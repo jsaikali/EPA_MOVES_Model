@@ -280,22 +280,22 @@
 	<target name="go32local" depends="">
 		<!-- Build the 32-bit versions of the Go calculator and generators using the local \go32 compiler -->
 		<echo message="Building the 32-bit version of the Go calculator with the local \go32 compiler. Expect errors if no \go32 directory exists."/>
-		<exec executable="${user.dir}\go32\bin\go.exe" spawn="false" dir="${user.dir}/calc/" output="gocalc32localoutput.txt" failifexecutionfails="true">
- 			<env key="Path" value="${user.dir}\go32\bin\;${env.Path}" />
+		<exec executable="${user.dir}/go32/bin/go.exe" spawn="false" dir="${user.dir}/calc/" output="gocalc32localoutput.txt" failifexecutionfails="true">
+ 			<env key="Path" value="${user.dir}/go32/bin/:${env.Path}" />
  			<env key="GOARCH" value="386"/>
 			<env key="GOMAXPROCS" value="4"/>
-			<env key="GOROOT" value="${user.dir}\go32\" />
+			<env key="GOROOT" value="${user.dir}/go32/" />
 			<arg value="build" />
 			<arg value="-o" />
 			<arg value="externalcalculatorgo32.exe" />
 			<arg value="externalcalculatorgo.go" />
 		</exec>
 		<echo message="Building the 32-bit version of the Go generators with the local \go32 compiler. Expect errors if no \go32 directory exists."/>
-		<exec executable="${user.dir}\go32\bin\go.exe" spawn="false" dir="${user.dir}/generators/" output="gogenerator32localoutput.txt" failifexecutionfails="true">
- 			<env key="Path" value="${user.dir}\go32\bin\;${env.Path}" />
+		<exec executable="${user.dir}/go32/bin/go.exe" spawn="false" dir="${user.dir}/generators/" output="gogenerator32localoutput.txt" failifexecutionfails="true">
+ 			<env key="Path" value="${user.dir}/go32/bin/:${env.Path}" />
  			<env key="GOARCH" value="386"/>
 			<env key="GOMAXPROCS" value="4"/>
-			<env key="GOROOT" value="${user.dir}\go32\" />
+			<env key="GOROOT" value="${user.dir}/go32/" />
 			<arg value="build" />
 			<arg value="-mod" />
 			<arg value="vendor" />
@@ -342,11 +342,11 @@
 			<arg value="externalcalculatorgo.go" />
 		</exec>
 		<echo message="Building the 32-bit version of the Go calculator with the local \go32 compiler. Expect errors if no \go32 directory exists."/>
-		<exec executable="${user.dir}\go32\bin\go.exe" spawn="false" dir="${user.dir}/calc/" output="gocalc32localoutput.txt" failifexecutionfails="false">
- 			<env key="Path" value="${user.dir}\go32\bin\;${env.Path}" />
+		<exec executable="${user.dir}/go32/bin/go.exe" spawn="false" dir="${user.dir}/calc/" output="gocalc32localoutput.txt" failifexecutionfails="false">
+ 			<env key="Path" value="${user.dir}/go32/bin/:${env.Path}" />
  			<env key="GOARCH" value="386"/>
 			<env key="GOMAXPROCS" value="4"/>
-			<env key="GOROOT" value="${user.dir}\go32\" />
+			<env key="GOROOT" value="${user.dir}/go32/" />
 			<arg value="build" />
 			<arg value="-o" />
 			<arg value="externalcalculatorgo32.exe" />
@@ -395,11 +395,11 @@
 			<arg value="externalgenerator.go" />
 		</exec>
 		<echo message="Building the 32-bit version of the Go generators with the local \go32 compiler. Expect errors if no \go32 directory exists."/>
-		<exec executable="${user.dir}\go32\bin\go.exe" spawn="false" dir="${user.dir}/generators/" output="gogenerator32localoutput.txt" failifexecutionfails="false">
- 			<env key="Path" value="${user.dir}\go32\bin\;${env.Path}" />
+		<exec executable="${user.dir}/go32/bin/go.exe" spawn="false" dir="${user.dir}/generators/" output="gogenerator32localoutput.txt" failifexecutionfails="false">
+ 			<env key="Path" value="${user.dir}/go32/bin/:${env.Path}" />
  			<env key="GOARCH" value="386"/>
 			<env key="GOMAXPROCS" value="4"/>
-			<env key="GOROOT" value="${user.dir}\go32\" />
+			<env key="GOROOT" value="${user.dir}/go32/" />
 			<arg value="build" />
 			<arg value="-mod" />
 			<arg value="vendor" />
@@ -1103,7 +1103,7 @@
 			<classpath refid="classpath" />
 			<arg value="-input=${input}" />
 			<arg value="-output=${output}" />
-			<arg value="-script=database\ConversionScripts\Convert_MOVES2014_input_to_MOVES3.sql" />
+			<arg value="-script=database/ConversionScripts/Convert_MOVES2014_input_to_MOVES3.sql" />
 		</java>
 	</target>
 
@@ -1115,7 +1115,7 @@
 			<classpath refid="classpath" />
 			<arg value="-input=${input}" />
 			<arg value="-output=${output}" />
-			<arg value="-script=database\ConversionScripts\Convert_MOVES2014ab_input_to_MOVES3.sql" />
+			<arg value="-script=database/ConversionScripts/Convert_MOVES2014ab_input_to_MOVES3.sql" />
 		</java>
 	</target>
 
@@ -1149,7 +1149,7 @@
 					<classpath refid="classpath" />
 					<arg value="-input=${input}" />
 					<arg value="-output=${output}" />
-					<arg value="-script=database\NEIQA\M3onroadCDBchecks.sql" />
+					<arg value="-script=database/NEIQA/M3onroadCDBchecks.sql" />
 				</java>
 			</else>
 		</if>		
@@ -1185,7 +1185,7 @@
 					<classpath refid="classpath" />
 					<arg value="-input=${input}" />
 					<arg value="-output=${output}" />
-					<arg value="-script=database\NEIQA\M3nonroadCDBchecks.sql" />
+					<arg value="-script=database/NEIQA/M3nonroadCDBchecks.sql" />
 				</java>
 			</else>
 		</if>
