@@ -1,0 +1,569 @@
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+Apache Ant(TM) version 1.10.7 compiled on September 1 2019
+Trying the default build file: build.xml
+Buildfile: /home/ec2-user/climateaction/EPA_MOVES_Model/build.xml
+Detected Java version: 11 in: /usr/lib/jvm/java-11-openjdk-11.0.9.11-0.amzn2.0.1.x86_64
+Detected OS: Linux
+parsing buildfile /home/ec2-user/climateaction/EPA_MOVES_Model/build.xml with URI = file:/home/ec2-user/climateaction/EPA_MOVES_Model/build.xml
+Project base dir set to: /home/ec2-user/climateaction/EPA_MOVES_Model
+parsing buildfile jar:file:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant.jar!/org/apache/tools/ant/antlib.xml with URI = jar:file:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant.jar!/org/apache/tools/ant/antlib.xml from a zip file
+ [macrodef] creating macro  appendworkercsv
+ [macrodef] creating macro  makeworkerlist
+Build sequence for target(s) `crungui' is [init, compile, go64, crungui]
+Complete build sequence is [init, compile, go64, crungui, errormessages, clean, compileall, compilejavago, nonroadNEIQA, 2workers, makeamazon, costello, convert2014_3, 3workers, go, jarcode, errormessagesauto, devtest, go32local, go32, manyworkers, runworker, master1worker, maketodo, recenttests, docs, alltests, all, convert2014ab_3, algorithms, 1worker, run, 508tests, inprogressguitests, fasttests, startmysql, dbimporter, stopmysql, targets, subworker, slowqueries, rungui, setlogin, testcleanup, cleantests, onroadNEIQA, crunworker, guitests, pickup, makejre, ]
+
+init:
+
+compile:
+    [javac] gov/epa/otaq/moves/common/BundleManifest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/BundleManifest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/CellFile.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/CellFile.class is up to date.
+    [javac] gov/epa/otaq/moves/common/CellFileReader.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/CellFileReader.class is up to date.
+    [javac] gov/epa/otaq/moves/common/CellFileToMySQLImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/CellFileToMySQLImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/common/CellFileWriter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/CellFileWriter.class is up to date.
+    [javac] gov/epa/otaq/moves/common/CompilationFlags.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/CompilationFlags.class is up to date.
+    [javac] gov/epa/otaq/moves/common/Configuration.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/Configuration.class is up to date.
+    [javac] gov/epa/otaq/moves/common/Constants.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/Constants.class is up to date.
+    [javac] gov/epa/otaq/moves/common/DatabaseSelection.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/DatabaseSelection.class is up to date.
+    [javac] gov/epa/otaq/moves/common/DatabaseSelectionTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/DatabaseSelectionTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/DatabaseUtilities.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/DatabaseUtilities.class is up to date.
+    [javac] gov/epa/otaq/moves/common/DatabaseUtilitiesTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/DatabaseUtilitiesTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/DistributedIDBroker.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/DistributedIDBroker.class is up to date.
+    [javac] gov/epa/otaq/moves/common/DistributedIDBrokerTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/DistributedIDBrokerTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/DistributedWorkFileName.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/DistributedWorkFileName.class is up to date.
+    [javac] gov/epa/otaq/moves/common/DistributedWorkFileNameTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/DistributedWorkFileNameTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/DistributedWorkFilePurpose.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/DistributedWorkFilePurpose.class is up to date.
+    [javac] gov/epa/otaq/moves/common/DistributedWorkFilePurposeTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/DistributedWorkFilePurposeTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/DistributedWorkFileState.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/DistributedWorkFileState.class is up to date.
+    [javac] gov/epa/otaq/moves/common/DistributedWorkFileStateTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/DistributedWorkFileStateTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/EPATableColumn.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/EPATableColumn.class is up to date.
+    [javac] gov/epa/otaq/moves/common/EPATableModel.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/EPATableModel.class is up to date.
+    [javac] gov/epa/otaq/moves/common/EPATableModelTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/EPATableModelTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/ExtendedComboBox.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/ExtendedComboBox.class is up to date.
+    [javac] gov/epa/otaq/moves/common/FileTimeUtility.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/FileTimeUtility.class is up to date.
+    [javac] gov/epa/otaq/moves/common/FileUtilities.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/FileUtilities.class is up to date.
+    [javac] gov/epa/otaq/moves/common/FileUtilitiesTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/FileUtilitiesTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/FloatConversion.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/FloatConversion.class is up to date.
+    [javac] gov/epa/otaq/moves/common/FloatConversionTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/FloatConversionTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/ISQLFilter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/ISQLFilter.class is up to date.
+    [javac] gov/epa/otaq/moves/common/InstanceCounter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/InstanceCounter.class is up to date.
+    [javac] gov/epa/otaq/moves/common/JARUtilities.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/JARUtilities.class is up to date.
+    [javac] gov/epa/otaq/moves/common/JARUtilitiesTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/JARUtilitiesTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/JListWithToolTips.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/JListWithToolTips.class is up to date.
+    [javac] gov/epa/otaq/moves/common/LogHandler.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/LogHandler.class is up to date.
+    [javac] gov/epa/otaq/moves/common/LogMessageCategory.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/LogMessageCategory.class is up to date.
+    [javac] gov/epa/otaq/moves/common/Logger.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/Logger.class is up to date.
+    [javac] gov/epa/otaq/moves/common/MOVESDatabaseType.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/MOVESDatabaseType.class is up to date.
+    [javac] gov/epa/otaq/moves/common/MOVESThread.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/MOVESThread.class is up to date.
+    [javac] gov/epa/otaq/moves/common/MOVESThreadTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/MOVESThreadTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/Model.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/Model.class is up to date.
+    [javac] gov/epa/otaq/moves/common/ModelDomain.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/ModelDomain.class is up to date.
+    [javac] gov/epa/otaq/moves/common/ModelScale.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/ModelScale.class is up to date.
+    [javac] gov/epa/otaq/moves/common/ModelScaleTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/ModelScaleTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/Models.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/Models.class is up to date.
+    [javac] gov/epa/otaq/moves/common/OSDetector.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/OSDetector.class is up to date.
+    [javac] gov/epa/otaq/moves/common/OffRoadSCCListProducer.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/OffRoadSCCListProducer.class is up to date.
+    [javac] gov/epa/otaq/moves/common/OffRoadSCCListProducerTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/OffRoadSCCListProducerTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/OffRoadVehicleSelection.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/OffRoadVehicleSelection.class is up to date.
+    [javac] gov/epa/otaq/moves/common/OffRoadVehicleSelectionTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/OffRoadVehicleSelectionTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/OnRoadVehicleSelection.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/OnRoadVehicleSelection.class is up to date.
+    [javac] gov/epa/otaq/moves/common/OnRoadVehicleSelectionTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/OnRoadVehicleSelectionTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/OpenFile.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/OpenFile.class is up to date.
+    [javac] gov/epa/otaq/moves/common/OutputEmissionsBreakdownSelection.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/OutputEmissionsBreakdownSelection.class is up to date.
+    [javac] gov/epa/otaq/moves/common/OutputEmissionsBreakdownSelectionTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/OutputEmissionsBreakdownSelectionTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/ParallelSQLRunner.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/ParallelSQLRunner.class is up to date.
+    [javac] gov/epa/otaq/moves/common/PasswordChecker.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/PasswordChecker.class is up to date.
+    [javac] gov/epa/otaq/moves/common/PasswordCheckerTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/PasswordCheckerTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/PerformanceProfiler.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/PerformanceProfiler.class is up to date.
+    [javac] gov/epa/otaq/moves/common/PermutationCreator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/PermutationCreator.class is up to date.
+    [javac] gov/epa/otaq/moves/common/PermutationCreatorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/PermutationCreatorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/RegExBuilder.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/RegExBuilder.class is up to date.
+    [javac] gov/epa/otaq/moves/common/SQLRunner.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/SQLRunner.class is up to date.
+    [javac] gov/epa/otaq/moves/common/ScriptTestSuite.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/ScriptTestSuite.class is up to date.
+    [javac] gov/epa/otaq/moves/common/StreamGobbler.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/StreamGobbler.class is up to date.
+    [javac] gov/epa/otaq/moves/common/StringComparatorIgnoreCase.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/StringComparatorIgnoreCase.class is up to date.
+    [javac] gov/epa/otaq/moves/common/StringComparatorIgnoreCaseTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/StringComparatorIgnoreCaseTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/StringUtilities.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/StringUtilities.class is up to date.
+    [javac] gov/epa/otaq/moves/common/StringUtilitiesTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/StringUtilitiesTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/TaggedSQLRunner.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/TaggedSQLRunner.class is up to date.
+    [javac] gov/epa/otaq/moves/common/TemporaryFileManager.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/TemporaryFileManager.class is up to date.
+    [javac] gov/epa/otaq/moves/common/TimeSpan.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/TimeSpan.class is up to date.
+    [javac] gov/epa/otaq/moves/common/TimeSpanTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/TimeSpanTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/ToolTipHelper.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/ToolTipHelper.class is up to date.
+    [javac] gov/epa/otaq/moves/common/TooltipComboBoxRenderer.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/TooltipComboBoxRenderer.class is up to date.
+    [javac] gov/epa/otaq/moves/common/TreeMapIgnoreCase.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/TreeMapIgnoreCase.class is up to date.
+    [javac] gov/epa/otaq/moves/common/TreeMapIgnoreCaseTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/TreeMapIgnoreCaseTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/TreeSetIgnoreCase.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/TreeSetIgnoreCase.class is up to date.
+    [javac] gov/epa/otaq/moves/common/TreeSetIgnoreCaseTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/TreeSetIgnoreCaseTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/WildCardFileNameFilter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/WildCardFileNameFilter.class is up to date.
+    [javac] gov/epa/otaq/moves/common/WildCardFileNameFilterTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/WildCardFileNameFilterTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/WildcardMatcher.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/WildcardMatcher.class is up to date.
+    [javac] gov/epa/otaq/moves/common/WildcardMatcherTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/WildcardMatcherTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/WindowStateHandler.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/WindowStateHandler.class is up to date.
+    [javac] gov/epa/otaq/moves/common/XLSReader.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/XLSReader.class is up to date.
+    [javac] gov/epa/otaq/moves/common/expression/Common.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/expression/Common.class is up to date.
+    [javac] gov/epa/otaq/moves/common/expression/ExpressionParser.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/expression/ExpressionParser.class is up to date.
+    [javac] gov/epa/otaq/moves/common/expression/ExpressionParserTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/expression/ExpressionParserTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/expression/IExpressionNode.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/expression/IExpressionNode.class is up to date.
+    [javac] gov/epa/otaq/moves/common/expression/IVariableSource.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/expression/IVariableSource.class is up to date.
+    [javac] gov/epa/otaq/moves/common/expression/Optimizer.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/expression/Optimizer.class is up to date.
+    [javac] gov/epa/otaq/moves/common/expression/Tokenizer.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/expression/Tokenizer.class is up to date.
+    [javac] gov/epa/otaq/moves/common/expression/TokenizerTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/expression/TokenizerTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/expression/Value.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/expression/Value.class is up to date.
+    [javac] gov/epa/otaq/moves/common/graph/BasicNodeImpl.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/graph/BasicNodeImpl.class is up to date.
+    [javac] gov/epa/otaq/moves/common/graph/BasicResourceImpl.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/graph/BasicResourceImpl.class is up to date.
+    [javac] gov/epa/otaq/moves/common/graph/GraphHolder.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/graph/GraphHolder.class is up to date.
+    [javac] gov/epa/otaq/moves/common/graph/GraphScheduler.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/graph/GraphScheduler.class is up to date.
+    [javac] gov/epa/otaq/moves/common/graph/GraphTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/graph/GraphTest.class is up to date.
+    [javac] gov/epa/otaq/moves/common/graph/GraphUtilities.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/graph/GraphUtilities.class is up to date.
+    [javac] gov/epa/otaq/moves/common/graph/INode.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/graph/INode.class is up to date.
+    [javac] gov/epa/otaq/moves/common/graph/IResource.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/graph/IResource.class is up to date.
+    [javac] gov/epa/otaq/moves/common/graph/sql/SQLNode.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/graph/sql/SQLNode.class is up to date.
+    [javac] gov/epa/otaq/moves/common/graph/sql/SQLNodeTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/common/graph/sql/SQLNodeTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/commandline/DatabaseConverter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/commandline/DatabaseConverter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/commandline/MOVESCommandLine.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/commandline/MOVESCommandLine.class is up to date.
+    [javac] gov/epa/otaq/moves/master/commandline/NEIQAScriptsRunner.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/commandline/NEIQAScriptsRunner.class is up to date.
+    [javac] gov/epa/otaq/moves/master/commandline/SetLogin.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/commandline/SetLogin.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/AggregationSQLGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/AggregationSQLGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/AggregationSQLGeneratorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/AggregationSQLGeneratorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/BundleUtilities.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/BundleUtilities.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/ControlStrategy.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/ControlStrategy.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/DatabaseConnectionManager.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/DatabaseConnectionManager.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/DatabaseConnectionManagerTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/DatabaseConnectionManagerTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/DefaultDataMaker.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/DefaultDataMaker.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/EmissionCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/EmissionCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/EmissionCalculatorExternal.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/EmissionCalculatorExternal.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/EmissionCalculatorInboundUnbundler.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/EmissionCalculatorInboundUnbundler.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/EmissionCalculatorInboundUnbundlerTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/EmissionCalculatorInboundUnbundlerTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/EmissionCalculatorOutboundBundler.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/EmissionCalculatorOutboundBundler.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/EmissionCalculatorOutboundBundlerTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/EmissionCalculatorOutboundBundlerTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/EmissionCalculatorRegistration.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/EmissionCalculatorRegistration.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/EmissionCalculatorRegistrationTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/EmissionCalculatorRegistrationTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/EmissionProcess.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/EmissionProcess.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/EmissionProcessTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/EmissionProcessTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/EmissionRatePreSelector.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/EmissionRatePreSelector.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/EmissionRatePreSelectorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/EmissionRatePreSelectorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/ExecutionLocation.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/ExecutionLocation.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/ExecutionLocationProducer.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/ExecutionLocationProducer.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/ExecutionLocationTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/ExecutionLocationTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/ExecutionRunSpec.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/ExecutionRunSpec.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/ExecutionRunSpecTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/ExecutionRunSpecTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/ExtractedDataCache.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/ExtractedDataCache.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/GREETInterface.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/GREETInterface.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/GREETInterfaceTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/GREETInterfaceTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/Generator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/Generator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/GenericCalculatorBase.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/GenericCalculatorBase.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/HeartbeatDetectionThread.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/HeartbeatDetectionThread.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/IExportDefaultHandler.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/IExportDefaultHandler.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/IImportExportHandler.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/IImportExportHandler.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/InputDataManager.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/InputDataManager.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/InputDataManagerTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/InputDataManagerTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/IntegratedPostProcessor.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/IntegratedPostProcessor.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/InterconnectionTracker.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/InterconnectionTracker.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/InternalControlStrategy.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/InternalControlStrategy.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/InternalControlStrategyPanel.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/InternalControlStrategyPanel.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/InternalControlStrategySimpleInstance.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/InternalControlStrategySimpleInstance.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/InternalControlStrategySingleInstanceOnly.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/InternalControlStrategySingleInstanceOnly.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/InternalControlStrategyUseImporterOnly.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/InternalControlStrategyUseImporterOnly.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MOVESAPI.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MOVESAPI.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MOVESEngine.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MOVESEngine.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MOVESEngineListener.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MOVESEngineListener.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MOVESEngineTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MOVESEngineTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MOVESInstantiator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MOVESInstantiator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MOVESInstantiatorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MOVESInstantiatorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MasterLoop.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MasterLoop.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MasterLoopContext.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MasterLoopContext.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MasterLoopGranularity.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MasterLoopGranularity.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MasterLoopGranularityTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MasterLoopGranularityTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MasterLoopPriority.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MasterLoopPriority.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MasterLoopTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MasterLoopTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MasterLoopable.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MasterLoopable.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MasterLoopableSubscription.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MasterLoopableSubscription.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MasterLoopableSubscriptionTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MasterLoopableSubscriptionTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MasterLoopableThread.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MasterLoopableThread.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/MesoscaleLookupPostProcessor.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/MesoscaleLookupPostProcessor.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/ModelYearMapper.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/ModelYearMapper.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/ModelYearMapperTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/ModelYearMapperTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/OutputProcessor.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/OutputProcessor.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/OutputProcessorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/OutputProcessorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/PDSpec.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/PDSpec.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/Pollutant.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/Pollutant.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/PollutantDisplayGroup.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/PollutantDisplayGroup.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/PollutantProcessAssociation.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/PollutantProcessAssociation.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/PollutantProcessAssociationTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/PollutantProcessAssociationTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/PollutantProcessLoader.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/PollutantProcessLoader.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/PollutantProcessLoaderTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/PollutantProcessLoaderTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/PollutantTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/PollutantTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/RoadType.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/RoadType.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/RoadTypeTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/RoadTypeTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/SCC.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/SCC.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/SCCFuelType.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/SCCFuelType.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/SCCTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/SCCTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/SQLForWorker.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/SQLForWorker.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/SQLForWorkerTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/SQLForWorkerTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/SQLMacroExpander.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/SQLMacroExpander.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/SchemaInspector.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/SchemaInspector.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/SchemaInspectorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/SchemaInspectorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/SystemConfiguration.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/SystemConfiguration.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/SystemConfigurationTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/SystemConfigurationTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/UncertaintyParameters.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/UncertaintyParameters.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/UncertaintyParametersTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/UncertaintyParametersTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/WeeksInMonthHelper.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/WeeksInMonthHelper.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/WorkFileRetrieverThread.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/WorkFileRetrieverThread.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/WorkFileRetrieverThreadTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/WorkFileRetrieverThreadTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/WorksheetChooserDialog.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/WorksheetChooserDialog.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/BasicDataHandler.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/BasicDataHandler.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/CommonNamesFilter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/CommonNamesFilter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/ICountyDataImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/ICountyDataImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/IDataHandler.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/IDataHandler.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/IDataStatus.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/IDataStatus.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/IImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/IImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/IImporterPanel.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/IImporterPanel.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/IImporterPart.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/IImporterPart.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/IImporterTabBaseProvider.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/IImporterTabBaseProvider.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/IProjectDataImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/IProjectDataImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/ImporterBase.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/ImporterBase.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/ImporterGUI.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/ImporterGUI.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/ImporterInstantiator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/ImporterInstantiator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/ImporterManager.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/ImporterManager.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/ImporterTabBase.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/ImporterTabBase.class is up to date.
+    [javac] gov/epa/otaq/moves/master/framework/importers/TableFileLinkagePart.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/framework/importers/TableFileLinkagePart.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/AboutAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/AboutAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/AdvancedPerformanceFeatures.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/AdvancedPerformanceFeatures.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/BuildLEVAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/BuildLEVAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/BuildLEVNLEV.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/BuildLEVNLEV.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/BuildNLEVAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/BuildNLEVAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/ClearAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/ClearAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/CloseAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/CloseAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/Configure.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/Configure.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/ConfigureAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/ConfigureAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/Convert2014To3Action.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/Convert2014To3Action.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/Convert2014aTo3Action.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/Convert2014aTo3Action.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/Converter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/Converter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/CopyAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/CopyAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/CreateFutureEmissionRatesAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/CreateFutureEmissionRatesAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/CreateInputDatabase.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/CreateInputDatabase.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/CustomReportAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/CustomReportAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/CutAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/CutAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/Description.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/Description.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/ExecuteAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/ExecuteAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/ExecuteDataImporterAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/ExecuteDataImporterAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/ExecuteGreetAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/ExecuteGreetAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/ExitAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/ExitAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/ExportToNIFAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/ExportToNIFAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/ExportToPechanAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/ExportToPechanAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/Ferc.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/Ferc.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/GeneralOutput.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/GeneralOutput.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/IMGUI.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/IMGUI.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/IMGUIAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/IMGUIAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/InternalControlStrategies.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/InternalControlStrategies.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/JLFAbstractAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/JLFAbstractAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/LayoutUtility.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/LayoutUtility.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/LoginDialog.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/LoginDialog.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/LoopingTool.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/LoopingTool.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/LoopingToolAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/LoopingToolAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/MOVESGUI.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/MOVESGUI.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/MOVESNavigation.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/MOVESNavigation.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/MOVESProgress.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/MOVESProgress.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/MOVESRunErrorLog.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/MOVESRunErrorLog.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/MOVESRunErrorLogAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/MOVESRunErrorLogAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/MOVESWindow.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/MOVESWindow.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/MOVESWindowReleaseVersionTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/MOVESWindowReleaseVersionTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/MacroscaleGeographicBounds.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/MacroscaleGeographicBounds.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/ManageInputDataSets.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/ManageInputDataSets.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/NewAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/NewAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/ONITool.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/ONITool.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/ONIToolAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/ONIToolAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/OffRoadVehicleEquipment.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/OffRoadVehicleEquipment.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/OnRoadVehicleEquipment.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/OnRoadVehicleEquipment.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/OpenAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/OpenAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/OutputEmissionsBreakdown.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/OutputEmissionsBreakdown.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/PDSpecGUI.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/PDSpecGUI.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/PDSpecGUIAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/PDSpecGUIAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/PasteAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/PasteAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/PauseAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/PauseAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/PollutantsAndProcesses.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/PollutantsAndProcesses.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/PreaggregationOptions.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/PreaggregationOptions.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/PreviousFile1Action.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/PreviousFile1Action.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/PreviousFile2Action.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/PreviousFile2Action.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/PreviousFile3Action.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/PreviousFile3Action.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/PreviousFile4Action.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/PreviousFile4Action.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/PrintAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/PrintAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/Report1Action.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/Report1Action.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/Report2Action.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/Report2Action.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/ResumeAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/ResumeAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/RoadTypeScreen.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/RoadTypeScreen.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/RunNonroadScriptAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/RunNonroadScriptAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/RunNonroadScriptActionHelper.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/RunNonroadScriptActionHelper.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/RunScriptAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/RunScriptAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/RunSpecEditor.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/RunSpecEditor.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/RunSpecSectionStatus.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/RunSpecSectionStatus.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/RunSpecSectionStatusTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/RunSpecSectionStatusTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/SDRMAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/SDRMAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/SaveAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/SaveAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/SaveAsAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/SaveAsAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/Scale.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/Scale.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/StopAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/StopAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/SummaryReportAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/SummaryReportAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/SummaryReporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/SummaryReporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/TCheckBox.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/TCheckBox.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/TextPrinter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/TextPrinter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/TimeSpans.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/TimeSpans.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/UpdateManufactureDisposalRatesAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/UpdateManufactureDisposalRatesAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/UpdateWellToPumpRatesAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/UpdateWellToPumpRatesAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/gui/UserGuideAction.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/gui/UserGuideAction.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/general/FuelControlStrategy.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/general/FuelControlStrategy.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/general/FuelControlStrategyTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/general/FuelControlStrategyTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/general/MeteorologyGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/general/MeteorologyGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/general/MeteorologyGeneratorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/general/MeteorologyGeneratorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/general/RefineryModel.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/general/RefineryModel.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/general/RefineryModelTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/general/RefineryModelTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/general/SourceMaintenanceControlStrategy.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/general/SourceMaintenanceControlStrategy.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/general/SourceMaintenanceControlStrategyTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/general/SourceMaintenanceControlStrategyTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/general/SourceManufacturingControlStrategy.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/general/SourceManufacturingControlStrategy.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/general/SourceManufacturingControlStrategyTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/general/SourceManufacturingControlStrategyTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/general/SourceUsageControlStrategy.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/general/SourceUsageControlStrategy.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/general/SourceUsageControlStrategyTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/general/SourceUsageControlStrategyTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/ActivityCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/ActivityCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/AirToxicsCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/AirToxicsCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/AirToxicsDistanceCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/AirToxicsDistanceCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/AverageSpeedOperatingModeDistributionGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/AverageSpeedOperatingModeDistributionGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/BaseRateByAgeHelper.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/BaseRateByAgeHelper.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/BaseRateCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/BaseRateCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/BaseRateGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/BaseRateGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/BaseRateGeneratorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/BaseRateGeneratorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/BasicBrakeWearPMEmissionCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/BasicBrakeWearPMEmissionCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/BasicRunningPMEmissionCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/BasicRunningPMEmissionCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/BasicStartPMEmissionCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/BasicStartPMEmissionCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/BasicTireWearPMEmissionCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/BasicTireWearPMEmissionCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CH4ExtendedIdleCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CH4ExtendedIdleCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CH4N2ORunningStartCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CH4N2ORunningStartCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CH4N2ORunningStartCalculatorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CH4N2ORunningStartCalculatorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CH4N2OWTPCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CH4N2OWTPCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CH4N2OWTPCalculatorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CH4N2OWTPCalculatorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CO2AERunningStartExtendedIdleCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CO2AERunningStartExtendedIdleCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CO2AERunningStartExtendedIdleCalculatorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CO2AERunningStartExtendedIdleCalculatorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CO2AtmosphericWTPCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CO2AtmosphericWTPCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CO2AtmosphericWTPCalculatorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CO2AtmosphericWTPCalculatorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CO2EqivalentWTPCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CO2EqivalentWTPCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CO2EqivalentWTPCalculatorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CO2EqivalentWTPCalculatorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CrankcaseEmissionCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CrankcaseEmissionCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CrankcaseEmissionCalculatorNonPM.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CrankcaseEmissionCalculatorNonPM.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CrankcaseEmissionCalculatorPM.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CrankcaseEmissionCalculatorPM.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CriteriaAndPMAuxiliaryPowerCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CriteriaAndPMAuxiliaryPowerCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CriteriaAndPMExtendedIdleEmissionCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CriteriaAndPMExtendedIdleEmissionCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CriteriaAndPMExtendedIdleEmissionCalculatorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CriteriaAndPMExtendedIdleEmissionCalculatorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CriteriaRunningCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CriteriaRunningCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/CriteriaStartCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/CriteriaStartCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/DistanceCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/DistanceCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/DummyCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/DummyCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/EnergyConsumptionCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/EnergyConsumptionCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/EvaporativeEmissionsOperatingModeDistributionGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/EvaporativeEmissionsOperatingModeDistributionGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/EvaporativePermeationCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/EvaporativePermeationCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/FuelEffectsGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/FuelEffectsGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/FuelEffectsGeneratorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/FuelEffectsGeneratorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/HCSpeciationCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/HCSpeciationCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/LinkOperatingModeDistributionGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/LinkOperatingModeDistributionGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/LiquidLeakingCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/LiquidLeakingCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/MesoscaleLookupOperatingModeDistributionGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/MesoscaleLookupOperatingModeDistributionGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/MesoscaleLookupTotalActivityGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/MesoscaleLookupTotalActivityGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/NH3AuxiliaryPowerCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/NH3AuxiliaryPowerCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/NH3ExtendedIdleEmissionCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/NH3ExtendedIdleEmissionCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/NH3ExtendedIdleEmissionCalculatorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/NH3ExtendedIdleEmissionCalculatorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/NH3RunningCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/NH3RunningCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/NH3StartCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/NH3StartCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/NO2Calculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/NO2Calculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/NOCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/NOCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/NRAirToxicsCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/NRAirToxicsCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/NRHCSpeciationCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/NRHCSpeciationCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/OperatingModeDistributionGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/OperatingModeDistributionGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/OperatingModeDistributionGeneratorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/OperatingModeDistributionGeneratorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/PM10BrakeTireCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/PM10BrakeTireCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/PM10EmissionCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/PM10EmissionCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/PMTotalExhaustCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/PMTotalExhaustCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/ProjectTAG.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/ProjectTAG.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/RatesOperatingModeDistributionGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/RatesOperatingModeDistributionGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/RefuelingLossCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/RefuelingLossCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/SO2Calculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/SO2Calculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/SourceBinDistributionGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/SourceBinDistributionGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/SourceTypePhysics.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/SourceTypePhysics.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/StartOperatingModeDistributionGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/StartOperatingModeDistributionGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/SulfatePMCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/SulfatePMCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/SulfurModelTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/SulfurModelTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/TOGSpeciationCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/TOGSpeciationCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/TankFuelGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/TankFuelGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/TankTemperatureGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/TankTemperatureGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/TankVaporVentingCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/TankVaporVentingCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/TotalActivityGenerator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/TotalActivityGenerator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/TotalActivityGeneratorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/TotalActivityGeneratorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/WellToPumpProcessor.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/WellToPumpProcessor.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/WellToPumpProcessorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/WellToPumpProcessorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/avft/AVFTControlStrategy.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/avft/AVFTControlStrategy.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/avft/AVFTMasterLoopable.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/avft/AVFTMasterLoopable.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/avft/AVFTPanel.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/avft/AVFTPanel.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/avft/AVFTPanelData.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/avft/AVFTPanelData.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/onroadretrofit/OnRoadRetrofitPanel.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/onroadretrofit/OnRoadRetrofitPanel.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/onroadretrofit/OnRoadRetrofitStrategy.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/onroadretrofit/OnRoadRetrofitStrategy.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/rateofprogress/RateOfProgressPanel.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/rateofprogress/RateOfProgressPanel.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/rateofprogress/RateOfProgressStrategy.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/ghg/internalcontrolstrategies/rateofprogress/RateOfProgressStrategy.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/AVFTImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/AVFTImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/AgeDistributionImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/AgeDistributionImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/AverageSpeedDistributionImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/AverageSpeedDistributionImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/DriveScheduleSecondLinkImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/DriveScheduleSecondLinkImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/FuelFormulationImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/FuelFormulationImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/FuelImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/FuelImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/FuelSupplyImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/FuelSupplyImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/FuelWizard.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/FuelWizard.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/GenericImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/GenericImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/HotellingImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/HotellingImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/IMImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/IMImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/IdleImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/IdleImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/LinkImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/LinkImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/LinkOpmodeDistributionImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/LinkOpmodeDistributionImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/LinkSourceTypeHourImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/LinkSourceTypeHourImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/MeteorologyImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/MeteorologyImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/OffNetworkLinkImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/OffNetworkLinkImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/OnRoadRetrofitImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/OnRoadRetrofitImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/RampFractionImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/RampFractionImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/RoadTypeDistributionImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/RoadTypeDistributionImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/SourceTypePopulationImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/SourceTypePopulationImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/StartsImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/StartsImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/StartsImporterDataLoadTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/StartsImporterDataLoadTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/VehicleTypeVMTImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/VehicleTypeVMTImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/ZoneImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/ZoneImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/implementation/importers/ZoneRoadTypeImporter.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/implementation/importers/ZoneRoadTypeImporter.class is up to date.
+    [javac] gov/epa/otaq/moves/master/nonroad/MonthlyFractions.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/nonroad/MonthlyFractions.class is up to date.
+    [javac] gov/epa/otaq/moves/master/nonroad/NonroadCalculatorHelper.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/nonroad/NonroadCalculatorHelper.class is up to date.
+    [javac] gov/epa/otaq/moves/master/nonroad/NonroadDataFileHelper.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/nonroad/NonroadDataFileHelper.class is up to date.
+    [javac] gov/epa/otaq/moves/master/nonroad/NonroadDataFilesObj.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/nonroad/NonroadDataFilesObj.class is up to date.
+    [javac] gov/epa/otaq/moves/master/nonroad/NonroadEmissionCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/nonroad/NonroadEmissionCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/nonroad/NonroadEmissionFacInfo.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/nonroad/NonroadEmissionFacInfo.class is up to date.
+    [javac] gov/epa/otaq/moves/master/nonroad/NonroadHelper.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/nonroad/NonroadHelper.class is up to date.
+    [javac] gov/epa/otaq/moves/master/nonroad/NonroadInputCreator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/nonroad/NonroadInputCreator.class is up to date.
+    [javac] gov/epa/otaq/moves/master/nonroad/NonroadOptFileHelper.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/nonroad/NonroadOptFileHelper.class is up to date.
+    [javac] gov/epa/otaq/moves/master/nonroad/NonroadOptFileSqlHelper.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/nonroad/NonroadOptFileSqlHelper.class is up to date.
+    [javac] gov/epa/otaq/moves/master/nonroad/NonroadOptfileOptionsPacket.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/nonroad/NonroadOptfileOptionsPacket.class is up to date.
+    [javac] gov/epa/otaq/moves/master/nonroad/NonroadOptfileRegionPacket.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/nonroad/NonroadOptfileRegionPacket.class is up to date.
+    [javac] gov/epa/otaq/moves/master/nonroad/NonroadPMBasedSulfur.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/nonroad/NonroadPMBasedSulfur.class is up to date.
+    [javac] gov/epa/otaq/moves/master/nonroad/NonroadTemparyDataFileManager.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/nonroad/NonroadTemparyDataFileManager.class is up to date.
+    [javac] gov/epa/otaq/moves/master/nonroad/SccTech_HpminmaxYear.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/nonroad/SccTech_HpminmaxYear.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/DistanceMeasurementSystem.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/DistanceMeasurementSystem.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/DistanceMeasurementSystemTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/DistanceMeasurementSystemTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/EnergyMeasurementSystem.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/EnergyMeasurementSystem.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/GenericCounty.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/GenericCounty.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/GeographicOutputDetailLevel.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/GeographicOutputDetailLevel.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/GeographicOutputDetailLevelTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/GeographicOutputDetailLevelTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/GeographicSelection.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/GeographicSelection.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/GeographicSelectionTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/GeographicSelectionTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/GeographicSelectionType.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/GeographicSelectionType.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/GeographicSelectionTypeTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/GeographicSelectionTypeTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/HydrocarbonUnitSystem.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/HydrocarbonUnitSystem.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/HydrocarbonUnitSystemTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/HydrocarbonUnitSystemTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/MassMeasurementSystem.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/MassMeasurementSystem.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/MassMeasurementSystemTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/MassMeasurementSystemTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/OutputFactors.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/OutputFactors.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/OutputFactorsTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/OutputFactorsTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/OutputTimeStep.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/OutputTimeStep.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/RunSpec.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/RunSpec.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/RunSpecTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/RunSpecTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/RunSpecXML.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/RunSpecXML.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/RunSpecXMLTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/RunSpecXMLTest.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/TimeMeasurementSystem.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/TimeMeasurementSystem.class is up to date.
+    [javac] gov/epa/otaq/moves/master/runspec/TimeMeasurementSystemTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/master/runspec/TimeMeasurementSystemTest.class is up to date.
+    [javac] gov/epa/otaq/moves/systemtests/fast/MOVESAPITest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/systemtests/fast/MOVESAPITest.class is up to date.
+    [javac] gov/epa/otaq/moves/systemtests/test508/Section508Test.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/systemtests/test508/Section508Test.class is up to date.
+    [javac] gov/epa/otaq/moves/tools/CompareRuns.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/tools/CompareRuns.class is up to date.
+    [javac] gov/epa/otaq/moves/tools/MySQLSlowQueryAnalyzer.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/tools/MySQLSlowQueryAnalyzer.class is up to date.
+    [javac] gov/epa/otaq/moves/tools/ReconcileIndexes.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/tools/ReconcileIndexes.class is up to date.
+    [javac] gov/epa/otaq/moves/tools/amazon/Job.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/tools/amazon/Job.class is up to date.
+    [javac] gov/epa/otaq/moves/tools/amazon/S3.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/tools/amazon/S3.class is up to date.
+    [javac] gov/epa/otaq/moves/tools/messages/DocumentBuilder.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/tools/messages/DocumentBuilder.class is up to date.
+    [javac] gov/epa/otaq/moves/tools/messages/MessageDocumentor.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/tools/messages/MessageDocumentor.class is up to date.
+    [javac] gov/epa/otaq/moves/utils/ApplicationRunner.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/utils/ApplicationRunner.class is up to date.
+    [javac] gov/epa/otaq/moves/utils/FileUtil.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/utils/FileUtil.class is up to date.
+    [javac] gov/epa/otaq/moves/utils/FileWithRelativePath.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/utils/FileWithRelativePath.class is up to date.
+    [javac] gov/epa/otaq/moves/utils/FormatUtil.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/utils/FormatUtil.class is up to date.
+    [javac] gov/epa/otaq/moves/utils/JarHelper.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/utils/JarHelper.class is up to date.
+    [javac] gov/epa/otaq/moves/utils/StreamGobbler.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/utils/StreamGobbler.class is up to date.
+    [javac] gov/epa/otaq/moves/worker/WorkerCommandLine.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/worker/WorkerCommandLine.class is up to date.
+    [javac] gov/epa/otaq/moves/worker/framework/ExternalCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/worker/framework/ExternalCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/worker/framework/NonroadOutputDataLoader.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/worker/framework/NonroadOutputDataLoader.class is up to date.
+    [javac] gov/epa/otaq/moves/worker/framework/NonroadPostProcessor.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/worker/framework/NonroadPostProcessor.class is up to date.
+    [javac] gov/epa/otaq/moves/worker/framework/RemoteEmissionsCalculator.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/worker/framework/RemoteEmissionsCalculator.class is up to date.
+    [javac] gov/epa/otaq/moves/worker/framework/RemoteEmissionsCalculatorTest.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/worker/framework/RemoteEmissionsCalculatorTest.class is up to date.
+    [javac] gov/epa/otaq/moves/worker/framework/WorkerConfiguration.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/worker/framework/WorkerConfiguration.class is up to date.
+    [javac] gov/epa/otaq/moves/worker/framework/WorkerHeartbeatThread.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/worker/framework/WorkerHeartbeatThread.class is up to date.
+    [javac] gov/epa/otaq/moves/worker/gui/WorkerGUI.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/worker/gui/WorkerGUI.class is up to date.
+    [javac] gov/epa/otaq/moves/worker/gui/WorkerWindow.java omitted as /home/ec2-user/climateaction/EPA_MOVES_Model/gov/epa/otaq/moves/worker/gui/WorkerWindow.class is up to date.
+
+go64:
+     [echo] Building the 64-bit version of the Go calculator with the system-wide Go compiler.
+     [exec] Current OS is Linux
+     [exec] Output redirected to /home/ec2-user/climateaction/EPA_MOVES_Model/gocalc64output.txt
+     [exec] Setting environment variable: GOARCH=amd64
+     [exec] Setting environment variable: GOMAXPROCS=4
+     [exec] Executing 'go' with arguments:
+     [exec] 'build'
+     [exec] '-o'
+     [exec] 'externalcalculatorgo64.exe'
+     [exec] 'externalcalculatorgo.go'
+     [exec] 
+     [exec] The ' characters around the executable and arguments are
+     [exec] not part of the command.
+     [echo] Building the 64-bit version of the Go generator with the system-wide Go compiler.
+     [exec] Current OS is Linux
+     [exec] Output redirected to /home/ec2-user/climateaction/EPA_MOVES_Model/gogenerators64output.txt
+     [exec] Setting environment variable: GOARCH=amd64
+     [exec] Setting environment variable: GOMAXPROCS=4
+     [exec] Executing 'go' with arguments:
+     [exec] 'build'
+     [exec] '-mod'
+     [exec] 'vendor'
+     [exec] '-o'
+     [exec] 'externalgenerator64.exe'
+     [exec] 'externalgenerator.go'
+     [exec] 
+     [exec] The ' characters around the executable and arguments are
+     [exec] not part of the command.
+
+crungui:
+     [java] Executing '/usr/lib/jvm/java-11-openjdk-11.0.9.11-0.amzn2.0.1.x86_64/bin/java' with arguments:
+     [java] '-Xmx2048m'
+     [java] '-classpath'
+     [java] '/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-launcher.jar:/home/ec2-user/climateaction/EPA_MOVES_Model:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/jai_codec.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/TestNG/velocity-dep-1.4.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/TestNG/commons-beanutils.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/TestNG/reportng-1.1.5.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/TestNG/testng-6.3.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/TestNG/guice-3.0.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/commons-logging-1.1.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/poi-ooxml-3.9-20121203.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/xmlbeans-2.3.0.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/log4j-1.2.13.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/jsr173_1.0_api.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/commons-codec-1.5.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/poi-3.9-20121203.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/dom4j-1.6.1.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/poi-ooxml-3.5-beta5-20090219.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/poi-ooxml-schemas-3.9-20121203.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/stax-api-1.0.1.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/poi-3.5-beta5-20090219.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/ooxml-schemas-1.0.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/mysql-connector-java-5.1.17-bin.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/xml-apis.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/ant-contrib-1.0b3.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/xercesImpl.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/sax.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/jaxp-api.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/jai_core.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/jakarta-regexp-1.3.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/commons-lang-2.2.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/jlfgr-1_0.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/dom.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/abbot/costello.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/abbot/bsh-2.0b4.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/abbot/jdom-1.0.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/abbot/abbot.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/abbot/gnu-regexp-1.1.0.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/junit-4.5.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-antlr.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-apache-bcel.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-apache-bsf.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-apache-log4j.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-apache-oro.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-apache-regexp.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-apache-resolver.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-apache-xalan2.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-commons-logging.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-commons-net.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-imageio.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-jai.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-javamail.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-jdepend.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-jmf.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-jsch.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-junit.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-junit4.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-junitlauncher.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-netrexx.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-swing.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-testutil.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-xz.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/aws-java-sdk-1.1.4.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/commons-codec-1.3.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/commons-httpclient-3.0.1.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/commons-logging-1.1.1.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/jackson-core-asl-1.4.3.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/mail-1.4.3.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/stax-1.2.0.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/stax-api-1.0.1.jar'
+     [java] 'gov.epa.otaq.moves.master.gui.MOVESGUI'
+     [java] 
+     [java] The ' characters around the executable and arguments are
+     [java] not part of the command.
+     [java] Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+     [java] 4/24/21, 5:15 PM INFO: Loading system configuration...
+     [java] 4/24/21, 5:15 PM INFO: System configuration setting up the instance counter...
+     [java] 4/24/21, 5:15 PM INFO: System configuration clearing prior IDs...
+     [java] 4/24/21, 5:15 PM INFO: System configuration reading computer ID...
+     [java] 4/24/21, 5:15 PM INFO: Using master configuration file: MOVESConfiguration.txt
+     [java] 4/24/21, 5:15 PM INFO: System configuration loading configuration files...
+     [java] 4/24/21, 5:15 PM INFO: System configuration setting up temporary files...
+     [java] 4/24/21, 5:15 PM INFO: Folder for temporary files: /home/ec2-user/climateaction/EPA_MOVES_Model/MOVESTemporary
+     [java] 4/24/21, 5:15 PM INFO: System configuration acquiring distributed master ID...
+     [java] 4/24/21, 5:15 PM DEBUG: java.io.IOException: No such file or directory
+     [java] 	at java.base/java.io.UnixFileSystem.createFileExclusively(Native Method)
+     [java] 	at java.base/java.io.File.createTempFile(File.java:2092)
+     [java] 	at gov.epa.otaq.moves.common.DistributedIDBroker.acquireID(DistributedIDBroker.java:51)
+     [java] 	at gov.epa.otaq.moves.master.framework.SystemConfiguration.<init>(SystemConfiguration.java:169)
+     [java] 	at gov.epa.otaq.moves.master.framework.SystemConfiguration.<clinit>(SystemConfiguration.java:45)
+     [java] 	at gov.epa.otaq.moves.master.gui.MOVESGUI.main(MOVESGUI.java:54)
+     [java] 
+     [java] No such file or directory
+     [java] 4/24/21, 5:15 PM ERROR: Unable to acquire the Master ID.
+     [java] 4/24/21, 5:15 PM INFO: Done loading system configuration.
+     [java] Exception in thread "main" java.awt.HeadlessException: 
+     [java] No X11 DISPLAY variable was set, but this program performed an operation which requires it.
+     [java] 	at java.desktop/java.awt.GraphicsEnvironment.checkHeadless(GraphicsEnvironment.java:208)
+     [java] 	at java.desktop/java.awt.Window.<init>(Window.java:548)
+     [java] 	at java.desktop/java.awt.Frame.<init>(Frame.java:423)
+     [java] 	at java.desktop/javax.swing.JFrame.<init>(JFrame.java:224)
+     [java] 	at gov.epa.otaq.moves.master.gui.MOVESWindow.<init>(MOVESWindow.java:233)
+     [java] 	at gov.epa.otaq.moves.master.gui.MOVESGUI.main(MOVESGUI.java:76)
+     [java] Java Result: 1
+
+BUILD SUCCESSFUL
+Total time: 3 seconds

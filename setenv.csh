@@ -40,7 +40,8 @@ export CLASSPATH=$CLASSPATH":$MOVES_HOME/libs/abbot/abbot.jar"
 export CLASSPATH=$CLASSPATH":$MOVES_HOME/libs/abbot/gnu-regexp-1.1.0.jar"
 export CLASSPATH=$CLASSPATH":$MOVES_HOME/libs/junit-4.5.jar"
 
-export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.9.x86_64
+export JAVA_HOME=/usr/lib/jvm/jre-11-openjdk
 export ANT_HOME=/home/ec2-user/climateaction/EPA_MOVES_Model/ant
-export PATH=$ANT_HOME/bin:$JAVA_HOME/bin:$PATH
+export PATH=$ANT_HOME/bin:$JAVA_HOME/bin:jre/bin:$PATH
 export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
+export ANT_OPTS=-XX:-UseGCOverheadLimit

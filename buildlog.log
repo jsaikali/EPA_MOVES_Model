@@ -1,0 +1,195 @@
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+Apache Ant(TM) version 1.10.7 compiled on September 1 2019
+Trying the default build file: build.xml
+Buildfile: /home/ec2-user/climateaction/EPA_MOVES_Model/build.xml
+Detected Java version: 11 in: /usr/lib/jvm/java-11-openjdk-11.0.9.11-0.amzn2.0.1.x86_64
+Detected OS: Linux
+parsing buildfile /home/ec2-user/climateaction/EPA_MOVES_Model/build.xml with URI = file:/home/ec2-user/climateaction/EPA_MOVES_Model/build.xml
+Project base dir set to: /home/ec2-user/climateaction/EPA_MOVES_Model
+parsing buildfile jar:file:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant.jar!/org/apache/tools/ant/antlib.xml with URI = jar:file:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant.jar!/org/apache/tools/ant/antlib.xml from a zip file
+ [macrodef] creating macro  appendworkercsv
+ [macrodef] creating macro  makeworkerlist
+Build sequence for target(s) `run' is [run]
+Complete build sequence is [run, init, compile, errormessages, go64, crungui, clean, compileall, compilejavago, nonroadNEIQA, 2workers, makeamazon, costello, convert2014_3, 3workers, go, jarcode, errormessagesauto, devtest, go32local, go32, manyworkers, runworker, master1worker, maketodo, recenttests, docs, alltests, all, convert2014ab_3, algorithms, 1worker, 508tests, inprogressguitests, fasttests, startmysql, dbimporter, stopmysql, targets, subworker, slowqueries, rungui, setlogin, testcleanup, cleantests, onroadNEIQA, crunworker, guitests, pickup, makejre, ]
+
+run:
+     [java] Executing '/usr/lib/jvm/java-11-openjdk-11.0.9.11-0.amzn2.0.1.x86_64/bin/java' with arguments:
+     [java] '-Xmx512m'
+     [java] '-classpath'
+     [java] '/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-launcher.jar:/home/ec2-user/climateaction/EPA_MOVES_Model:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/jai_codec.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/TestNG/velocity-dep-1.4.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/TestNG/commons-beanutils.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/TestNG/reportng-1.1.5.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/TestNG/testng-6.3.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/TestNG/guice-3.0.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/commons-logging-1.1.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/poi-ooxml-3.9-20121203.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/xmlbeans-2.3.0.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/log4j-1.2.13.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/jsr173_1.0_api.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/commons-codec-1.5.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/poi-3.9-20121203.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/dom4j-1.6.1.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/poi-ooxml-3.5-beta5-20090219.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/poi-ooxml-schemas-3.9-20121203.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/stax-api-1.0.1.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/poi-3.5-beta5-20090219.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/poi/ooxml-schemas-1.0.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/mysql-connector-java-5.1.17-bin.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/xml-apis.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/ant-contrib-1.0b3.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/xercesImpl.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/sax.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/jaxp-api.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/jai_core.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/jakarta-regexp-1.3.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/commons-lang-2.2.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/jlfgr-1_0.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/dom.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/abbot/costello.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/abbot/bsh-2.0b4.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/abbot/jdom-1.0.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/abbot/abbot.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/abbot/gnu-regexp-1.1.0.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs/junit-4.5.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-antlr.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-apache-bcel.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-apache-bsf.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-apache-log4j.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-apache-oro.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-apache-regexp.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-apache-resolver.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-apache-xalan2.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-commons-logging.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-commons-net.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-imageio.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-jai.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-javamail.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-jdepend.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-jmf.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-jsch.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-junit.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-junit4.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-junitlauncher.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-netrexx.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-swing.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-testutil.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant-xz.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/ant/lib/ant.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/libs:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/aws-java-sdk-1.1.4.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/commons-codec-1.3.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/commons-httpclient-3.0.1.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/commons-logging-1.1.1.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/jackson-core-asl-1.4.3.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/mail-1.4.3.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/stax-1.2.0.jar:/home/ec2-user/climateaction/EPA_MOVES_Model/amazon/libs/stax-api-1.0.1.jar'
+     [java] 'gov.epa.otaq.moves.master.commandline.MOVESCommandLine'
+     [java] '-r'
+     [java] 'joannarunspec.mrs'
+     [java] 
+     [java] The ' characters around the executable and arguments are
+     [java] not part of the command.
+     [java] Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+     [java] 4/24/21, 5:14 PM INFO: Loading system configuration...
+     [java] 4/24/21, 5:14 PM INFO: System configuration setting up the instance counter...
+     [java] 4/24/21, 5:14 PM INFO: System configuration clearing prior IDs...
+     [java] 4/24/21, 5:14 PM INFO: System configuration reading computer ID...
+     [java] 4/24/21, 5:14 PM INFO: Using master configuration file: MOVESConfiguration.txt
+     [java] 4/24/21, 5:14 PM INFO: System configuration loading configuration files...
+     [java] 4/24/21, 5:14 PM INFO: System configuration setting up temporary files...
+     [java] 4/24/21, 5:14 PM INFO: Folder for temporary files: /home/ec2-user/climateaction/EPA_MOVES_Model/MOVESTemporary
+     [java] 4/24/21, 5:14 PM INFO: System configuration acquiring distributed master ID...
+     [java] 4/24/21, 5:14 PM DEBUG: java.io.IOException: No such file or directory
+     [java] 	at java.base/java.io.UnixFileSystem.createFileExclusively(Native Method)
+     [java] 	at java.base/java.io.File.createTempFile(File.java:2092)
+     [java] 	at gov.epa.otaq.moves.common.DistributedIDBroker.acquireID(DistributedIDBroker.java:51)
+     [java] 	at gov.epa.otaq.moves.master.framework.SystemConfiguration.<init>(SystemConfiguration.java:169)
+     [java] 	at gov.epa.otaq.moves.master.framework.SystemConfiguration.<clinit>(SystemConfiguration.java:45)
+     [java] 	at gov.epa.otaq.moves.master.commandline.MOVESCommandLine.main(MOVESCommandLine.java:27)
+     [java] 
+     [java] No such file or directory
+     [java] 4/24/21, 5:14 PM ERROR: Unable to acquire the Master ID.
+     [java] 4/24/21, 5:14 PM INFO: Done loading system configuration.
+     [java] 4/24/21, 5:14 PM INFO: Initializing default database connections...
+     [java] 4/24/21, 5:14 PM INFO: Reading default database table definitions...
+     [java] 4/24/21, 5:14 PM INFO: Done initializing database connections.
+     [java] 4/24/21, 5:14 PM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesdb20210209.Pollutant' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2625)
+     [java] 	at com.mysql.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:2119)
+     [java] 	at com.mysql.jdbc.PreparedStatement.executeQuery(PreparedStatement.java:2281)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:248)
+     [java] 	at gov.epa.otaq.moves.master.framework.PollutantProcessLoader.loadFromDatabase(PollutantProcessLoader.java:122)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.load(RunSpecXML.java:95)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.loadRunSpec(MOVESAPI.java:699)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runBatch(MOVESAPI.java:668)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runApplication(MOVESAPI.java:306)
+     [java] 	at gov.epa.otaq.moves.master.commandline.MOVESCommandLine.main(MOVESCommandLine.java:32)
+     [java] 
+     [java] Table 'movesdb20210209.Pollutant' doesn't exist
+     [java] 4/24/21, 5:14 PM ERROR: Loading Pollutants and Processes from the database failed.
+     [java] 4/24/21, 5:14 PM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesdb20210209.monthOfAnyYear' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.common.TimeSpan.loadTimeObjects(TimeSpan.java:252)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.load(RunSpecXML.java:98)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.loadRunSpec(MOVESAPI.java:699)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runBatch(MOVESAPI.java:668)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runApplication(MOVESAPI.java:306)
+     [java] 	at gov.epa.otaq.moves.master.commandline.MOVESCommandLine.main(MOVESCommandLine.java:32)
+     [java] 
+     [java] Table 'movesdb20210209.monthOfAnyYear' doesn't exist
+     [java] 4/24/21, 5:14 PM ERROR: Unable to load time objects
+     [java] select monthID, monthName from monthOfAnyYear order by monthID
+     [java] 4/24/21, 5:14 PM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesdb20210209.RoadType' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.RoadType.isInDatabase(RoadType.java:63)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.processRoadTypes(RunSpecXML.java:751)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.processRunSpecSubNode(RunSpecXML.java:180)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.load(RunSpecXML.java:118)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.loadRunSpec(MOVESAPI.java:699)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runBatch(MOVESAPI.java:668)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runApplication(MOVESAPI.java:306)
+     [java] 	at gov.epa.otaq.moves.master.commandline.MOVESCommandLine.main(MOVESCommandLine.java:32)
+     [java] 
+     [java] Table 'movesdb20210209.RoadType' doesn't exist
+     [java] 4/24/21, 5:14 PM ERROR: Verifying if roadtype is in the database.
+     [java] 4/24/21, 5:14 PM WARNING: Road type ID, 1, with name, 'Off-Network', was not found in the default database.
+     [java] 4/24/21, 5:14 PM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesdb20210209.RoadType' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.RoadType.isInDatabase(RoadType.java:63)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.processRoadTypes(RunSpecXML.java:751)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.processRunSpecSubNode(RunSpecXML.java:180)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.load(RunSpecXML.java:118)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.loadRunSpec(MOVESAPI.java:699)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runBatch(MOVESAPI.java:668)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runApplication(MOVESAPI.java:306)
+     [java] 	at gov.epa.otaq.moves.master.commandline.MOVESCommandLine.main(MOVESCommandLine.java:32)
+     [java] 
+     [java] Table 'movesdb20210209.RoadType' doesn't exist
+     [java] 4/24/21, 5:14 PM ERROR: Verifying if roadtype is in the database.
+     [java] 4/24/21, 5:14 PM WARNING: Road type ID, 2, with name, 'Rural Restricted Access', was not found in the default database.
+     [java] 4/24/21, 5:14 PM WARNING: Invalid PollutantProcessAssociation
+     [java] 4/24/21, 5:14 PM WARNING: Invalid PollutantProcessAssociation
+     [java] 4/24/21, 5:14 PM WARNING: Invalid PollutantProcessAssociation
+     [java] 4/24/21, 5:14 PM WARNING: Invalid PollutantProcessAssociation
+     [java] 4/24/21, 5:14 PM WARNING: Invalid PollutantProcessAssociation
+     [java] 4/24/21, 5:14 PM WARNING: Invalid PollutantProcessAssociation
+     [java] 4/24/21, 5:14 PM WARNING: Invalid PollutantProcessAssociation
+     [java] 4/24/21, 5:14 PM INFO: ***Starting MOVES run***
+     [java] 4/24/21, 5:14 PM INFO: Master Release: MOVES3.0.1
+     [java] 4/24/21, 5:14 PM INFO: Master Computer ID: ip-172-31-44-226.us-east-2.compute.internal
+     [java] 4/24/21, 5:14 PM INFO: Master ID: 0
+     [java] 4/24/21, 5:14 PM INFO: RunSpec: /home/ec2-user/climateaction/EPA_MOVES_Model/joannarunspec.mrs
+     [java] Exception in thread "main" java.lang.NullPointerException
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESEngine.clearSharedWorkFolder(MOVESEngine.java:1665)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESEngine.notifyListenersOfCompletion(MOVESEngine.java:1202)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESEngine.join(MOVESEngine.java:1382)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESEngine.join(MOVESEngine.java:1352)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runBatch(MOVESAPI.java:672)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runApplication(MOVESAPI.java:306)
+     [java] 	at gov.epa.otaq.moves.master.commandline.MOVESCommandLine.main(MOVESCommandLine.java:32)
+     [java] 4/24/21, 5:14 PM DEBUG: java.lang.NullPointerException
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESEngine.clearSharedWorkFolder(MOVESEngine.java:1665)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESEngine.launchCore(MOVESEngine.java:466)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESEngine.launch(MOVESEngine.java:276)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.startMOVESEngineOnroad(MOVESAPI.java:856)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.startMOVESEngine(MOVESAPI.java:768)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runBatch(MOVESAPI.java:669)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runApplication(MOVESAPI.java:306)
+     [java] 	at gov.epa.otaq.moves.master.commandline.MOVESCommandLine.main(MOVESCommandLine.java:32)
+     [java] 
+     [java] null
+     [java] 4/24/21, 5:14 PM RUN_ERROR: Error launching RunSpec
+     [java] Java Result: 1
+
+BUILD SUCCESSFUL
+Total time: 3 seconds
