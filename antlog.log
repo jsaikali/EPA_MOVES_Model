@@ -1,0 +1,1363 @@
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+Buildfile: /home/ec2-user/climateaction/EPA_MOVES_Model/build.xml
+
+run:
+     [java] Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+     [java] 4/25/21, 2:55 AM INFO: Loading system configuration...
+     [java] 4/25/21, 2:55 AM INFO: System configuration setting up the instance counter...
+     [java] 4/25/21, 2:55 AM INFO: System configuration clearing prior IDs...
+     [java] 4/25/21, 2:55 AM INFO: System configuration reading computer ID...
+     [java] 4/25/21, 2:55 AM INFO: Using master configuration file: MOVESConfiguration.txt
+     [java] 4/25/21, 2:55 AM INFO: System configuration loading configuration files...
+     [java] 4/25/21, 2:55 AM INFO: System configuration setting up temporary files...
+     [java] 4/25/21, 2:55 AM INFO: Folder for temporary files: /home/ec2-user/climateaction/EPA_MOVES_Model/MOVESTemporary
+     [java] 4/25/21, 2:55 AM INFO: System configuration acquiring distributed master ID...
+     [java] 4/25/21, 2:55 AM INFO: Done loading system configuration.
+     [java] 4/25/21, 2:55 AM INFO: Initializing default database connections...
+     [java] 4/25/21, 2:55 AM INFO: Reading default database table definitions...
+     [java] 4/25/21, 2:55 AM INFO: Done initializing database connections.
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesdb20210209.Pollutant' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2625)
+     [java] 	at com.mysql.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:2119)
+     [java] 	at com.mysql.jdbc.PreparedStatement.executeQuery(PreparedStatement.java:2281)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:248)
+     [java] 	at gov.epa.otaq.moves.master.framework.PollutantProcessLoader.loadFromDatabase(PollutantProcessLoader.java:122)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.load(RunSpecXML.java:95)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.loadRunSpec(MOVESAPI.java:699)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runBatch(MOVESAPI.java:668)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runApplication(MOVESAPI.java:306)
+     [java] 	at gov.epa.otaq.moves.master.commandline.MOVESCommandLine.main(MOVESCommandLine.java:32)
+     [java] 
+     [java] Table 'movesdb20210209.Pollutant' doesn't exist
+     [java] 4/25/21, 2:55 AM ERROR: Loading Pollutants and Processes from the database failed.
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesdb20210209.monthOfAnyYear' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.common.TimeSpan.loadTimeObjects(TimeSpan.java:252)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.load(RunSpecXML.java:98)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.loadRunSpec(MOVESAPI.java:699)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runBatch(MOVESAPI.java:668)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runApplication(MOVESAPI.java:306)
+     [java] 	at gov.epa.otaq.moves.master.commandline.MOVESCommandLine.main(MOVESCommandLine.java:32)
+     [java] 
+     [java] Table 'movesdb20210209.monthOfAnyYear' doesn't exist
+     [java] 4/25/21, 2:55 AM ERROR: Unable to load time objects
+     [java] select monthID, monthName from monthOfAnyYear order by monthID
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesdb20210209.RoadType' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.RoadType.isInDatabase(RoadType.java:63)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.processRoadTypes(RunSpecXML.java:751)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.processRunSpecSubNode(RunSpecXML.java:180)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.load(RunSpecXML.java:118)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.loadRunSpec(MOVESAPI.java:699)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runBatch(MOVESAPI.java:668)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runApplication(MOVESAPI.java:306)
+     [java] 	at gov.epa.otaq.moves.master.commandline.MOVESCommandLine.main(MOVESCommandLine.java:32)
+     [java] 
+     [java] Table 'movesdb20210209.RoadType' doesn't exist
+     [java] 4/25/21, 2:55 AM ERROR: Verifying if roadtype is in the database.
+     [java] 4/25/21, 2:55 AM WARNING: Road type ID, 1, with name, 'Off-Network', was not found in the default database.
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesdb20210209.RoadType' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.RoadType.isInDatabase(RoadType.java:63)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.processRoadTypes(RunSpecXML.java:751)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.processRunSpecSubNode(RunSpecXML.java:180)
+     [java] 	at gov.epa.otaq.moves.master.runspec.RunSpecXML.load(RunSpecXML.java:118)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.loadRunSpec(MOVESAPI.java:699)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runBatch(MOVESAPI.java:668)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runApplication(MOVESAPI.java:306)
+     [java] 	at gov.epa.otaq.moves.master.commandline.MOVESCommandLine.main(MOVESCommandLine.java:32)
+     [java] 
+     [java] Table 'movesdb20210209.RoadType' doesn't exist
+     [java] 4/25/21, 2:55 AM ERROR: Verifying if roadtype is in the database.
+     [java] 4/25/21, 2:55 AM WARNING: Road type ID, 2, with name, 'Rural Restricted Access', was not found in the default database.
+     [java] 4/25/21, 2:55 AM WARNING: Invalid PollutantProcessAssociation
+     [java] 4/25/21, 2:55 AM WARNING: Invalid PollutantProcessAssociation
+     [java] 4/25/21, 2:55 AM WARNING: Invalid PollutantProcessAssociation
+     [java] 4/25/21, 2:55 AM WARNING: Invalid PollutantProcessAssociation
+     [java] 4/25/21, 2:55 AM WARNING: Invalid PollutantProcessAssociation
+     [java] 4/25/21, 2:55 AM WARNING: Invalid PollutantProcessAssociation
+     [java] 4/25/21, 2:55 AM WARNING: Invalid PollutantProcessAssociation
+     [java] 4/25/21, 2:55 AM INFO: ***Starting MOVES run***
+     [java] 4/25/21, 2:55 AM INFO: Master Release: MOVES3.0.1
+     [java] 4/25/21, 2:55 AM INFO: Master Computer ID: ip-172-31-44-226.us-east-2.compute.internal
+     [java] 4/25/21, 2:55 AM INFO: Master ID: 6967299074924990597
+     [java] 4/25/21, 2:55 AM INFO: RunSpec: /home/ec2-user/climateaction/EPA_MOVES_Model/joannarunspec.mrs
+     [java] 4/25/21, 2:55 AM INFO: Thread starting for class gov.epa.otaq.moves.master.framework.HeartbeatDetectionThread.
+     [java] 4/25/21, 2:55 AM INFO: Initializing default database connections...
+     [java] 4/25/21, 2:55 AM INFO: Database connections already established.
+     [java] 4/25/21, 2:55 AM INFO: Initializing MOVESExecution connections...
+     [java] 4/25/21, 2:55 AM INFO: HeartbeatDetectionThread !hasWorkerOnThisComputer
+     [java] 4/25/21, 2:55 AM INFO: Creating the execution database...
+     [java] 4/25/21, 2:55 AM INFO: Removing tables from the execution database...
+     [java] 4/25/21, 2:55 AM INFO: Creating empty tables in the execution database...
+     [java] 4/25/21, 2:55 AM INFO: Finalizing the execution database...
+     [java] 4/25/21, 2:55 AM INFO: Reading execution database table definitions...
+     [java] 4/25/21, 2:55 AM INFO: Done initializing database connections.
+     [java] 4/25/21, 2:55 AM INFO: Initializing output database connections...
+     [java] 4/25/21, 2:55 AM INFO: Done initializing database connections.
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesdb20210209.Pollutant' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2625)
+     [java] 	at com.mysql.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:2119)
+     [java] 	at com.mysql.jdbc.PreparedStatement.executeQuery(PreparedStatement.java:2281)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:248)
+     [java] 	at gov.epa.otaq.moves.master.framework.PollutantProcessLoader.loadFromDatabase(PollutantProcessLoader.java:122)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESEngine.launchCore(MOVESEngine.java:491)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESEngine.launch(MOVESEngine.java:276)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.startMOVESEngineOnroad(MOVESAPI.java:856)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.startMOVESEngine(MOVESAPI.java:768)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runBatch(MOVESAPI.java:669)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runApplication(MOVESAPI.java:306)
+     [java] 	at gov.epa.otaq.moves.master.commandline.MOVESCommandLine.main(MOVESCommandLine.java:32)
+     [java] 
+     [java] Table 'movesdb20210209.Pollutant' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Loading Pollutants and Processes from the database failed.
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesdb20210209.monthOfAnyYear' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.common.TimeSpan.loadTimeObjects(TimeSpan.java:252)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESEngine.launchCore(MOVESEngine.java:492)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESEngine.launch(MOVESEngine.java:276)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.startMOVESEngineOnroad(MOVESAPI.java:856)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.startMOVESEngine(MOVESAPI.java:768)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runBatch(MOVESAPI.java:669)
+     [java] 	at gov.epa.otaq.moves.master.framework.MOVESAPI.runApplication(MOVESAPI.java:306)
+     [java] 	at gov.epa.otaq.moves.master.commandline.MOVESCommandLine.main(MOVESCommandLine.java:32)
+     [java] 
+     [java] Table 'movesdb20210209.monthOfAnyYear' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to load time objects
+     [java] select monthID, monthName from monthOfAnyYear order by monthID
+     [java] 4/25/21, 2:55 AM INFO: Thread starting for class gov.epa.otaq.moves.master.framework.MasterLoop.
+     [java] 4/25/21, 2:55 AM INFO: Thread starting for class gov.epa.otaq.moves.master.framework.EmissionCalculatorInboundUnbundler.
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesdb20210209.pollutantDisplayGroup' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.TOGSpeciationCalculator.getMechanismPollutants(TOGSpeciationCalculator.java:44)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.addLumpedSpecies(ExecutionRunSpec.java:684)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeBeforeExecutionDatabase(ExecutionRunSpec.java:178)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:151)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesdb20210209.pollutantDisplayGroup' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to query mechanism pollutants: select pollutantID from pollutant inner join pollutantDisplayGroup using (pollutantDisplayGroupID) where pollutantDisplayGroupName='Mechanisms'
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesdb20210209.pollutantDisplayGroup' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.TOGSpeciationCalculator.getMechanismPollutants(TOGSpeciationCalculator.java:44)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.addLumpedSpecies(ExecutionRunSpec.java:684)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeBeforeExecutionDatabase(ExecutionRunSpec.java:178)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:151)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesdb20210209.pollutantDisplayGroup' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to add lumped species to the internal set of pollutants
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Error while merging default database:com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.IMCoverage' doesn't exist
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.SampleVehicleDay' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:824)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:667)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQLCore(SQLRunner.java:341)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQL(SQLRunner.java:321)
+     [java] 	at gov.epa.otaq.moves.master.framework.InputDataManager.createUniqueVehicleIDs(InputDataManager.java:4533)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:259)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.SampleVehicleDay' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Could not create unique vehicle IDs.
+     [java] SQL: alter table SampleVehicleDay add column originalVehID int null
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecsourcetype' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.IMCoverage' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:366)
+     [java] 	at gov.epa.otaq.moves.common.DatabaseUtilities.getRowCount(DatabaseUtilities.java:320)
+     [java] 	at gov.epa.otaq.moves.master.framework.InputDataManager.merge(InputDataManager.java:2812)
+     [java] 	at gov.epa.otaq.moves.master.framework.InputDataManager.merge(InputDataManager.java:1437)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:245)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:824)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:667)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQLCore(SQLRunner.java:341)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQL(SQLRunner.java:321)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.fillSourceTypes(ExecutionRunSpec.java:2209)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.buildNonLocationFilterTables(ExecutionRunSpec.java:1250)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:302)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecsourcetype' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: An SQL exception occurred while building the runspec filter tables.
+     [java] SQL: 
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecstate' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:824)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:667)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQLCore(SQLRunner.java:341)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQL(SQLRunner.java:321)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.buildLocationFilterTables(ExecutionRunSpec.java:1477)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:312)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecstate' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: An SQL exception occurred while building the runspec filter tables.
+     [java] SQL: TRUNCATE runspecstate
+     [java] 4/25/21, 2:55 AM INFO: Failed to execute script:         insert into runSpecFuelRegion (fuelRegionID) select distinct regionID as fuelRegionID from regionCounty inner join runSpecCounty using (countyID) where regionCodeID=1;
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runSpecFuelRegion' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:824)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:667)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQLCore(SQLRunner.java:341)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQL(SQLRunner.java:321)
+     [java] 	at gov.epa.otaq.moves.common.DatabaseUtilities.executeScript(DatabaseUtilities.java:231)
+     [java] 	at gov.epa.otaq.moves.common.DatabaseUtilities.executeScript(DatabaseUtilities.java:169)
+     [java] 	at gov.epa.otaq.moves.common.DatabaseUtilities.executeScript(DatabaseUtilities.java:151)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.runAdditionalSetupScript(ExecutionRunSpec.java:1721)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:313)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runSpecFuelRegion' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: An exception occurred while running FillExecution.sql.
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecsourcetype' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecsourcetype' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select sourcetypeid from runspecsourcetype
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecroadtype' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecroadtype' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select roadtypeid from runspecroadtype
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecmonth' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecmonth' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select monthid from runspecmonth
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecday' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecday' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select dayid from runspecday
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspechour' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspechour' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select hourid from runspechour
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecmonthgroup' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecmonthgroup' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select monthgroupid from runspecmonthgroup
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecyear' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecyear' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select yearid from runspecyear
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecmodelyear' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecmodelyear' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select modelyearid from runspecmodelyear
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecmodelyearage' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecmodelyearage' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select yearid, modelyearid, ageid from runspecmodelyearage
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecsourcefueltype' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecsourcefueltype' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select sourcetypeid, fueltypeid from runspecsourcefueltype
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspechourday' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspechourday' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select hourdayid from runspechourday
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecstate' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecstate' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select stateid from runspecstate
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspeccounty' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspeccounty' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select countyid from runspeccounty
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspeczone' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspeczone' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select zoneid from runspeczone
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspeclink' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspeclink' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select linkid from runspeclink
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecpollutant' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecpollutant' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select pollutantid from runspecpollutant
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecprocess' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecprocess' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select processid from runspecprocess
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecpollutantprocess' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecpollutantprocess' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select polprocessid from runspecpollutantprocess
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspechourday' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspechourday' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select hourday.hourdayid as hourdayid, dayid, hourid from runspechourday inner join hourday using (hourdayid)
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecpollutantprocess' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecpollutantprocess' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select pollutantprocessassoc.polprocessid as polprocessid, processid, pollutantid from runspecpollutantprocess inner join pollutantprocessassoc using (polprocessid)
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecmonth' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addData(SQLMacroExpander.java:134)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2273)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecmonth' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup macro expansion using select monthofanyyear.monthid as monthid, monthgroupid from runspecmonth inner join monthofanyyear using (monthid)
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecsourcetype' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecsourcetype' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select sourcetypeid from runspecsourcetype
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecsourcefueltype' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecsourcefueltype' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select distinct fueltypeid from runspecsourcefueltype union select distinct fueltypeid from runspecsectorfueltype
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecsectorfueltype' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecsectorfueltype' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select distinct fueltypeid as nrfueltypeid from runspecsectorfueltype
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecsourcefueltype' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecsourcefueltype' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select distinct fuelsubtypeid from fuelsubtype where fueltypeid in (select distinct fueltypeid from runspecsourcefueltype union select distinct fueltypeid from runspecsectorfueltype)
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecsourcefueltype' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecsourcefueltype' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select distinct fuelsubtypeid as nrfuelsubtypeid from nrfuelsubtype where fueltypeid in (select distinct fueltypeid from runspecsourcefueltype union select distinct fueltypeid from runspecsectorfueltype)
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecroadtype' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecroadtype' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select roadtypeid from runspecroadtype
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecmonth' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecmonth' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select monthid from runspecmonth
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecday' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecday' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select dayid from runspecday
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspechour' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspechour' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select hourid from runspechour
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecmonthgroup' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecmonthgroup' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select monthgroupid from runspecmonthgroup
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecyear' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecyear' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select yearid from runspecyear
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecmodelyear' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecmodelyear' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select modelyearid from runspecmodelyear
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspechourday' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspechourday' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select hourdayid from runspechourday
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecpollutant' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecpollutant' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select pollutantid from runspecpollutant
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecprocess' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecprocess' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select processid from runspecprocess
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.runspecpollutantprocess' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.SQLMacroExpander.addCSVData(SQLMacroExpander.java:191)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.setupMacroExpander(ExecutionRunSpec.java:2304)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:315)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.runspecpollutantprocess' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to setup CSV macro expansion using select polprocessid from runspecpollutantprocess
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.modelYearMapping' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.ModelYearMapper.buildMappings(ModelYearMapper.java:58)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:321)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.modelYearMapping' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to map model years using: select startUserModelYear, endUserModelYear, startStandardModelYear, endStandardModelYear from modelYearMapping order by startUserModelYear
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.modelYearMapping' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.ModelYearMapper.buildMappings(ModelYearMapper.java:58)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:321)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.modelYearMapping' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to build model year mappings
+     [java] 4/25/21, 2:55 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.fuelFormulation' doesn't exist
+     [java] 	at jdk.internal.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:824)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:667)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQLCore(SQLRunner.java:341)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQL(SQLRunner.java:321)
+     [java] 	at gov.epa.otaq.moves.master.framework.DefaultDataMaker.addDefaultDataToExecutionDatabase(DefaultDataMaker.java:65)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:291)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.fuelFormulation' doesn't exist
+     [java] 4/25/21, 2:55 AM RUN_ERROR: Unable to create default data
+     [java] 4/25/21, 2:55 AM INFO: Thread shutdown starting for class gov.epa.otaq.moves.master.framework.MasterLoop.
+     [java] 4/25/21, 2:55 AM INFO: Thread starting for class gov.epa.otaq.moves.master.framework.MasterLoopableThread.
+     [java] 4/25/21, 2:55 AM INFO: Thread shutdown starting for class gov.epa.otaq.moves.master.framework.MasterLoopableThread.
+     [java] 4/25/21, 2:55 AM INFO: Thread shutdown complete for class gov.epa.otaq.moves.master.framework.MasterLoopableThread.
+     [java] 4/25/21, 2:55 AM INFO: Thread shutdown complete for class gov.epa.otaq.moves.master.framework.MasterLoop.
+     [java] 4/25/21, 2:55 AM INFO: Unbundler has detected completion conditions. Exiting.
+     [java] 4/25/21, 2:55 AM INFO: Generated bundles = 0 Retrieved bundles = 0
+     [java] 4/25/21, 2:55 AM INFO: Thread shutdown starting for class gov.epa.otaq.moves.master.framework.EmissionCalculatorInboundUnbundler.
+     [java] 4/25/21, 2:55 AM INFO: Thread shutdown complete for class gov.epa.otaq.moves.master.framework.EmissionCalculatorInboundUnbundler.
+     [java] 4/25/21, 2:55 AM INFO: Thread shutdown starting for class gov.epa.otaq.moves.master.framework.HeartbeatDetectionThread.
+     [java] 4/25/21, 2:55 AM INFO: Thread shutdown complete for class gov.epa.otaq.moves.master.framework.HeartbeatDetectionThread.
+     [java] MOVESCommandLine after runApplication
+
+BUILD SUCCESSFUL
+Total time: 6 seconds
