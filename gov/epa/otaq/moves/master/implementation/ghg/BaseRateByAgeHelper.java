@@ -109,19 +109,19 @@ public class BaseRateByAgeHelper {
 		double MeanBaseRate, MeanBaseRateIM, MeanBaseRateACAdj, MeanBaseRateIMACAdj;
 
 		void fill(ResultSet rs) throws SQLException {
-			modelYearID = rs.getInt("modelYearID");
-			fuelTypeID = rs.getInt("fuelTypeID");
-			ageGroupID = rs.getInt("ageGroupID");
-			regClassID = rs.getInt("regClassID");
+			modelYearID = rs.getInt("modelyearid");
+			fuelTypeID = rs.getInt("fueltypeid");
+			ageGroupID = rs.getInt("agegroupid");
+			regClassID = rs.getInt("regclassid");
 			partialKey = "|" + modelYearID + "|" + fuelTypeID + "|" + ageGroupID + "|" + regClassID;
 			
-			sumSBD = rs.getDouble("sumSBD");
-			sumSBDRaw = rs.getDouble("sumSBDRaw");
+			sumSBD = rs.getDouble("sumsbd");
+			sumSBDRaw = rs.getDouble("sumsbdraw");
 
-			MeanBaseRate = rs.getFloat("MeanBaseRate");
-			MeanBaseRateIM = rs.getFloat("MeanBaseRateIM");
-			MeanBaseRateACAdj = rs.getFloat("MeanBaseRateACAdj");
-			MeanBaseRateIMACAdj = rs.getFloat("MeanBaseRateIMACAdj");
+			MeanBaseRate = rs.getFloat("meanbaserate");
+			MeanBaseRateIM = rs.getFloat("meanbaserateim");
+			MeanBaseRateACAdj = rs.getFloat("meanbaserateacadj");
+			MeanBaseRateIMACAdj = rs.getFloat("meanbaserateimacadj");
 		}
 	}
 
@@ -256,39 +256,39 @@ public class BaseRateByAgeHelper {
 		try {
 			writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 			// Make the table. If it already exists, it may contain data so do not truncate it.
-			sql = "create table if not exists " + tableName + " like BaseRateByAge";
+			sql = "create table if not exists " + tableName + " like baseratebyage";
 			SQLRunner.executeSQL(db,sql);
 			// Get the lookup data and index it in memory.
 			loadSBWeightedEmissionRateByAge(context.sourceTypeID,context.polProcessID);
 			// Do the main loop
 			sql = "select *"
-					+ " from RatesOpModeDistribution"
-					+ " where sourceTypeID=" + context.sourceTypeID
-					+ " and polProcessID=" + context.polProcessID;
+					+ " from ratesopmodedistribution"
+					+ " where sourcetypeid=" + context.sourceTypeID
+					+ " and polprocessid=" + context.polProcessID;
 			if(context.roadTypeID > 0) {
-				sql += " and roadTypeID=" + context.roadTypeID;
+				sql += " and roadtypeid=" + context.roadTypeID;
 			}
-			sql += " order by sourceTypeID, polProcessID, roadTypeID, hourDayID";
+			sql += " order by sourcetypeid, polprocessid, roadtypeid, hourdayid";
 			if(flags.keepOpModeID) {
-				sql += ", opModeID";
+				sql += ", opmodeid";
 			}
 			if(flags.useAvgSpeedBin) {
-				sql += ", avgSpeedBinID";
+				sql += ", avgspeedbinid";
 			}
-			sql += ", opModeID";
+			sql += ", opmodeid";
 			query.open(db,sql);
 			String previousROMD = null;
 			while(query.rs.next()) {
-				String keyROMD = "" + query.rs.getInt("sourceTypeID")
-						+ "|" + query.rs.getInt("polProcessID")
-						+ "|" + query.rs.getInt("roadTypeID")
-						+ "|" + query.rs.getInt("hourDayID");
-				Integer opModeID = Integer.valueOf(query.rs.getInt("opModeID"));
+				String keyROMD = "" + query.rs.getInt("sourcetypeid")
+						+ "|" + query.rs.getInt("polprocessid")
+						+ "|" + query.rs.getInt("roadtypeid")
+						+ "|" + query.rs.getInt("hourdayid");
+				Integer opModeID = Integer.valueOf(query.rs.getInt("opmodeid"));
 				if(flags.keepOpModeID) {
 					keyROMD += "|" + opModeID;
 				}
 				if(flags.useAvgSpeedBin) {
-					keyROMD += "|" + query.rs.getInt("avgSpeedBinID");
+					keyROMD += "|" + query.rs.getInt("avgspeedbinid");
 				}
 				if(previousROMD != null && !keyROMD.equals(previousROMD)) {
 					// Everytime the ROMD's portion of the output table's unique key
@@ -311,11 +311,11 @@ public class BaseRateByAgeHelper {
 					if(o == null) { // If there is no output record yet, fill it.
 						o = new OutputRecord();
 						o.sourceTypeID = context.sourceTypeID;
-						o.roadTypeID = query.rs.getInt("roadTypeID");
+						o.roadTypeID = query.rs.getInt("roadtypeid");
 						if(flags.useAvgSpeedBin) {
-							o.avgSpeedBinID = query.rs.getInt("avgSpeedBinID");
+							o.avgSpeedBinID = query.rs.getInt("avgspeedbinid");
 						}
-						o.hourDayID = query.rs.getInt("hourDayID");
+						o.hourDayID = query.rs.getInt("hourdayid");
 						o.polProcessID = context.polProcessID;
 						if(flags.keepOpModeID) {
 							o.opModeID = opModeID.intValue();
@@ -335,9 +335,9 @@ public class BaseRateByAgeHelper {
 					// Accumulate output data
 					double sumSBD = flags.useSumSBD? er.sumSBD : 1;
 					double sumSBDRaw = flags.useSumSBDRaw? er.sumSBDRaw : 1;
-					double opModeFraction = query.rs.getFloat("opModeFraction");
-					double avgBinSpeed = query.rs.getFloat("avgBinSpeed");
-					double avgSpeedFraction = flags.useAvgSpeedFraction? query.rs.getFloat("avgSpeedFraction") : 1;
+					double opModeFraction = query.rs.getFloat("opmodefraction");
+					double avgBinSpeed = query.rs.getFloat("avgbinspeed");
+					double avgSpeedFraction = flags.useAvgSpeedFraction? query.rs.getFloat("avgspeedfraction") : 1;
 
 					double t = opModeFraction * avgSpeedFraction * sumSBD;
 					if(flags.keepOpModeID) {
@@ -435,9 +435,9 @@ public class BaseRateByAgeHelper {
 	void loadSBWeightedEmissionRateByAge(int sourceTypeID, int polProcessID) throws SQLException {
 		erByOpModeID.clear();
 		String sql = "select *"
-				+ " from SBWeightedEmissionRateByAge"
-				+ " where sourceTypeID=" + sourceTypeID
-				+ " and polProcessID=" + polProcessID;
+				+ " from sbweightedemissionratebyage"
+				+ " where sourcetypeid=" + sourceTypeID
+				+ " and polprocessid=" + polProcessID;
 		SQLRunner.Query query = new SQLRunner.Query();
 		try {
 			ArrayList<SBWeightedEmissionRateByAge> t;
@@ -446,7 +446,7 @@ public class BaseRateByAgeHelper {
 			while(query.rs.next()) {
 				SBWeightedEmissionRateByAge er = new SBWeightedEmissionRateByAge();
 				er.fill(query.rs);
-				opModeID = Integer.valueOf(query.rs.getInt("opModeID"));
+				opModeID = Integer.valueOf(query.rs.getInt("opmodeid"));
 				t = erByOpModeID.get(opModeID);
 				if(t == null) {
 					t = new ArrayList<SBWeightedEmissionRateByAge>();

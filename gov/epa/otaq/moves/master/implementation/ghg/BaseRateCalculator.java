@@ -250,10 +250,10 @@ public class BaseRateCalculator extends EmissionCalculator
 
 		// Get the first Pollutant/Process for the context process that is in the
 		// SourceBinDistribution and runspec.
-		String sql = "SELECT sbd.polProcessID FROM SourceBinDistribution sbd"
-				+ " INNER JOIN PollutantProcessAssoc ppa ON ppa.polProcessID = sbd.polProcessID"
-				+ " INNER JOIN RunspecPollutantProcess rpp ON rpp.polProcessID = sbd.polProcessID"
-				+ " WHERE ppa.processID = " + context.iterProcess.databaseKey + " LIMIT 1";
+		String sql = "SELECT sbd.polprocessid from sourcebindistribution sbd"
+				+ " inner join pollutantprocessassoc ppa on ppa.polprocessid = sbd.polprocessid"
+				+ " inner join runspecpollutantprocess rpp on rpp.polprocessid = sbd.polprocessid"
+				+ " where ppa.processid = " + context.iterProcess.databaseKey + " LIMIT 1";
 		SQLRunner.Query query = new SQLRunner.Query();
 		try {
 			query.open(executionDatabase,sql);
@@ -318,35 +318,35 @@ public class BaseRateCalculator extends EmissionCalculator
 			// So as to match the SQL statements, the following sections must be in this order:
 			// sourceTypeID, modelYearID, fuelTypeID, regClassID
 			if(ExecutionRunSpec.theExecutionRunSpec.getRunSpec().outputEmissionsBreakdownSelection.sourceUseType) {
-				activityTotalSelect += ",u.sourceTypeID";
-				activityTotalGroup += ",u.sourceTypeID";
-				activityWeightJoin += ",sourceTypeID";
+				activityTotalSelect += ",u.sourcetypeid";
+				activityTotalGroup += ",u.sourcetypeid";
+				activityWeightJoin += ",sourcetypeid";
 			} else {
-				activityTotalSelect += ",0 as sourceTypeID";
+				activityTotalSelect += ",0 as sourcetypeid";
 				enabledSectionNames.add("DiscardSourceTypeID");
 			}
 			if(ExecutionRunSpec.theExecutionRunSpec.getRunSpec().outputEmissionsBreakdownSelection.modelYear) {
-				activityTotalSelect += ",u.modelYearID";
-				activityTotalGroup += ",u.modelYearID";
-				activityWeightJoin += ",modelYearID";
+				activityTotalSelect += ",u.modelyearid";
+				activityTotalGroup += ",u.modelyearid";
+				activityWeightJoin += ",modelyearid";
 			} else {
-				activityTotalSelect += ",0 as modelYearID";
+				activityTotalSelect += ",0 as modelyearid";
 				enabledSectionNames.add("DiscardModelYearID");
 			}
 			if(ExecutionRunSpec.theExecutionRunSpec.getRunSpec().outputEmissionsBreakdownSelection.fuelType) {
-				activityTotalSelect += ",u.fuelTypeID";
-				activityTotalGroup += ",u.fuelTypeID";
-				activityWeightJoin += ",fuelTypeID";
+				activityTotalSelect += ",u.fueltypeid";
+				activityTotalGroup += ",u.fueltypeid";
+				activityWeightJoin += ",fueltypeid";
 			} else {
-				activityTotalSelect += ",0 as fuelTypeID";
+				activityTotalSelect += ",0 as fueltypeid";
 				enabledSectionNames.add("DiscardFuelTypeID");
 			}
 			if(ExecutionRunSpec.theExecutionRunSpec.getRunSpec().outputEmissionsBreakdownSelection.regClassID) {
-				activityTotalSelect += ",u.regClassID";
-				activityTotalGroup += ",u.regClassID";
-				activityWeightJoin += ",regClassID";
+				activityTotalSelect += ",u.regclassid";
+				activityTotalGroup += ",u.regclassid";
+				activityWeightJoin += ",regclassid";
 			} else {
-				activityTotalSelect += ",0 as regClassID";
+				activityTotalSelect += ",0 as regclassid";
 				enabledSectionNames.add("DiscardRegClassID");
 			}
 

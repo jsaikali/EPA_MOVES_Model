@@ -197,7 +197,7 @@ public class DatabaseSelection implements Comparable {
 					if(db != null) {
 						if(!CompilationFlags.ALLOW_FUELSUBTYPE_OUTPUT) {
 							try {
-								SQLRunner.executeSQL(db,"alter table MOVESOutput drop fuelSubTypeID");
+								SQLRunner.executeSQL(db,"alter table movesoutput drop fuelsubtypeid");
 							} catch(Exception e) {
 								// Nothing to do here.
 								// This exception will occur when MOVESOutput does not already contain

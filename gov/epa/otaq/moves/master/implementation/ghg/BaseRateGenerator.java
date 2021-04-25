@@ -186,9 +186,9 @@ public class BaseRateGenerator extends Generator {
 // Put back after T1506 testing			//"analyze table ratesOpModeDistribution",
 // TODO 
 
-			"alter table avgSpeedBin add key speed1 (avgSpeedBinID, avgBinSpeed)",
-			"alter table avgSpeedBin add key speed2 (avgBinSpeed, avgSpeedBinID)",
-			"analyze table avgSpeedBin"
+			"alter table avgspeedbin add key speed1 (avgspeedbinid, avgbinspeed)",
+			"alter table avgspeedbin add key speed2 (avgbinspeed, avgspeedbinid)",
+			"analyze table avgspeedbin"
 		};
 		long detailStart, detailEnd;
 		for(int i=0;i<statements.length;i++) {
@@ -216,11 +216,11 @@ public class BaseRateGenerator extends Generator {
 		String sbdKey = "";
 		String sbdTable = "";
 		if(CompilationFlags.USE_FUELUSAGEFRACTION) {
-			sbdTable = "sourceBinDistributionFuelUsage_" + processID + "_" + countyID + "_" + year;
+			sbdTable = "sourcebindistributionfuelusage_" + processID + "_" + countyID + "_" + year;
 			sbdKey = sbdTable;
 		} else {
-			sbdTable = "sourceBinDistribution";
-			sbdKey = "sourceBinDistribution" + processID;
+			sbdTable = "sourcebindistribution";
+			sbdKey = "sourcebindistribution" + processID;
 		}
 		if(sourceBinTablesDone.contains(sbdKey)) {
 			return false;
@@ -237,7 +237,7 @@ public class BaseRateGenerator extends Generator {
 			 * @condition Rates creation
 			**/
 			Logger.log(LogMessageCategory.DEBUG,"Normalizing sourcebin-weighted emission rates");
-			normalize = "/ SUM(sbd.SourceBinActivityFraction)";
+			normalize = "/ SUM(sbd.sourcebinactivityfraction)";
 		} else {
 			/**
 			 * @step 008
@@ -251,10 +251,10 @@ public class BaseRateGenerator extends Generator {
 		String projectStringJoin, projectStringWhere;
 		if (isProjectDomain && (processID == 9 || processID == 1)) {
 			projectStringJoin = "		left join sourceusetypephysicsmapping sutpm on ("
-				+ "		    sutpm.realSourceTypeID = stmy.sourceTypeID"
-				+ "         and sutpm.regClassID = sb.regClassID"
-				+ "         and left(sutpm.opModeIDOffset, 2) = left(er.opModeID, 2))";
-			projectStringWhere = "  	(ppmy.modelYearID BETWEEN sutpm.beginModelYearID AND sutpm.endModelYearID OR er.OpModeID = 501) AND";
+				+ "		    sutpm.realsourcetypeid = stmy.sourcetypeid"
+				+ "         and sutpm.regclassid = sb.regclassid"
+				+ "         and left(sutpm.opmodeidoffset, 2) = left(er.opmodeid, 2))";
+			projectStringWhere = "  	(ppmy.modelyearid BETWEEN sutpm.beginmodelyearid and sutpm.endmodelyearid or er.opmodeid = 501) AND";
 		} else  {
 			projectStringJoin = "";
 			projectStringWhere = "";
@@ -264,20 +264,20 @@ public class BaseRateGenerator extends Generator {
 		
 		String[] statements = {
 			"#CORE",
-			"TRUNCATE TABLE BaseRateByAge",
-			"TRUNCATE TABLE BaseRate",
+			"TRUNCATE TABLE baseratebyage",
+			"TRUNCATE TABLE baserate",
 
-			"create table if not exists BaseRateByAge_" + processID + "_" + year + " like BaseRateByAge",
-			"create table if not exists BaseRate_" + processID + "_" + year + " like BaseRate",
-			"truncate table BaseRateByAge_" + processID + "_" + year,
-			"truncate table BaseRate_" + processID + "_" + year,
+			"create table if not exists baseratebyage_" + processID + "_" + year + " like baseratebyage",
+			"create table if not exists baserate_" + processID + "_" + year + " like baserate",
+			"truncate table baseratebyage_" + processID + "_" + year,
+			"truncate table baserate_" + processID + "_" + year,
 
-			"#SBWeightedEmissionRateByAge",
-			"TRUNCATE TABLE SBWeightedEmissionRateByAge",
-			"#SBWeightedEmissionRate",
-			"TRUNCATE TABLE SBWeightedEmissionRate",
-			"#SBWeightedDistanceRate",
-			"TRUNCATE TABLE SBWeightedDistanceRate",
+			"#sbweightedemissionratebyage",
+			"TRUNCATE TABLE sbweightedemissionratebyage",
+			"#sbweightedemissionrate",
+			"TRUNCATE TABLE sbweightedemissionrate",
+			"#sbweighteddistancerate",
+			"TRUNCATE TABLE sbweighteddistancerate",
 
 			/**
 			 * @step 010
@@ -298,70 +298,70 @@ public class BaseRateGenerator extends Generator {
 			 * @input PollutantProcessAssoc
 			 * @input fullACAdjustment
 			**/
-			"#SBWeightedEmissionRateByAge",
-			"INSERT INTO SBWeightedEmissionRateByAge ("
-			+ " 	sourceTypeID,"
-			+ " 	polProcessID,"
-			+ " 	modelYearID,"
-			+ " 	fuelTypeID,"
-			+ " 	opModeID,"
-			+ " 	ageGroupID,"
-			+ "		regClassID,"
-			+ " 	MeanBaseRate,"
-			+ " 	MeanBaseRateIM,"
-			+ " 	MeanBaseRateACAdj,"
-			+ " 	MeanBaseRateIMACAdj,"
-			+ "		sumSBD, sumSBDRaw)"
-			+ " SELECT"
-			+ " 	stmy.sourceTypeID,"
-			+ " 	er.polProcessID,"
-			+ " 	stmy.modelYearID,"
-			+ " 	sb.fuelTypeID,"
-			+ " 	er.opModeID,"
-			+ " 	er.ageGroupID,"
-			+ "		sb.regClassID,"
-			+ " 	SUM(sbd.SourceBinActivityFraction * er.MeanBaseRate)" + normalize + ","
-			+ " 	SUM(sbd.SourceBinActivityFraction * er.MeanBaseRateIM)" + normalize + ","
-			+ " 	SUM(sbd.SourceBinActivityFraction * er.MeanBaseRate * (coalesce(fullACAdjustment,1.0)-1.0))" + normalize + ","
-			+ " 	SUM(sbd.SourceBinActivityFraction * er.MeanBaseRateIM * (coalesce(fullACAdjustment,1.0)-1.0))" + normalize + ","
-			+ "		SUM(sbd.SourceBinActivityFraction)" + normalize + ","
-			+ "		SUM(sbd.SourceBinActivityFraction)"
+			"#sbweightedemissionratebyage",
+			"INSERT INTO sbweightedemissionratebyage ("
+			+ " 	sourcetypeid,"
+			+ " 	polprocessid,"
+			+ " 	modelyearid,"
+			+ " 	fueltypeid,"
+			+ " 	opmodeid,"
+			+ " 	agegroupid,"
+			+ "		regclassid,"
+			+ " 	meanbaserate,"
+			+ " 	meanbaserateim,"
+			+ " 	meanbaserateacadj,"
+			+ " 	meanbaserateimacadj,"
+			+ "		sumsbd, sumsbdraw)"
+			+ " select"
+			+ " 	stmy.sourcetypeid,"
+			+ " 	er.polprocessid,"
+			+ " 	stmy.modelyearid,"
+			+ " 	sb.fueltypeid,"
+			+ " 	er.opmodeid,"
+			+ " 	er.agegroupid,"
+			+ "		sb.regclassid,"
+			+ " 	SUM(sbd.sourcebinactivityfraction * er.meanbaserate)" + normalize + ","
+			+ " 	SUM(sbd.sourcebinactivityfraction * er.meanbaserateim)" + normalize + ","
+			+ " 	SUM(sbd.sourcebinactivityfraction * er.meanbaserate * (coalesce(fullacadjustment,1.0)-1.0))" + normalize + ","
+			+ " 	SUM(sbd.sourcebinactivityfraction * er.meanbaserateim * (coalesce(fullacadjustment,1.0)-1.0))" + normalize + ","
+			+ "		SUM(sbd.sourcebinactivityfraction)" + normalize + ","
+			+ "		SUM(sbd.sourcebinactivityfraction)"
 			+ " FROM"
-			+ " 	EmissionRateByAge er"
-			+ " 	inner join PollutantProcessModelYear ppmy"
-			+ " 	inner join SourceBin sb"
+			+ " 	emissionratebyage er"
+			+ " 	inner join pollutantprocessmodelyear ppmy"
+			+ " 	inner join sourcebin sb"
 			+ " 	inner join " + sbdTable + " sbd"
-			+ " 	inner join SourceTypeModelYear stmy"
-			+ " 	inner join RunspecModelYearAgeGroup rsmy"
-			+ " 	inner join PollutantProcessAssoc ppa"
-			+ " 	left outer join fullACAdjustment fac on ("
-			+ " 		fac.sourceTypeID = stmy.sourceTypeID"
-			+ " 		and fac.polProcessID = er.polProcessID"
-			+ " 		and fac.opModeID = er.opModeID)"
+			+ " 	inner join sourcetypemodelyear stmy"
+			+ " 	inner join runspecmodelyearagegroup rsmy"
+			+ " 	inner join pollutantprocessassoc ppa"
+			+ " 	left outer join fullacadjustment fac on ("
+			+ " 		fac.sourcetypeid = stmy.sourcetypeid"
+			+ " 		and fac.polprocessid = er.polprocessid"
+			+ " 		and fac.opmodeid = er.opmodeid)"
 			+ " WHERE"
-			+ " 	ppmy.modelYearGroupID = sb.modelYearGroupID AND"
-			+ " 	ppmy.modelYearID = stmy.modelYearID AND"
-			+ " 	er.polProcessID = ppmy.polProcessID AND"
-			+ " 	er.polProcessID = sbd.polProcessID AND"
-			+ " 	ppmy.polProcessID = sbd.polProcessID AND"
-			+ " 	er.sourceBinID = sb.sourceBinID AND"
-			+ " 	er.sourceBinID = sbd.sourceBinID AND"
-			+ " 	sb.sourceBinID = sbd.sourceBinID AND"
-			+ " 	sbd.sourceTypeModelYearID = stmy.sourceTypeModelYearID AND"
-			+ " 	stmy.modelYearID = rsmy.modelYearID AND"
-			+ " 	ppa.polProcessID = er.polProcessID AND"
-			+ " 	er.ageGroupID = rsmy.ageGroupID AND"
-			+ " 	ppa.processID = " + processID + " AND"
-			+ " 	rsmy.yearID = " + year
+			+ " 	ppmy.modelyeargroupid = sb.modelyeargroupid and"
+			+ " 	ppmy.modelyearid = stmy.modelyearid and"
+			+ " 	er.polprocessid = ppmy.polprocessid and"
+			+ " 	er.polprocessid = sbd.polprocessid and"
+			+ " 	ppmy.polprocessid = sbd.polprocessid and"
+			+ " 	er.sourcebinid = sb.sourcebinid and"
+			+ " 	er.sourcebinid = sbd.sourcebinid and"
+			+ " 	sb.sourcebinid = sbd.sourcebinid and"
+			+ " 	sbd.sourcetypemodelyearid = stmy.sourcetypemodelyearid and"
+			+ " 	stmy.modelyearid = rsmy.modelyearid and"
+			+ " 	ppa.polprocessid = er.polprocessid and"
+			+ " 	er.agegroupid = rsmy.agegroupid and"
+			+ " 	ppa.processid = " + processID + " AND"
+			+ " 	rsmy.yearid = " + year
 			+ " GROUP BY"
-			+ "		stmy.sourceTypeID,"
-			+ " 	er.polProcessID,"
-			+ " 	stmy.modelYearID,"
-			+ " 	sb.fuelTypeID,"
-			+ " 	er.opModeID,"
-			+ " 	er.ageGroupID,"
-			+ "		sb.regClassID"
-			+ " HAVING SUM(sbd.SourceBinActivityFraction) > 0",
+			+ "		stmy.sourcetypeid,"
+			+ " 	er.polprocessid,"
+			+ " 	stmy.modelyearid,"
+			+ " 	sb.fueltypeid,"
+			+ " 	er.opmodeid,"
+			+ " 	er.agegroupid,"
+			+ "		sb.regclassid"
+			+ " HAVING SUM(sbd.sourcebinactivityfraction) > 0",
 
 			/**
 			 * @step 010
@@ -382,67 +382,67 @@ public class BaseRateGenerator extends Generator {
 			 * @input PollutantProcessAssoc
 			 * @input fullACAdjustment
 			**/
-			"#SBWeightedEmissionRate",
-			"INSERT INTO SBWeightedEmissionRate ("
-			+ " 	sourceTypeID,"
-			+ " 	polProcessID,"
-			+ " 	modelYearID,"
-			+ " 	fuelTypeID,"
-			+ " 	opModeID,"
-			+ " 	regClassID,"
-			+ " 	MeanBaseRate,"
-			+ " 	MeanBaseRateIM,"
-			+ " 	MeanBaseRateACAdj,"
-			+ " 	MeanBaseRateIMACAdj,"
-			+ "		sumSBD, sumSBDRaw)"
+			"#sbweightedemissionrate",
+			"INSERT INTO sbweightedemissionrate ("
+			+ " 	sourcetypeid,"
+			+ " 	polprocessid,"
+			+ " 	modelyearid,"
+			+ " 	fueltypeid,"
+			+ " 	opmodeid,"
+			+ " 	regclassid,"
+			+ " 	meanbaserate,"
+			+ " 	meanbaserateim,"
+			+ " 	meanbaserateacadj,"
+			+ " 	meanbaserateimacadj,"
+			+ "		sumsbd, sumsbdraw)"
 			+ " SELECT"
-			+ " 	stmy.sourceTypeID,"
-			+ " 	er.polProcessID,"
-			+ " 	stmy.modelYearID,"
-			+ " 	sb.fuelTypeID,"
-			+ " 	er.opModeID,"
-			+ "		sb.regClassID,"
-			+ " 	SUM(sbd.SourceBinActivityFraction * er.MeanBaseRate)" + normalize + ","
-			+ " 	SUM(sbd.SourceBinActivityFraction * er.MeanBaseRateIM)" + normalize + ","
-			+ " 	SUM(sbd.SourceBinActivityFraction * er.MeanBaseRate * (coalesce(fullACAdjustment,1.0)-1.0))" + normalize + ","
-			+ " 	SUM(sbd.SourceBinActivityFraction * er.MeanBaseRateIM * (coalesce(fullACAdjustment,1.0)-1.0))" + normalize + ","
-			+ "		SUM(sbd.SourceBinActivityFraction)" + normalize + ","
-			+ "		SUM(sbd.SourceBinActivityFraction)"
+			+ " 	stmy.sourcetypeid,"
+			+ " 	er.polprocessid,"
+			+ " 	stmy.modelyearid,"
+			+ " 	sb.fueltypeid,"
+			+ " 	er.opmodeid,"
+			+ "		sb.regclassid,"
+			+ " 	sum(sbd.sourcebinactivityfraction * er.meanbaserate)" + normalize + ","
+			+ " 	sum(sbd.sourcebinactivityfraction * er.meanbaserateim)" + normalize + ","
+			+ " 	sum(sbd.sourcebinactivityfraction * er.meanbaserate * (coalesce(fullacadjustment,1.0)-1.0))" + normalize + ","
+			+ " 	sum(sbd.sourcebinactivityfraction * er.meanbaserateim * (coalesce(fullacadjustment,1.0)-1.0))" + normalize + ","
+			+ "		sum(sbd.sourcebinactivityfraction)" + normalize + ","
+			+ "		sum(sbd.sourcebinactivityfraction)"
 			+ " FROM"
-			+ " 	EmissionRate er"
-			+ " 	inner join PollutantProcessModelYear ppmy"
-			+ " 	inner join SourceBin sb"
+			+ " 	emissionrate er"
+			+ " 	inner join pollutantprocessmodelyear ppmy"
+			+ " 	inner join sourcebin sb"
 			+ " 	inner join " + sbdTable + " sbd"
-			+ " 	inner join SourceTypeModelYear stmy"
-			+ " 	inner join RunspecModelYear rsmy"
-			+ " 	inner join PollutantProcessAssoc ppa"
+			+ " 	inner join sourcetypemodelyear stmy"
+			+ " 	inner join runspecmodelyear rsmy"
+			+ " 	inner join pollutantprocessassoc ppa"
 			+ 		projectStringJoin
-			+ " 	left outer join fullACAdjustment fac on ("
-			+ " 		fac.sourceTypeID = stmy.sourceTypeID"
-			+ " 		and fac.polProcessID = er.polProcessID"
-			+ " 		and fac.opModeID = er.opModeID)"
+			+ " 	left outer join fullacadjustment fac on ("
+			+ " 		fac.sourcetypeid = stmy.sourcetypeid"
+			+ " 		and fac.polprocessid = er.polprocessid"
+			+ " 		and fac.opmodeid = er.opmodeid)"
 			+ " WHERE"
-			+ " 	ppmy.modelYearGroupID = sb.modelYearGroupID AND"
-			+ " 	ppmy.modelYearID = stmy.modelYearID AND"
+			+ " 	ppmy.modelyeargroupid = sb.modelyeargroupid and"
+			+ " 	ppmy.modelyearid = stmy.modelyearid and"
 			+ 		projectStringWhere
-			+ " 	er.polProcessID = ppmy.polProcessID AND"
-			+ " 	er.polProcessID = sbd.polProcessID AND"
-			+ " 	ppmy.polProcessID = sbd.polProcessID AND"
-			+ " 	er.sourceBinID = sb.sourceBinID AND"
-			+ " 	er.sourceBinID = sbd.sourceBinID AND"
-			+ " 	sb.sourceBinID = sbd.sourceBinID AND"
-			+ " 	sbd.sourceTypeModelYearID = stmy.sourceTypeModelYearID AND"
-			+ " 	stmy.modelYearID = rsmy.modelYearID AND"
-			+ " 	ppa.polProcessID = er.polProcessID AND"
-			+ " 	ppa.processID = " + processID
+			+ " 	er.polprocessid = ppmy.polprocessid and"
+			+ " 	er.polprocessid = sbd.polprocessid and"
+			+ " 	ppmy.polprocessid = sbd.polprocessid and"
+			+ " 	er.sourcebinid = sb.sourcebinid and"
+			+ " 	er.sourcebinid = sbd.sourcebinid and"
+			+ " 	sb.sourcebinid = sbd.sourcebinid and"
+			+ " 	sbd.sourcetypemodelyearid = stmy.sourcetypemodelyearid and"
+			+ " 	stmy.modelyearid = rsmy.modelyearid and"
+			+ " 	ppa.polprocessid = er.polprocessid and"
+			+ " 	ppa.processid = " + processID
 			+ " GROUP BY"
-			+ "		stmy.sourceTypeID,"
-			+ " 	er.polProcessID,"
-			+ " 	stmy.modelYearID,"
-			+ " 	sb.fuelTypeID,"
-			+ " 	er.opModeID,"
-			+ "		sb.regClassID"
-			+ " HAVING SUM(sbd.SourceBinActivityFraction) > 0",
+			+ "		stmy.sourcetypeid,"
+			+ " 	er.polprocessid,"
+			+ " 	stmy.modelyearid,"
+			+ " 	sb.fueltypeid,"
+			+ " 	er.opmodeid,"
+			+ "		sb.regclassid"
+			+ " HAVING SUM(sbd.sourcebinactivityfraction) > 0",
 
 			/**
 			 * @step 020
@@ -466,65 +466,65 @@ public class BaseRateGenerator extends Generator {
 			 * @input fullACAdjustment
 			 * @condition Running Exhaust
 			**/
-			"#SBWeightedDistanceRate",
+			"#sbweighteddistancerate",
 			(processID == 1?
-			"INSERT INTO SBWeightedDistanceRate ("
-			+ " 	sourceTypeID,"
-			+ " 	polProcessID,"
-			+ " 	modelYearID,"
-			+ " 	fuelTypeID,"
-			+ " 	regClassID,"
-			+ " 	avgSpeedBinID,"
-			+ " 	MeanBaseRate,"
-			+ " 	MeanBaseRateIM,"
-			+ " 	MeanBaseRateACAdj,"
-			+ " 	MeanBaseRateIMACAdj,"
-			+ "		sumSBD, sumSBDRaw)"
+			"INSERT INTO sbweighteddistancerate ("
+			+ " 	sourcetypeid,"
+			+ " 	polprocessid,"
+			+ " 	modelyearid,"
+			+ " 	fueltypeid,"
+			+ " 	regclassid,"
+			+ " 	avgspeedbinid,"
+			+ " 	meanbaserate,"
+			+ " 	meanbaserateim,"
+			+ " 	meanbaserateacadj,"
+			+ " 	meanbaserateimacadj,"
+			+ "		sumsbd, sumsbdraw)"
 			+ " SELECT"
-			+ " 	er.sourceTypeID,"
-			+ " 	er.polProcessID,"
-			+ " 	er.modelYearID,"
-			+ " 	er.fuelTypeID,"
-			+ "		sb.regClassID,"
-			+ " 	er.avgSpeedBinID,"
-			+ " 	SUM(sbd.SourceBinActivityFraction * er.ratePerSHO)" + normalize + ","
-			+ " 	SUM(sbd.SourceBinActivityFraction * er.ratePerSHO)" + normalize + ","
-			+ " 	SUM(sbd.SourceBinActivityFraction * er.ratePerSHO * (coalesce(fullACAdjustment,1.0)-1.0))" + normalize + ","
-			+ " 	SUM(sbd.SourceBinActivityFraction * er.ratePerSHO * (coalesce(fullACAdjustment,1.0)-1.0))" + normalize + ","
-			+ "		SUM(sbd.SourceBinActivityFraction)" + normalize + ","
-			+ "		SUM(sbd.SourceBinActivityFraction)"
+			+ " 	er.sourcetypeid,"
+			+ " 	er.polprocessid,"
+			+ " 	er.modelyearid,"
+			+ " 	er.fueltypeid,"
+			+ "		sb.regclassid,"
+			+ " 	er.avgspeedbinid,"
+			+ " 	sum(sbd.sourcebinactivityfraction * er.ratepersho)" + normalize + ","
+			+ " 	sum(sbd.sourcebinactivityfraction * er.ratepersho)" + normalize + ","
+			+ " 	sum(sbd.sourcebinactivityfraction * er.ratepersho * (coalesce(fullacadjustment,1.0)-1.0))" + normalize + ","
+			+ " 	sum(sbd.sourcebinactivityfraction * er.ratepersho * (coalesce(fullacadjustment,1.0)-1.0))" + normalize + ","
+			+ "		sum(sbd.sourcebinactivityfraction)" + normalize + ","
+			+ "		sum(sbd.sourcebinactivityfraction)"
 			+ " FROM"
-			+ " 	distanceEmissionRate er"
-			+ " 	inner join SourceBin sb"
+			+ " 	distanceemissionrate er"
+			+ " 	inner join sourcebin sb"
 			+ " 	inner join " + sbdTable + " sbd"
-			+ " 	inner join SourceTypeModelYear stmy"
-			+ " 	inner join PollutantProcessAssoc ppa"
-			+ "		inner join modelYearGroup myg on ("
-			+ "			myg.modelYearGroupID = sb.modelYearGroupID"
-			+ "			and myg.modelYearGroupStartYear <= er.modelYearID"
-			+ "			and myg.modelYearGroupEndYear >= er.modelYearID)"
-			+ " 	left outer join fullACAdjustment fac on ("
-			+ " 		fac.sourceTypeID = stmy.sourceTypeID"
-			+ " 		and fac.polProcessID = er.polProcessID"
-			+ " 		and fac.opModeID = 300)" // opModeID=300 is All Running
+			+ " 	inner join sourcetypemodelyear stmy"
+			+ " 	inner join pollutantprocessassoc ppa"
+			+ "		inner join modelyeargroup myg on ("
+			+ "			myg.modelyeargroupid = sb.modelyeargroupid"
+			+ "			and myg.modelyeargroupstartyear <= er.modelyearid"
+			+ "			and myg.modelyeargroupendyear >= er.modelyearid)"
+			+ " 	left outer join fullacadjustment fac on ("
+			+ " 		fac.sourcetypeid = stmy.sourcetypeid"
+			+ " 		and fac.polprocessid = er.polprocessid"
+			+ " 		and fac.opmodeid = 300)" // opModeID=300 is All Running
 			+ " WHERE"
-			+ " 	er.modelYearID = stmy.modelYearID AND"
-			+ " 	er.fuelTypeID = sb.fuelTypeID AND"
-			+ " 	sbd.polProcessID = 101 AND" // use Running Exhaust Total Gaseous Hydrocarbons (101)
-			+ " 	sb.sourceBinID = sbd.sourceBinID AND"
-			+ " 	sbd.sourceTypeModelYearID = stmy.sourceTypeModelYearID AND"
-			+ " 	stmy.modelYearID = er.modelYearID AND"
-			+ "		stmy.sourceTypeID = er.sourceTypeID AND"
-			+ " 	ppa.polProcessID = er.polProcessID AND"
-			+ " 	ppa.processID = " + processID
+			+ " 	er.modelyearid = stmy.modelyearid and"
+			+ " 	er.fueltypeid = sb.fueltypeid and"
+			+ " 	sbd.polprocessid = 101 and" // use running exhaust total gaseous hydrocarbons (101)
+			+ " 	sb.sourcebinid = sbd.sourcebinid and"
+			+ " 	sbd.sourcetypemodelyearid = stmy.sourcetypemodelyearid and"
+			+ " 	stmy.modelyearid = er.modelyearid and"
+			+ "		stmy.sourcetypeid = er.sourcetypeid and"
+			+ " 	ppa.polprocessid = er.polprocessid and"
+			+ " 	ppa.processid = " + processID
 			+ " GROUP BY"
-			+ "		er.sourceTypeID,"
-			+ " 	er.polProcessID,"
-			+ " 	er.modelYearID,"
-			+ " 	er.fuelTypeID,"
-			+ "		sb.regClassID,"
-			+ " 	er.avgSpeedBinID"
-			+ " HAVING SUM(sbd.SourceBinActivityFraction) > 0"
+			+ "		er.sourcetypeid,"
+			+ " 	er.polprocessid,"
+			+ " 	er.modelyearid,"
+			+ " 	er.fueltypeid,"
+			+ "		sb.regclassid,"
+			+ " 	er.avgspeedbinid"
+			+ " HAVING SUM(sbd.sourcebinactivityfraction) > 0"
 			:
 			""),
 
@@ -640,7 +640,7 @@ public class BaseRateGenerator extends Generator {
 		String quantAdjust = "";
 		if(ExecutionRunSpec.theExecutionRunSpec.getModelScale() == ModelScale.MESOSCALE_LOOKUP) {
 			if(processID == 2 || processID == 90 || processID == 91) {
-				quantAdjust = "* sumSBDRaw";
+				quantAdjust = "* sumsbdraw";
 				brbaFlags.useSumSBDRaw = true;
 			}
 		}
@@ -661,7 +661,7 @@ public class BaseRateGenerator extends Generator {
 
 		String avgSpeedFraction = "";
 		if(applyAvgSpeedDistribution) {
-			avgSpeedFraction = "*coalesce(avgSpeedFraction,0)";
+			avgSpeedFraction = "*coalesce(avgspeedfraction,0)";
 			brbaFlags.useAvgSpeedFraction = true;
 		}
 
@@ -741,49 +741,49 @@ public class BaseRateGenerator extends Generator {
 			 * @condition Aggregate average speed bins (Project domain or Inventory or Rates for Non-(Running, Brakewear, or Tirewear))
 			**/
 
-			"#BaseRateByAge",
-			"insert into BaseRateByAge_" + processID + "_" + yearID + " ("
-			+ " 	sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID, polProcessID, modelYearID, fuelTypeID, ageGroupID, regClassID, opModeID,"
-			+ " 	opModeFraction, opModeFractionRate, MeanBaseRate, MeanBaseRateIM, MeanBaseRateACAdj, MeanBaseRateIMACAdj, emissionRate, emissionRateIM, emissionRateACAdj, emissionRateIMACAdj, processID, pollutantID)"
+			"#baseratebyage",
+			"insert into baseratebyage_" + processID + "_" + yearID + " ("
+			+ " 	sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, polprocessid, modelyearid, fueltypeid, agegroupid, regclassid, opmodeid,"
+			+ " 	opmodefraction, opmodefractionrate, meanbaserate, meanbaserateim, meanbaserateacadj, meanbaserateimacadj, emissionrate, emissionrateim, emissionrateacadj, emissionrateimacadj, processid, pollutantid)"
 			+ " select"
-			+ " 	romd.sourceTypeID, romd.roadTypeID,"
-			+ (!useAvgSpeedBin? " 0 as avgSpeedBinID," : " romd.avgSpeedBinID,")
-			+ "		romd.hourDayID, romd.polProcessID,"
-			+ " 	er.modelYearID, er.fuelTypeID, er.ageGroupID, er.regClassID, 0 as opModeID,"
-			+ "		sum(opModeFraction" + avgSpeedFraction + sumSBD + "),"
-			+ "		sum(opModeFraction" + avgSpeedFraction + sumSBD + "),"
-			+ " 	sum(MeanBaseRate * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateIM * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateACAdj * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateIMACAdj * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	romd.sourcetypeid, romd.roadtypeid,"
+			+ (!useAvgSpeedBin? " 0 as avgspeedbinid," : " romd.avgspeedbinid,")
+			+ "		romd.hourdayid, romd.polprocessid,"
+			+ " 	er.modelyearid, er.fueltypeid, er.agegroupid, er.regclassid, 0 as opmodeid,"
+			+ "		sum(opmodefraction" + avgSpeedFraction + sumSBD + "),"
+			+ "		sum(opmodefraction" + avgSpeedFraction + sumSBD + "),"
+			+ " 	sum(meanbaserate * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateim * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateacadj * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateimacadj * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
 			+ (useAvgSpeedBin?
-				( " 	case when avgBinSpeed>0 then sum(MeanBaseRate * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,"
-				+ " 	case when avgBinSpeed>0 then sum(MeanBaseRateIM * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,")
+				( " 	case when avgbinspeed>0 then sum(meanbaserate * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,"
+				+ " 	case when avgbinspeed>0 then sum(meanbaserateim * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,")
 				:
-				( " 	sum(MeanBaseRate * opModeFraction" + avgSpeedFraction + "),"
-				+ " 	sum(MeanBaseRateIM * opModeFraction" + avgSpeedFraction + "),")
+				( " 	sum(meanbaserate * opmodefraction" + avgSpeedFraction + "),"
+				+ " 	sum(meanbaserateim * opmodefraction" + avgSpeedFraction + "),")
 				)
 			+ (useAvgSpeedBin?
-				( " 	case when avgBinSpeed>0 then sum(MeanBaseRateACAdj * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,"
-				+ " 	case when avgBinSpeed>0 then sum(MeanBaseRateIMACAdj * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,")
+				( " 	case when avgbinspeed>0 then sum(meanbaserateacadj * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,"
+				+ " 	case when avgbinspeed>0 then sum(meanbaserateimacadj * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,")
 				:
-				( " 	sum(MeanBaseRateACAdj * opModeFraction" + avgSpeedFraction + "),"
-				+ " 	sum(MeanBaseRateIMACAdj * opModeFraction" + avgSpeedFraction + "),")
+				( " 	sum(meanbaserateacadj * opmodefraction" + avgSpeedFraction + "),"
+				+ " 	sum(meanbaserateimacadj * opmodefraction" + avgSpeedFraction + "),")
 				)
-			+ " 	mod(romd.polProcessID,100) as processID, floor(romd.polProcessID/100) as pollutantID"
+			+ " 	mod(romd.polprocessid,100) as processid, floor(romd.polprocessid/100) as pollutantid"
 			+ " from"
-			+ " 	RatesOpModeDistribution romd"
-			+ " 	inner join SBWeightedEmissionRateByAge er on ("
-			+ " 		er.sourceTypeID = romd.sourceTypeID"
-			+ " 		and er.polProcessID = romd.polProcessID"
-			+ " 		and er.opModeID = romd.opModeID"
+			+ " 	ratesopmodedistribution romd"
+			+ " 	inner join sbweightedemissionratebyage er on ("
+			+ " 		er.sourcetypeid = romd.sourcetypeid"
+			+ " 		and er.polprocessid = romd.polprocessid"
+			+ " 		and er.opmodeid = romd.opmodeid"
 			+ " 	)"
-			+ " where romd.sourceTypeID = ##sourceTypeID## and romd.polProcessID = ##polProcessID##"
+			+ " where romd.sourcetypeid = ##sourcetypeid## and romd.polprocessid = ##polprocessid##"
 			+ (isProjectDomain && roadTypeID > 0? " and romd.roadTypeID=" + roadTypeID : "")
 			+ " group by"
-			+ " 	romd.sourceTypeID, romd.polProcessID, romd.roadTypeID, romd.hourDayID,"
-			+ (!useAvgSpeedBin? "" : " romd.avgSpeedBinID,")
-			+ " 	er.modelYearID, er.fuelTypeID, er.ageGroupID, er.regClassID",
+			+ " 	romd.sourcetypeid, romd.polprocessid, romd.roadtypeid, romd.hourdayid,"
+			+ (!useAvgSpeedBin? "" : " romd.avgspeedbinid,")
+			+ " 	er.modelyearid, er.fueltypeid, er.agegroupid, er.regclassid",
 
 			/**
 			 * @step 110
@@ -825,49 +825,49 @@ public class BaseRateGenerator extends Generator {
 			 * @condition Aggregate average speed bins (Project domain or Inventory or Rates for Non-(Running, Brakewear, or Tirewear))
 			**/
 
-			"#BaseRate",
-			"insert into BaseRate_" + processID + "_" + yearID + " ("
-			+ " 	sourceTypeID, roadTypeID, avgSpeedBinID, polProcessID, hourDayID, modelYearID, fuelTypeID, regClassID, opModeID,"
-			+ " 	opModeFraction, opModeFractionRate, MeanBaseRate, MeanBaseRateIM, MeanBaseRateACAdj, MeanBaseRateIMACAdj, emissionRate, emissionRateIM, emissionRateACAdj, emissionRateIMACAdj, processID, pollutantID)"
+			"#baserate",
+			"insert into baserate_" + processID + "_" + yearID + " ("
+			+ " 	sourcetypeid, roadtypeid, avgspeedbinid, polprocessid, hourdayid, modelyearid, fueltypeid, regclassid, opmodeid,"
+			+ " 	opmodefraction, opmodefractionrate, meanbaserate, meanbaserateim, meanbaserateacadj, meanbaserateimacadj, emissionrate, emissionrateim, emissionrateacadj, emissionrateimacadj, processid, pollutantid)"
 			+ " select"
-			+ " 	romd.sourceTypeID, romd.roadTypeID,"
-			+ (!useAvgSpeedBin? " 0 as avgSpeedBinID," : " romd.avgSpeedBinID,")
-			+ "		romd.polProcessID, romd.hourDayID,"
-			+ " 	er.modelYearID, er.fuelTypeID, er.regClassID, 0 as opModeID,"
-			+ "		sum(opModeFraction" + avgSpeedFraction + sumSBD + "),"
-			+ "		sum(opModeFraction" + avgSpeedFraction + sumSBD + "),"
-			+ " 	sum(MeanBaseRate * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateIM * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateACAdj * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateIMACAdj * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	romd.sourcetypeid, romd.roadtypeid,"
+			+ (!useAvgSpeedBin? " 0 as avgspeedbinid," : " romd.avgspeedbinid,")
+			+ "		romd.polprocessid, romd.hourdayid,"
+			+ " 	er.modelyearid, er.fueltypeid, er.regclassid, 0 as opmodeid,"
+			+ "		sum(opmodefraction" + avgSpeedFraction + sumSBD + "),"
+			+ "		sum(opmodefraction" + avgSpeedFraction + sumSBD + "),"
+			+ " 	sum(meanbaserate * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateim * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateacadj * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateimacadj * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
 			+ (useAvgSpeedBin?
-				( " 	case when avgBinSpeed>0 then sum(MeanBaseRate * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,"
-				+ " 	case when avgBinSpeed>0 then sum(MeanBaseRateIM * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,")
+				( " 	case when avgbinspeed>0 then sum(meanbaserate * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,"
+				+ " 	case when avgbinspeed>0 then sum(meanbaserateim * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,")
 				:
-				( " 	sum(MeanBaseRate * opModeFraction" + avgSpeedFraction + "),"
-				+ " 	sum(MeanBaseRateIM * opModeFraction" + avgSpeedFraction + "),")
+				( " 	sum(meanbaserate * opmodefraction" + avgSpeedFraction + "),"
+				+ " 	sum(meanbaserateim * opmodefraction" + avgSpeedFraction + "),")
 				)
 			+ (useAvgSpeedBin?
-				( " 	case when avgBinSpeed>0 then sum(MeanBaseRateACAdj * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,"
-				+ " 	case when avgBinSpeed>0 then sum(MeanBaseRateIMACAdj * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,")
+				( " 	case when avgbinspeed>0 then sum(meanbaserateacadj * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,"
+				+ " 	case when avgbinspeed>0 then sum(meanbaserateimacadj * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,")
 				:
-				( " 	sum(MeanBaseRateACAdj * opModeFraction" + avgSpeedFraction + "),"
-				+ " 	sum(MeanBaseRateIMACAdj * opModeFraction" + avgSpeedFraction + "),")
+				( " 	sum(meanbaserateacadj * opmodefraction" + avgSpeedFraction + "),"
+				+ " 	sum(meanbaserateimacadj * opmodefraction" + avgSpeedFraction + "),")
 				)
-			+ " 	mod(romd.polProcessID,100) as processID, floor(romd.polProcessID/100) as pollutantID"
+			+ " 	mod(romd.polprocessid,100) as processid, floor(romd.polprocessid/100) as pollutantid"
 			+ " from"
-			+ " 	RatesOpModeDistribution romd"
-			+ " 	inner join SBWeightedEmissionRate er on ("
-			+ " 		er.sourceTypeID = romd.sourceTypeID"
-			+ " 		and er.polProcessID = romd.polProcessID"
-			+ " 		and er.opModeID = romd.opModeID"
+			+ " 	ratesopmodedistribution romd"
+			+ " 	inner join sbweightedemissionrate er on ("
+			+ " 		er.sourcetypeid = romd.sourcetypeid"
+			+ " 		and er.polprocessid = romd.polprocessid"
+			+ " 		and er.opmodeid = romd.opmodeid"
 			+ " 	)"
-			+ " where romd.sourceTypeID = ##sourceTypeID## and romd.polProcessID = ##polProcessID##"
-			+ (isProjectDomain && roadTypeID > 0? " and romd.roadTypeID=" + roadTypeID : "")
+			+ " where romd.sourcetypeid = ##sourcetypeid## and romd.polprocessid = ##polprocessid##"
+			+ (isProjectDomain && roadTypeID > 0? " and romd.roadtypeid=" + roadTypeID : "")
 			+ " group by"
 			+ " 	romd.sourceTypeID, romd.polProcessID, romd.roadTypeID, romd.hourDayID,"
-			+ (!useAvgSpeedBin? "" : " romd.avgSpeedBinID,")
-			+ " 	er.modelYearID, er.fuelTypeID, er.regClassID",
+			+ (!useAvgSpeedBin? "" : " romd.avgspeedbinid,")
+			+ " 	er.modelyearid, er.fueltypeid, er.regclassiD",
 
 			// Add from distanceEmissionRate.
 
@@ -908,61 +908,61 @@ public class BaseRateGenerator extends Generator {
 			 * @condition Not Start Exhaust
 			 * @condition Aggregate average speed bins (Project domain or Inventory or Rates for Non-(Running, Brakewear, or Tirewear))
 			**/
-			"#BaseRate",
-			"insert into BaseRate_" + processID + "_" + yearID + " ("
-			+ " 	sourceTypeID, roadTypeID, avgSpeedBinID, polProcessID, hourDayID, modelYearID, fuelTypeID, regClassID, opModeID,"
-			+ " 	opModeFraction, opModeFractionRate, MeanBaseRate, MeanBaseRateIM, MeanBaseRateACAdj, MeanBaseRateIMACAdj, emissionRate, emissionRateIM, emissionRateACAdj, emissionRateIMACAdj, processID, pollutantID)"
+			"#baserate",
+			"insert into baserate_" + processID + "_" + yearID + " ("
+			+ " 	sourcetypeid, roadtypeid, avgspeedbinid, polprocessid, hourdayid, modelyearid, fueltypeid, regclassid, opmodeid,"
+			+ " 	opmodefraction, opmodefractionrate, meanbaserate, meanbaserateim, meanbaserateacadj, meanbaserateimacadj, emissionrate, emissionrateim, emissionrateacadj, emissionrateimacadj, processid, pollutantid)"
 			+ " select"
-			+ " 	er.sourceTypeID, rsrt.roadTypeID,"
-			+ (!useAvgSpeedBin? " 0 as avgSpeedBinID," : " er.avgSpeedBinID,")
-			+ "		er.polProcessID, rshd.hourDayID,"
-			+ " 	er.modelYearID, er.fuelTypeID, er.regClassID, 0 as opModeID,"
+			+ " 	er.sourcetypeid, rsrt.roadtypeid,"
+			+ (!useAvgSpeedBin? " 0 as avgspeedbinid," : " er.avgspeedbinid,")
+			+ "		er.polprocessid, rshd.hourdayid,"
+			+ " 	er.modelyearid, er.fueltypeid, er.regclassid, 0 as opmodeid,"
 			+ "		sum(1" + avgSpeedFraction + sumSBD + "),"
 			+ "		sum(1" + avgSpeedFraction + sumSBD + "),"
-			+ " 	sum(MeanBaseRate" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateIM" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateACAdj" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateIMACAdj" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserate" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateim" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateacadj" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateimacadj" + avgSpeedFraction + quantAdjust + "),"
 			+ (useAvgSpeedBin?
-				( " 	case when avgBinSpeed>0 then sum(MeanBaseRate" + avgSpeedFraction + ") / avgBinSpeed else null end,"
-				+ " 	case when avgBinSpeed>0 then sum(MeanBaseRateIM" + avgSpeedFraction + ") / avgBinSpeed else null end,")
+				( " 	case when avgbinspeed>0 then sum(meanbaserate" + avgSpeedFraction + ") / avgbinspeed else null end,"
+				+ " 	case when avgbinspeed>0 then sum(meanbaserateim" + avgSpeedFraction + ") / avgbinspeed else null end,")
 				:
-				( " 	sum(MeanBaseRate" + avgSpeedFraction + "),"
-				+ " 	sum(MeanBaseRateIM" + avgSpeedFraction + "),")
+				( " 	sum(meanbaserate" + avgSpeedFraction + "),"
+				+ " 	sum(meanbaserateim" + avgSpeedFraction + "),")
 				)
 			+ (useAvgSpeedBin?
-				( " 	case when avgBinSpeed>0 then sum(MeanBaseRateACAdj" + avgSpeedFraction + ") / avgBinSpeed else null end,"
-				+ " 	case when avgBinSpeed>0 then sum(MeanBaseRateIMACAdj" + avgSpeedFraction + ") / avgBinSpeed else null end,")
+				( " 	case when avgbinspeed>0 then sum(meanbaserateacadj" + avgSpeedFraction + ") / avgbinspeed else null end,"
+				+ " 	case when avgbinspeed>0 then sum(meanbaserateimacadj" + avgSpeedFraction + ") / avgbinspeed else null end,")
 				:
-				( " 	sum(MeanBaseRateACAdj" + avgSpeedFraction + "),"
-				+ " 	sum(MeanBaseRateIMACAdj" + avgSpeedFraction + "),")
+				( " 	sum(meanbaserateacadj" + avgSpeedFraction + "),"
+				+ " 	sum(meanbaserateimacadj" + avgSpeedFraction + "),")
 				)
-			+ " 	mod(er.polProcessID,100) as processID, floor(er.polProcessID/100) as pollutantID"
+			+ " 	mod(er.polprocessid,100) as processid, floor(er.polprocessid/100) as pollutantid"
 			+ " from"
-			+ " 	SBWeightedDistanceRate er"
-			+ " 	inner join runSpecRoadType rsrt"
-			+ " 	inner join runSpecHourDay rshd"
+			+ " 	sbweighteddistancerate er"
+			+ " 	inner join runspecroadtype rsrt"
+			+ " 	inner join runspechourday rshd"
 			+ (applyAvgSpeedDistribution?
-			  "		left outer join avgSpeedDistribution asd on ("
-			+ "			asd.sourceTypeID = er.sourceTypeID"
-			+ "			and asd.roadTypeID = rsrt.roadTypeID"
-			+ "			and asd.hourDayID = rshd.hourDayID"
-			+ "			and asd.avgSpeedBinID = er.avgSpeedBinID)"
+			  "		left outer join avgspeeddistribution asd on ("
+			+ "			asd.sourcetypeid = er.sourcetypeid"
+			+ "			and asd.roadtypeid = rsrt.roadtypeid"
+			+ "			and asd.hourdayid = rshd.hourdayid"
+			+ "			and asd.avgspeedbinid = er.avgspeedbinid)"
 				: ""
 			)
 			+ (useAvgSpeedBin?
-				" inner join avgSpeedBin asb on (asb.avgSpeedBinID = er.avgSpeedBinID)"
+				" inner join avgspeedbin asb on (asb.avgspeedbinid = er.avgspeedbinid)"
 				:
 				"")
-			+ " where rsrt.roadTypeID > 1 and rsrt.roadTypeID < 100"
-			+ " and er.sourceTypeID = ##sourceTypeID## and er.polProcessID = ##polProcessID##"
-			+ (isProjectDomain && roadTypeID > 0? " and rsrt.roadTypeID=" + roadTypeID : "")
+			+ " where rsrt.roadtypeid > 1 and rsrt.roadtypeid < 100"
+			+ " and er.sourcetypeid = ##sourcetypeid## and er.polprocessid = ##polprocessid##"
+			+ (isProjectDomain && roadTypeID > 0? " and rsrt.roadtypeid=" + roadTypeID : "")
 			+ " group by"
-			+ "		rsrt.roadTypeID, rshd.hourDayID,"
-			+ " 	er.sourceTypeID,"
-			+ "		er.polProcessID,"
-			+ " 	er.modelYearID, er.fuelTypeID, er.regClassID"
-			+ (!useAvgSpeedBin? "" : ", er.avgSpeedBinID")
+			+ "		rsrt.roadtypeid, rshd.hourdayid,"
+			+ " 	er.sourcetypeid,"
+			+ "		er.polprocessid,"
+			+ " 	er.modelyearid, er.fueltypeid, er.regclassid"
+			+ (!useAvgSpeedBin? "" : ", er.avgspeedbinid")
 		};
 
 		String[] withOpModeStatements = {
@@ -1006,50 +1006,50 @@ public class BaseRateGenerator extends Generator {
 			 * @condition Aggregate average speed bins (Project domain or Inventory or Rates for Non-(Running, Brakewear, or Tirewear))
 			**/
 
-			"#BaseRateByAge",
-			"insert into BaseRateByAge_" + processID + "_" + yearID + " ("
-			+ " 	sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID, polProcessID, modelYearID, fuelTypeID, ageGroupID, regClassID, opModeID,"
-			+ " 	opModeFraction, opModeFractionRate, MeanBaseRate, MeanBaseRateIM, MeanBaseRateACAdj, MeanBaseRateIMACAdj, emissionRate, emissionRateIM, emissionRateACAdj, emissionRateIMACAdj, processID, pollutantID)"
+			"#baseratebyage",
+			"insert into baseratebyage_" + processID + "_" + yearID + " ("
+			+ " 	sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, polprocessid, modelyearid, fueltypeid, agegroupid, regclassid, opmodeid,"
+			+ " 	opmodefraction, opmodefractionrate, meanbaserate, meanbaserateim, meanbaserateacadj, meanbaserateimacadj, emissionrate, emissionrateim, emissionrateacadj, emissionrateimacadj, processid, pollutantid)"
 			+ " select"
-			+ " 	romd.sourceTypeID, romd.roadTypeID,"
-			+ (!useAvgSpeedBin? " 0 as avgSpeedBinID," : " romd.avgSpeedBinID,")
-			+ "		romd.hourDayID, romd.polProcessID,"
-			+ " 	er.modelYearID, er.fuelTypeID, er.ageGroupID, er.regClassID, romd.opModeID,"
-			+ "		sum(opModeFraction" + avgSpeedFraction + sumSBD + quantAdjust + "),"
-			+ "		sum(opModeFraction" + avgSpeedFraction + sumSBD + "),"
+			+ " 	romd.sourcetypeid, romd.roadtypeid,"
+			+ (!useAvgSpeedBin? " 0 as avgspeedbinid," : " romd.avgspeedbinid,")
+			+ "		romd.hourdayid, romd.polprocessid,"
+			+ " 	er.modelyearid, er.fueltypeid, er.agegroupid, er.regclassid, romd.opmodeid,"
+			+ "		sum(opmodefraction" + avgSpeedFraction + sumSBD + quantAdjust + "),"
+			+ "		sum(opmodefraction" + avgSpeedFraction + sumSBD + "),"
 
-			+ " 	sum(MeanBaseRate * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateIM * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateACAdj * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateIMACAdj * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserate * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateim * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateacadj * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateimacadj * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
 			+ (useAvgSpeedBin?
-				( " 	case when avgBinSpeed>0 then sum(MeanBaseRate * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,"
-				+ " 	case when avgBinSpeed>0 then sum(MeanBaseRateIM * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,")
+				( " 	case when avgbinspeed>0 then sum(meanbaserate * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,"
+				+ " 	case when avgbinspeed>0 then sum(meanbaserateim * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,")
 				:
-				( " 	sum(MeanBaseRate * opModeFraction" + avgSpeedFraction + "),"
-				+ " 	sum(MeanBaseRateIM * opModeFraction" + avgSpeedFraction + "),")
+				( " 	sum(meanbaserate * opmodefraction" + avgSpeedFraction + "),"
+				+ " 	sum(meanbaserateim * opmodefraction" + avgSpeedFraction + "),")
 				)
 			+ (useAvgSpeedBin?
-				( " 	case when avgBinSpeed>0 then sum(MeanBaseRateACAdj * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,"
-				+ " 	case when avgBinSpeed>0 then sum(MeanBaseRateIMACAdj * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,")
+				( " 	case when avgbinspeed>0 then sum(meanbaserateacadj * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,"
+				+ " 	case when avgbinspeed>0 then sum(meanbaserateimacadj * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,")
 				:
-				( " 	sum(MeanBaseRateACAdj * opModeFraction" + avgSpeedFraction + "),"
-				+ " 	sum(MeanBaseRateIMACAdj * opModeFraction" + avgSpeedFraction + "),")
+				( " 	sum(meanbaserateacadj * opmodefraction" + avgSpeedFraction + "),"
+				+ " 	sum(meanbaserateimacadj * opmodefraction" + avgSpeedFraction + "),")
 				)
-			+ " 	mod(romd.polProcessID,100) as processID, floor(romd.polProcessID/100) as pollutantID"
+			+ " 	mod(romd.polprocessid,100) as processid, floor(romd.polprocessid/100) as pollutantid"
 			+ " from"
-			+ " 	RatesOpModeDistribution romd"
-			+ " 	inner join SBWeightedEmissionRateByAge er on ("
-			+ " 		er.sourceTypeID = romd.sourceTypeID"
-			+ " 		and er.polProcessID = romd.polProcessID"
-			+ " 		and er.opModeID = romd.opModeID"
+			+ " 	ratesopmodedistribution romd"
+			+ " 	inner join Sbweightedemissionratebyage er on ("
+			+ " 		er.sourcetypeid = romd.sourcetypeid"
+			+ " 		and er.polprocessid = romd.polprocessid"
+			+ " 		and er.opmodeid = romd.opmodeid"
 			+ " 	)"
-			+ " where romd.sourceTypeID = ##sourceTypeID## and romd.polProcessID = ##polProcessID##"
-			+ (isProjectDomain && roadTypeID > 0? " and romd.roadTypeID=" + roadTypeID : "")
+			+ " where romd.sourcetypeid = ##sourcetypeid## and romd.polprocessid = ##polprocessid##"
+			+ (isProjectDomain && roadTypeID > 0? " and romd.roadtypeid=" + roadTypeID : "")
 			+ " group by"
-			+ " 	romd.sourceTypeID, romd.polProcessID, romd.roadTypeID, romd.hourDayID, romd.opModeID,"
-			+ (!useAvgSpeedBin? "" : " romd.avgSpeedBinID,")
-			+ " 	er.modelYearID, er.fuelTypeID, er.ageGroupID, er.regClassID",
+			+ " 	romd.sourcetypeid, romd.polprocessid, romd.roadtypeid, romd.hourdayid, romd.opmodeid,"
+			+ (!useAvgSpeedBin? "" : " romd.avgspeedbinid,")
+			+ " 	er.modelyearid, er.fueltypeid, er.agegroupid, er.regclassid",
 
 			/**
 			 * @step 110
@@ -1091,50 +1091,50 @@ public class BaseRateGenerator extends Generator {
 			 * @condition Aggregate average speed bins (Project domain or Inventory or Rates for Non-(Running, Brakewear, or Tirewear))
 			**/
 
-			"#BaseRate",
-			"insert into BaseRate_" + processID + "_" + yearID + " ("
-			+ " 	sourceTypeID, roadTypeID, avgSpeedBinID, polProcessID, hourDayID, modelYearID, fuelTypeID, regClassID, opModeID,"
-			+ " 	opModeFraction, opModeFractionRate, MeanBaseRate, MeanBaseRateIM, MeanBaseRateACAdj, MeanBaseRateIMACAdj, emissionRate, emissionRateIM, emissionRateACAdj, emissionRateIMACAdj, processID, pollutantID)"
+			"#baserate",
+			"insert into baserate_" + processid + "_" + yearid + " ("
+			+ " 	sourcetypeid, roadtypeid, avgspeedbinid, polprocessid, hourdayid, modelyearid, fueltypeid, regclassid, opmodeid,"
+			+ " 	opmodefraction, opmodefractionrate, meanbaserate, meanbaserateim, meanbaserateacadj, meanbaserateimacadj, emissionrate, emissionrateim, emissionrateacadj, emissionrateimacadj, processid, pollutantid)"
 			+ " select"
-			+ " 	romd.sourceTypeID, romd.roadTypeID,"
-			+ (!useAvgSpeedBin? " 0 as avgSpeedBinID," : " romd.avgSpeedBinID,")
-			+ "		romd.polProcessID, romd.hourDayID,"
-			+ " 	er.modelYearID, er.fuelTypeID, er.regClassID, romd.opModeID,"
-			+ "		sum(opModeFraction" + avgSpeedFraction + sumSBD + quantAdjust + "),"
-			+ "		sum(opModeFraction" + avgSpeedFraction + sumSBD + "),"
+			+ " 	romd.sourcetypeid, romd.roadtypeid,"
+			+ (!useAvgSpeedBin? " 0 as avgspeedbinid," : " romd.avgspeedbinid,")
+			+ "		romd.polprocessid, romd.hourdayid,"
+			+ " 	er.modelyearid, er.fueltypeid, er.regclassid, romd.opmodeid,"
+			+ "		sum(opmodefraction" + avgSpeedFraction + sumSBD + quantAdjust + "),"
+			+ "		sum(opmodefraction" + avgSpeedFraction + sumSBD + "),"
 
-			+ " 	sum(MeanBaseRate * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateIM * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateACAdj * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateIMACAdj * opModeFraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserate * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateim * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateacadj * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateimacadj * opmodefraction" + avgSpeedFraction + quantAdjust + "),"
 			+ (useAvgSpeedBin?
-				( " 	case when avgBinSpeed>0 then sum(MeanBaseRate * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,"
-				+ " 	case when avgBinSpeed>0 then sum(MeanBaseRateIM * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,")
+				( " 	case when avgbinspeed>0 then sum(meanbaserate * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,"
+				+ " 	case when avgbinspeed>0 then sum(meanbaserateim * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,")
 				:
 				( " 	sum(MeanBaseRate * opModeFraction" + avgSpeedFraction + "),"
 				+ " 	sum(MeanBaseRateIM * opModeFraction" + avgSpeedFraction + "),")
 				)
 			+ (useAvgSpeedBin?
-				( " 	case when avgBinSpeed>0 then sum(MeanBaseRateACAdj * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,"
-				+ " 	case when avgBinSpeed>0 then sum(MeanBaseRateIMACAdj * opModeFraction" + avgSpeedFraction + ") / avgBinSpeed else null end,")
+				( " 	case when avgbinspeed>0 then sum(meanbaserateacadj * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,"
+				+ " 	case when avgbinspeed>0 then sum(meanbaserateimacadj * opmodefraction" + avgSpeedFraction + ") / avgbinspeed else null end,")
 				:
-				( " 	sum(MeanBaseRateACAdj * opModeFraction" + avgSpeedFraction + "),"
-				+ " 	sum(MeanBaseRateIMACAdj * opModeFraction" + avgSpeedFraction + "),")
+				( " 	sum(meanbaserateacadj * opmodefraction" + avgSpeedFraction + "),"
+				+ " 	sum(meanbaserateimacadj * opmodefraction" + avgSpeedFraction + "),")
 				)
-			+ " 	mod(romd.polProcessID,100) as processID, floor(romd.polProcessID/100) as pollutantID"
+			+ " 	mod(romd.polprocessid,100) as processid, floor(romd.polprocessid/100) as pollutantid"
 			+ " from"
-			+ " 	RatesOpModeDistribution romd"
-			+ " 	inner join SBWeightedEmissionRate er on ("
-			+ " 		er.sourceTypeID = romd.sourceTypeID"
-			+ " 		and er.polProcessID = romd.polProcessID"
-			+ " 		and er.opModeID = romd.opModeID"
+			+ " 	ratesopmodedistribution romd"
+			+ " 	inner join sbweightedemissionrate er on ("
+			+ " 		er.sourcetypeid = romd.sourcetypeid"
+			+ " 		and er.polprocessid = romd.polprocessid"
+			+ " 		and er.opmodeid = romd.opmodeid"
 			+ " 	)"
-			+ " where romd.sourceTypeID = ##sourceTypeID## and romd.polProcessID = ##polProcessID##"
-			+ (isProjectDomain && roadTypeID > 0? " and romd.roadTypeID=" + roadTypeID : "")
+			+ " where romd.sourcetypeid = ##sourcetypeid## and romd.polprocessid = ##polprocessid##"
+			+ (isProjectDomain && roadTypeID > 0? " and romd.roadtypeid=" + roadTypeID : "")
 			+ " group by"
-			+ " 	romd.sourceTypeID, romd.polProcessID, romd.roadTypeID, romd.hourDayID, romd.opModeID,"
-			+ (!useAvgSpeedBin? "" : " romd.avgSpeedBinID,")
-			+ " 	er.modelYearID, er.fuelTypeID, er.regClassID",
+			+ " 	romd.sourcetypeid, romd.polprocessid, romd.roadtypeid, romd.hourdayid, romd.opmodeid,"
+			+ (!useAvgSpeedBin? "" : " romd.avgspeedbinid,")
+			+ " 	er.modelyearid, er.fueltypeid, er.regclassid",
 
 			// Add from distanceEmissionRate. Use 300 as the opModeID.
 
@@ -1178,61 +1178,61 @@ public class BaseRateGenerator extends Generator {
 			 * @condition Aggregate average speed bins (Project domain or Inventory or Rates for Non-(Running, Brakewear, or Tirewear))
 			**/
 
-			"#BaseRate",
-			"insert into BaseRate_" + processID + "_" + yearID + " ("
-			+ " 	sourceTypeID, roadTypeID, avgSpeedBinID, polProcessID, hourDayID, modelYearID, fuelTypeID, regClassID, opModeID,"
-			+ " 	opModeFraction, opModeFractionRate, MeanBaseRate, MeanBaseRateIM, MeanBaseRateACAdj, MeanBaseRateIMACAdj, emissionRate, emissionRateIM, emissionRateACAdj, emissionRateIMACAdj, processID, pollutantID)"
+			"#baserate",
+			"insert into baserate_" + processID + "_" + yearID + " ("
+			+ " 	sourcetypeid, roadtypeid, avgspeedbinid, polprocessid, hourdayid, modelyearid, fueltypeid, regclassid, opmodeid,"
+			+ " 	opmodefraction, opmodefractionrate, meanbaserate, meanbaserateim, meanbaserateacadj, meanbaserateimacadj, emissionrate, emissionrateim, emissionrateacadj, emissionrateimacadj, processid, pollutantid)"
 			+ " select"
-			+ " 	er.sourceTypeID, rsrt.roadTypeID,"
-			+ (!useAvgSpeedBin? " 0 as avgSpeedBinID," : " er.avgSpeedBinID,")
-			+ "		er.polProcessID, rshd.hourDayID,"
-			+ " 	er.modelYearID, er.fuelTypeID, er.regClassID, 300 as opModeID,"
+			+ " 	er.sourcetypeid, rsrt.roadtypeid,"
+			+ (!useAvgSpeedBin? " 0 as avgspeedbinid," : " er.avgspeedbinid,")
+			+ "		er.polprocessid, rshd.hourdayid,"
+			+ " 	er.modelyearid, er.fueltypeid, er.regclassid, 300 as opmodeid,"
 			+ "		sum(1" + avgSpeedFraction + sumSBD + "),"
 			+ "		sum(1" + avgSpeedFraction + sumSBD + "),"
-			+ " 	sum(MeanBaseRate" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateIM" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateACAdj" + avgSpeedFraction + quantAdjust + "),"
-			+ " 	sum(MeanBaseRateIMACAdj" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserate" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateim" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateacadj" + avgSpeedFraction + quantAdjust + "),"
+			+ " 	sum(meanbaserateimacadj" + avgSpeedFraction + quantAdjust + "),"
 			+ (useAvgSpeedBin?
-				( " 	case when avgBinSpeed>0 then sum(MeanBaseRate" + avgSpeedFraction + ") / avgBinSpeed else null end,"
-				+ " 	case when avgBinSpeed>0 then sum(MeanBaseRateIM" + avgSpeedFraction + ") / avgBinSpeed else null end,")
+				( " 	case when avgbinspeed>0 then sum(meanbaserate" + avgSpeedFraction + ") / avgbinspeed else null end,"
+				+ " 	case when avgbinspeed>0 then sum(meanbaserateim" + avgSpeedFraction + ") / avgbinspeed else null end,")
 				:
-				( " 	sum(MeanBaseRate" + avgSpeedFraction + "),"
-				+ " 	sum(MeanBaseRateIM" + avgSpeedFraction + "),")
+				( " 	sum(meanbaserate" + avgSpeedFraction + "),"
+				+ " 	sum(meanbaserateim" + avgSpeedFraction + "),")
 				)
 			+ (useAvgSpeedBin?
-				( " 	case when avgBinSpeed>0 then sum(MeanBaseRateACAdj" + avgSpeedFraction + ") / avgBinSpeed else null end,"
-				+ " 	case when avgBinSpeed>0 then sum(MeanBaseRateIMACAdj" + avgSpeedFraction + ") / avgBinSpeed else null end,")
+				( " 	case when avgbinspeed>0 then sum(meanbaserateacadj" + avgSpeedFraction + ") / avgbinspeed else null end,"
+				+ " 	case when avgbinspeed>0 then sum(meanbaserateimacadj" + avgSpeedFraction + ") / avgbinspeed else null end,")
 				:
-				( " 	sum(MeanBaseRateACAdj" + avgSpeedFraction + "),"
-				+ " 	sum(MeanBaseRateIMACAdj" + avgSpeedFraction + "),")
+				( " 	sum(meanbaserateacadj" + avgSpeedFraction + "),"
+				+ " 	sum(meanbaserateimacadj" + avgSpeedFraction + "),")
 				)
-			+ " 	mod(er.polProcessID,100) as processID, floor(er.polProcessID/100) as pollutantID"
+			+ " 	mod(er.polprocessid,100) as processid, floor(er.polprocessid/100) as pollutantid"
 			+ " from"
-			+ " 	SBWeightedDistanceRate er"
-			+ " 	inner join runSpecRoadType rsrt"
-			+ " 	inner join runSpecHourDay rshd"
+			+ " 	sbweighteddistancerate er"
+			+ " 	inner join runspecroadtype rsrt"
+			+ " 	inner join runspechourday rshd"
 			+ (applyAvgSpeedDistribution?
-			  "		left outer join avgSpeedDistribution asd on ("
-			+ "			asd.sourceTypeID = er.sourceTypeID"
-			+ "			and asd.roadTypeID = rsrt.roadTypeID"
-			+ "			and asd.hourDayID = rshd.hourDayID"
-			+ "			and asd.avgSpeedBinID = er.avgSpeedBinID)"
+			  "		left outer join avgspeeddistribution asd on ("
+			+ "			asd.sourcetypeid = er.sourcetypeid"
+			+ "			and asd.roadtypeid = rsrt.roadtypeid"
+			+ "			and asd.hourdayid = rshd.hourdayid"
+			+ "			and asd.avgspeedbinid = er.avgspeedbinid)"
 				: ""
 			)
 			+ (useAvgSpeedBin?
-				" inner join avgSpeedBin asb on (asb.avgSpeedBinID = er.avgSpeedBinID)"
+				" inner join avgspeedbin asb on (asb.avgspeedbinid = er.avgspeedbinid)"
 				:
 				"")
-			+ " where rsrt.roadTypeID > 1 and rsrt.roadTypeID < 100"
-			+ " and er.sourceTypeID = ##sourceTypeID## and er.polProcessID = ##polProcessID##"
-			+ (isProjectDomain && roadTypeID > 0? " and rsrt.roadTypeID=" + roadTypeID : "")
+			+ " where rsrt.roadtypeid > 1 and rsrt.roadtypeid < 100"
+			+ " and er.sourcetypeid = ##sourcetypeid## and er.polprocessid = ##polprocessid##"
+			+ (isProjectDomain && roadTypeID > 0? " and rsrt.roadtypeid=" + roadTypeID : "")
 			+ " group by"
-			+ "		rsrt.roadTypeID, rshd.hourDayID,"
-			+ " 	er.sourceTypeID,"
-			+ "		er.polProcessID,"
-			+ " 	er.modelYearID, er.fuelTypeID, er.regClassID"
-			+ (!useAvgSpeedBin? "" : ", er.avgSpeedBinID")
+			+ "		rsrt.roadtypeid, rshd.hourdayid,"
+			+ " 	er.sourcetypeid,"
+			+ "		er.polprocessid,"
+			+ " 	er.modelyearid, er.fueltypeid, er.regclassid"
+			+ (!useAvgSpeedBin? "" : ", er.avgspeedbinid")
 		};
 
 		String[] statements = keepOpModeID? withOpModeStatements : noOpModeStatements;
@@ -1248,10 +1248,10 @@ public class BaseRateGenerator extends Generator {
 			if(isProjectDomain && previousRoadTypeID > 0) {
 				context = "#CORE";
 				String[] cleanupStatements = {
-					"#BaseRateByAge",
-					"delete from BaseRateByAge_" + processID + "_" + yearID + " where roadTypeID=" + previousRoadTypeID,
-					"#BaseRate",
-					"delete from BaseRate_" + processID + "_" + yearID + " where roadTypeID=" + previousRoadTypeID
+					"#baseratebyage",
+					"delete from baseratebyage_" + processID + "_" + yearID + " where roadtypeid=" + previousRoadTypeID,
+					"#baserate",
+					"delete from baserate_" + processID + "_" + yearID + " where roadtypeid=" + previousRoadTypeID
 				};
 				concurrentSQL.clear();
 				for(int i=0;i<cleanupStatements.length;i++) {
@@ -1281,13 +1281,13 @@ public class BaseRateGenerator extends Generator {
 				previousRoadTypeID = 0;
 			}
 			if(applyAvgSpeedDistribution && !useExternalGenerator) {
-				sql = "update RatesOpModeDistribution, avgSpeedDistribution"
-						+ " 	set RatesOpModeDistribution.avgSpeedFraction = avgSpeedDistribution.avgSpeedFraction"
-						+ " where RatesOpModeDistribution.sourceTypeID = avgSpeedDistribution.sourceTypeID"
-						+ " and RatesOpModeDistribution.roadTypeID = avgSpeedDistribution.roadTypeID"
-						+ " and RatesOpModeDistribution.hourDayID = avgSpeedDistribution.hourDayID"
-						+ " and RatesOpModeDistribution.avgSpeedBinID = avgSpeedDistribution.avgSpeedBinID"
-						+ " and RatesOpModeDistribution.avgSpeedFraction <= 0";
+				sql = "update ratesopmodedistribution, avgspeeddistribution"
+						+ " 	set ratesopmodedistribution.avgspeedfraction = avgspeeddistribution.avgspeedfraction"
+						+ " where ratesopmodedistribution.sourcetypeid = avgspeeddistribution.sourcetypeid"
+						+ " and ratesopmodedistribution.roadtypeid = avgspeeddistribution.roadtypeid"
+						+ " and ratesopmodedistribution.hourdayid = avgspeeddistribution.hourdayid"
+						+ " and ratesopmodedistribution.avgspeedbinid = avgspeeddistribution.avgspeedbinid"
+						+ " and ratesopmodedistribution.avgspeedfraction <= 0";
 				long startMillis = System.currentTimeMillis();
 				SQLRunner.executeSQL(db,sql);
 				long endMillis = System.currentTimeMillis();
@@ -1306,11 +1306,11 @@ public class BaseRateGenerator extends Generator {
 			} else {
 				// Get iteration dimensions, keeping only those that belong to the desired process.
 				ArrayList<String> tuples = new ArrayList<String>();
-				sql = "select distinct sourceTypeID, polProcessID from SBWeightedEmissionRateByAge"
+				sql = "select distinct sourcetypeid, polprocessid from sbweightedemissionratebyage"
 						+ " union"
-						+ " select distinct sourceTypeID, polProcessID from SBWeightedEmissionRate"
+						+ " select distinct sourcetypeid, polprocessid from sbweightedemissionrate"
 						+ " union"
-						+ " select distinct sourceTypeID, polProcessID from SBWeightedDistanceRate";
+						+ " select distinct sourcetypeid, polprocessid from sbweighteddistancerate";
 				query.open(db,sql);
 				while(query.rs.next()) {
 					String sourceTypeID = query.rs.getString(1);
@@ -1331,8 +1331,8 @@ public class BaseRateGenerator extends Generator {
 					String polProcessID = tuples.get(ti+1);
 					//Logger.log(LogMessageCategory.DEBUG,"BaseRateGenerator for sourceTypeID=" + sourceTypeID + ", polProcessID=" + polProcessID);
 					replacements.clear();
-					replacements.put("##sourceTypeID##",sourceTypeID);
-					replacements.put("##polProcessID##",polProcessID);
+					replacements.put("##sourcetypeid##",sourceTypeID);
+					replacements.put("##polprocessid##",polProcessID);
 					for(int i=0;i<statements.length;i++) {
 						sql = statements[i];
 						if(sql != null && sql.length() > 0) {
@@ -1391,7 +1391,7 @@ public class BaseRateGenerator extends Generator {
 
 		if(ExecutionRunSpec.theExecutionRunSpec.getModelScale() == ModelScale.MESOSCALE_LOOKUP) {
 			Logger.log(LogMessageCategory.DEBUG,"Normalizing sourcebin-weighted distance rates");
-			normalize = "/ SUM(sbd.SourceBinActivityFraction)";
+			normalize = "/ SUM(sbd.sourcebinactivityfraction)";
 		} else {
 			Logger.log(LogMessageCategory.DEBUG,"Not normalizing sourcebin-weighted distance rates");
 		}
@@ -1410,36 +1410,36 @@ public class BaseRateGenerator extends Generator {
 			**/
 
 			// metalEmissionRate
-			"insert into distanceEmissionRate ("
-			+ " 	polProcessID,"
-			+ " 	fuelTypeID, sourceTypeID,"
-			+ " 	modelYearID,"
-			+ " 	avgSpeedBinID,"
-			+ " 	ratePerMile, ratePerSHO)"
-			+ " select r.polProcessID,"
-			+ " 	rssf.fuelTypeID, rssf.sourceTypeID, "
-			+ " 	rsmy.modelYearID,"
-			+ " 	asb.avgSpeedBinID,"
+			"insert into distanceemissionrate ("
+			+ " 	polprocessid,"
+			+ " 	fueltypeid, sourcetypeid,"
+			+ " 	modelyearid,"
+			+ " 	avgspeedbinid,"
+			+ " 	ratepermile, ratepersho)"
+			+ " select r.polprocessid,"
+			+ " 	rssf.fueltypeid, rssf.sourcetypeid, "
+			+ " 	rsmy.modelyearid,"
+			+ " 	asb.avgspeedbinid,"
 			+ " 	(case units when 'g/mile' then 1.0"
 			+ " 		when 'g/km' then 1.609344"
 			+ " 		when 'TEQ/mile' then 1.0"
 			+ " 		when 'TEQ/km' then 1.609344"
 			+ " 		else 1.0"
-			+ " 	end)*(r.meanBaseRate) as ratePerMile,"
+			+ " 	end)*(r.meanbaserate) as ratepermile,"
 			+ " 	(case units when 'g/mile' then 1.0"
 			+ " 		when 'g/km' then 1.609344"
 			+ " 		when 'TEQ/mile' then 1.0"
 			+ " 		when 'TEQ/km' then 1.609344"
 			+ " 		else 1.0"
-			+ " 	end)*(r.meanBaseRate * asb.avgBinSpeed) as ratePerSHO"
-			+ " from metalEmissionRate r"
-			+ " inner join runSpecSourceFueltype rssf on ("
-			+ " 	rssf.sourceTypeID = r.sourceTypeID"
-			+ " 	and rssf.fuelTypeID = r.fuelTypeID)"
-			+ " inner join runSpecModelYear rsmy on ("
-			+ " 	rsmy.modelYearID >= floor(r.modelYearGroupID/10000)"
-			+ " 	and rsmy.modelYearID <= mod(r.modelYearGroupID,10000))"
-			+ " inner join avgSpeedBin asb",
+			+ " 	end)*(r.meanbaserate * asb.avgbinspeed) as ratepersho"
+			+ " from metalemissionrate r"
+			+ " inner join runspecsourcefueltype rssf on ("
+			+ " 	rssf.sourcetypeid = r.sourcetypeid"
+			+ " 	and rssf.fueltypeid = r.fueltypeid)"
+			+ " inner join runspecmodelyear rsmy on ("
+			+ " 	rsmy.modelyearid >= floor(r.modelyeargroupid/10000)"
+			+ " 	and rsmy.modelyearid <= mod(r.modelyeargroupid,10000))"
+			+ " inner join avgspeedbin asb",
 
 			/**
 			 * @step 015
@@ -1452,35 +1452,35 @@ public class BaseRateGenerator extends Generator {
 			**/
 			
 			// dioxinEmissionRate
-			"insert into distanceEmissionRate ("
-			+ " 	polProcessID,"
-			+ " 	fuelTypeID, sourceTypeID,"
-			+ " 	modelYearID,"
-			+ " 	avgSpeedBinID,"
-			+ " 	ratePerMile, ratePerSHO)"
-			+ " select r.polProcessID,"
-			+ " 	rssf.fuelTypeID, rssf.sourceTypeID,"
-			+ " 	rsmy.modelYearID,"
-			+ " 	asb.avgSpeedBinID,"
+			"insert into distanceemissionrate ("
+			+ " 	polprocessid,"
+			+ " 	fueltypeid, sourcetypeid,"
+			+ " 	modelyearid,"
+			+ " 	avgspeedbinid,"
+			+ " 	ratepermile, ratepersho)"
+			+ " select r.polprocessid,"
+			+ " 	rssf.fueltypeid, rssf.sourcetypeid,"
+			+ " 	rsmy.modelyearid,"
+			+ " 	asb.avgspeedbinid,"
 			+ " 	(case units when 'g/mile' then 1.0"
 			+ " 		when 'g/km' then 1.609344"
 			+ " 		when 'TEQ/mile' then 1.0"
 			+ " 		when 'TEQ/km' then 1.609344"
 			+ " 		else 1.0"
-			+ " 	end)*(r.meanBaseRate) as ratePerMile,"
+			+ " 	end)*(r.meanbaserate) as ratepermile,"
 			+ " 	(case units when 'g/mile' then 1.0"
 			+ " 		when 'g/km' then 1.609344"
 			+ " 		when 'TEQ/mile' then 1.0"
 			+ " 		when 'TEQ/km' then 1.609344"
 			+ " 		else 1.0"
-			+ " 	end)*(r.meanBaseRate * asb.avgBinSpeed) as ratePerSHO"
-			+ " from dioxinEmissionRate r"
-			+ " inner join runSpecSourceFueltype rssf on ("
-			+ " 	rssf.fuelTypeID = r.fuelTypeID)"
-			+ " inner join runSpecModelYear rsmy on ("
-			+ " 	rsmy.modelYearID >= floor(r.modelYearGroupID/10000)"
-			+ " 	and rsmy.modelYearID <= mod(r.modelYearGroupID,10000))"
-			+ " inner join avgSpeedBin asb"
+			+ " 	end)*(r.meanbaserate * asb.avgbinspeed) as ratepersho"
+			+ " from dioxinemissionrate r"
+			+ " inner join runspecsourcefueltype rssf on ("
+			+ " 	rssf.fueltypeid = r.fueltypeid)"
+			+ " inner join runspecmodelyear rsmy on ("
+			+ " 	rsmy.modelyearid >= floor(r.modelyeargroupid/10000)"
+			+ " 	and rsmy.modelyearid <= mod(r.modelyeargroupid,10000))"
+			+ " inner join avgspeedbin asb"
 		};
 
 		String sql = "";
@@ -1522,7 +1522,7 @@ public class BaseRateGenerator extends Generator {
 		new TaggedSQLRunner.OverrideHandler() {
 			public boolean onOverrideSQL(Connection db,String sql,Object data1,Object data2) throws Exception {
 				if(!useBaseRateByAgeHelper
-						|| !sql.startsWith("insert into BaseRateByAge_")
+						|| !sql.startsWith("insert into baseratebyage_")
 						|| !(data1 instanceof BaseRateByAgeHelper.Context)
 						|| !(data2 instanceof BaseRateByAgeHelper.Flags)) {
 					return false;

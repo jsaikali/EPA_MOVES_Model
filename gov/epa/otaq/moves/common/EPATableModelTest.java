@@ -27,7 +27,7 @@ public class EPATableModelTest extends TestCase {
 		super(name);
 
 		dbSelection.serverName = "localhost";
-		dbSelection.databaseName = "MOVESDefault" ;
+		dbSelection.databaseName = "movesdefault" ;
 		dbSelection.userName = "";
 		dbSelection.password = "";
 		con = dbSelection.openConnectionOrNull();
@@ -50,9 +50,9 @@ public class EPATableModelTest extends TestCase {
 		}
 
 		EPATableModel epaTable = 
-				new EPATableModel( "SourceTypeID | FuelTypeID | EngineTechID | Year | Value " );
+				new EPATableModel( "sourcetypeid | fueltypeid | enginetechid | year | value " );
 		EPATableModel epaSourceUseType = new EPATableModel( 
-				"SourceTypeID | HPMSVTypeID | sourcetypename | rollingterma | rotatingtermb | "
+				"sourcetypeid | hpmsvtypeid | sourcetypename | rollingterma | rotatingtermb | "
 				+ "dragtermc | sourcemass " );
 
 		System.out.println( "" ) ;
@@ -86,7 +86,7 @@ public class EPATableModelTest extends TestCase {
 		System.out.println( epaSourceUseType.getPrintDataRows() ) ;
 
 		rc = epaSourceUseType.sqlSelect( "select sourcemass , dragtermc , rotatingtermb , " + 
-				" rollingterma , SourceTypeID , HPMSVTypeID , sourcetypename from sourceusetype" );
+				" rollingterma , sourcetypeid , hpmsvtypeid , sourcetypename from sourceusetype" );
 		System.out.println( "\nData from SQL diff order  rc =" + rc + " " 
 				+ epaSourceUseType.errorText + "\n" ) ;
 		System.out.println( epaSourceUseType.getPrintDataRows() ) ;
@@ -149,7 +149,7 @@ public class EPATableModelTest extends TestCase {
 		EPATableModel tableSourceUseType = new EPATableModel() ;
 		EPATableModel tableYear = new EPATableModel() ;
 		EPATableModel tableFuelEngTechAssoc = new EPATableModel( 
-				"SourceTypeId | FuelTypeId | EngTechId | Category | YearData " ) ;
+				"sourcetypeid | fueltypeid | engtechid | category | yeardata " ) ;
 
 		rc = tableSourceUseType.sqlSelect( "select * from sourceusetype" ) ;
 
@@ -159,9 +159,9 @@ public class EPATableModelTest extends TestCase {
 		rc = tableYear.sqlSelect( "select * from year where yearid >= 2000" ) ;
 
 		sql= "SELECT " + 
-				" (sourcetypeid*1000000)+(categoryDisplayOrder*10000)+(fueltypeid*100)+engtechid "
-				+ " AS Sorter, sourceTypeID, categoryDisplayOrder, category, " 
-				+ " fuelengtechassoc.fuelTypeID, fuelengtechassoc.engTechID " 
+				" (sourcetypeid*1000000)+(categorydisplayorder*10000)+(fueltypeid*100)+engtechid "
+				+ " AS sorter, sourcetypeid, categorydisplayorder, category, " 
+				+ " fuelengtechassoc.fueltypeid, fuelengtechassoc.engtechid " 
 				+ " FROM fuelengtechassoc where sourcetypeid = 21 ORDER BY 1 " ;
 
 		rc = tableFuelEngTechAssoc.sqlSelect( sql ) ;

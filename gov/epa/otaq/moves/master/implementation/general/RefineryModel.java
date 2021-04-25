@@ -437,7 +437,7 @@ public class RefineryModel {
 	/** True when using Nonroad fuel supply **/
 	boolean isNonroad = false;
 	/** Name of the table holding the fuel supply **/
-	String fuelSupplyTable = "fuelSupply";
+	String fuelSupplyTable = "fuelsupply";
 
 	/**
 	 * Constructor
@@ -448,7 +448,7 @@ public class RefineryModel {
 	public RefineryModel(Connection dbToUse, boolean isNonroadToUse) {
 		db = dbToUse;
 		isNonroad = isNonroadToUse;
-		fuelSupplyTable = isNonroad? "nrFuelSupply" : "fuelSupply";
+		fuelSupplyTable = isNonroad? "nrfuelsupply" : "fuelsupply";
 	}
 
 	/**
@@ -458,49 +458,49 @@ public class RefineryModel {
 	public void loadFuels(ArrayList<FuelFormulation> fuels) {
 		fuels.clear();
 		
-		String fuelSubtypeTable = isNonroad? "nrFuelSubtype" : "fuelSubtype";
+		String fuelSubtypeTable = isNonroad? "nrfuelsubtype" : "fuelsubtype";
 
 		String defaultDatabaseName = SystemConfiguration.theSystemConfiguration.databaseSelections[MOVESDatabaseType.DEFAULT.getIndex()].databaseName ;
-		String sql = "select fs.fuelRegionID, fs.fuelYearID, fs.monthGroupID,"
-				+ " 	fs.fuelFormulationID, fst.fuelTypeID, ff.fuelSubtypeID,"
-				+ " 	RVP,sulfurLevel,ETOHVolume,MTBEVolume,ETBEVolume,TAMEVolume,"
-				+ " 	aromaticContent,olefinContent,benzeneContent,"
+		String sql = "select fs.fuelregionid, fs.fuelyearid, fs.monthgroupid,"
+				+ " 	fs.fuelformulationid, fst.fueltypeid, ff.fuelsubtypeid,"
+				+ " 	rvp,sulfurlevel,etohvolume,mtbevolume,etbevolume,tamevolume,"
+				+ " 	aromaticcontent,olefincontent,benzenecontent,"
 				+ " 	e200,e300,"
-				+ " 	volToWtPercentOxy,BioDieselEsterVolume,"
-				+ " 	CetaneIndex,PAHContent,"
-				+ " 	T50,T90"
+				+ " 	voltowtpercentoxy,biodieselestervolume,"
+				+ " 	cetaneindex,pahcontent,"
+				+ " 	t50,t90"
 				+ " from " + fuelSupplyTable + " fs"
-				+ " inner join fuelFormulation ff on (ff.fuelFormulationID=fs.fuelFormulationID)"
-				+ " inner join " + defaultDatabaseName + "." + fuelSubtypeTable + " fst on (fst.fuelSubtypeID=ff.fuelSubtypeID)";
+				+ " inner join fuelformulation ff on (ff.fuelformulationid=fs.fuelformulationid)"
+				+ " inner join " + defaultDatabaseName + "." + fuelSubtypeTable + " fst on (fst.fuelsubtypeid=ff.fuelsubtypeid)";
 		//System.out.println(sql);
 		SQLRunner.Query query = new SQLRunner.Query();
 		try {
 			query.open(db,sql);
 			while(query.rs.next()) {
 				FuelFormulation f = new FuelFormulation();
-				f.regionID = query.rs.getInt("fuelRegionID");
-				f.fuelYearID = query.rs.getInt("fuelYearID");
-				f.monthGroupID = query.rs.getInt("monthGroupID");
-				f.fuelFormulationID = query.rs.getInt("fuelFormulationID");
-				f.fuelTypeID = query.rs.getInt("fuelTypeID");
-				f.fuelSubtypeID = query.rs.getInt("fuelSubtypeID");
-				f.RVP = query.rs.getFloat("RVP");
-				f.sulfurLevel = query.rs.getFloat("sulfurLevel");
-				f.ETOHVolume = query.rs.getFloat("ETOHVolume");
-				f.MTBEVolume = query.rs.getFloat("MTBEVolume");
-				f.ETBEVolume = query.rs.getFloat("ETBEVolume");
-				f.TAMEVolume = query.rs.getFloat("TAMEVolume");
-				f.aromaticContent = query.rs.getFloat("aromaticContent");
-				f.olefinContent = query.rs.getFloat("olefinContent");
-				f.benzeneContent = query.rs.getFloat("benzeneContent");
+				f.regionID = query.rs.getInt("fuelregionid");
+				f.fuelYearID = query.rs.getInt("fuelyearid");
+				f.monthGroupID = query.rs.getInt("monthgroupid");
+				f.fuelFormulationID = query.rs.getInt("fuelformulationid");
+				f.fuelTypeID = query.rs.getInt("fueltypeid");
+				f.fuelSubtypeID = query.rs.getInt("fuelsubtypeid");
+				f.RVP = query.rs.getFloat("rvp");
+				f.sulfurLevel = query.rs.getFloat("sulfurlevel");
+				f.ETOHVolume = query.rs.getFloat("etohvolume");
+				f.MTBEVolume = query.rs.getFloat("mtbevolume");
+				f.ETBEVolume = query.rs.getFloat("etbevolume");
+				f.TAMEVolume = query.rs.getFloat("tamevolume");
+				f.aromaticContent = query.rs.getFloat("aromaticcontent");
+				f.olefinContent = query.rs.getFloat("olefincontent");
+				f.benzeneContent = query.rs.getFloat("benzenecontent");
 				f.e200 = query.rs.getFloat("e200");
 				f.e300 = query.rs.getFloat("e300");
-				f.volToWtPercentOxy = query.rs.getFloat("volToWtPercentOxy");
-				f.BioDieselEsterVolume = query.rs.getFloat("BioDieselEsterVolume");
-				f.CetaneIndex = query.rs.getFloat("CetaneIndex");
-				f.PAHContent = query.rs.getFloat("PAHContent");
-				f.T50 = query.rs.getFloat("T50");
-				f.T90 = query.rs.getFloat("T90");
+				f.volToWtPercentOxy = query.rs.getFloat("voltowtpercentoxy");
+				f.BioDieselEsterVolume = query.rs.getFloat("biodieselestervolume");
+				f.CetaneIndex = query.rs.getFloat("cetaneindex");
+				f.PAHContent = query.rs.getFloat("pahcontent");
+				f.T50 = query.rs.getFloat("t50");
+				f.T90 = query.rs.getFloat("t90");
 
 				fuels.add(f);
 			}
@@ -593,28 +593,28 @@ public class RefineryModel {
 		String sql = "";
 		try {
 			for(FuelFormulation f : request.changedFuels) {
-				sql = "insert ignore into fuelFormulation (fuelFormulationID) values (" + f.fuelFormulationID + ")";
+				sql = "insert ignore into fuelformulation (fuelformulationid) values (" + f.fuelFormulationID + ")";
 				SQLRunner.executeSQL(db,sql);
-				sql = "update fuelFormulation set"
-						+ " fuelSubtypeID=" + f.fuelSubtypeID
-						+ " ,RVP= " + f.RVP
-						+ " ,sulfurLevel= " + f.sulfurLevel
-						+ " ,ETOHVolume= " + f.ETOHVolume
-						+ " ,MTBEVolume= " + f.MTBEVolume
-						+ " ,ETBEVolume= " + f.ETBEVolume
-						+ " ,TAMEVolume= " + f.TAMEVolume
-						+ " ,aromaticContent= " + f.aromaticContent
-						+ " ,olefinContent= " + f.olefinContent
-						+ " ,benzeneContent= " + f.benzeneContent
+				sql = "update fuelformulation set"
+						+ " fuelsubtypeid=" + f.fuelSubtypeID
+						+ " ,rvp= " + f.RVP
+						+ " ,sulfurlevel= " + f.sulfurLevel
+						+ " ,etohvolume= " + f.ETOHVolume
+						+ " ,mtbevolume= " + f.MTBEVolume
+						+ " ,etbevolume= " + f.ETBEVolume
+						+ " ,tamevolume= " + f.TAMEVolume
+						+ " ,aromaticcontent= " + f.aromaticContent
+						+ " ,olefincontent= " + f.olefinContent
+						+ " ,benzenecontent= " + f.benzeneContent
 						+ " ,e200= " + f.e200
 						+ " ,e300= " + f.e300
-						+ " ,volToWtPercentOxy= " + f.volToWtPercentOxy
-						+ " ,BioDieselEsterVolume= " + f.BioDieselEsterVolume
-						+ " ,CetaneIndex= " + f.CetaneIndex
-						+ " ,PAHContent= " + f.PAHContent
-						+ " ,T50= " + f.T50
-						+ " ,T90= " + f.T90
-						+ " where fuelFormulationID=" + f.fuelFormulationID;
+						+ " ,voltowtpercentoxy= " + f.volToWtPercentOxy
+						+ " ,biodieselestervolume= " + f.BioDieselEsterVolume
+						+ " ,cetaneindex= " + f.CetaneIndex
+						+ " ,pahcontent= " + f.PAHContent
+						+ " ,t50= " + f.T50
+						+ " ,t90= " + f.T90
+						+ " where fuelformulationid=" + f.fuelFormulationID;
 				//System.out.println(sql);
 				SQLRunner.executeSQL(db,sql);
 			}
@@ -637,7 +637,7 @@ public class RefineryModel {
 		SQLRunner.Query query = new SQLRunner.Query();
 		String sql = "";
 		try {
-			sql = "select * from fuelWizardFactors where adjustedParameter=" + DatabaseUtilities.escapeSQL(adjustedParameter,true);
+			sql = "select * from fuelwizardfactors where adjustedparameter=" + DatabaseUtilities.escapeSQL(adjustedParameter,true);
 			query.open(factorDB,sql);
 			while(query.rs.next()) {
 				FuelWizardProperty p = new FuelWizardProperty();

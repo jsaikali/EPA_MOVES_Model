@@ -46,11 +46,11 @@ public class MeteorologyGeneratorTest extends TestCase {
 		try {
 			Connection db = DatabaseSelection.openKnownWorkingConnection();
 					
-			SQLRunner.executeSQL(db, "USE MOVESExecution");
-			SQLRunner.executeSQL(db, "Drop TABLE if EXISTS ZoneMonthHour CASCADE ");
+			SQLRunner.executeSQL(db, "USE movesexecution");
+			SQLRunner.executeSQL(db, "Drop TABLE if EXISTS zonemonthhour CASCADE ");
 			SQLRunner.executeSQL(db, 
-				"CREATE TABLE IF NOT EXISTS ZoneMonthHour " + 
-				"SELECT * from MOVESDEFAULT.ZoneMonthHour" );
+				"CREATE TABLE IF NOT EXISTS zonemonthhour " + 
+				"SELECT * from movesdefault.zonemonthhour" );
 	
 			mG.doHeatIndex(db);
 	
@@ -60,12 +60,12 @@ public class MeteorologyGeneratorTest extends TestCase {
 			PreparedStatement statement;
 			ResultSet rs;
 			
-			sql = "SELECT SUM(heatIndex) as SUM FROM ZoneMonthHour ";
+			sql = "SELECT SUM(heatindex) as sum FROM zonemonthhour ";
 			statement = db.prepareStatement(sql);
 			rs = statement.executeQuery();
 			
 			if(rs.next()) {
-				result = rs.getDouble("SUM");
+				result = rs.getDouble("sum");
 			}
 			rs.close();
 			System.out.println("heatIndex Sum = " + result);

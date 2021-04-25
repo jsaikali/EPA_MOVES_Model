@@ -85,7 +85,7 @@ public class ExecutionLocationProducer {
 					roadTypesSQL += " OR ";
 				}
 				hasText = true;
-				roadTypesSQL += "roadTypeID=" + roadType.roadTypeID;
+				roadTypesSQL += "roadtypeid=" + roadType.roadTypeID;
 			}
 			if(hasText) {
 				roadTypesSQL = " AND (" + roadTypesSQL + ")";
@@ -190,10 +190,10 @@ public class ExecutionLocationProducer {
 		PreparedStatement statement = null;
 		try {
 			if(hasOnroad) {
-				sql = "SELECT County.stateID,County.countyID,Link.zoneID,Link.linkID,Link.roadTypeID "
-						+ " FROM County, Link"
-						+ " WHERE Link.linkID = ? "
-						+ " AND County.countyID = Link.countyID";
+				sql = "SELECT county.stateid,county.countyid,link.zoneid,link.linkid,link.roadtypeid "
+						+ " from county, link"
+						+ " where link.linkid = ? "
+						+ " and county.countyid = link.countyid";
 				sql += roadTypesSQL;
 				statement = db.prepareStatement(sql);
 				statement.setInt(1,linkID);
@@ -213,10 +213,10 @@ public class ExecutionLocationProducer {
 		PreparedStatement statement = null;
 		try {
 			if(hasOnroad) {
-				sql = "SELECT County.stateID,County.countyID,Link.zoneID,Link.linkID,Link.roadTypeID "
-						+ " FROM County, Link"
-						+ " WHERE Link.zoneID = ? "
-						+ " AND County.countyID = Link.countyID";
+				sql = "SELECT county.stateid,county.countyid,link.zoneid,link.linkid,link.roadtypeid "
+						+ " from county, link"
+						+ " where link.zoneid = ? "
+						+ " and county.countyid = link.countyid";
 				sql += roadTypesSQL;
 				statement = db.prepareStatement(sql);
 				statement.setInt(1,zoneID);
@@ -236,10 +236,10 @@ public class ExecutionLocationProducer {
 		PreparedStatement statement = null;
 		try {
 			if(hasOnroad) {
-				sql = "SELECT County.stateID,County.countyID,Link.zoneID,Link.linkID,Link.roadTypeID "
-						+ " FROM County, Link"
-						+ " WHERE County.countyID = ?"
-						+ " AND County.countyID = Link.countyID";
+				sql = "SELECT county.stateid,county.countyid,link.zoneid,link.linkid,link.roadtypeid "
+						+ " from county, link"
+						+ " where county.countyid = ?"
+						+ " and county.countyid = link.countyid";
 				sql += roadTypesSQL;
 				statement = db.prepareStatement(sql);
 				statement.setInt(1,countyID);
@@ -247,9 +247,9 @@ public class ExecutionLocationProducer {
 				addLocationsFromSQL(sql,statement);
 			}
 			if(hasNonroad) {
-				sql = "SELECT County.stateID,County.countyID,County.countyID as zoneID,County.countyID as linkID,100 as roadTypeID "
-						+ " FROM County"
-						+ " WHERE County.countyID = ?";
+				sql = "SELECT county.stateid,county.countyid,county.countyid as zoneid,county.countyid as linkid,100 as roadtypeid "
+						+ " from county"
+						+ " where county.countyid = ?";
 				statement = db.prepareStatement(sql);
 				statement.setInt(1,countyID);
 				addLocationsFromSQL(sql,statement);
@@ -269,10 +269,10 @@ public class ExecutionLocationProducer {
 		PreparedStatement statement = null;
 		try {
 			if(hasOnroad) {
-				sql = "SELECT County.stateID,County.countyID,Link.zoneID,Link.linkID,Link.roadTypeID "
-						+ " FROM County, Link"
-						+ " WHERE County.stateID = ? "
-						+ " AND County.countyID = Link.countyID";
+				sql = "SELECT county.stateid,county.countyid,link.zoneid,link.linkid,link.roadtypeid "
+						+ " from county, link"
+						+ " where county.stateid = ? "
+						+ " and county.countyid = link.countyid";
 				sql += roadTypesSQL;
 				statement = db.prepareStatement(sql);
 				statement.setInt(1,stateID);
@@ -280,9 +280,9 @@ public class ExecutionLocationProducer {
 				addLocationsFromSQL(sql,statement);
 			}
 			if(hasNonroad) {
-				sql = "SELECT County.stateID,County.countyID,County.countyID as zoneID,County.countyID as linkID,100 as roadTypeID "
-						+ " FROM County"
-						+ " WHERE County.stateID = ?";
+				sql = "select county.stateid,county.countyid,county.countyid as zoneid,county.countyid as linkid,100 as roadtypeid "
+						+ " from county"
+						+ " where county.stateid = ?";
 				statement = db.prepareStatement(sql);
 				statement.setInt(1,stateID);
 				addLocationsFromSQL(sql,statement);
@@ -301,18 +301,18 @@ public class ExecutionLocationProducer {
 		PreparedStatement statement = null;
 		try {
 			if(hasOnroad) {
-				sql = "SELECT State.stateID,County.countyID,Link.zoneID,Link.linkID,Link.roadTypeID "
-						+ " FROM State, County, Link"
-						+ " WHERE State.stateID = County.stateID "
-						+ " AND County.countyID = Link.countyID";
+				sql = "SELECT state.stateid,county.countyid,link.zoneid,link.linkid,link.roadtypeid "
+						+ " from state, county, link"
+						+ " where state.stateid = county.stateid "
+						+ " and county.countyid = link.countyid";
 				sql += roadTypesSQL;
 				statement = db.prepareStatement(sql);
 				//System.out.println("addNationLocation: sql=" + sql);
 				addLocationsFromSQL(sql,statement);
 			}
 			if(hasNonroad) {
-				sql = "SELECT County.stateID,County.countyID,County.countyID as zoneID,County.countyID as linkID,100 as roadTypeID "
-						+ " FROM County";
+				sql = "SELECT county.stateid,county.countyid,county.countyid as zoneid,county.countyid as linkid,100 as roadtypeid "
+						+ " from county";
 				statement = db.prepareStatement(sql);
 				addLocationsFromSQL(sql,statement);
 			}

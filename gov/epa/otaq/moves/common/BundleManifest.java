@@ -604,12 +604,12 @@ public class BundleManifest {
 
 		String sql = "";
 		try {
-			sql = "insert into bundleTracking (MOVESRunID, hostType, loopableClassName, workerVersion, workerComputerID, workerID,"
-					+ " bundleNumber, isCleanUp,"
-					+ " iterationID, processID, roadTypeID, linkID,"
-					+ " zoneID, countyID, stateID,"
-					+ " yearID, monthID, dayID, hourID,"
-					+ " executionGranularity, executionPriority, durationSeconds)"
+			sql = "insert into bundletracking (movesrunid, hosttype, loopableclassname, workerversion, workercomputerid, workerid,"
+					+ " bundlenumber, iscleanup,"
+					+ " iterationid, processid, roadtypeid, linkid,"
+					+ " zoneid, countyid, stateid,"
+					+ " yearid, monthid, dayid, hourid,"
+					+ " executiongranularity, executionpriority, durationseconds)"
 					+ " values (" + runID
 					+ ", " + (isMaster? "'M'":"'W'")
 					+ ", " + DatabaseUtilities.escapeSQL(StringUtilities.substring(ch.loopableClassName,0,200),true)

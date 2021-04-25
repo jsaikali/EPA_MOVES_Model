@@ -123,9 +123,9 @@ public class AverageSpeedOperatingModeDistributionGenerator extends Generator {
 		try {
 			if(polProcessIDs.length() > 0) {
 				db = DatabaseConnectionManager.checkOutConnection(MOVESDatabaseType.EXECUTION);
-				sql = "DELETE FROM OpModeDistribution WHERE isUserInput='N' AND linkID = "
+				sql = "DELETE FROM opmodedistribution WHERE isuserinput='N' AND linkid = "
 						+ context.iterLocation.linkRecordID
-						+ " AND polProcessID IN (" + polProcessIDs + ")";
+						+ " AND polprocessid IN (" + polProcessIDs + ")";
 				SQLRunner.executeSQL(db, sql);
 			}
 		} catch(Exception e) {
@@ -157,7 +157,7 @@ public class AverageSpeedOperatingModeDistributionGenerator extends Generator {
 				 * @condition Project domain
 				 * @condition Tirewear process
 				**/
-				"delete from RatesOpModeDistribution where polProcessID=11710",
+				"delete from ratesopmodedistribution where polprocessid=11710",
 
 				/**
 				 * @step 020
@@ -168,31 +168,31 @@ public class AverageSpeedOperatingModeDistributionGenerator extends Generator {
 				 * @condition Project domain
 				 * @condition Tirewear process
 				**/
-				"insert ignore into RatesOpModeDistribution (sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID,"
-				+ " polProcessID, opModeID, opModeFraction, avgBinSpeed)"
-				+ " select sourceTypeID, roadTypeID, 0 as avgSpeedBinID, hourDayID, "
-				+ " 	11710 as polProcessID,"
-				+ " 	(case " + opModeAssignmentSQL + " else -1 end) as opModeID,"
-				+ " 	1 as opModeFraction,"
-				+ " 	linkAvgSpeed avgBinSpeed"
+				"insert ignore into ratesopmodedistribution (sourcetypeid, roadtypeid, avgspeedbinid, hourdayid,"
+				+ " polprocessid, opmodeid, opmodefraction, avgbinspeed)"
+				+ " select sourcetypeid, roadtypeid, 0 as avgspeedbinid, hourdayid, "
+				+ " 	11710 as polprocessid,"
+				+ " 	(case " + opModeAssignmentSQL + " else -1 end) as opmodeid,"
+				+ " 	1 as opmodefraction,"
+				+ " 	linkavgspeed avgbinspeed"
 				+ " from link"
-				+ " inner join RunSpecSourceType"
-				+ " inner join RunSpecHourDay"
-				+ " where linkID=" + linkID
+				+ " inner join runspecsourcetype"
+				+ " inner join runspechourday"
+				+ " where linkid=" + linkID
 			};
 			statements = t;
 		} else {
 			String[] t = {
-				"insert ignore into opModeDistribution (sourceTypeID, hourDayID, linkID, polProcessID,"
-				+ " 	opModeID, opModeFraction, opModeFractionCV, isUserInput)"
-				+ " select sourceTypeID, hourDayID, linkID, 11710 as polProcessID,"
-				+ " 	(case " + opModeAssignmentSQL + " else -1 end) as opModeID,"
-				+ " 	1 as opModeFraction,"
-				+ " 	0 as opModeFractionCV,"
-				+ " 	'N' as isUserInput"
+				"insert ignore into opmodedistribution (sourcetypeid, hourdayid, linkid, polprocessid,"
+				+ " 	opmodeid, opmodefraction, opmodefractioncv, isuserinput)"
+				+ " select sourcetypeid, hourdayid, linkid, 11710 as polprocessid,"
+				+ " 	(case " + opModeAssignmentSQL + " else -1 end) as opmodeid,"
+				+ " 	1 as opmodefraction,"
+				+ " 	0 as opmodefractioncv,"
+				+ " 	'N' as isuserinput"
 				+ " from link"
-				+ " inner join RunSpecSourceType"
-				+ " inner join RunSpecHourDay"
+				+ " inner join runspecsourcetype"
+				+ " inner join runspechourday"
 			};
 			statements = t;
 		}
@@ -216,27 +216,27 @@ public class AverageSpeedOperatingModeDistributionGenerator extends Generator {
 	void calculateOpModeFractions(int linkID) {
 		String opModeIDColumn = "";
 		if(isTirewear) {
-			opModeIDColumn = "opModeIDTirewear";
+			opModeIDColumn = "opmodeidtirewear";
 		//} else if(isRunningExhaust) {
 		//	opModeIDColumn = "opModeIDRunning";
 		}
 
 		String[] statements = {
-			"insert ignore into OpModeDistribution (sourceTypeID, linkID, hourDayID,"
-				+ " polProcessID, opModeID, opModeFraction)"
-				+ " select sourceTypeID, linkID, hourDayID, polProcessID, "
-				+ opModeIDColumn + ", sum(avgSpeedFraction)"
-				+ " from avgSpeedBin bin"
-				+ " inner join avgSpeedDistribution dist on dist.avgSpeedBinID=bin.avgSpeedBinID"
-				+ " inner join link on link.roadTypeID=dist.roadTypeID,"
-				+ " pollutantProcessAssoc"
-				+ " where polProcessID in (" + polProcessIDs + ")"
-				+ " and linkID=" + linkID
-				+ " group by sourceTypeID, linkID, hourDayID, polProcessID, " + opModeIDColumn
-				+ " having sum(avgSpeedFraction) > 0"
-				+ " order by sourceTypeID, linkID, hourDayID, polProcessID, " + opModeIDColumn,
+			"insert ignore into Opmodedistribution (sourcetypeid, linkid, hourdayid,"
+				+ " polprocessid, opmodeid, opmodefraction)"
+				+ " select sourcetypeid, linkid, hourdayid, polprocessid, "
+				+ opModeIDColumn + ", sum(avgspeedfraction)"
+				+ " from avgspeedbin bin"
+				+ " inner join avgspeeddistribution dist on dist.avgspeedbinid=bin.avgspeedbinid"
+				+ " inner join link on link.roadtypeid=dist.roadtypeid,"
+				+ " pollutantprocessassoc"
+				+ " where polprocessid in (" + polProcessIDs + ")"
+				+ " and linkid=" + linkID
+				+ " group by sourcetypeid, linkid, hourdayid, polprocessid, " + opModeIDColumn
+				+ " having sum(avgspeedfraction) > 0"
+				+ " order by sourcetypeid, linkid, hourdayid, polprocessid, " + opModeIDColumn,
 
-			"ANALYZE TABLE OpModeDistribution"
+			"ANALYZE TABLE opmodedistribution"
 		};
 		String sql = "";
 		try {
@@ -255,7 +255,7 @@ public class AverageSpeedOperatingModeDistributionGenerator extends Generator {
 	void calculateRatesFirstOpModeFractions() {
 		String opModeIDColumn = "";
 		if(isTirewear) {
-			opModeIDColumn = "opModeIDTirewear";
+			opModeIDColumn = "opmodeidtirewear";
 		//} else if(isRunningExhaust) {
 		//	opModeIDColumn = "opModeIDRunning";
 		}
@@ -266,32 +266,32 @@ public class AverageSpeedOperatingModeDistributionGenerator extends Generator {
 			// the rates produced by 2010B. However, those rates cannot be
 			// combined with activity to match the 2010B tirewear inventory.
 			String[] t = {
-				"drop table if exists tAvgSpeedROMD",
+				"drop table if exists tavgspeedromd",
 	
-				"create table tAvgSpeedROMD"
-					+ " select sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID, "
-					+ " polProcessID, avgBinSpeed"
-					+ " from avgSpeedBin bin,"
-					+ " runSpecSourceType sut,"
-					+ " runSpecRoadType rt,"
-					+ " runSpecHourDay hd,"
-					+ " pollutantProcessAssoc ppa"
-					+ " where polProcessID in (" + polProcessIDs + ")",
+				"create table tavgspeedromd"
+					+ " select sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, "
+					+ " polprocessid, avgbinspeed"
+					+ " from avgspeedbin bin,"
+					+ " runspecsourcetype sut,"
+					+ " runspecroadtype rt,"
+					+ " runspechourday hd,"
+					+ " pollutantprocessassoc ppa"
+					+ " where polprocessid in (" + polProcessIDs + ")",
 	
-				"alter table tAvgSpeedROMD add key (hourDayID, roadTypeID, sourceTypeID)",
+				"alter table tavgspeedromd add key (hourdayid, roadtypeid, sourcetypeid)",
 	
-				"insert ignore into RatesOpModeDistribution (sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID,"
-					+ " polProcessID, opModeID, opModeFraction, avgBinSpeed)"
-					+ " select r.sourceTypeID, r.roadTypeID, r.avgSpeedBinID, r.hourDayID, "
-					+ " 	r.polProcessID, " + opModeIDColumn + ", dist.avgSpeedFraction as opModeFraction, r.avgBinSpeed"
-					+ " from avgSpeedBin bin"
-					+ " inner join avgSpeedDistribution dist on (dist.avgSpeedBinID=bin.avgSpeedBinID)"
-					+ " inner join tAvgSpeedROMD r on ("
-					+ " 	r.sourceTypeID = dist.sourceTypeID"
-					+ " 	and r.roadTypeID = dist.roadTypeID"
-					+ " 	and r.hourDayID = dist.hourDayID)",
+				"insert ignore into ratesopmodedistribution (sourcetypeid, roadtypeid, avgspeedbinid, hourdayid,"
+					+ " polprocessid, opmodeid, opmodefraction, avgbinspeed)"
+					+ " select r.sourcetypeid, r.roadtypeid, r.avgspeedbinid, r.hourdayid, "
+					+ " 	r.polprocessid, " + opModeIDColumn + ", dist.avgspeedfraction as opmodefraction, r.avgbinspeed"
+					+ " from avgspeedbin bin"
+					+ " inner join avgspeeddistribution dist on (dist.avgspeedbinid=bin.avgspeedbinid)"
+					+ " inner join tavgspeedromd r on ("
+					+ " 	r.sourcetypeid = dist.sourcetypeid"
+					+ " 	and r.roadtypeid = dist.roadtypeid"
+					+ " 	and r.hourdayid = dist.hourdayid)",
 	
-				"ANALYZE TABLE RatesOpModeDistribution"
+				"ANALYZE TABLE ratesopmodedistribution"
 			};
 			statements = t;
 		} else {
@@ -306,18 +306,18 @@ public class AverageSpeedOperatingModeDistributionGenerator extends Generator {
 				 * @condition Non-Project domain
 				 * @condition Tirewear process
 				**/
-				"insert ignore into RatesOpModeDistribution (sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID,"
-					+ " polProcessID, opModeID, opModeFraction, avgBinSpeed)"
-					+ " select sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID, "
-					+ " polProcessID, " + opModeIDColumn + ", 1 as opModeFraction, avgBinSpeed"
-					+ " from avgSpeedBin bin,"
-					+ " runSpecSourceType sut,"
-					+ " runSpecRoadType rt,"
-					+ " runSpecHourDay hd,"
-					+ " pollutantProcessAssoc ppa"
-					+ " where polProcessID in (" + polProcessIDs + ")",
+				"insert ignore into ratesopmodedistribution (sourcetypeid, roadtypeid, avgspeedbinid, hourdayid,"
+					+ " polprocessid, opmodeid, opmodefraction, avgbinspeed)"
+					+ " select sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, "
+					+ " polprocessid, " + opModeIDColumn + ", 1 as opmodefraction, avgbinspeed"
+					+ " from avgspeedbin bin,"
+					+ " runspecsourcetype sut,"
+					+ " runspecroadtype rt,"
+					+ " runspechourday hd,"
+					+ " pollutantprocessassoc ppa"
+					+ " where polprocessid in (" + polProcessIDs + ")",
 	
-				"ANALYZE TABLE RatesOpModeDistribution"
+				"ANALYZE TABLE ratesopmodedistribution"
 			};
 			statements = t;
 		}
@@ -344,11 +344,11 @@ public class AverageSpeedOperatingModeDistributionGenerator extends Generator {
 	**/
 	String buildOpModeClause() {
 		String clause = "when linkAvgSpeed<0.1 then 400\n";
-		String sql = "select speedLower, speedUpper, opModeID "
-				+ " from operatingMode"
-				+ " where opModeID >= 401 and opModeID <= 499"
-				+ " and opModeName like 'tirewear%'"
-				+ " order by speedLower";
+		String sql = "select speedlower, speedupper, opmodeid "
+				+ " from operatingmode"
+				+ " where opmodeid >= 401 and opmodeid <= 499"
+				+ " and opmodename like 'tirewear%'"
+				+ " order by speedlower";
 		SQLRunner.Query query = new SQLRunner.Query();
 		try {
 			query.open(db,sql);
@@ -356,25 +356,25 @@ public class AverageSpeedOperatingModeDistributionGenerator extends Generator {
 				boolean hasCondition = false;
 				String line = "when (";
 
-				float speedLower = query.rs.getFloat("speedLower");
+				float speedLower = query.rs.getFloat("speedlower");
 				if(!query.rs.wasNull()) {
 					if(hasCondition) {
 						line += " and ";
 					}
 					hasCondition = true;
-					line += "" + speedLower + " <= linkAvgSpeed";
+					line += "" + speedLower + " <= linkavgspeed";
 				}
 
-				float speedUpper = query.rs.getFloat("speedUpper");
+				float speedUpper = query.rs.getFloat("speedupper");
 				if(!query.rs.wasNull()) {
 					if(hasCondition) {
 						line += " and ";
 					}
 					hasCondition = true;
-					line += "linkAvgSpeed < " + speedUpper;
+					line += "linkavgspeed < " + speedUpper;
 				}
 
-				line += ") then " + query.rs.getInt("opModeID");
+				line += ") then " + query.rs.getInt("opmodeid");
 				clause += line + "\n";
 			}
 		} catch(SQLException e) {

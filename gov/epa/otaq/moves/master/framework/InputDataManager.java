@@ -247,9 +247,9 @@ public class InputDataManager {
 				))
 		*/
 		Vector<String> sqls = new Vector<String>();
-		String searchSQL = "select distinct fuelRegionID, fuelYearID, monthGroupID"
-				+ " from fuelSupply"
-				+ " order by fuelRegionID, fuelYearID, monthGroupID";
+		String searchSQL = "select distinct fuelregionid, fuelyearid, monthgroupid"
+				+ " from fuelsupply"
+				+ " order by fuelregionid, fuelyearid, monthgroupid";
 		SQLRunner.Query query = new SQLRunner.Query();
 		String sql = "";
 		try {
@@ -264,9 +264,9 @@ public class InputDataManager {
 			String referenceParameters = "";
 			while(query.rs.next()) {
 				hasData = true;
-				String fuelRegionID = query.rs.getString("fuelRegionID");
-				String fuelYearID = query.rs.getString("fuelYearID");
-				String monthGroupID = query.rs.getString("monthGroupID");
+				String fuelRegionID = query.rs.getString("fuelregionid");
+				String fuelYearID = query.rs.getString("fuelyearid");
+				String monthGroupID = query.rs.getString("monthgroupid");
 				if(priorFuelRegionID.length() > 0 && !priorFuelRegionID.equals(fuelRegionID)) {
 					if(referenceParameters.length() <= 0) {
 						referenceParameters = countyParameters;
@@ -292,21 +292,21 @@ public class InputDataManager {
 				TreeSet<String> fuelYearIDs = new TreeSet<String>();
 				TreeSet<String> monthGroupIDs = new TreeSet<String>();
 				while(query.rs.next()) {
-					fuelRegionIDs.add(query.rs.getString("fuelRegionID"));
-					fuelYearIDs.add(query.rs.getString("fuelYearID"));
-					monthGroupIDs.add(query.rs.getString("monthGroupID"));
+					fuelRegionIDs.add(query.rs.getString("fuelregionid"));
+					fuelYearIDs.add(query.rs.getString("fuelyearid"));
+					monthGroupIDs.add(query.rs.getString("monthgroupid"));
 				}
-				wholeClause = "(not (fuelRegionID in (" + StringUtilities.getCSV(fuelRegionIDs) + ")"
-						+ " and fuelYearID in (" + StringUtilities.getCSV(fuelYearIDs) + ")"
-						+ " and monthGroupID in (" + StringUtilities.getCSV(monthGroupIDs) + ")))";
+				wholeClause = "(not (fuelregionid in (" + StringUtilities.getCSV(fuelRegionIDs) + ")"
+						+ " and fuelyearid in (" + StringUtilities.getCSV(fuelYearIDs) + ")"
+						+ " and monthgroupid in (" + StringUtilities.getCSV(monthGroupIDs) + ")))";
 			} else {
 				String priorFuelYearID = "";
 				String monthGroupIDs = "";
 				String clause = "";
 				while(query.rs.next()) {
-					String fuelRegionID = query.rs.getString("fuelRegionID");
-					String fuelYearID = query.rs.getString("fuelYearID");
-					String monthGroupID = query.rs.getString("monthGroupID");
+					String fuelRegionID = query.rs.getString("fuelregionid");
+					String fuelYearID = query.rs.getString("fuelyearid");
+					String monthGroupID = query.rs.getString("monthgroupid");
 					if(!fuelRegionID.equals(priorFuelRegionID)) {
 						if(clause.length() > 0) {
 							wholeClause = addToWhereClause(wholeClause,clause + monthGroupIDs + ")))");
@@ -316,9 +316,9 @@ public class InputDataManager {
 						priorFuelRegionID = fuelRegionID;
 						priorFuelYearID = fuelYearID;
 						monthGroupIDs = monthGroupID;
-						clause = "not (fuelRegionID=" + fuelRegionID + " and (fuelYearID=" + fuelYearID + " and monthGroupID in (";
+						clause = "not (fuelregionid=" + fuelRegionID + " and (fuelyearid=" + fuelYearID + " and monthgroupid in (";
 					} else if(!fuelYearID.equals(priorFuelYearID)) {
-						clause += monthGroupIDs + ")) or (fuelYearID=" + fuelYearID + " and monthGroupID in (";
+						clause += monthGroupIDs + ")) or (fuelyearid=" + fuelYearID + " and monthgroupid in (";
 						monthGroupIDs = monthGroupID;
 						priorFuelYearID = fuelYearID;
 					} else {
@@ -736,11 +736,11 @@ public class InputDataManager {
 						h.hasNext(); ) {
 					Integer hour = (Integer)h.next();
 					if(sql.length()==0) {
-						sql = "SELECT hourDayID FROM HourDay WHERE ";
+						sql = "SELECT hourdayid from hourday WHERE ";
 					} else {
 						sql += " OR ";
 					}
-					sql += "(dayID=" + day + " AND hourID=" + hour + ")";
+					sql += "(dayid=" + day + " AND hourid=" + hour + ")";
 				}
 			}
 			if(sql !="") {
@@ -934,10 +934,10 @@ public class InputDataManager {
 			}
 			clauses += t;
 		}
-		String sql = "select distinct sourceTypeID"
-			+ " from NRSourceUseType sut"
-			+ " inner join NRSCC s on (s.SCC=sut.SCC)"
-			+ " inner join NREquipmentType et on (et.NREquipTypeID=s.NREquipTypeID)"
+		String sql = "select distinct sourcetypeid"
+			+ " from nrsourceusetype sut"
+			+ " inner join nrscc s on (s.scc=sut.scc)"
+			+ " inner join nrequipmenttype et on (et.nrequiptypeid=s.nrequiptypeid)"
 			+ " where (" + clauses + ")";
 		Connection nrDefaultDatabase = null;
 		String resultSQL = "";
@@ -954,7 +954,7 @@ public class InputDataManager {
 				} else {
 					resultSQL += ",";
 				}
-				resultSQL += query.rs.getString("sourceTypeID");
+				resultSQL += query.rs.getString("sourcetypeid");
 				isFirst = false;
 			}
 			query.close();
@@ -1084,11 +1084,11 @@ public class InputDataManager {
 						ExecutionRunSpec.theExecutionRunSpec.months.iterator();
 						iter.hasNext(); ) {
 					Integer month = (Integer)iter.next();
-					sql = "SELECT DISTINCT monthGroupID FROM monthOfAnyYear WHERE "
-							+ " monthID =" + month.intValue();
+					sql = "SELECT DISTINCT monthgroupid from monthofanyyear where "
+							+ " monthid =" + month.intValue();
 					results = SQLRunner.executeQuery(defaultDB, sql);
 					while (results.next()) {
-						monthGroupIDs.add(Integer.valueOf(results.getInt("monthGroupID")));
+						monthGroupIDs.add(Integer.valueOf(results.getInt("monthgroupid")));
 					}
 				}
 			} catch(Exception e) {
@@ -1168,8 +1168,8 @@ public class InputDataManager {
 		try {
 			defaultDatabase = DatabaseConnectionManager.checkOutConnection(
 					MOVESDatabaseType.DEFAULT);
-			sql = "SELECT DISTINCT fuelSubTypeID FROM FuelSubType";
-			Vector<String> fuelTypeClauses = buildSQLWhereClauseForFuelTypes("FuelTypeID");
+			sql = "SELECT DISTINCT fuelsubtypeid from fuelsubtype";
+			Vector<String> fuelTypeClauses = buildSQLWhereClauseForFuelTypes("fueltypeid");
 			if(fuelTypeClauses.size() > 0) {
 				sql += " WHERE " + fuelTypeClauses.get(0);
 			}
@@ -1186,7 +1186,7 @@ public class InputDataManager {
 				} else {
 					sql += ",";
 				}
-				sql +=  results.getString("fuelSubTypeID");
+				sql +=  results.getString("fuelsubtypeid");
 				isFirst = false;
 			}
 			results.close();
@@ -1222,8 +1222,8 @@ public class InputDataManager {
 		try {
 			defaultDatabase = DatabaseConnectionManager.checkOutConnection(
 					MOVESDatabaseType.DEFAULT);
-			sql = "SELECT DISTINCT fuelSubTypeID FROM nrFuelSubType";
-			Vector<String> fuelTypeClauses = buildSQLWhereClauseForNonroadFuelTypes("FuelTypeID");
+			sql = "SELECT DISTINCT fuelsubtypeid from nrfuelsubtype";
+			Vector<String> fuelTypeClauses = buildSQLWhereClauseForNonroadFuelTypes("fueltypeid");
 			if(fuelTypeClauses.size() > 0) {
 				sql += " WHERE " + fuelTypeClauses.get(0);
 			}
@@ -1236,7 +1236,7 @@ public class InputDataManager {
 				} else {
 					sql += ",";
 				}
-				sql +=  results.getString("fuelSubTypeID");
+				sql +=  results.getString("fuelsubtypeid");
 				isFirst = false;
 			}
 			results.close();
@@ -1305,8 +1305,8 @@ public class InputDataManager {
 		try {
 			nrDefaultDatabase = DatabaseConnectionManager.checkOutConnection(
 					MOVESDatabaseType.DEFAULT);
-			sql = "SELECT DISTINCT NREquipTypeID, surrogateID FROM NREquipmentType";
-			Vector<String> sectorClauses = buildSQLWhereClauseForSectors("sectorID");
+			sql = "SELECT DISTINCT nrequiptypeid, surrogateid from nrequipmenttype";
+			Vector<String> sectorClauses = buildSQLWhereClauseForSectors("sectorid");
 			if(sectorClauses.size() > 0) {
 				sql += " WHERE " + sectorClauses.get(0);
 			}
@@ -1322,12 +1322,12 @@ public class InputDataManager {
 				} else {
 					resultSQL += ",";
 				}
-				int equipmentTypeID = query.rs.getInt("NREquipTypeID");
+				int equipmentTypeID = query.rs.getInt("nrequiptypeid");
 				equipmentTypes.add(Integer.valueOf(equipmentTypeID));
 				resultSQL +=  equipmentTypeID;
 				isFirst = false;
 
-				int surrogateID = query.rs.getInt("surrogateID");
+				int surrogateID = query.rs.getInt("surrogateid");
 				if(surrogateID > 0) {
 					Integer ts = Integer.valueOf(surrogateID);
 					if(!equipmentTypes.contains(ts) && !surrogateTypes.contains(ts)) {
@@ -1342,12 +1342,12 @@ public class InputDataManager {
 			query.close();
 
 			if(surrogateSQL.length() > 0) {
-				sql = "select distinct NREquipTypeID"
-						+ " from NREquipmentType"
-						+ " where NREquipTypeID in (" + surrogateSQL + ")";
+				sql = "select distinct nrequiptypeid"
+						+ " from nrequipmenttype"
+						+ " where nrequiptypeid in (" + surrogateSQL + ")";
 				query.open(nrDefaultDatabase,sql);
 				while(query.rs.next()) {
-					int equipmentTypeID = query.rs.getInt("NREquipTypeID");
+					int equipmentTypeID = query.rs.getInt("nrequiptypeid");
 					Integer t = Integer.valueOf(equipmentTypeID);
 					if(!equipmentTypes.contains(t)) {
 						equipmentTypes.add(t);
@@ -1604,108 +1604,108 @@ public class InputDataManager {
 		Connection executionConnection = null;
 		String[] commands = {
 			// CrankcaseEmissionRatio
-			"DROP TABLE IF EXISTS CrankcaseEmissionRatioSample",
-			"CREATE TABLE CrankcaseEmissionRatioSample SELECT polProcessID, minModelYearID, maxModelYearID,"
-					+ " sourceTypeID,fuelTypeID,COALESCE(crankcaseRatio,0) AS crankcaseRatio,"
-					+ " COALESCE(crankcaseRatioCV,0) as crankcaseRatioCV"
-					+ " FROM CrankcaseEmissionRatio",
+			"DROP TABLE IF EXISTS crankcaseemissionratiosample",
+			"CREATE TABLE crankcaseemissionratiosample select polprocessid, minmodelyearid, maxmodelyearid,"
+					+ " sourcetypeid,fueltypeid,coalesce(crankcaseratio,0) as crankcaseratio,"
+					+ " coalesce(crankcaseratiocv,0) as crankcaseratiocv"
+					+ " from crankcaseemissionratio",
 
 			// PM10EmissionRatio
-			"DROP TABLE IF EXISTS PM10EmissionRatioSample",
-			"CREATE TABLE PM10EmissionRatioSample SELECT polProcessID, "
-					+ " sourceTypeID,fuelTypeID,COALESCE(PM10PM25Ratio,0) AS PM10PM25Ratio,"
-					+ " COALESCE(PM10PM25RatioCV,0) as PM10PM25RatioCV"
-					+ " FROM PM10EmissionRatio",
+			"DROP TABLE IF EXISTS pm10emissionratiosample",
+			"CREATE TABLE pm10emissionratiosample select polprocessid, "
+					+ " sourcetypeid,fueltypeid,coalesce(pm10pm25ratio,0) as pm10pm25ratio,"
+					+ " coalesce(pm10pm25ratiocv,0) as pm10pm25ratiocv"
+					+ " from pm10emissionratio",
 
 			// EmissionRate
-			"DROP TABLE IF EXISTS EmissionRateSample",
-			"CREATE TABLE EmissionRateSample SELECT sourceBinID, polProcessID, opModeID,"
-					+ " COALESCE(meanBaseRate,0) AS meanBaseRate, COALESCE(meanBaseRateCV,0)"
-					+ " AS meanBaseRateCV, COALESCE(meanBaseRateIM,0) AS meanBaseRateIM,"
-					+ " COALESCE(meanBaseRateIMCV,0) AS meanBaseRateIMCV, dataSourceID "
-					+ " FROM EmissionRate",
+			"DROP TABLE IF EXISTS emissionratesample",
+			"CREATE TABLE emissionratesample select sourcebinid, polprocessid, opmodeid,"
+					+ " coalesce(meanbaserate,0) as meanbaserate, coalesce(meanbaseratecv,0)"
+					+ " as meanbaseratecv, coalesce(meanbaserateim,0) as meanbaserateim,"
+					+ " coalesce(meanbaserateimcv,0) as meanbaserateimcv, datasourceid "
+					+ " from emissionrate",
 
 			// EmissionRateByAge
-			"DROP TABLE IF EXISTS EmissionRateByAgeSample",
-			"CREATE TABLE EmissionRateByAgeSample SELECT sourceBinID, polProcessID, opModeID,"
-					+ " ageGroupID, COALESCE(meanBaseRate,0) AS meanBaseRate,"
-					+ " COALESCE(meanBaseRateCV,0) AS meanBaseRateCV, COALESCE(meanBaseRateIM,0)"
-					+ " AS meanBaseRateIM, COALESCE(meanBaseRateIMCV,0) AS meanBaseRateIMCV,"
-					+ " dataSourceID"
-					+ " FROM EmissionRateByAge",
+			"DROP TABLE IF EXISTS emissionratebyagesample",
+			"CREATE TABLE emissionratebyagesample select sourcebinid, polprocessid, opmodeid,"
+					+ " agegroupid, coalesce(meanbaserate,0) as meanbaserate,"
+					+ " coalesce(meanbaseratecv,0) as meanbaseratecv, coalesce(meanbaserateim,0)"
+					+ " as meanbaserateim, coalesce(meanbaserateimcv,0) as meanbaserateimcv,"
+					+ " datasourceid"
+					+ " from emissionratebyage",
 
 			// SulfateEmissionRate
-			"DROP TABLE IF EXISTS SulfateEmissionRateSample",
-			"CREATE TABLE SulfateEmissionRateSample SELECT polProcessID, fuelTypeID, "
-					+ "modelYearGroupID, COALESCE(meanBaseRate,0) AS meanBaseRate,"
-					+ " COALESCE(meanBaseRateCV,0) AS meanBaseRateCV, "
-					+ " dataSourceId"
-					+ " FROM SulfateEmissionRate",
+			"DROP TABLE IF EXISTS sulfateemissionratesample",
+			"CREATE TABLE sulfateemissionratesample select polprocessid, fueltypeid, "
+					+ "modelyeargroupid, coalesce(meanbaserate,0) as meanbaserate,"
+					+ " coalesce(meanbaseratecv,0) as meanbaseratecv, "
+					+ " datasourceid"
+					+ " from sulfateemissionrate",
 
 			// NONO2Ratio
-			"DROP TABLE IF EXISTS NONO2RatioSample",
-			"CREATE TABLE NONO2RatioSample SELECT polProcessID, sourceTypeID, "
-					+ " fuelTypeID, modelYearGroupID, COALESCE(NOxRatio,0) AS NOxRatio,"
-					+ " COALESCE(NOxRatioCV,0) AS NOxRatioCV, "
-					+ " dataSourceId"
-					+ " FROM NONO2Ratio",
+			"DROP TABLE IF EXISTS nono2ratiosample",
+			"CREATE TABLE nono2ratiosample select polprocessid, sourcetypeid, "
+					+ " fueltypeid, modelyeargroupid, coalesce(noxratio,0) as noxratio,"
+					+ " coalesce(noxratiocv,0) as noxratiocv, "
+					+ " datasourceid"
+					+ " from nono2ratio",
 
 			// methaneTHCRatio
-			"drop table if exists methaneTHCRatio",
-			"create table methaneTHCRatioSample"
-					+ " select processID, fuelTypeID, sourceTypeID, modelYearGroupID, ageGroupID,"
-					+ " coalesce(CH4THCRatio,0) as CH4THCRatio, coalesce(CH4THCRatioCV,0) as CH4THCRatioCV"
-					+ " from methaneTHCRatio",
+			"drop table if exists methanethcratio",
+			"create table methanethcratiosample"
+					+ " select processid, fueltypeid, sourcetypeid, modelyeargroupid, agegroupid,"
+					+ " coalesce(ch4thcratio,0) as ch4thcratio, coalesce(ch4thcratiocv,0) as ch4thcratiocv"
+					+ " from methanethcratio",
 
 			// CumTVVCoeffs
-			"drop table if exists CumTVVCoeffsSample",
-			"create table CumTVVCoeffsSample"
-					+ " select regClassID, modelYearGroupID, ageGroupID, polProcessID,"
-					+ " coalesce(tvvTermA,0.0) as tvvTermA,"
-					+ " coalesce(tvvTermB,0.0) as tvvTermB,"
-					+ " coalesce(tvvTermC,0.0) as tvvTermC,"
-					+ " coalesce(tvvTermACV,0.0) as tvvTermACV,"
-					+ " coalesce(tvvTermBCV,0.0) as tvvTermBCV,"
-					+ " coalesce(tvvTermCCV,0.0) as tvvTermCCV,"
-					+ " coalesce(tvvTermAIM,0.0) as tvvTermAIM,"
-					+ " coalesce(tvvTermBIM,0.0) as tvvTermBIM,"
-					+ " coalesce(tvvTermCIM,0.0) as tvvTermCIM,"
-					+ " coalesce(tvvTermAIMCV,0.0) as tvvTermAIMCV,"
-					+ " coalesce(tvvTermBIMCV,0.0) as tvvTermBIMCV,"
-					+ " coalesce(tvvTermCIMCV,0.0) as tvvTermCIMCV"
-					+ " from CumTVVCoeffs",
+			"drop table if exists cumtvvcoeffssample",
+			"create table cumtvvcoeffssample"
+					+ " select regclassid, modelyeargroupid, agegroupid, polprocessid,"
+					+ " coalesce(tvvterma,0.0) as tvvterma,"
+					+ " coalesce(tvvtermb,0.0) as tvvtermb,"
+					+ " coalesce(tvvtermc,0.0) as tvvtermc,"
+					+ " coalesce(tvvtermacv,0.0) as tvvtermacv,"
+					+ " coalesce(tvvtermbcv,0.0) as tvvtermbcv,"
+					+ " coalesce(tvvtermccv,0.0) as tvvtermccv,"
+					+ " coalesce(tvvtermaim,0.0) as tvvtermaim,"
+					+ " coalesce(tvvtermbim,0.0) as tvvtermbim,"
+					+ " coalesce(tvvtermcim,0.0) as tvvtermcim,"
+					+ " coalesce(tvvtermaimcv,0.0) as tvvtermaimcv,"
+					+ " coalesce(tvvtermbimcv,0.0) as tvvtermbimcv,"
+					+ " coalesce(tvvtermcimcv,0.0) as tvvtermcimcv"
+					+ " from cumtvvcoeffs",
 
 			// TemperatureAdjustment
-			"drop table if exists TemperatureAdjustmentSample",
-			"create table TemperatureAdjustmentSample"
-					+ " select polProcessID, fuelTypeID,"
-					+ " coalesce(tempAdjustTermA,0.0) as tempAdjustTermA,"
-					+ " coalesce(tempAdjustTermB,0.0) as tempAdjustTermB,"
-					+ " coalesce(tempAdjustTermC,0.0) as tempAdjustTermC,"
-					+ " coalesce(tempAdjustTermACV,0.0) as tempAdjustTermACV,"
-					+ " coalesce(tempAdjustTermBCV,0.0) as tempAdjustTermBCV,"
-					+ " coalesce(tempAdjustTermCCV,0.0) as tempAdjustTermCCV"
-					+ " from TemperatureAdjustment",
+			"drop table if exists temperatureadjustmentsample",
+			"create table temperatureadjustmentsample"
+					+ " select polprocessid, fueltypeid,"
+					+ " coalesce(tempadjustterma,0.0) as tempadjustterma,"
+					+ " coalesce(tempadjusttermb,0.0) as tempadjusttermb,"
+					+ " coalesce(tempadjusttermc,0.0) as tempadjusttermc,"
+					+ " coalesce(tempadjusttermacv,0.0) as tempadjusttermacv,"
+					+ " coalesce(tempadjusttermbcv,0.0) as tempadjusttermbcv,"
+					+ " coalesce(tempadjusttermccv,0.0) as tempadjusttermccv"
+					+ " from temperatureadjustment",
 
 			// StartTempAdjustment
-			"drop table if exists StartTempAdjustmentSample",
-			"create table StartTempAdjustmentSample"
-					+ " select polProcessID, fuelTypeID, opmodeID, modelYearGroupID,"
-					+ " coalesce(tempAdjustTermA,0.0) as tempAdjustTermA,"
-					+ " coalesce(tempAdjustTermB,0.0) as tempAdjustTermB,"
-					+ " coalesce(tempAdjustTermC,0.0) as tempAdjustTermC,"
-					+ " coalesce(tempAdjustTermACV,0.0) as tempAdjustTermACV,"
-					+ " coalesce(tempAdjustTermBCV,0.0) as tempAdjustTermBCV,"
-					+ " coalesce(tempAdjustTermCCV,0.0) as tempAdjustTermCCV"
-					+ " from StartTempAdjustment",
+			"drop table if exists starttempadjustmentsample",
+			"create table starttempadjustmentsample"
+					+ " select polprocessid, fueltypeid, opmodeid, modelyeargroupid,"
+					+ " coalesce(tempadjustterma,0.0) as tempadjustterma,"
+					+ " coalesce(tempadjusttermb,0.0) as tempadjusttermb,"
+					+ " coalesce(tempadjusttermc,0.0) as tempadjusttermc,"
+					+ " coalesce(tempadjusttermacv,0.0) as tempadjusttermacv,"
+					+ " coalesce(tempadjusttermbcv,0.0) as tempadjusttermbcv,"
+					+ " coalesce(tempadjusttermccv,0.0) as tempadjusttermccv"
+					+ " from starttempadjustment",
 
 			// FullACAdjustment
-			"drop table if exists FullACAdjustmentSample",
-			"create table FullACAdjustmentSample"
-					+ " select sourceTypeID, polProcessID, opmodeID,"
-					+ " coalesce(fullACAdjustment,1.0) as fullACAdjustment,"
-					+ " coalesce(fullACAdjustmentCV,0.0) as fullACAdjustmentCV"
-					+ " from FullACAdjustment",
+			"drop table if exists fullacadjustmentsample",
+			"create table fullacadjustmentsample"
+					+ " select sourcetypeid, polprocessid, opmodeid,"
+					+ " coalesce(fullacadjustment,1.0) as fullacadjustment,"
+					+ " coalesce(fullacadjustmentcv,0.0) as fullacadjustmentcv"
+					+ " from fullacadjustment",
 /*
 			// FuelAdjustment
 			"drop table if exists FuelAdjustmentSample",
@@ -1718,14 +1718,14 @@ public class InputDataManager {
 					+ " from FuelAdjustment",
 */
 			// RefuelingFactors
-			"drop table if exists RefuelingFactorsSample",
-			"create table RefuelingFactorsSample"
-					+ " select fuelTypeID, defaultFormulationID,"
-					+ " vaporTermA, vaporTermB, vaporTermC, vaporTermD, vaporTermE, vaporTermF,"
-					+ " vaporLowTLimit, vaporHighTLimit, tankTDiffLimit,"
-					+ " minimumRefuelingVaporLoss, refuelingSpillRate, refuelingSpillRateCV,"
-					+ " displacedVaporRateCV"
-					+ " from RefuelingFactors"
+			"drop table if exists refuelingfactorssample",
+			"create table refuelingfactorssample"
+					+ " select fueltypeid, defaultformulationid,"
+					+ " vaporterma, vaportermb, vaportermc, vaportermd, vaporterme, vaportermf,"
+					+ " vaporlowtlimit, vaporhightlimit, tanktdifflimit,"
+					+ " minimumrefuelingvaporloss, refuelingspillrate, refuelingspillratecv,"
+					+ " displacedvaporratecv"
+					+ " from refuelingfactors"
 		};
 		String sql = "";
 		try {
@@ -1777,92 +1777,92 @@ public class InputDataManager {
 		}
 
 		//CrankcaseEmissionRatio
-		randomizeTableData("polProcessID, minModelYearID, maxModelYearID, sourceTypeID, fuelTypeID,"
-				+ " crankcaseRatio, crankcaseRatioCV",
-				"CrankcaseEmissionRatioSample", 5,
-				"TRUNCATE CrankcaseEmissionRatio", "CrankcaseEmissionRatio (polProcessID, "
-				+ "minModelYearID, maxModelYearID, sourceTypeID, fuelTypeID, crankcaseRatio, crankcaseRatioCV)",1);
+		randomizeTableData("polprocessid, minmodelyearid, maxmodelyearid, sourcetypeid, fueltypeid,"
+				+ " crankcaseratio, crankcaseratiocv",
+				"crankcaseemissionratiosample", 5,
+				"truncate crankcaseemissionratio", "crankcaseemissionratio (polprocessid, "
+				+ "minmodelyearid, maxmodelyearid, sourcetypeid, fueltypeid, crankcaseratio, crankcaseratiocv)",1);
 		//PM10EmissionRatio
-		randomizeTableData("polProcessID, sourceTypeID, fuelTypeID,"
-				+ " PM10PM25Ratio, PM10PM25RatioCV",
-				"PM10EmissionRatioSample", 3,
-				"TRUNCATE PM10EmissionRatio", "PM10EmissionRatio (polProcessID, "
-				+ "sourceTypeID, fuelTypeID, PM10PM25Ratio, PM10PM25RatioCV)",1);
+		randomizeTableData("polprocessid, sourcetypeid, fueltypeid,"
+				+ " pm10pm25ratio, pm10pm25ratiocv",
+				"pm10emissionratiosample", 3,
+				"truncate pm10emissionratio", "pm10emissionratio (polprocessid, "
+				+ "sourcetypeid, fueltypeid, pm10pm25ratio, pm10pm25ratiocv)",1);
 		//EmissionRate
-		randomizeTableData(" * ", "EmissionRateSample", 3, "TRUNCATE EmissionRate",
-		        " emissionRate (sourceBinID, polProcessID, opModeID,"
-				+ " meanBaseRate, meanBaseRateCV, "
-				+ " meanBaseRateIM, meanBaseRateIMCV, dataSourceID)",2);
+		randomizeTableData(" * ", "emissionratesample", 3, "truncate emissionrate",
+		        " emissionrate (sourcebinid, polprocessid, opmodeid,"
+				+ " meanbaserate, meanbaseratecv, "
+				+ " meanbaserateim, meanbaserateimcv, datasourceid)",2);
 		//EmissionRateByAge
-		randomizeTableData(" * ", "EmissionRateByAgeSample ", 4,
-				"TRUNCATE EmissionRateByAge", "emissionRateByAge (sourceBinID, polProcessID,"
-				+ " opModeID, ageGroupID, meanBaseRate, meanBaseRateCV, meanBaseRateIM,"
-				+ " meanBaseRateIMCV, dataSourceID)",2);
+		randomizeTableData(" * ", "emissionratebyagesample ", 4,
+				"truncate emissionratebyage", "emissionratebyage (sourcebinid, polprocessid,"
+				+ " opmodeid, agegroupid, meanbaserate, meanbaseratecv, meanbaserateim,"
+				+ " meanbaserateimcv, datasourceid)",2);
 		//SulfateEmissionRate
-		randomizeTableData("polProcessID, fuelTypeID, modelYearGroupID, meanBaseRate, meanBaseRateCV, dataSourceId",
-				"SulfateEmissionRateSample", 3,
-				"TRUNCATE SulfateEmissionRate", "SulfateEmissionRate (polProcessID, fuelTypeID,"
-				+ " modelYearGroupID, meanBaseRate, meanBaseRateCV, dataSourceId)",1);
+		randomizeTableData("polprocessid, fueltypeid, modelyeargroupid, meanbaserate, meanbaseratecv, datasourceid",
+				"sulfateemissionratesample", 3,
+				"truncate sulfateemissionrate", "sulfateemissionrate (polprocessid, fueltypeid,"
+				+ " modelyeargroupid, meanbaserate, meanbaseratecv, datasourceid)",1);
 		//NONO2Ratio
-		randomizeTableData("polProcessID, sourceTypeID, fuelTypeID, modelYearGroupID, NOxRatio,"
-				+ " NOxRatioCV, dataSourceId",
-				"NONO2RatioSample", 4,
-				"TRUNCATE NONO2RatioSample", "NONO2Ratio (polProcessID, "
-				+ "sourceTypeID, fuelTypeID, modelYearGroupID, NOxRatio, NOxRatioCV, dataSourceId)",1);
+		randomizeTableData("polprocessid, sourcetypeid, fueltypeid, modelyeargroupid, noxratio,"
+				+ " noxratiocv, datasourceid",
+				"nono2ratiosample", 4,
+				"truncate nono2ratiosample", "nono2ratio (polprocessid, "
+				+ "sourcetypeid, fueltypeid, modelyeargroupid, noxratio, noxratiocv, datasourceid)",1);
 		// methaneTHCRatio
-		randomizeTableData("processID, fuelTypeID, sourceTypeID, modelYearGroupID, ageGroupID, CH4THCRatio, CH4THCRatioCV",
-				"methaneTHCRatioSample",
+		randomizeTableData("processid, fueltypeid, sourcetypeid, modelyeargroupid, agegroupid, ch4thcratio, ch4thcratiocv",
+				"methanethcratiosample",
 				5,
-				"truncate methaneTHCRatio",
-				"methaneTHCRatio (processID, fuelTypeID, sourceTypeID, modelYearGroupID, ageGroupID, CH4THCRatio, CH4THCRatioCV",
+				"truncate methanethcratio",
+				"methanethcratio (processid, fueltypeid, sourcetypeid, modelyeargroupid, agegroupid, ch4thcratio, ch4thcratiocv",
 				1);
 		//CumTVVCoeffs
-		randomizeTableData("regClassID, modelYearGroupID, ageGroupID, polProcessID,"
-					+ "tvvTermA, tvvTermACV, tvvTermAIM, tvvTermAIMCV,"
-					+ "tvvTermB, tvvTermBCV, tvvTermBIM, tvvTermBIMCV,"
-					+ "tvvTermC, tvvTermCCV, tvvTermCIM, tvvTermCIMCV",
-				"CumTVVCoeffsSample",
+		randomizeTableData("regclassid, modelyeargroupid, agegroupid, polprocessid,"
+					+ "tvvterma, tvvtermacv, tvvtermaim, tvvtermaimcv,"
+					+ "tvvtermb, tvvtermbcv, tvvtermbim, tvvtermbimcv,"
+					+ "tvvtermc, tvvtermccv, tvvtermcim, tvvtermcimcv",
+				"cumtvvcoeffssample",
 				4,
-				"truncate CumTVVCoeffs",
-				"CumTVVCoeffs (regClassID, modelYearGroupID, ageGroupID, polProcessID,"
-					+ "tvvTermA, tvvTermACV, tvvTermAIM, tvvTermAIMCV,"
-					+ "tvvTermB, tvvTermBCV, tvvTermBIM, tvvTermBIMCV,"
-					+ "tvvTermC, tvvTermCCV, tvvTermCIM, tvvTermCIMCV)",
+				"truncate cumtvvcoeffs",
+				"cumtvvcoeffs (regclassid, modelyeargroupid, agegroupid, polprocessid,"
+					+ "tvvterma, tvvtermacv, tvvtermaim, tvvtermaimcv,"
+					+ "tvvtermb, tvvtermbcv, tvvtermbim, tvvtermbimcv,"
+					+ "tvvtermc, tvvtermccv, tvvtermcim, tvvtermcimcv)",
 				6);
 		//TemperatureAdjustment
-		randomizeTableData("polProcessID, fuelTypeID, "
-					+ " tempAdjustTermA, tempAdjustTermACV,"
-					+ " tempAdjustTermB, tempAdjustTermBCV,"
-					+ " tempAdjustTermC, tempAdjustTermCCV",
-				"TemperatureAdjustmentSample",
+		randomizeTableData("polprocessid, fueltypeid, "
+					+ " tempadjustterma, tempadjusttermacv,"
+					+ " tempadjusttermb, tempadjusttermbcv,"
+					+ " tempadjusttermc, tempadjusttermccv",
+				"temperatureadjustmentsample",
 				2,
-				"truncate TemperatureAdjustment",
-				"TemperatureAdjustment (polProcessID, fuelTypeID, "
-					+ " tempAdjustTermA, tempAdjustTermACV,"
-					+ " tempAdjustTermB, tempAdjustTermBCV,"
-					+ " tempAdjustTermC, tempAdjustTermCCV)",
+				"truncate temperatureadjustment",
+				"temperatureadjustment (polprocessid, fueltypeid, "
+					+ " tempadjustterma, tempadjusttermacv,"
+					+ " tempadjusttermb, tempadjusttermbcv,"
+					+ " tempadjusttermc, tempadjusttermccv)",
 				3);
 		//StartTempAdjustment
-		randomizeTableData("polProcessID, fuelTypeID, "
-					+ " modelYearGroupID, opModeID, "
-					+ " tempAdjustTermA, tempAdjustTermACV,"
-					+ " tempAdjustTermB, tempAdjustTermBCV,"
-					+ " tempAdjustTermC, tempAdjustTermCCV",
-				"StartTempAdjustmentSample",
+		randomizeTableData("polprocessid, fueltypeid, "
+					+ " modelyeargroupid, opmodeid, "
+					+ " tempadjustterma, tempadjusttermacv,"
+					+ " tempadjusttermb, tempadjusttermbcv,"
+					+ " tempadjusttermc, tempadjusttermccv",
+				"starttempadjustmentsample",
 				4,
-				"truncate StartTempAdjustment",
-				"StartTempAdjustment (polProcessID, fuelTypeID, "
-					+ " modelYearGroupID, opModeID, "
-					+ " tempAdjustTermA, tempAdjustTermACV,"
-					+ " tempAdjustTermB, tempAdjustTermBCV,"
-					+ " tempAdjustTermC, tempAdjustTermCCV)",
+				"truncate starttempadjustment",
+				"starttempadjustment (polprocessid, fueltypeid, "
+					+ " modelyeargroupid, opmodeid, "
+					+ " tempadjustterma, tempadjusttermacv,"
+					+ " tempadjusttermb, tempadjusttermbcv,"
+					+ " tempadjusttermc, tempadjusttermccv)",
 				3);
 		//FullACAdjustment
-		randomizeTableData("sourceTypeID, polProcessID, opModeID,"
-				+ " fullACAdjustment, fullACAdjustmentCV",
-				"FullACAdjustmentSample", 3,
-				"TRUNCATE FullACAdjustment", "FullACAdjustment (sourceTypeID, polProcessID,"
-				+ " opModeID, fullACAdjustment, fullACAdjustmentCV)",1);
+		randomizeTableData("sourcetypeid, polprocessid, opmodeid,"
+				+ " fullacadjustment, fullacadjustmentcv",
+				"fullacadjustmentsample", 3,
+				"truncate fullacadjustment", "fullacadjustment (sourcetypeid, polprocessid,"
+				+ " opmodeid, fullacadjustment, fullacadjustmentcv)",1);
 /*
 		//FuelAdjustment
 		randomizeTableData("polProcessID, sourceTypeID, fuelMYGroupID, fuelFormulationID,"
@@ -1874,18 +1874,18 @@ public class InputDataManager {
 				+ " fuelAdjustmentGPA, fuelAdjustmentGPACV)",2);
 */
 		// RefuelingFactors
-		randomizeTableData("fuelTypeID, defaultFormulationID,"
-					+ " vaporTermA, vaporTermB, vaporTermC, vaporTermD, vaporTermE, vaporTermF,"
-					+ " vaporLowTLimit, vaporHighTLimit, tankTDiffLimit,"
-					+ " minimumRefuelingVaporLoss, refuelingSpillRate, refuelingSpillRateCV,"
-					+ " displacedVaporRateCV",
-					"RefuelingFactorsSample", 12,
-					"TRUNCATE RefuelingFactors",
-					"RefuelingFactors (fuelTypeID, defaultFormulationID,"
-					+ " vaporTermA, vaporTermB, vaporTermC, vaporTermD, vaporTermE, vaporTermF,"
-					+ " vaporLowTLimit, vaporHighTLimit, tankTDiffLimit,"
-					+ " minimumRefuelingVaporLoss, refuelingSpillRate, refuelingSpillRateCV,"
-					+ " displacedVaporRateCV)",
+		randomizeTableData("fueltypeid, defaultformulationid,"
+					+ " vaporterma, vaportermb, vaportermc, vaportermd, vaporterme, vaportermf,"
+					+ " vaporlowtlimit, vaporhightlimit, tanktdifflimit,"
+					+ " minimumrefuelingvaporloss, refuelingspillrate, refuelingspillratecv,"
+					+ " displacedvaporratecv",
+					"refuelingfactorssample", 12,
+					"truncate refuelingfactors",
+					"refuelingfactors (fueltypeid, defaultformulationid,"
+					+ " vaporterma, vaportermb, vaportermc, vaportermd, vaporterme, vaportermf,"
+					+ " vaporlowtlimit, vaporhightlimit, tanktdifflimit,"
+					+ " minimumrefuelingvaporloss, refuelingspillrate, refuelingspillratecv,"
+					+ " displacedvaporratecv)",
 					1);
 		/*
 		// ATRatioGas1
@@ -1897,19 +1897,19 @@ public class InputDataManager {
 				+ " ATRatio,ATRatioCV)",1);
 		*/
 		// ATRatioGas2
-		randomizeTableData("polProcessID,sourceTypeID,fuelSubtypeID,"
-				+ " ATRatio,ATRatioCV",
-				"ATRatioGas2", 3,
-				"TRUNCATE ATRatioGas2",
-				"ATRatioGas2 (polProcessID,sourceTypeID,fuelSubtypeID,"
-				+ " ATRatio,ATRatioCV)",1);
+		randomizeTableData("polprocessid,sourcetypeid,fuelsubtypeid,"
+				+ " atratio,atratiocv",
+				"atratiogas2", 3,
+				"truncate atratiogas2",
+				"atratiogas2 (polprocessid,sourcetypeid,fuelsubtypeid,"
+				+ " atratio,atratiocv)",1);
 		// ATRatioNonGas
-		randomizeTableData("polProcessID,sourceTypeID,fuelSubtypeID,"
-				+ " ATRatio,ATRatioCV",
-				"ATRatioNonGas", 3,
-				"TRUNCATE ATRatioNonGas",
-				"ATRatioNonGas (polProcessID,sourceTypeID,fuelSubtypeID,"
-				+ " ATRatio,ATRatioCV)",1);
+		randomizeTableData("polprocessid,sourcetypeid,fuelsubtypeid,"
+				+ " atratio,atratiocv",
+				"atrationongas", 3,
+				"truncate atrationongas",
+				"atrationongas (polprocessid,sourcetypeid,fuelsubtypeid,"
+				+ " atratio,atratiocv)",1);
 
 		OutputEmissionsBreakdownSelection outputEmissionsBreakdownSelection =
 				ExecutionRunSpec.theExecutionRunSpec.getOutputEmissionsBreakdownSelection();
@@ -1939,24 +1939,24 @@ public class InputDataManager {
 					exportTableFilePath.delete();
 				}
 				sql = "SELECT " + activeRunID + ", " + nextIterationID + ","
-						+ " polProcessID, minModelYearID, maxModelYearID, sourceTypeID, fuelTypeID, crankcaseRatio"
-						+ " INTO OUTFILE '" + fileName + "' FROM CrankcaseEmissionRatio";
+						+ " polprocessid, minmodelyearid, maxmodelyearid, sourcetypeid, fueltypeid, crankcaseratio"
+						+ " INTO OUTFILE '" + fileName + "' FROM crankcaseemissionratio";
 				SQLRunner.executeSQL(executionConnection,sql);
 
-				sql = "CREATE TABLE IF NOT EXISTS CrankcaseEmissionRatioSample ("
-						+ " MOVESRunID SMALLINT UNSIGNED NOT NULL,"
-						+ " iterationID SMALLINT UNSIGNED DEFAULT 1,"
-					    + " polProcessID INT NOT NULL,"
-					    + " minModelYearID SMALLINT NOT NULL,"
-					    + " maxModelYearID SMALLINT NOT NULL,"
-						+ " sourceTypeID SMALLINT NOT NULL,"
-					    + " fuelTypeID SMALLINT NOT NULL,"
-					    + " crankcaseRatio FLOAT NULL)";
+				sql = "CREATE TABLE IF NOT EXISTS crankcaseemissionratiosample ("
+						+ " movesrunid smallint unsigned not null,"
+						+ " iterationid smallint unsigned default 1,"
+					    + " polprocessid int not null,"
+					    + " minmodelyearid smallint not null,"
+					    + " maxmodelyearid smallint not null,"
+						+ " sourcetypeid smallint not null,"
+					    + " fueltypeid smallint not null,"
+					    + " crankcaseratio float null)";
 				SQLRunner.executeSQL(outputConnection,sql);
 
-				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE CrankcaseEmissionRatioSample "
-						+ "(MOVESRunID, iterationID, polProcessID, minModelYearID, maxModelYearID, sourceTypeID, "
-						+ " fuelTypeID, crankcaseRatio)";
+				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE crankcaseemissionratiosample "
+						+ "(movesrunid, iterationid, polprocessid, minmodelyearid, maxmodelyearid, sourcetypeid, "
+						+ " fueltypeid, crankcaseratio)";
 				SQLRunner.executeSQL(outputConnection, sql);
 
 				// Do PM10EmissionRatio Table
@@ -1964,22 +1964,22 @@ public class InputDataManager {
 					exportTableFilePath.delete();
 				}
 				sql = "SELECT " + activeRunID + ", " + nextIterationID + ","
-						+ " polProcessID, sourceTypeID, fuelTypeID, PM10PM25Ratio"
-						+ " INTO OUTFILE '" + fileName + "' FROM PM10EmissionRatio";
+						+ " polprocessid, sourcetypeid, fueltypeid, pm10pm25ratio"
+						+ " INTO OUTFILE '" + fileName + "' FROM pm10emissionratio";
 				SQLRunner.executeSQL(executionConnection,sql);
 
-				sql = "CREATE TABLE IF NOT EXISTS PM10EmissionRatioSample ("
-						+ " MOVESRunID SMALLINT UNSIGNED NOT NULL,"
-						+ " iterationID SMALLINT UNSIGNED DEFAULT 1,"
-					    + " polProcessID INT NOT NULL,"
-						+ " sourceTypeID SMALLINT NOT NULL,"
-					    + " fuelTypeID SMALLINT NOT NULL,"
-					    + " PM10PM25Ratio FLOAT NULL)";
+				sql = "CREATE TABLE IF NOT EXISTS pm10emissionratiosample ("
+						+ " movesrunid smallint unsigned not null,"
+						+ " iterationid smallint unsigned default 1,"
+					    + " polprocessid int not null,"
+						+ " sourcetypeid smallint not null,"
+					    + " fueltypeid smallint not null,"
+					    + " pm10pm25ratio float null)";
 				SQLRunner.executeSQL(outputConnection,sql);
 
-				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE PM10EmissionRatioSample "
-						+ "(MOVESRunID, iterationID, polProcessID, sourceTypeID, "
-						+ " fuelTypeID, PM10PM25Ratio)";
+				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE pm10emissionratiosample "
+						+ "(movesrunid, iterationid, polprocessid, sourcetypeid, "
+						+ " fueltypeid, pm10pm25ratio)";
 				SQLRunner.executeSQL(outputConnection, sql);
 
 				// Do EmissionRate table
@@ -1987,23 +1987,23 @@ public class InputDataManager {
 					exportTableFilePath.delete();
 				}
 				sql = "SELECT " + activeRunID + ", " + nextIterationID
-						+ ", sourceBinID, polProcessID, opModeID, meanBaseRate, meanBaseRateIM"
-						+ " INTO OUTFILE '" + fileName + "' FROM emissionRate";
+						+ ", sourcebinid, polprocessid, opmodeid, meanbaserate, meanbaserateim"
+						+ " INTO OUTFILE '" + fileName + "' FROM emissionrate";
 				SQLRunner.executeSQL(executionConnection,sql);
 
-				sql = "CREATE TABLE IF NOT EXISTS EmissionRateSample ("
-						+ " MOVESRunID SMALLINT UNSIGNED NOT NULL,"
-						+ " iterationID SMALLINT UNSIGNED DEFAULT 1,"
-						+ " sourceBinID BIGINT NOT NULL,"
-					    + " polProcessID INT NOT NULL,"
-					    + " opModeID SMALLINT NOT NULL,"
-					    + " meanBaseRate FLOAT NULL,"
-					    + " meanBaseRateIM FLOAT NULL)";
+				sql = "CREATE TABLE IF NOT EXISTS emissionratesample ("
+						+ " movesrunid smallint unsigned not null,"
+						+ " iterationid smallint unsigned default 1,"
+						+ " sourcebinid bigint not null,"
+					    + " polprocessid int not null,"
+					    + " opmodeid smallint not null,"
+					    + " meanbaserate float null,"
+					    + " meanbaserateim float null)";
 				SQLRunner.executeSQL(outputConnection,sql);
 
-				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE EmissionRateSample "
-						+ "(MOVESRunID, iterationID, sourceBinID, polProcessID, opModeID,"
-						+ " meanBaseRate, meanBaseRateIM)";
+				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE emissionratesample "
+						+ "(movesrunid, iterationid, sourcebinid, polprocessid, opmodeid,"
+						+ " meanbaserate, meanbaserateim)";
 				SQLRunner.executeSQL(outputConnection, sql);
 
 				// Do EmissionRateByAge table
@@ -2012,24 +2012,24 @@ public class InputDataManager {
 				}
 
 				sql = "SELECT " + activeRunID + ", " + nextIterationID
-						+ ", sourceBinID, polProcessID, opModeID, ageGroupID, meanBaseRate,"
-						+ " meanBaseRateIM INTO OUTFILE '" + fileName + "' FROM emissionRateByAge";
+						+ ", sourcebinid, polprocessid, opmodeid, agegroupid, meanbaserate,"
+						+ " meanbaserateim INTO OUTFILE '" + fileName + "' FROM emissionratebyage";
 				SQLRunner.executeSQL(executionConnection,sql);
 
-				sql = "CREATE TABLE IF NOT EXISTS EmissionRateByAgeSample ("
-						+ " MOVESRunID SMALLINT UNSIGNED NOT NULL,"
-						+ " iterationID SMALLINT UNSIGNED DEFAULT 1,"
-						+ " sourceBinID BIGINT NOT NULL,"
-					    + " polProcessID INT NOT NULL,"
-					    + " opModeID SMALLINT NOT NULL,"
-						+ " ageGroupID SMALLINT NOT NULL,"
-					    + " meanBaseRate FLOAT NULL,"
-					    + " meanBaseRateIM FLOAT NULL)";
+				sql = "CREATE TABLE IF NOT EXISTS emissionratebyagesample ("
+						+ " movesrunid smallint unsigned not null,"
+						+ " iterationid smallint unsigned default 1,"
+						+ " sourcebinid bigint not null,"
+					    + " polprocessid int not null,"
+					    + " opmodeid smallint not null,"
+						+ " agegroupid smallint not null,"
+					    + " meanbaserate float null,"
+					    + " meanbaserateim float null)";
 				SQLRunner.executeSQL(outputConnection,sql);
 
-				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE EmissionRateByAgeSample ("
-						+ " MOVESRunID, iterationID, sourceBinID, polProcessID, opModeID,"
-						+ " ageGroupID, meanBaseRate, meanBaseRateIM)";
+				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE emissionratebyagesample ("
+						+ " movesrunid, iterationid, sourcebinid, polprocessid, opmodeid,"
+						+ " agegroupid, meanbaserate, meanbaserateim)";
 				SQLRunner.executeSQL(outputConnection, sql);
 
 				// Do SulfateEmissionRate table
@@ -2038,23 +2038,23 @@ public class InputDataManager {
 				}
 
 				sql = "SELECT " + activeRunID + ", " + nextIterationID
-						+ ", polProcessID, fuelTypeID, modelYearGroupID, meanBaseRate"
-						+ " INTO OUTFILE '" + fileName + "' FROM SulfateEmissionRate";
+						+ ", polprocessid, fueltypeid, modelyeargroupid, meanbaserate"
+						+ " INTO OUTFILE '" + fileName + "' FROM sulfateemissionrate";
 				SQLRunner.executeSQL(executionConnection,sql);
 
-				sql = "CREATE TABLE IF NOT EXISTS SulfateEmissionRateSample ("
-						+ " MOVESRunID SMALLINT UNSIGNED NOT NULL,"
-						+ " iterationID SMALLINT UNSIGNED DEFAULT 1,"
-					    + " polProcessID INT NOT NULL,"
-					    + " fuelTypeID SMALLINT NOT NULL,"
-						+ " modelYearGroupID INT NOT NULL,"
-					    + " meanBaseRate FLOAT NULL,"
-					    + " dataSourceId SMALLINT NULL)";
+				sql = "CREATE TABLE IF NOT EXISTS sulfateemissionratesample ("
+						+ " movesrunid smallint unsigned not null,"
+						+ " iterationid smallint unsigned default 1,"
+					    + " polprocessid int not null,"
+					    + " fueltypeid smallint not null,"
+						+ " modelyeargroupid int not null,"
+					    + " meanbaserate float null,"
+					    + " datasourceid smallint null)";
 				SQLRunner.executeSQL(outputConnection,sql);
 
-				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE SulfateEmissionRateSample "
-						+ "(MOVESRunID, iterationID, polProcessID, fuelTypeID, modelYearGroupID,"
-						+ " meanBaseRate, dataSourceId)";
+				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE sulfateemissionratesample "
+						+ "(movesrunid, iterationid, polprocessid, fueltypeid, modelyeargroupid,"
+						+ " meanbaserate, datasourceid)";
 				SQLRunner.executeSQL(outputConnection, sql);
 
 				// Do NONO2Ratio table
@@ -2063,8 +2063,8 @@ public class InputDataManager {
 				}
 
 				sql = "SELECT " + activeRunID + ", " + nextIterationID
-						+ ", polProcessID, sourceTypeID, fuelTypeID, modelYearGroupID, NOxRatio, dataSourceId "
-						+ " INTO OUTFILE '" + fileName + "' FROM NONO2Ratio";
+						+ ", polprocessid, sourcetypeid, fueltypeid, modelyeargroupid, noxratio, datasourceid "
+						+ " INTO OUTFILE '" + fileName + "' FROM nono2ratio";
 				SQLRunner.executeSQL(executionConnection,sql);
 
 				sql = "CREATE TABLE IF NOT EXISTS NONO2Sample ("
@@ -2078,9 +2078,9 @@ public class InputDataManager {
 					    + " dataSourceId SMALLINT NULL)";
 				SQLRunner.executeSQL(outputConnection,sql);
 
-				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE NONO2RatioSample "
-						+ "(MOVESRunID, iterationID, polProcessID, sourceTypeID, fuelTypeID, "
-						+ " modelYearGroupID, NOxRatio, dataSourceId)";
+				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE nono2ratiosample "
+						+ "(movesrunid, iterationid, polprocessid, sourcetypeid, fueltypeid, "
+						+ " modelyeargroupid, noxratio, datasourceid)";
 				SQLRunner.executeSQL(outputConnection, sql);
 
 				// Do methaneTHCRatio table
@@ -2089,24 +2089,24 @@ public class InputDataManager {
 				}
 
 				sql = "SELECT " + activeRunID + ", " + nextIterationID
-						+ ", processID, fuelTypeID, sourceTypeID, modelYearGroupID, ageGroupID, CH4THCRatio"
-						+ " INTO OUTFILE '" + fileName + "' FROM methaneTHCRatio";
+						+ ", processid, fueltypeid, sourcetypeid, modelyeargroupid, agegroupid, ch4thcratio"
+						+ " INTO OUTFILE '" + fileName + "' FROM methanethcratio";
 				SQLRunner.executeSQL(executionConnection,sql);
 
-				sql = "CREATE TABLE IF NOT EXISTS methaneTHCRatioSample ("
-						+ " MOVESRunID SMALLINT UNSIGNED NOT NULL,"
-						+ " iterationID SMALLINT UNSIGNED DEFAULT 1,"
-						+ " processID smallint(6) NOT NULL DEFAULT '0',"
-						+ " fuelTypeID smallint(6) NOT NULL DEFAULT '0',"
-						+ " sourceTypeID smallint(6) NOT NULL DEFAULT '0',"
-						+ " modelYearGroupID int(11) NOT NULL DEFAULT '0',"
-						+ " ageGroupID smallint(6) NOT NULL DEFAULT '0',"
-						+ " CH4THCRatio double DEFAULT NULL)";
+				sql = "CREATE TABLE IF NOT EXISTS methanethcratiosample ("
+						+ " movesrunid smallint unsigned not null,"
+						+ " iterationid smallint unsigned default 1,"
+						+ " processid smallint(6) not null default '0',"
+						+ " fueltypeid smallint(6) not null default '0',"
+						+ " sourcetypeid smallint(6) not null default '0',"
+						+ " modelyeargroupid int(11) not null default '0',"
+						+ " agegroupid smallint(6) not null default '0',"
+						+ " ch4thcratio double default null)";
 				SQLRunner.executeSQL(outputConnection,sql);
 
-				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE methaneTHCRatioSample ("
-						+ " MOVESRunID, iterationID"
-						+ ", processID, fuelTypeID, sourceTypeID, modelYearGroupID, ageGroupID, CH4THCRatio"
+				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE methanethcratiosample ("
+						+ " movesrunid, iterationid"
+						+ ", processid, fueltypeid, sourcetypeid, modelyeargroupid, agegroupid, ch4thcratio"
 						+ ")";
 				SQLRunner.executeSQL(outputConnection, sql);
 
@@ -2116,32 +2116,32 @@ public class InputDataManager {
 				}
 
 				sql = "SELECT " + activeRunID + ", " + nextIterationID
-						+ ", regClassID, modelYearGroupID, ageGroupID, polProcessID"
-						+ ", tvvTermA, tvvTermB, tvvTermC"
-						+ ", tvvTermAIM, tvvTermBIM, tvvTermCIM"
-						+ " INTO OUTFILE '" + fileName + "' FROM CumTVVCoeffs";
+						+ ", regclassid, modelyeargroupid, agegroupid, polprocessid"
+						+ ", tvvterma, tvvtermb, tvvtermc"
+						+ ", tvvtermaim, tvvtermbim, tvvtermcim"
+						+ " INTO OUTFILE '" + fileName + "' FROM cumtvvcoeffs";
 				SQLRunner.executeSQL(executionConnection,sql);
 
-				sql = "CREATE TABLE IF NOT EXISTS CumTVVCoeffsSample ("
-						+ " MOVESRunID SMALLINT UNSIGNED NOT NULL,"
-						+ " iterationID SMALLINT UNSIGNED DEFAULT 1,"
-						+ " regClassID smallint(6) NOT NULL,"
-						+ " modelYearGroupID int(11) NOT NULL,"
-						+ " ageGroupID smallint(6) NOT NULL,"
-						+ " polProcessID int NOT NULL,"
-						+ " tvvTermA float NULL,"
-						+ " tvvTermB float NULL,"
-						+ " tvvTermC float NULL,"
-						+ " tvvTermAIM float NULL,"
-						+ " tvvTermBIM float NULL,"
-						+ " tvvTermCIM float NULL)";
+				sql = "CREATE TABLE IF NOT EXISTS cumtvvcoeffssample ("
+						+ " movesrunid smallint unsigned not null,"
+						+ " iterationid smallint unsigned default 1,"
+						+ " regclassid smallint(6) not null,"
+						+ " modelyeargroupid int(11) not null,"
+						+ " agegroupid smallint(6) not null,"
+						+ " polprocessid int not null,"
+						+ " tvvterma float null,"
+						+ " tvvtermb float null,"
+						+ " tvvtermc float null,"
+						+ " tvvtermaim float null,"
+						+ " tvvtermbim float null,"
+						+ " tvvtermcim float null)";
 				SQLRunner.executeSQL(outputConnection,sql);
 
-				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE CumTVVCoeffsSample ("
-						+ " MOVESRunID, iterationID"
-						+ ", regClassID, modelYearGroupID, ageGroupID, polProcessID"
-						+ ", tvvTermA, tvvTermB, tvvTermC"
-						+ ", tvvTermAIM, tvvTermBIM, tvvTermCIM"
+				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE cumtvvcoeffssample ("
+						+ " movesrunid, iterationid"
+						+ ", regclassid, modelyeargroupid, agegroupid, polprocessid"
+						+ ", tvvterma, tvvtermb, tvvtermc"
+						+ ", tvvtermaim, tvvtermbim, tvvtermcim"
 						+ ")";
 				SQLRunner.executeSQL(outputConnection, sql);
 
@@ -2151,24 +2151,24 @@ public class InputDataManager {
 				}
 
 				sql = "SELECT " + activeRunID + ", " + nextIterationID + ","
-						+ " polProcessID, fuelTypeID, "
-						+ " tempAdjustTermA, tempAdjustTermB, tempAdjustTermC"
-						+ " INTO OUTFILE '" + fileName + "' FROM TemperatureAdjustment";
+						+ " polprocessid, fueltypeid, "
+						+ " tempadjustterma, tempadjusttermb, tempadjusttermc"
+						+ " INTO OUTFILE '" + fileName + "' FROM temperatureadjustment";
 				SQLRunner.executeSQL(executionConnection,sql);
 
-				sql = "CREATE TABLE IF NOT EXISTS TemperatureAdjustmentSample ("
-						+ " MOVESRunID SMALLINT UNSIGNED NOT NULL,"
-						+ " iterationID SMALLINT UNSIGNED DEFAULT 1,"
-					    + " polProcessID INT NOT NULL,"
-					    + " fuelTypeID SMALLINT NOT NULL,"
-					    + " tempAdjustTermA FLOAT NULL,"
-					    + " tempAdjustTermB FLOAT NULL,"
-					    + " tempAdjustTermC FLOAT NULL)";
+				sql = "CREATE TABLE IF NOT EXISTS temperatureadjustmentsample ("
+						+ " movesrunid smallint unsigned not null,"
+						+ " iterationid smallint unsigned default 1,"
+					    + " polprocessid int not null,"
+					    + " fueltypeid smallint not null,"
+					    + " tempadjustterma float null,"
+					    + " tempadjusttermb float null,"
+					    + " tempadjusttermc float null)";
 				SQLRunner.executeSQL(outputConnection,sql);
 
-				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE TemperatureAdjustmentSample "
-						+ "(MOVESRunID, iterationID, polProcessID, fuelTypeID,"
-						+ " tempAdjustTermA, tempAdjustTermB, tempAdjustTermC)";
+				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE temperatureadjustmentsample "
+						+ "(movesrunid, iterationid, polprocessid, fueltypeid,"
+						+ " tempadjustterma, tempadjusttermb, tempadjusttermc)";
 				SQLRunner.executeSQL(outputConnection, sql);
 
 				// Do StartTempAdjustment Table
@@ -2176,27 +2176,27 @@ public class InputDataManager {
 					exportTableFilePath.delete();
 				}
 				sql = "SELECT " + activeRunID + ", " + nextIterationID + ","
-						+ " polProcessID, fuelTypeID, modelYearGroupID, opModeID,"
-						+ " tempAdjustTermA, tempAdjustTermB, tempAdjustTermC"
-						+ " INTO OUTFILE '" + fileName + "' FROM StartTempAdjustment";
+						+ " polprocessid, fueltypeid, modelyeargroupid, opmodeid,"
+						+ " tempadjustterma, tempadjusttermb, tempadjusttermc"
+						+ " INTO OUTFILE '" + fileName + "' FROM starttempadjustment";
 				SQLRunner.executeSQL(executionConnection,sql);
 
-				sql = "CREATE TABLE IF NOT EXISTS StartTempAdjustmentSample ("
-						+ " MOVESRunID SMALLINT UNSIGNED NOT NULL,"
-						+ " iterationID SMALLINT UNSIGNED DEFAULT 1,"
-					    + " polProcessID INT NOT NULL,"
-					    + " fuelTypeID SMALLINT NOT NULL,"
-					    + " modelYearGroupID INTEGER NOT NULL,"
-					    + " opModeID SMALLINT NOT NULL,"
-					    + " tempAdjustTermA FLOAT NULL,"
-					    + " tempAdjustTermB FLOAT NULL,"
-					    + " tempAdjustTermC FLOAT NULL)";
+				sql = "CREATE TABLE IF NOT EXISTS starttempadjustmentsample ("
+						+ " movesrunid smallint unsigned not null,"
+						+ " iterationid smallint unsigned default 1,"
+					    + " polprocessid int not null,"
+					    + " fueltypeid smallint not null,"
+					    + " modelyeargroupid integer not null,"
+					    + " opmodeid smallint not null,"
+					    + " tempadjustterma float null,"
+					    + " tempadjusttermb float null,"
+					    + " tempadjusttermc float null)";
 				SQLRunner.executeSQL(outputConnection,sql);
 
-				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE StartTempAdjustmentSample "
-						+ "(MOVESRunID, iterationID, polProcessID, fuelTypeID,"
-						+ " modelYearGroupID, opModeID,"
-						+ " tempAdjustTermA, tempAdjustTermB, tempAdjustTermC)";
+				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE starttempadjustmentsample "
+						+ "(movesrunid, iterationid, polprocessid, fueltypeid,"
+						+ " modelyeargroupid, opmodeid,"
+						+ " tempadjustterma, tempadjusttermb, tempadjusttermc)";
 				SQLRunner.executeSQL(outputConnection, sql);
 
 				// Do FullACAdjustment Table
@@ -2204,22 +2204,22 @@ public class InputDataManager {
 					exportTableFilePath.delete();
 				}
 				sql = "SELECT " + activeRunID + ", " + nextIterationID + ","
-						+ " sourceTypeID, polProcessID, opModeID, fullACAdjustment"
-						+ " INTO OUTFILE '" + fileName + "' FROM FullACAdjustment";
+						+ " sourcetypeid, polprocessid, opmodeid, fullacadjustment"
+						+ " INTO OUTFILE '" + fileName + "' FROM fullacadjustment";
 				SQLRunner.executeSQL(executionConnection,sql);
 
-				sql = "CREATE TABLE IF NOT EXISTS FullACAdjustmentSample ("
-						+ " MOVESRunID SMALLINT UNSIGNED NOT NULL,"
-						+ " iterationID SMALLINT UNSIGNED DEFAULT 1,"
-						+ " sourceTypeID SMALLINT NOT NULL,"
-					    + " polProcessID INT NOT NULL,"
-					    + " opModeID SMALLINT NOT NULL,"
-					    + " fullACAdjustment FLOAT NULL)";
+				sql = "CREATE TABLE IF NOT EXISTS fullacadjustmentsample ("
+						+ " movesrunid smallint unsigned not null,"
+						+ " iterationid smallint unsigned default 1,"
+						+ " sourcetypeid smallint not null,"
+					    + " polprocessid int not null,"
+					    + " opmodeid smallint not null,"
+					    + " fullacadjustment float null)";
 				SQLRunner.executeSQL(outputConnection,sql);
 
-				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE FULLACAdjustmentSample "
-						+ "(MOVESRunID, iterationID, sourceTypeID, polProcessID, opModeID,"
-						+ " fullACAdjustment)";
+				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE fullacadjustmentsample "
+						+ "(movesrunid, iterationid, sourcetypeid, polprocessid, opmodeid,"
+						+ " fullacadjustment)";
 				SQLRunner.executeSQL(outputConnection, sql);
 /*
 				// Do FuelAdjustment Table
@@ -2255,42 +2255,42 @@ public class InputDataManager {
 				}
 
 				sql = "SELECT " + activeRunID + ", " + nextIterationID
-						+ ", fuelTypeID, defaultFormulationID,"
-						+ " vaporTermA, vaporTermB, vaporTermC, vaporTermD, vaporTermE, vaporTermF,"
-						+ " vaporLowTLimit, vaporHighTLimit, tankTDiffLimit,"
-						+ " minimumRefuelingVaporLoss, refuelingSpillRate, refuelingSpillRateCV,"
-						+ " displacedVaporRateCV"
-						+ " INTO OUTFILE '" + fileName + "' FROM RefuelingFactors";
+						+ ", fueltypeid, defaultformulationid,"
+						+ " vaporterma, vaportermb, vaportermc, vaportermd, vaporterme, vaportermf,"
+						+ " vaporlowtlimit, vaporhightlimit, tanktdifflimit,"
+						+ " minimumrefuelingvaporloss, refuelingspillrate, refuelingspillratecv,"
+						+ " displacedvaporratecv"
+						+ " INTO OUTFILE '" + fileName + "' FROM refuelingfactors";
 				SQLRunner.executeSQL(executionConnection,sql);
 
-				sql = "CREATE TABLE IF NOT EXISTS RefuelingFactorsSample ("
-						+ " MOVESRunID SMALLINT UNSIGNED NOT NULL,"
-						+ " iterationID SMALLINT UNSIGNED DEFAULT 1,"
-						+ " fuelTypeID           SMALLINT NOT NULL,"
-						+ " defaultFormulationID SMALLINT NULL,"
-						+ " vaporTermA           FLOAT NOT NULL DEFAULT 0,"
-						+ " vaporTermB           FLOAT NOT NULL DEFAULT 0,"
-						+ " vaporTermC           FLOAT NOT NULL DEFAULT 0,"
-						+ " vaporTermD           FLOAT NOT NULL DEFAULT 0,"
-						+ " vaporTermE           FLOAT NOT NULL DEFAULT 0,"
-						+ " vaporTermF           FLOAT NOT NULL DEFAULT 0,"
-						+ " vaporLowTLimit       FLOAT NOT NULL DEFAULT 0,"
-						+ " vaporHighTLimit      FLOAT NOT NULL DEFAULT 0,"
-						+ " tankTDiffLimit       FLOAT NOT NULL DEFAULT 0,"
-						+ " minimumRefuelingVaporLoss FLOAT NOT NULL DEFAULT 0,"
-						+ " refuelingSpillRate   FLOAT NOT NULL DEFAULT 0,"
-						+ " refuelingSpillRateCV FLOAT NULL,"
-						+ " displacedVaporRateCV FLOAT NULL"
+				sql = "CREATE TABLE IF NOT EXISTS refuelingfactorssample ("
+						+ " movesrunid smallint unsigned not null,"
+						+ " iterationid smallint unsigned default 1,"
+						+ " fueltypeid           smallint not null,"
+						+ " defaultformulationid smallint null,"
+						+ " vaporterma           float not null default 0,"
+						+ " vaportermb           float not null default 0,"
+						+ " vaportermc           float not null default 0,"
+						+ " vaportermd           float not null default 0,"
+						+ " vaporterme           float not null default 0,"
+						+ " vaportermf           float not null default 0,"
+						+ " vaporlowtlimit       float not null default 0,"
+						+ " vaporhightlimit      float not null default 0,"
+						+ " tanktdifflimit       float not null default 0,"
+						+ " minimumrefuelingvaporloss float not null default 0,"
+						+ " refuelingspillrate   float not null default 0,"
+						+ " refuelingspillratecv float null,"
+						+ " displacedvaporratecv float null"
 						+ ")";
 				SQLRunner.executeSQL(outputConnection,sql);
 
-				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE RefuelingFactorsSample ("
-						+ " MOVESRunID, iterationID"
-						+ ", fuelTypeID, defaultFormulationID,"
-						+ " vaporTermA, vaporTermB, vaporTermC, vaporTermD, vaporTermE, vaporTermF,"
-						+ " vaporLowTLimit, vaporHighTLimit, tankTDiffLimit,"
-						+ " minimumRefuelingVaporLoss, refuelingSpillRate, refuelingSpillRateCV,"
-						+ " displacedVaporRateCV"
+				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE refuelingfactorssample ("
+						+ " movesrunid, iterationid"
+						+ ", fueltypeid, defaultformulationid,"
+						+ " vaporterma, vaportermb, vaportermc, vaportermd, vaporterme, vaportermf,"
+						+ " vaporlowtlimit, vaporhightlimit, tanktdifflimit,"
+						+ " minimumrefuelingvaporloss, refuelingspillrate, refuelingspillratecv,"
+						+ " displacedvaporratecv"
 						+ ")";
 				SQLRunner.executeSQL(outputConnection, sql);
 
@@ -2330,25 +2330,25 @@ public class InputDataManager {
 				}
 
 				sql = "SELECT " + activeRunID + ", " + nextIterationID + ","
-						+ " polProcessID, sourceTypeID, fuelSubtypeID,"
-						+ " ATRatio, ATRatioCV"
-						+ " INTO OUTFILE '" + fileName + "' FROM ATRatioGas2";
+						+ " polprocessid, sourcetypeid, fuelsubtypeid,"
+						+ " atratio, atratiocv"
+						+ " INTO OUTFILE '" + fileName + "' FROM atratiogas2";
 				SQLRunner.executeSQL(executionConnection,sql);
 
-				sql = "CREATE TABLE IF NOT EXISTS ATRatioGas2Sample ("
-						+ " MOVESRunID SMALLINT UNSIGNED NOT NULL,"
-						+ " iterationID SMALLINT UNSIGNED DEFAULT 1,"
-						+ " polProcessID int NOT NULL default '0',"
-						+ " sourceTypeID smallint(6) NOT NULL default '0',"
-						+ " fuelSubtypeID smallint(6) default NULL,"
-						+ " ATRatio float default NULL,"
-						+ " ATRatioCV float default NULL)";
+				sql = "CREATE TABLE IF NOT EXISTS atratiogas2sample ("
+						+ " movesrunid smallint unsigned not null,"
+						+ " iterationid smallint unsigned default 1,"
+						+ " polprocessid int not null default '0',"
+						+ " sourcetypeid smallint(6) not null default '0',"
+						+ " fuelsubtypeid smallint(6) default null,"
+						+ " atratio float default null,"
+						+ " atratiocv float default null)";
 				SQLRunner.executeSQL(outputConnection,sql);
 
-				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE ATRatioGas2Sample "
-						+ " (MOVESRunID, iterationID,  polProcessID, "
-						+ " sourceTypeID, fuelSubtypeID,"
-						+ " ATRatio, ATRatioCV)";
+				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE atratiogas2sample "
+						+ " (movesrunid, iterationid,  polprocessid, "
+						+ " sourcetypeid, fuelsubtypeid,"
+						+ " atratio, atratiocv)";
 				SQLRunner.executeSQL(outputConnection, sql);
 
 				// Do ATRatioNonGas Table
@@ -2357,25 +2357,25 @@ public class InputDataManager {
 				}
 
 				sql = "SELECT " + activeRunID + ", " + nextIterationID + ","
-						+ " polProcessID, sourceTypeID, fuelSubtypeID,"
-						+ " ATRatio, ATRatioCV"
-						+ " INTO OUTFILE '" + fileName + "' FROM ATRatioNonGas";
+						+ " polprocessid, sourcetypeid, fuelsubtypeid,"
+						+ " atratio, atratiocv"
+						+ " INTO OUTFILE '" + fileName + "' FROM atrationongas";
 				SQLRunner.executeSQL(executionConnection,sql);
 
-				sql = "CREATE TABLE IF NOT EXISTS ATRatioNonGasSample ("
-						+ " MOVESRunID SMALLINT UNSIGNED NOT NULL,"
-						+ " iterationID SMALLINT UNSIGNED DEFAULT 1,"
-						+ " polProcessID int NOT NULL default '0',"
-						+ " sourceTypeID smallint(6) NOT NULL default '0',"
-						+ " fuelSubtypeID smallint(6) default NULL,"
-						+ " ATRatio float default NULL,"
-						+ " ATRatioCV float default NULL)";
+				sql = "CREATE TABLE IF NOT EXISTS atrationongassample ("
+						+ " movesrunid smallint unsigned not null,"
+						+ " iterationid smallint unsigned default 1,"
+						+ " polprocessid int not null default '0',"
+						+ " sourcetypeid smallint(6) not null default '0',"
+						+ " fuelsubtypeid smallint(6) default null,"
+						+ " atratio float default null,"
+						+ " atratiocv float default null)";
 				SQLRunner.executeSQL(outputConnection,sql);
 
-				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE ATRatioNonGasSample "
-						+ " (MOVESRunID, iterationID,  polProcessID, "
-						+ " sourceTypeID, fuelSubtypeID,"
-						+ " ATRatio, ATRatioCV)";
+				sql = "LOAD DATA INFILE '" + fileName + "' INTO TABLE atrationongassample "
+						+ " (movesrunid, iterationid,  polprocessid, "
+						+ " sourcetypeid, fuelsubtypeid,"
+						+ " atratio, atratiocv)";
 				SQLRunner.executeSQL(outputConnection, sql);
 			} catch (Exception e) {
 				/**
@@ -2997,543 +2997,543 @@ public class InputDataManager {
 			}
 		}
 		TableToCopy[] tablesAndFilterColumns = {
-			new TableToCopy("AgeCategory",null,null,null,null,null,null,null,null,
+			new TableToCopy("agecategory",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("AgeGroup",null,null,null,null,null,null,null,null,
+			new TableToCopy("agegroup",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("ATBaseEmissions",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID",null,null,null,"monthGroupID",null),
-			new TableToCopy("ATRatio",null,null,null,null,null,null,null,null,null,
-					null,null,null,"polProcessID",null,"fuelTypeID",null,"monthGroupID",null),
-			new TableToCopy("ATRatioGas2",null,null,null,null,null,null,null,null,null,
-					null,null,null,"polProcessID","sourceTypeID",null,"fuelSubtypeID",null,null),
-			new TableToCopy("ATRatioNonGas",null,null,null,null,null,null,null,null,null,
-					null,null,null,"polProcessID","sourceTypeID",null,"fuelSubtypeID",null,null),
-			new TableToCopy("AverageTankGasoline",null,null,null,"zoneID",null,null,null,null,
-					null,null,null,null,null,null,"fuelTypeID",null,"monthGroupID","isUserInput","fuelYearID",null,null),
-			new TableToCopy("AverageTankTemperature",null,"monthID",null,"zoneID",null,null,null,
-					null,null,null,"hourDayID",null,null,null,null,null,null,"isUserInput"),
-			new TableToCopy("AvgSpeedBin",null,null,null,null,null,null,null,null,
+			new TableToCopy("atbaseemissions",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid",null,null,null,"monthgroupid",null),
+			new TableToCopy("atratio",null,null,null,null,null,null,null,null,null,
+					null,null,null,"polprocessid",null,"fueltypeid",null,"monthgroupid",null),
+			new TableToCopy("atratiogas2",null,null,null,null,null,null,null,null,null,
+					null,null,null,"polprocessid","sourcetypeid",null,"fuelsubtypeid",null,null),
+			new TableToCopy("atrationongas",null,null,null,null,null,null,null,null,null,
+					null,null,null,"polprocessid","sourcetypeid",null,"fuelsubtypeid",null,null),
+			new TableToCopy("averagetankgasoline",null,null,null,"zoneid",null,null,null,null,
+					null,null,null,null,null,null,"fueltypeid",null,"monthgroupid","isuserinput","fuelyearid",null,null),
+			new TableToCopy("averagetanktemperature",null,"monthid",null,"zoneid",null,null,null,
+					null,null,null,"hourdayid",null,null,null,null,null,null,"isuserinput"),
+			new TableToCopy("avgspeedbin",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			// AvgSpeedDistribution cannot filter by roadTypeID or hourDayID because TotalActivityGenerator will
-			// not be able to calculate SourceHours properly.
-			new TableToCopy("AvgSpeedDistribution",null,null,null,null,null,null,null,null,
-					null,null,null/*"hourDayID"*/,null/*"roadTypeID"*/,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("AVFT",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,"sourceTypeID",null/*"fuelTypeID"*/,null,null,null),
-			new TableToCopy("BaseFuel",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,null,"fuelTypeID",null,null,null),
-			new TableToCopy("ColdSoakInitialHourFraction",null,"monthID",null,"zoneID",null,null,null,null,
-					null,null,"hourDayID",null,null,"sourceTypeID",null,null,null,"isUserInput"),
-			new TableToCopy("ColdSoakTankTemperature",null,"monthID",null,"zoneID",null,null,null,null,
-					null,"hourID",null,null,null,null,null,null,null,null),
-			new TableToCopy("ComplexModelParameterName",null,null,null,null,null,null,null,null,
+			// avgspeeddistribution cannot filter by roadtypeid or hourdayid because totalactivitygenerator will
+			// not be able to calculate sourcehours properly.
+			new TableToCopy("avgspeeddistribution",null,null,null,null,null,null,null,null,
+					null,null,null/*"hourdayid"*/,null/*"roadtypeid"*/,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("avft",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,"sourcetypeid",null/*"fueltypeid"*/,null,null,null),
+			new TableToCopy("basefuel",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,null,"fueltypeid",null,null,null),
+			new TableToCopy("coldsoakinitialhourfraction",null,"monthid",null,"zoneid",null,null,null,null,
+					null,null,"hourdayid",null,null,"sourcetypeid",null,null,null,"isuserinput"),
+			new TableToCopy("coldsoaktanktemperature",null,"monthid",null,"zoneid",null,null,null,null,
+					null,"hourid",null,null,null,null,null,null,null,null),
+			new TableToCopy("complexmodelparametername",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("ComplexModelParameters",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID",null,null,null,null,null),
+			new TableToCopy("complexmodelparameters",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid",null,null,null,null,null),
 
 			((mc == Models.ModelCombination.M2 || mc == Models.ModelCombination.M12) ? 
-					new TableToCopy("County", null, null, null, null, null, null, null, null, 
+					new TableToCopy("county", null, null, null, null, null, null, null, null, 
 					null, null, null, null, null, null, null, null, null, null)
 						: 
-					new TableToCopy("County",null,null,null,null,"countyID","stateID",null,null,
+					new TableToCopy("county",null,null,null,null,"countyid","stateid",null,null,
 					null,null,null,null,null,null,null,null,null,null)),
-			new TableToCopy("countyType",null,null,null,null,null,null,null,null,
+			new TableToCopy("countytype",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
 
-			new TableToCopy("countyType",null,null,null,null,null,null,null,null,
+			new TableToCopy("countytype",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
 
 
 			((mc == Models.ModelCombination.M2 || mc == Models.ModelCombination.M12) ? 
-					new TableToCopy("CountyYear", null, null, null, null, null, null, null,	null, 
+					new TableToCopy("countyyear", null, null, null, null, null, null, null,	null, 
 					null, null, null, null, null, null, null, null, null, null) 
 						: 
-					new TableToCopy("CountyYear","yearID",null,null,null,"countyID",null,null,null,
+					new TableToCopy("countyyear","yearid",null,null,null,"countyid",null,null,null,
 					null,null,null,null,null,null,null,null,null,null)),
 
 			// CrankcaseEmissionRatio can't be filtered by polProcessID because PM needs
 			// NonECNonSO4PM which isn't shown on the GUI.
-			new TableToCopy("CrankcaseEmissionRatio", null, null, null, null, null, null, null, null,
-					null, null, null, null, null/*"polProcessID"*/, "sourceTypeID", "fuelTypeID",
+			new TableToCopy("crankcaseemissionratio", null, null, null, null, null, null, null, null,
+					null, null, null, null, null/*"polprocessid"*/, "sourcetypeid", "fueltypeid",
 					null, null, null),
-			new TableToCopy("criteriaRatio",null,null,null,null,null,null,null,null,
-					null, null, null, null, "polProcessID", "sourceTypeID", "fuelTypeID",
+			new TableToCopy("criteriaratio",null,null,null,null,null,null,null,null,
+					null, null, null, null, "polprocessid", "sourcetypeid", "fueltypeid",
 					null, null, null),
-			new TableToCopy("CumTVVCoeffs",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID",null,null,null,null,null),
-			new TableToCopy("DataSource",null,null,null,null,null,null,null,null,
+			new TableToCopy("cumtvvcoeffs",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid",null,null,null,null,null),
+			new TableToCopy("datasource",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("DayOfAnyWeek",null,null,null,null,null,null,null,null,
-					"dayID",null,null,null,null,null,null,null,null,null),
-			// DayVMTFraction cannot filter by roadTypeID or TotalActivityGenerator will
-			// not be able to calculate SourceHours properly.
-			new TableToCopy("DayVMTFraction",null,"monthID",null,null,null,null,null,null,
-					"dayID",null,null,null/*"roadTypeID"*/,null,"sourceTypeID",null,null,null,null),
+			new TableToCopy("dayofanyweek",null,null,null,null,null,null,null,null,
+					"dayid",null,null,null,null,null,null,null,null,null),
+			// dayvmtfraction cannot filter by roadtypeid or totalactivitygenerator will
+			// not be able to calculate sourcehours properly.
+			new TableToCopy("dayvmtfraction",null,"monthid",null,null,null,null,null,null,
+					"dayid",null,null,null/*"roadtypeid"*/,null,"sourcetypeid",null,null,null,null),
 			new TableToCopy("dioxinemissionrate", null, null, null, null, null, null, null, null,
-					null, null, null, null, "polProcessID", null, "fuelTypeID",
+					null, null, null, null, "polprocessid", null, "fueltypeid",
 					null, null, null),
-			new TableToCopy("DriveSchedule",null,null,null,null,null,null,null,null,
+			new TableToCopy("driveschedule",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("DriveScheduleAssoc",null,null,null,null,null,null,null,null,
-					null,null,null,"roadTypeID",null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("DriveScheduleSecond",null,null,null,null,null,null,null,null,
+			new TableToCopy("drivescheduleassoc",null,null,null,null,null,null,null,null,
+					null,null,null,"roadtypeid",null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("driveschedulesecond",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("driveScheduleSecondLink",null,null, null /*"linkID"*/,null,null,null,null,
+			new TableToCopy("driveschedulesecondlink",null,null, null /*"linkid"*/,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("e10FuelProperties",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,null,null,null,"monthGroupID",null,"fuelYearID","fuelRegionID",null),
-			new TableToCopy("EmissionProcess",null,null,null,null,null,null,null,"processID",
+			new TableToCopy("e10fuelproperties",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,null,null,null,"monthgroupid",null,"fuelyearid","fuelregionid",null),
+			new TableToCopy("emissionprocess",null,null,null,null,null,null,null,"processid",
 					null,null,null,null,null,null,null,null,null,null),
 
 			includeEmissionRates?
-					new TableToCopy("EmissionRate",null,null,null,null,null,null,null,null,
-							null,null,null,null,"polProcessID",null,null,null,null,null)
+					new TableToCopy("emissionrate",null,null,null,null,null,null,null,null,
+							null,null,null,null,"polprocessid",null,null,null,null,null)
 					: null,
 			includeEmissionRates?
-					new TableToCopy("EmissionRateByAge",null,null,null,null,null,null,null,null,
-							null,null,null,null,"polProcessID",null,null,null,null,null)
+					new TableToCopy("emissionratebyage",null,null,null,null,null,null,null,null,
+							null,null,null,null,"polprocessid",null,null,null,null,null)
 					: null,
 
-			new TableToCopy("EmissionRateAdjustment",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID","sourceTypeID","fuelTypeID",null,null,null),
-			new TableToCopy("EngineSize",null,null,null,null,null,null,null,null,
+			new TableToCopy("emissionrateadjustment",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid","sourcetypeid","fueltypeid",null,null,null),
+			new TableToCopy("enginesize",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("EngineTech",null,null,null,null,null,null,null,null,
+			new TableToCopy("enginetech",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("ETOHBin",null,null,null,null,null,null,null,null,
+			new TableToCopy("etohbin",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("evapTemperatureAdjustment",null,null,null,null,null,null,null,"processID",
+			new TableToCopy("evaptemperatureadjustment",null,null,null,null,null,null,null,"processid",
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("evapRVPTemperatureAdjustment",null,null,null,null,null,null,null,"processID",
-					null,null,null,null,null,null,"fuelTypeID",null,null,null),
-			new TableToCopy("ExtendedIdleHours","yearID","monthID",null,"zoneID",null,null,null,
-					null,null,null,"hourDayID",null,null,"sourceTypeID",null,null,null,
-					"isUserInput"),
-//			new TableToCopy("FuelAdjustment",null,null,null,null,null,null,null,null,null,
-//					null,null,null,"polProcessID","sourceTypeID",null,/*"fuelSubTypeID"*/ null,null,null),
-			// FuelEngTechAssoc not filtered because AVFT control strategy
-			// intends to make control strategy objects which can be used with all RunSpecs
-			new TableToCopy("FuelEngTechAssoc",null,null,null,null,null,null,null,null,
+			new TableToCopy("evaprvptemperatureadjustment",null,null,null,null,null,null,null,"processid",
+					null,null,null,null,null,null,"fueltypeid",null,null,null),
+			new TableToCopy("extendedidlehours","yearid","monthid",null,"zoneid",null,null,null,
+					null,null,null,"hourdayid",null,null,"sourcetypeid",null,null,null,
+					"isuserinput"),
+//			new TableToCopy("fueladjustment",null,null,null,null,null,null,null,null,null,
+//					null,null,null,"polprocessid","sourcetypeid",null,/*"fuelsubtypeid"*/ null,null,null),
+			// fuelengtechassoc not filtered because avft control strategy
+			// intends to make control strategy objects which can be used with all runspecs
+			new TableToCopy("fuelengtechassoc",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("FuelFormulation",null,null,null,null,null,null,null,null,
+			new TableToCopy("fuelformulation",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("FuelModelName",null,null,null,null,null,null,null,null,
+			new TableToCopy("fuelmodelname",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("FuelModelWtFactor",null,null,null,null,null,null,null,null,
+			new TableToCopy("fuelmodelwtfactor",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("ComplexModelParameters",null,null,null,null,null,null,null,null,
+			new TableToCopy("complexmodelparameters",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("FuelModelYearGroup",null,null,null,null,null,null,null,null,
+			new TableToCopy("fuelmodelyeargroup",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("FuelParameterName",null,null,null,null,null,null,null,null,
+			new TableToCopy("fuelparametername",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
 
 			((mc == Models.ModelCombination.M2 || mc == Models.ModelCombination.M12) ? 
-					new TableToCopy("FuelSubtype", null, null, null, null, null, null, null, null, 
+					new TableToCopy("fuelsubtype", null, null, null, null, null, null, null, null, 
 					null, null, null, null, null, null, null, null, null, null)
 						: 
-					new TableToCopy("FuelSubtype",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,null,"fuelTypeID",null,null,null)),
+					new TableToCopy("fuelsubtype",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,null,"fueltypeid",null,null,null)),
 
 			includeFuelSupply?
-				new TableToCopy("FuelSupply",null,null,null,null,null,null,null,null,
-						null,null,null,null,null,null,null,null,"monthGroupID",null,"fuelYearID","fuelRegionID",null)
+				new TableToCopy("fuelsupply",null,null,null,null,null,null,null,null,
+						null,null,null,null,null,null,null,null,"monthgroupid",null,"fuelyearid","fuelregionid",null)
 				: null,
 
-			new TableToCopy("FuelSupplyYear",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,null,null,null,null,null,"fuelYearID",null,null),
-			new TableToCopy("FuelType",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,null,"fuelTypeID",null,null,null),
+			new TableToCopy("fuelsupplyyear",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,null,null,null,null,null,"fuelyearid",null,null),
+			new TableToCopy("fueltype",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,null,"fueltypeid",null,null,null),
 
 			includeFuelUsageFraction?
-					new TableToCopy("fuelUsageFraction",null,null,null,null,"countyID",null,null,null,
-					null,null,null,null,null,null,"sourceBinFuelTypeID",null,null,null,"fuelYearID",null,null)
+					new TableToCopy("fuelusagefraction",null,null,null,null,"countyid",null,null,null,
+					null,null,null,null,null,null,"sourcebinfueltypeid",null,null,null,"fuelyearid",null,null)
 					: null,
 
-			new TableToCopy("fuelWizardFactors",null,null,null,null,null,null,null,null,
+			new TableToCopy("fuelwizardfactors",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("FullACAdjustment",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID","sourceTypeID",null,null,null,null),
-			new TableToCopy("generalFuelRatio",null,null,null,null,null,null,"pollutantID","processID",
-					null, null, null, null, "polProcessID", null, "fuelTypeID", null, null, null),
-			new TableToCopy("generalFuelRatioExpression",null,null,null,null,null,null,null,null,
-					null, null, null, null, "polProcessID", null, "fuelTypeID", null, null, null),
-			new TableToCopy("GreetManfAndDisposal",null,null,null,null,null,null,"pollutantID",
+			new TableToCopy("fullacadjustment",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid","sourcetypeid",null,null,null,null),
+			new TableToCopy("generalfuelratio",null,null,null,null,null,null,"pollutantid","processid",
+					null, null, null, null, "polprocessid", null, "fueltypeid", null, null, null),
+			new TableToCopy("generalfuelratioexpression",null,null,null,null,null,null,null,null,
+					null, null, null, null, "polprocessid", null, "fueltypeid", null, null, null),
+			new TableToCopy("greetmanfanddisposal",null,null,null,null,null,null,"pollutantid",
 					null,null,null,null,null,null,null,null ,null,null,null),
-			/* Contains "base year," or bounding, values for an analysis year so this table cannot
+			/* contains "base year," or bounding, values for an analysis year so this table cannot
 			 * be filtered by the year, it is filtered by pollutantID and fuelSubType */
-			new TableToCopy("GreetWellToPump",null,null,null,null,null,null,"pollutantID",null,
-					null,null,null,null,null,null,null,"fuelSubTypeID",null,null),
-			new TableToCopy("Grid",null,null,null,null,null,null,null,null,
+			new TableToCopy("greetwelltopump",null,null,null,null,null,null,"pollutantid",null,
+					null,null,null,null,null,null,null,"fuelsubtypeid",null,null),
+			new TableToCopy("grid",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("GridZoneAssoc",null,null,null,"zoneID",null,null,null,null,
+			new TableToCopy("gridzoneassoc",null,null,null,"zoneid",null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("HCPermeationCoeff",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID",null,null,null,null,null),
-			new TableToCopy("HCSpeciation",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID",null,null,"fuelSubtypeID",null,null),
+			new TableToCopy("hcpermeationcoeff",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid",null,null,null,null,null),
+			new TableToCopy("hcspeciation",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid",null,null,"fuelsubtypeid",null,null),
 
 			(CompilationFlags.ENABLE_AUXILIARY_POWER_EXHAUST && includeHotellingActivityDistribution)?
 					// hotellingActivityDistribution uses wildcards for zoneID, so it cannot be filtered by zone.
-					new TableToCopy("hotellingActivityDistribution",null,null,null,null/*"zoneID"*/,null,null,null,null,
+					new TableToCopy("hotellingactivitydistribution",null,null,null,null/*"zoneid"*/,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null)
 					: null,
-			new TableToCopy("hotellingAgeFraction",null,null,null,"zoneID",null,null,null,null,
+			new TableToCopy("hotellingagefraction",null,null,null,"zoneid",null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
 			CompilationFlags.ENABLE_AUXILIARY_POWER_EXHAUST?
-					new TableToCopy("hotellingHours","yearID","monthID",null,"zoneID",null,null,null,
-					null,null,null,"hourDayID",null,null,"sourceTypeID",null,null,null,
-					"isUserInput")
+					new TableToCopy("hotellinghours","yearid","monthid",null,"zoneid",null,null,null,
+					null,null,null,"hourdayid",null,null,"sourcetypeid",null,null,null,
+					"isuserinput")
 					: null,
 
-			new TableToCopy("hotellingCalendarYear","yearID",null,null,null,null,null,null,null,
+			new TableToCopy("hotellingcalendaryear","yearid",null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
 
-			new TableToCopy("hotellingHourFraction",null,null,null,"zoneID",null,null,null,null,
-					"dayID","hourID",null,null,null,null,null,null,null,null),
-			new TableToCopy("hotellingMonthAdjust",null,"monthID",null,"zoneID",null,null,null,
+			new TableToCopy("hotellinghourfraction",null,null,null,"zoneid",null,null,null,null,
+					"dayid","hourid",null,null,null,null,null,null,null,null),
+			new TableToCopy("hotellingmonthadjust",null,"monthid",null,"zoneid",null,null,null,
 					null,null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("hotellingHoursPerDay","yearID",null,null,"zoneID",null,null,null,null,
-					"dayID",null,null,null,null,null,null,null,null,null),
+			new TableToCopy("hotellinghoursperday","yearid",null,null,"zoneid",null,null,null,null,
+					"dayid",null,null,null,null,null,null,null,null,null),
 
-			// HourDay cannot be filtered by hourID because TotalActivityGenerator requires all hours
-			new TableToCopy("HourDay",null,null,null,null,null,null,null,null,
-					"dayID",null/*"hourID"*/,null,null,null,null,null,null,null,null),
-			// HourOfAnyDay cannot be filtered by hourID because TotalActivityGenerator requires all hours
-			new TableToCopy("HourOfAnyDay",null,null,null,null,null,null,null,null,
-					null,null/*"hourID"*/,null,null,null,null,null,null,null,null),
-			/* HourVMTFraction cannot be filtered by sourceTypeID because info for
-			 * type 21 is needed by PreAggDay.sql */
-			// HourVMTFraction cannot filter by roadTypeID or hourID because TotalActivityGenerator will
-			// not be able to calculate SourceHours properly.
-			new TableToCopy("HourVMTFraction",null,null,null,null,null,null,null,null,
-					"dayID",null/*"hourID"*/,null,null/*"roadTypeID"*/,null,null,null,null,null,null),
-			new TableToCopy("HPMSVtype",null,null,null,null,null,null,null,null,
+			// hourday cannot be filtered by hourid because totalactivitygenerator requires all hours
+			new TableToCopy("hourday",null,null,null,null,null,null,null,null,
+					"dayid",null/*"hourid"*/,null,null,null,null,null,null,null,null),
+			// hourofanyday cannot be filtered by hourid because totalactivitygenerator requires all hours
+			new TableToCopy("hourofanyday",null,null,null,null,null,null,null,null,
+					null,null/*"hourid"*/,null,null,null,null,null,null,null,null),
+			/* hourvmtfraction cannot be filtered by sourcetypeid because info for
+			 * type 21 is needed by preaggday.sql */
+			// hourvmtfraction cannot filter by roadtypeid or hourid because totalactivitygenerator will
+			// not be able to calculate sourcehours properly.
+			new TableToCopy("hourvmtfraction",null,null,null,null,null,null,null,null,
+					"dayid",null/*"hourid"*/,null,null/*"roadtypeid"*/,null,null,null,null,null,null),
+			new TableToCopy("hpmsvtype",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("HPMSVtypeDay","yearID","monthID",null,null,null,null,null,null,
-					"dayID",null,null,null,null,null,null,null,null,null),
+			new TableToCopy("hpmsvtypeday","yearid","monthid",null,null,null,null,null,null,
+					"dayid",null,null,null,null,null,null,null,null,null),
 
 			/* Contains "base year", or bounding, values for an analysis year so this table cannot
 			 * be filtered by the selected runspec criteria. */
-			includeHPMSVtypeYear? new TableToCopy("HPMSVtypeYear",null,null,null,null,null,null,null,null,
+			includeHPMSVtypeYear? new TableToCopy("hpmsvtypeyear",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null)
 					: null,
 
 			includeIMCoverage?
-					new TableToCopy("IMCoverage","yearID",null,null,null,"countyID","stateID",null,null,
-					null,null,null,null,"polProcessID","sourceTypeID","fuelTypeID",null,null,null)
+					new TableToCopy("imcoverage","yearid",null,null,null,"countyid","stateid",null,null,
+					null,null,null,null,"polprocessid","sourcetypeid","fueltypeid",null,null,null)
 					: null,
 
-			new TableToCopy("idleDayAdjust",null,null,null,null,null,null,null,null,
-					"dayID",null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("idleModelYearGrouping",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("idleMonthAdjust",null,"monthID",null,null,null,null,null,null,
-					null,null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("idleRegion",null,null,null,null,null,null,null,null,
+			new TableToCopy("idledayadjust",null,null,null,null,null,null,null,null,
+					"dayid",null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("idlemodelyeargrouping",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("idlemonthadjust",null,"monthid",null,null,null,null,null,null,
+					null,null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("idleregion",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("IMFactor",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID","sourceTypeID","fuelTypeID",null,null,null),
-			new TableToCopy("IMInspectFreq",null,null,null,null,null,null,null,null,
+			new TableToCopy("imfactor",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid","sourcetypeid","fueltypeid",null,null,null),
+			new TableToCopy("iminspectfreq",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("IMModelYearGroup",null,null,null,null,null,null,null,null,
+			new TableToCopy("immodelyeargroup",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("IMTestStandards",null,null,null,null,null,null,null,null,
+			new TableToCopy("imteststandards",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("StartsOpModeDistribution",null,null,null /*"linkID"*/,null,null,null,null,null,
-					"dayID","hourID",null,null,null,"sourceTypeID",null,null,null,"isUserInput"),
-			new TableToCopy("integratedSpeciesSet",null,null,null,null,null,null,null,null,
+			new TableToCopy("startsopmodedistribution",null,null,null /*"linkid"*/,null,null,null,null,null,
+					"dayid","hourid",null,null,null,"sourcetypeid",null,null,null,"isuserinput"),
+			new TableToCopy("integratedspeciesset",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("integratedSpeciesSetName",null,null,null,null,null,null,null,null,
+			new TableToCopy("integratedspeciessetname",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
 
 			includeLinkTable?
-					new TableToCopy("Link",null,null,null,"zoneID","countyID",null,null,null,
-					null,null,null,"roadTypeID",null,null,null,null,null,null)
+					new TableToCopy("link",null,null,null,"zoneid","countyid",null,null,null,
+					null,null,null,"roadtypeid",null,null,null,null,null,null)
 					: null,
 
-			new TableToCopy("LinkAverageSpeed",null,null,null /*"linkID"*/,null,null,null,null,null,
+			new TableToCopy("linkaveragespeed",null,null,null /*"linkid"*/,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("LinkHourVMTFraction",null,"monthID", null /*"linkID"*/,null,null,null,null,
-					"dayID","hourID",null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("linkSourceTypeHour",null,null, null /*"linkID"*/,null,null,null,null,
-					null,null,null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("lumpedSpeciesName",null,null,null,null,null,null,null,null,
+			new TableToCopy("linkhourvmtfraction",null,"monthid", null /*"linkid"*/,null,null,null,null,
+					"dayid","hourid",null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("linksourcetypehour",null,null, null /*"linkid"*/,null,null,null,null,
+					null,null,null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("lumpedspeciesname",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("M6SulfurCoeff",null,null,null,null,null,null,"pollutantID",
+			new TableToCopy("m6sulfurcoeff",null,null,null,null,null,null,"pollutantid",
 					null,null,null,null,null,null,null,null ,null,null,null),
-			new TableToCopy("MeanFuelParameters",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID",null,"fuelTypeID",null,null,null),
-			new TableToCopy("mechanismName",null,null,null,null,null,null,null,null,
+			new TableToCopy("meanfuelparameters",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid",null,"fueltypeid",null,null,null),
+			new TableToCopy("mechanismname",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
 			new TableToCopy("metalemissionrate", null, null, null, null, null, null, null, null,
-					null, null, null, null, "polProcessID", "sourceTypeID", "fuelTypeID",
+					null, null, null, null, "polprocessid", "sourcetypeid", "fueltypeid",
 					null, null, null),
-			new TableToCopy("methaneTHCRatio",null,null,null,null,null,null,null,"processID",
-					null,null,null,null,null,null,null,null/*"fuelSubtypeID"*/,null,null),
+			new TableToCopy("methanethcratio",null,null,null,null,null,null,null,"processid",
+					null,null,null,null,null,null,null,null/*"fuelsubtypeid"*/,null,null),
 			new TableToCopy("minorhapratio", null, null, null, null, null, null, null, null,
-					null, null, null, null, "polProcessID", null, "fuelTypeID",
+					null, null, null, null, "polprocessid", null, "fueltypeid",
 					null, null, null),
-			new TableToCopy("ModelYear",null,null,null,null,null,null,null,null,
+			new TableToCopy("modelyear",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("modelYearCutPoints",null,null,null,null,null,null,null,null,
+			new TableToCopy("modelyearcutpoints",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("ModelYearGroup",null,null,null,null,null,null,null,null,
+			new TableToCopy("modelyeargroup",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("ModelYearMapping",null,null,null,null,null,null,null,null,
+			new TableToCopy("modelyearmapping",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("MonthGroupHour",null,null,null,null,null,null,null,null,
-					null,"hourID",null,null,null,null,null,null,"monthGroupID",null),
-			new TableToCopy("MonthGroupOfAnyYear",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,null,null,null,"monthGroupID",null),
-			/* AggregationSQLGenerator needs MonthOfAnyYear to have all 12 months */
-			new TableToCopy("MonthofAnyYear",null,null /*"monthID"*/,null,null,null,null,null,null,
+			new TableToCopy("monthgrouphour",null,null,null,null,null,null,null,null,
+					null,"hourid",null,null,null,null,null,null,"monthgroupid",null),
+			new TableToCopy("monthgroupofanyyear",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,null,null,null,"monthgroupid",null),
+			/* aggregationsqlgenerator needs monthofanyyear to have all 12 months */
+			new TableToCopy("monthofanyyear",null,null /*"monthid"*/,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			/* MonthVMTFraction cannot be filtered by sourceTypeID because info for
-			 * type 21 is needed by PreAggYear.sql */
-			new TableToCopy("MonthVMTFraction",null,"monthID",null,null,null,null,null,null,
+			/* monthvmtfraction cannot be filtered by sourcetypeid because info for
+			 * type 21 is needed by preaggyear.sql */
+			new TableToCopy("monthvmtfraction",null,"monthid",null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("NONO2Ratio",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID","sourceTypeID","fuelTypeID",null,null,null),
-			new TableToCopy("offNetworkLink",null,null,null,null,null,null,null,
-					null,null,null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("OMDGPolProcessRepresented",null,null,null,null,null,null,null,null,
-					null, null, null, null, "polProcessID", null, null, null, null, null),
-			new TableToCopy("onRoadRetrofit",null,null,null,null,null,null,"pollutantID",
-					"processID",null,null,null,null,null,"sourceTypeID","fuelTypeID",null,null,null),
-			new TableToCopy("OperatingMode",null,null,null,null,null,null,null,null,
+			new TableToCopy("nono2ratio",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid","sourcetypeid","fueltypeid",null,null,null),
+			new TableToCopy("offnetworklink",null,null,null,null,null,null,null,
+					null,null,null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("omdgpolprocessrepresented",null,null,null,null,null,null,null,null,
+					null, null, null, null, "polprocessid", null, null, null, null, null),
+			new TableToCopy("onroadretrofit",null,null,null,null,null,null,"pollutantid",
+					"processid",null,null,null,null,null,"sourcetypeid","fueltypeid",null,null,null),
+			new TableToCopy("operatingmode",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("OpModeDistribution",null,null,null /*"linkID"*/,null,null,null,null,null,
-					null,null,"hourDayID",null,"polProcessID","sourceTypeID",null,null,null,
-					"isUserInput"),
-			new TableToCopy("OpModePolProcAssoc",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID",null,null,null,null,null),
-			new TableToCopy("OxyThreshName",null,null,null,null,null,null,null,null,
+			new TableToCopy("opmodedistribution",null,null,null /*"linkid"*/,null,null,null,null,null,
+					null,null,"hourdayid",null,"polprocessid","sourcetypeid",null,null,null,
+					"isuserinput"),
+			new TableToCopy("opmodepolprocassoc",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid",null,null,null,null,null),
+			new TableToCopy("oxythreshname",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("pahGasRatio", null, null, null, null, null, null, null, null,
-					null, null, null, null, "polProcessID", null, "fuelTypeID",
+			new TableToCopy("pahgasratio", null, null, null, null, null, null, null, null,
+					null, null, null, null, "polprocessid", null, "fueltypeid",
 					null, null, null),
-			new TableToCopy("pahParticleRatio", null, null, null, null, null, null, null, null,
-					null, null, null, null, "polProcessID", null, "fuelTypeID",
+			new TableToCopy("pahparticleratio", null, null, null, null, null, null, null, null,
+					null, null, null, null, "polprocessid", null, "fueltypeid",
 					null, null, null),
-			new TableToCopy("PM10EmissionRatio", null, null, null, null, null, null, null, null,
-					null, null, null, null, "polProcessID", "sourceTypeID", "fuelTypeID",
+			new TableToCopy("pm10emissionratio", null, null, null, null, null, null, null, null,
+					null, null, null, null, "polprocessid", "sourcetypeid", "fueltypeid",
 					null, null, null),
-			new TableToCopy("PMSpeciation", null, null, null, null, null, null, "outputPollutantID", "processID",
-					null, null, null, null, null, "sourceTypeID", "fuelTypeID", null, null, null),
-			new TableToCopy("PollutantDisplayGroup",null,null,null,null,null,null,null,null,
+			new TableToCopy("pmspeciation", null, null, null, null, null, null, "outputpollutantid", "processid",
+					null, null, null, null, null, "sourcetypeid", "fueltypeid", null, null, null),
+			new TableToCopy("pollutantdisplaygroup",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
 
 			((mc == Models.ModelCombination.M2 || mc == Models.ModelCombination.M12) ? 
-					new TableToCopy("Pollutant", null, null, null, null, null, null, null,
+					new TableToCopy("pollutant", null, null, null, null, null, null, null,
 					null, null, null, null, null, null, null, null, null, null, null)
 						: 
-					new TableToCopy("Pollutant",null,null,null,null,null,null,"pollutantID",null,
+					new TableToCopy("pollutant",null,null,null,null,null,null,"pollutantid",null,
 					null,null,null,null,null,null,null,null,null,null)),
 			((mc == Models.ModelCombination.M2 || mc == Models.ModelCombination.M12) ? 
-					new TableToCopy("PollutantProcessAssoc", null, null, null, null, null, null, null, 
+					new TableToCopy("pollutantprocessassoc", null, null, null, null, null, null, null, 
 					null, null, null, null, null, null, null, null, null, null, null) 
 						: 
-					new TableToCopy("PollutantProcessAssoc",null,null,null,null,null,null,"pollutantID",
-					"processID",null,null,null,null,"polProcessID",null,null,null,null,null)),
+					new TableToCopy("pollutantprocessassoc",null,null,null,null,null,null,"pollutantid",
+					"processid",null,null,null,null,"polprocessid",null,null,null,null,null)),
 
-			new TableToCopy("PollutantProcessModelYear",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID",null,null,null,null,null),
-			new TableToCopy("RefuelingFactors", null, null, null, null, null, null, null, null,
-					null, null, null, null, null, null, "fuelTypeID", null, null, null),
-			new TableToCopy("RegulatoryClass",null,null,null,null,null,null,null,null,
+			new TableToCopy("pollutantprocessmodelyear",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid",null,null,null,null,null),
+			new TableToCopy("refuelingfactors", null, null, null, null, null, null, null, null,
+					null, null, null, null, null, null, "fueltypeid", null, null, null),
+			new TableToCopy("regulatoryclass",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
 			new TableToCopy("region",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,null,null,null,null,null,null,"regionID",null),
-			new TableToCopy("regionCode",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,null,null,null,null,null,null,"regionid",null),
+			new TableToCopy("regioncode",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("regionCounty","fuelYearID",null,null,null,"countyID",null,null,null, //modifying filter to include fuel year in regionCounty filtering
+			new TableToCopy("regioncounty","fuelyearid",null,null,null,"countyid",null,null,null, //modifying filter to include fuel year in regioncounty filtering
 					null,null,null,null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("RetrofitInputAssociations",null,null,null,null,null,null,null,null,
+			new TableToCopy("retrofitinputassociations",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			// RoadType cannot filter by roadTypeID or TotalActivityGenerator will
-			// not be able to calculate SourceHours properly.
-			new TableToCopy("RoadType",null,null,null,null,null,null,null,null,
-					null,null,null,null/*"roadTypeID"*/,null,null,null,null,null,null),
-			/* RoadTypeDistribution cannot be filtered by sourceTypeID because info for
-			 * type 21 is needed by PreAggDay.sql */
-			// RoadTypeDistribution cannot filter by roadTypeID or TotalActivityGenerator will
-			// not be able to calculate SourceHours properly.
-			// RoadTypeDistribution cannot filter by roadTypeID or ActivityCalculator will
+			// roadtype cannot filter by roadtypeid or totalactivitygenerator will
+			// not be able to calculate sourcehours properly.
+			new TableToCopy("roadtype",null,null,null,null,null,null,null,null,
+					null,null,null,null/*"roadtypeid"*/,null,null,null,null,null,null),
+			/* roadtypedistribution cannot be filtered by sourcetypeid because info for
+			 * type 21 is needed by preaggday.sql */
+			// roadtypedistribution cannot filter by roadtypeid or totalactivitygenerator will
+			// not be able to calculate sourcehours properly.
+			// roadtypedistribution cannot filter by roadtypeid or activitycalculator will
 			// not be able to calculate population properly.
-			new TableToCopy("RoadTypeDistribution",null,null,null,null,null,null,null,null,
-					null,null,null,null/*"roadTypeID"*/,null,null,null,null,null,null),
-			new TableToCopy("SampleVehicleDay",null,null,null,null,null,null,null,null,
-					"dayID",null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("SampleVehicleSoaking",null,null,null,null,null,null,null,null,
-					"dayID",null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("SampleVehicleSoakingDay",null,null,null,null,null,null,null,null,
-					"dayID",null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("SampleVehicleSoakingDayUsed",null,null,null,null,null,null,null,null,
-					"dayID",null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("SampleVehicleSoakingDayBasis",null,null,null,null,null,null,null,null,
-					"dayID",null,null,null,null,null,null,null,null,null),
-			new TableToCopy("SampleVehicleSoakingDayBasisUsed",null,null,null,null,null,null,null,null,
-					"dayID",null,null,null,null,null,null,null,null,null),
-			new TableToCopy("SampleVehicleTrip",null,null,null,null,null,null,null,null,
-					"dayID",null,null,null,null,null,null,null,null,null),
+			new TableToCopy("roadtypedistribution",null,null,null,null,null,null,null,null,
+					null,null,null,null/*"roadtypeid"*/,null,null,null,null,null,null),
+			new TableToCopy("samplevehicleday",null,null,null,null,null,null,null,null,
+					"dayid",null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("samplevehiclesoaking",null,null,null,null,null,null,null,null,
+					"dayid",null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("samplevehiclesoakingday",null,null,null,null,null,null,null,null,
+					"dayid",null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("samplevehiclesoakingdayused",null,null,null,null,null,null,null,null,
+					"dayid",null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("samplevehiclesoakingdaybasis",null,null,null,null,null,null,null,null,
+					"dayid",null,null,null,null,null,null,null,null,null),
+			new TableToCopy("samplevehiclesoakingdaybasisused",null,null,null,null,null,null,null,null,
+					"dayid",null,null,null,null,null,null,null,null,null),
+			new TableToCopy("samplevehicletrip",null,null,null,null,null,null,null,null,
+					"dayid",null,null,null,null,null,null,null,null,null),
 					
-			// Do not filter SampleVehiclePopulation by fuel type. Doing so breaks features that
+			// do not filter samplevehiclepopulation by fuel type. doing so breaks features that
 			// require this distribution even when not selected in the runspec.
-			new TableToCopy("SampleVehiclePopulation",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,"sourceTypeID",null/*"fuelTypeID"*/,null,null,null,null,null,"modelYearID"),
+			new TableToCopy("samplevehiclepopulation",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,"sourcetypeid",null/*"fueltypeid"*/,null,null,null,null,null,"modelyearid"),
 
-			new TableToCopy("SCC",null,null,null,null,null,null,null,null,
+			new TableToCopy("scc",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("Sector",null,null,null,null,null,null,null,null,
+			new TableToCopy("sector",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("SHO","yearID","monthID",null /*"linkID"*/,null,null,null,null,null,
-					null,null,"hourDayID",null,null,"sourceTypeID",null,null,null,"isUserInput"),
-			// AVFT needs all of these fractions so it can move vehicles from one type
+			new TableToCopy("sho","yearid","monthid",null /*"linkid"*/,null,null,null,null,null,
+					null,null,"hourdayid",null,null,"sourcetypeid",null,null,null,"isuserinput"),
+			// avft needs all of these fractions so it can move vehicles from one type
 			// of fuel to another.
-			new TableToCopy("SizeWeightFraction",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,null,null/*"fuelTypeID"*/,null,null,null),
-			new TableToCopy("SoakActivityFraction",null,"monthID",null,"zoneID",null,null,null,
-					null,null,null,"hourDayID",null,null,null,null,null,null,
-					"isUserInput"),
-			new TableToCopy("SourceBin",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,null,"fuelTypeID",null,null,null),
-			new TableToCopy("SourceBinDistribution",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID",null,null,null,null,"isUserInput"),
-			new TableToCopy("SourceHours","yearID","monthID",null,null,null,null,null,
-					null,null,null,"hourDayID",null,null,"sourceTypeID",null,null,null,
-					"isUserInput"),
-			new TableToCopy("SourceTypeAge",null,null,null,null,null,null,null,null,
+			new TableToCopy("sizeweightfraction",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,null,null/*"fueltypeid"*/,null,null,null),
+			new TableToCopy("soakactivityfraction",null,"monthid",null,"zoneid",null,null,null,
+					null,null,null,"hourdayid",null,null,null,null,null,null,
+					"isuserinput"),
+			new TableToCopy("sourcebin",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,null,"fueltypeid",null,null,null),
+			new TableToCopy("sourcebindistribution",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid",null,null,null,null,"isuserinput"),
+			new TableToCopy("sourcehours","yearid","monthid",null,null,null,null,null,
+					null,null,null,"hourdayid",null,null,"sourcetypeid",null,null,null,
+					"isuserinput"),
+			new TableToCopy("sourcetypeage",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
 
 			/* Used in base year calculations so this table cannot be filtered */
-			includeSourceTypeAgeDistribution? new TableToCopy("SourceTypeAgeDistribution",null,null,null,null,null,null,null,null,
+			includeSourceTypeAgeDistribution? new TableToCopy("sourcetypeagedistribution",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null)
 					: null,
 
-			new TableToCopy("SourceTypeDayVMT","yearID","monthID",null,null,null,null,null,null,
-					"dayID",null,null,null,null,"sourceTypeID",null,null,null,null),
+			new TableToCopy("sourcetypedayvmt","yearid","monthid",null,null,null,null,null,null,
+					"dayid",null,null,null,null,"sourcetypeid",null,null,null,null),
 					
-			// SourceTypeHour cannot be filtered by hour because hotelling shaping requires
-			// all hours of a day. The TAG filters it by day.
-			new TableToCopy("SourceTypeHour",null,null,null,null,null,null,null,null,
-					null,null,null/*"hourDayID"*/,null,null,"sourceTypeID",null,null,null,null),
+			// sourcetypehour cannot be filtered by hour because hotelling shaping requires
+			// all hours of a day. the tag filters it by day.
+			new TableToCopy("sourcetypehour",null,null,null,null,null,null,null,null,
+					null,null,null/*"hourdayid"*/,null,null,"sourcetypeid",null,null,null,null),
 
-			// Used in AVFTControlStrategy calculations, so do not use filter by sourceTypeID
-			new TableToCopy("SourceTypeModelYear",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,null/*"sourceTypeID"*/,null,null,null,null,null,null,"modelYearID"),
-			new TableToCopy("SourceTypeModelYearGroup",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("SourceTypePolProcess",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID","sourceTypeID",null,null,null,null),
-			new TableToCopy("SourceTypeTechAdjustment", null, null, null, null, null, null, null,
-					"processID", null, null, null, null, null, "sourceTypeID", null,
+			// used in avftcontrolstrategy calculations, so do not use filter by sourcetypeid
+			new TableToCopy("sourcetypemodelyear",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,null/*"sourcetypeid"*/,null,null,null,null,null,null,"modelyearid"),
+			new TableToCopy("sourcetypemodelyeargroup",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("sourcetypepolprocess",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid","sourcetypeid",null,null,null,null),
+			new TableToCopy("sourcetypetechadjustment", null, null, null, null, null, null, null,
+					"processid", null, null, null, null, null, "sourcetypeid", null,
 					null, null, null),
 
 			// "SourceTypeYear" Used in base year calculations so this table cannot be filtered
 			// Also, sourceTypeID cannot be filtered in SourceTypeYear due to the need
 			// to calculate relativeMAR in TotalActivityGenerator, a calculation that needs
 			// data from all source use types.
-			includeSourceTypeYear? new TableToCopy("SourceTypeYear",null,null,null,null,null,null,null,null,
+			includeSourceTypeYear? new TableToCopy("sourcetypeyear",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null)
 					: null,
 
-			new TableToCopy("SourceTypeYearVMT","yearID",null,null,null,null,null,null,null,
-					null,null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("SourceUseType",null,null,null,null,null,null,null,null,
+			new TableToCopy("sourcetypeyearvmt","yearid",null,null,null,null,null,null,null,
+					null,null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("sourceusetype",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("sourceUseTypePhysics",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("Starts","yearID","monthID",null,"zoneID",null,null,null,null,
-					null,null,"hourDayID",null,null,null,null,null,null,"isUserInput"),
-			new TableToCopy("startsAgeAdjustment",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("startsPerDay",null,null,null,null,null,null,null,null,
-					"dayID",null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("startsPerDayPerVehicle",null,null,null,null,null,null,null,null,
-					"dayID",null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("startsHourFraction",null,null,null,null,null,null,null,null,
-					"dayID","hourID",null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("startsMonthAdjust",null,"monthID",null,null,null,null,null,null,
-					null,null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("StartsPerVehicle",null,null,null,null,null,null,null,null,
-					null,null,"hourDayID",null,null,"sourceTypeID",null,null,null,null),
+			new TableToCopy("sourceusetypephysics",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("starts","yearid","monthid",null,"zoneid",null,null,null,null,
+					null,null,"hourdayid",null,null,null,null,null,null,"isuserinput"),
+			new TableToCopy("startsageadjustment",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("startsperday",null,null,null,null,null,null,null,null,
+					"dayid",null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("startsperdaypervehicle",null,null,null,null,null,null,null,null,
+					"dayid",null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("startshourfraction",null,null,null,null,null,null,null,null,
+					"dayid","hourid",null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("startsmonthadjust",null,"monthid",null,null,null,null,null,null,
+					null,null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("startspervehicle",null,null,null,null,null,null,null,null,
+					null,null,"hourdayid",null,null,"sourcetypeid",null,null,null,null),
 
 			((mc == Models.ModelCombination.M2 || mc == Models.ModelCombination.M12) ? 
-					new TableToCopy("State",null,null,null,null,null,null,null,null,
+					new TableToCopy("state",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null)
 						:
-					new TableToCopy("State",null,null,null,null,null,"stateID",null,null,
+					new TableToCopy("state",null,null,null,null,null,"stateid",null,null,
 					null,null,null,null,null,null,null,null,null,null)),
 
-			new TableToCopy("SulfateEmissionRate",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID",null,"fuelTypeID",null,null,null),
-			new TableToCopy("SulfateFractions", null, null, null, null, null, null, null, "processID",
-					null, null, null, null, null, "sourceTypeID", "fuelTypeID", null, null, null),
-			new TableToCopy("SulfurBase",null,null,null,null,null,null,null,null,
+			new TableToCopy("sulfateemissionrate",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid",null,"fueltypeid",null,null,null),
+			new TableToCopy("sulfatefractions", null, null, null, null, null, null, null, "processid",
+					null, null, null, null, null, "sourcetypeid", "fueltypeid", null, null, null),
+			new TableToCopy("sulfurbase",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("sulfurCapAmount",null,null,null,null,null,null,null,null,
-					null,null,null,null,null,null,"fuelTypeID",null,null,null),
-			new TableToCopy("SulfurModelCoeff",null,null,null,null,null,null,null,"processID",
+			new TableToCopy("sulfurcapamount",null,null,null,null,null,null,null,null,
+					null,null,null,null,null,null,"fueltypeid",null,null,null),
+			new TableToCopy("sulfurmodelcoeff",null,null,null,null,null,null,null,"processid",
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("SulfurModelName",null,null,null,null,null,null,null,null,
+			new TableToCopy("sulfurmodelname",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("TankTemperatureGroup",null,null,null,null,null,null,null,null,
+			new TableToCopy("tanktemperaturegroup",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("TankTemperatureRise",null,null,null,null,null,null,null,null,
+			new TableToCopy("tanktemperaturerise",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("TankVaporGenCoeffs",null,null,null,null,null,null,null,null,
+			new TableToCopy("tankvaporgencoeffs",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("TemperatureAdjustment",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID",null,"fuelTypeID",null,null,null),
-			new TableToCopy("temperatureFactorExpression", null, null, null, null, null, null, "pollutantID", "processID",
-					null, null, null, null, null, "sourceTypeID", "fuelTypeID", null, null, null),
-			new TableToCopy("TemperatureProfileID",null,"monthID",null,"zoneID",null,null,null,null,
+			new TableToCopy("temperatureadjustment",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid",null,"fueltypeid",null,null,null),
+			new TableToCopy("temperaturefactorexpression", null, null, null, null, null, null, "pollutantid", "processid",
+					null, null, null, null, null, "sourcetypeid", "fueltypeid", null, null, null),
+			new TableToCopy("temperatureprofileid",null,"monthid",null,"zoneid",null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("togSpeciation",null,null,null,null,null,null,null,"processID",
-					null,null,null,null,null,null,null,"fuelSubtypeID",null,null),
-			new TableToCopy("TOGSpeciationProfile",null,null,null,null,null,null,null,null,
+			new TableToCopy("togspeciation",null,null,null,null,null,null,null,"processid",
+					null,null,null,null,null,null,null,"fuelsubtypeid",null,null),
+			new TableToCopy("togspeciationprofile",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("TOGSpeciationProfileName",null,null,null,null,null,null,null,null,
+			new TableToCopy("togspeciationprofilename",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			new TableToCopy("totalIdleFraction",null,"monthID",null,null,null,null,null,null,
-					"dayID",null,null,null,null,"sourceTypeID",null,null,null,null),
-			new TableToCopy("StartTempAdjustment",null,null,null,null,null,null,null,null,
-					null,null,null,null,"polProcessID",null,"fuelTypeID",null,null,null),
-			new TableToCopy("WeightClass",null,null,null,null,null,null,null,null,
+			new TableToCopy("totalidlefraction",null,"monthid",null,null,null,null,null,null,
+					"dayid",null,null,null,null,"sourcetypeid",null,null,null,null),
+			new TableToCopy("starttempadjustment",null,null,null,null,null,null,null,null,
+					null,null,null,null,"polprocessid",null,"fueltypeid",null,null,null),
+			new TableToCopy("weightclass",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
-			/* "Year" Contains "base year," or bounding, values for an analysis year so this table
+			/* "year" contains "base year," or bounding, values for an analysis year so this table
 			 * cannot be filtered by the selected runspec criteria. */
-			new TableToCopy("Year",null,null,null,null,null,null,null,null,
+			new TableToCopy("year",null,null,null,null,null,null,null,null,
 					null,null,null,null,null,null,null,null,null,null),
 
 			((mc == Models.ModelCombination.M2 || mc == Models.ModelCombination.M12) ? 
-					new TableToCopy("Zone", null, null, null, null, null, null, null, null,
+					new TableToCopy("zone", null, null, null, null, null, null, null, null,
 					null, null, null, null, null, null, null, null, null, null)
 						: 
-					new TableToCopy("Zone",null,null,null,"zoneID","countyID",null,null,null,
+					new TableToCopy("zone",null,null,null,"zoneid","countyid",null,null,null,
 					null,null,null,null,null,null,null,null,null,null)),
 			((mc == Models.ModelCombination.M2 || mc == Models.ModelCombination.M12) ? 
-					new TableToCopy("ZoneMonthHour", null, null, null, null, null, null,
+					new TableToCopy("zonemonthhour", null, null, null, null, null, null,
 					null, null, null, null, null, null, null, null, null, null, null, null) 
 						: 
-					new TableToCopy("ZoneMonthHour",null,"monthID",null,"zoneID",null,null,null,null,
-					null,null/*"hourID"*/,null,null,null,null,null,null,null,null)),
+					new TableToCopy("zonemonthhour",null,"monthid",null,"zoneid",null,null,null,null,
+					null,null/*"hourid"*/,null,null,null,null,null,null,null,null)),
 
-			// ZoneRoadType cannot filter by roadTypeID or ActivityCalculator will
+			// zoneroadtype cannot filter by roadtypeid or activitycalculator will
 			// not be able to calculate population properly.
-			// Also, the hotelling/extended idle algorithm requires data from the
-			// Rural Restricted road type even if it is not in the runspec.
-			new TableToCopy("ZoneRoadType",null,null,null,"zoneID",null,null,null,null,
+			// also, the hotelling/extended idle algorithm requires data from the
+			// rural restricted road type even if it is not in the runspec.
+			new TableToCopy("zoneroadtype",null,null,null,"zoneid",null,null,null,null,
 					null,null,null,null/*"roadTypeID"*/,null,null,null,null,null,null)
 		};
 		TreeSetIgnoreCase tablesToFilter = new TreeSetIgnoreCase();
 		boolean allowTablesToFilter = false;
 		if(mergeSession != null) {
 			String[] shallowTables = {
-				"Year", "regionCounty", 
-				"MonthGroupOfAnyYear", "MonthOfAnyYear"
+				"year", "regioncounty", 
+				"monthgroupofanyyear", "monthofanyyear"
 			};
 			for(int i=0;i<shallowTables.length;i++) {
 				tablesToFilter.add(shallowTables[i]);
@@ -3776,17 +3776,17 @@ if(shouldLog) System.out.println("IDM No clause sets for " + t.tableName);
 		}
 		// Move data from staging tables to production tables.
 		if(CompilationFlags.DO_RATES_FIRST) {
-			String sql = "insert ignore into ratesOpModeDistribution (avgSpeedBinID, roadTypeID, "
-					+ " sourceTypeID, hourDayID, polProcessID, opModeID, opModeFraction, opModeFractionCV)"
-					+ " select 0 as avgSpeedBinID, 1 as roadTypeID, "
-					+ " sourceTypeID, hourDayID, polProcessID, opModeID, opModeFraction, opModeFractionCV"
-					+ " from importStartsOpModeDistribution";
+			String sql = "insert ignore into ratesopmodedistribution (avgspeedbinid, roadtypeid, "
+					+ " sourcetypeid, hourdayid, polprocessid, opmodeid, opmodefraction, opmodefractioncv)"
+					+ " select 0 as avgspeedbinid, 1 as roadtypeid, "
+					+ " sourcetypeid, hourdayid, polprocessid, opmodeid, opmodefraction, opmodefractioncv"
+					+ " from importstartsopmodedistribution";
 
 			SQLRunner.executeSQL(destination,sql);
 		} else {
-			String sql = "insert ignore into opModeDistribution (sourceTypeID, hourDayID, linkID, polProcessID, opModeID, opModeFraction, opModeFractionCV)"
-					+ " select sourceTypeID, hourDayID, linkID, polProcessID, opModeID, opModeFraction, opModeFractionCV"
-					+ " from importStartsOpModeDistribution";
+			String sql = "insert ignore into opmodedistribution (sourcetypeid, hourdayid, linkid, polprocessid, opmodeid, opmodefraction, opmodefractioncv)"
+					+ " select sourcetypeid, hourdayid, linkid, polprocessid, opmodeid, opmodefraction, opmodefractioncv"
+					+ " from importstartsopmodedistribution";
 			SQLRunner.executeSQL(destination,sql);
 		}
 
@@ -3950,118 +3950,118 @@ if(shouldLog) System.out.println("IDM No clause sets for " + t.tableName);
 		}
 
 		NRTableToCopy[] tablesAndFilterColumns = {
-				new NRTableToCopy("NRAgeCategory", null, null, null, null,
+				new NRTableToCopy("nragecategory", null, null, null, null,
 						null, null, null, null, null, null, null, null, null,
 						null, null, null, null, null),
-				new NRTableToCopy("nrATRatio", null, null, null,
-						null, null, "pollutantID", "processID", null, null, null,
-						null, null, null, "fuelSubTypeID", null, null,
+				new NRTableToCopy("nratratio", null, null, null,
+						null, null, "pollutantid", "processid", null, null, null,
+						null, null, null, "fuelsubtypeid", null, null,
 						null, null),
-				new NRTableToCopy("NRBaseYearEquipPopulation", null, null,
-						null, null, "stateID", null, null, null, null, null,
-						null, "sourceTypeID", null, null, null, null, null,
+				new NRTableToCopy("nrbaseyearequippopulation", null, null,
+						null, null, "stateid", null, null, null, null, null,
+						null, "sourcetypeid", null, null, null, null, null,
 						null),
 				new NRTableToCopy("nrcrankcaseemissionrate", null, null, null,
 						null, null, null, null, null, null, null,
-						"polProcessID", "sourceTypeID", null, null, null, null,
+						"polprocessid", "sourcetypeid", null, null, null, null,
 						null, null),
-				new NRTableToCopy("NRDayAllocation", null, null, null, null,
-						null, null, null, "dayID", null, null, null, null,
-						null, null, null, null, "NREquipTypeID", null),
-				new NRTableToCopy("NRDeterioration", null, null, null, null,
-						null, null, null, null, null, null, "polProcessID",
+				new NRTableToCopy("nrdayallocation", null, null, null, null,
+						null, null, null, "dayid", null, null, null, null,
+						null, null, null, null, "nrequiptypeid", null),
+				new NRTableToCopy("nrdeterioration", null, null, null, null,
+						null, null, null, null, null, null, "polprocessid",
 						null, null, null, null, null, null, null),
-				new NRTableToCopy("NREngTechFraction", null, null, null, null,
-						null, null, "processID", null, null, null, null,
-						"sourceTypeID", null, null, null, null, null, null),
-				new NRTableToCopy("NREquipmentType", null, null, null, null,
+				new NRTableToCopy("nrengtechfraction", null, null, null, null,
+						null, null, "processid", null, null, null, null,
+						"sourcetypeid", null, null, null, null, null, null),
+				new NRTableToCopy("nrequipmenttype", null, null, null, null,
 						null, null, null, null, null, null, null, null, null,
-						null, null, "sectorID", "NREquipTypeID", null),
-				new NRTableToCopy("NREvapEmissionRate", null, null, null, null,
-						null, null, null, null, null, null, "polProcessID",
-						"sourceTypeID", null, null, null, null, null, null),
-				new NRTableToCopy("NRExhaustEmissionRate", null, null, null,
+						null, null, "sectorid", "nrequiptypeid", null),
+				new NRTableToCopy("nrevapemissionrate", null, null, null, null,
+						null, null, null, null, null, null, "polprocessid",
+						"sourcetypeid", null, null, null, null, null, null),
+				new NRTableToCopy("nrexhaustemissionrate", null, null, null,
 						null, null, null, null, null, null, null,
-						"polProcessID", "sourceTypeID", null, null, null, null,
+						"polprocessid", "sourcetypeid", null, null, null, null,
 						null, null),
-				new NRTableToCopy("NRFuelOxyAdjustment", null, null, null,
+				new NRTableToCopy("nrfueloxyadjustment", null, null, null,
 						null, null, null, null, null, null, null,
-						"polProcessID", null, "fuelTypeID", null, null, null,
+						"polprocessid", null, "fueltypeid", null, null, null,
 						null, null),
-				new NRTableToCopy("NRGrowthIndex", "yearID", null, null, null,
+				new NRTableToCopy("nrgrowthindex", "yearid", null, null, null,
 						null, null, null, null, null, null, null, null, null,
 						null, null, null, null, null),
-				new NRTableToCopy("NRGrowthPattern", null, null, null, null,
+				new NRTableToCopy("nrgrowthpattern", null, null, null, null,
 						null, null, null, null, null, null, null, null, null,
 						null, null, null, null, null),
-				new NRTableToCopy("NRGrowthPatternFinder", null, null, null,
-						null, "stateID", null, null, null, null, null, null,
+				new NRTableToCopy("nrgrowthpatternfinder", null, null, null,
+						null, "stateid", null, null, null, null, null, null,
 						null, null, null, null, null, null, null),
-				new NRTableToCopy("nrHCSpeciation", null, null, null,
-						null, null, "pollutantID", "processID", null, null, null,
-						null, null, null, "fuelSubTypeID", null, null,
+				new NRTableToCopy("nrhcspeciation", null, null, null,
+						null, null, "pollutantid", "processid", null, null, null,
+						null, null, null, "fuelsubtypeid", null, null,
 						null, null),
-				new NRTableToCopy("NRHourAllocation", null, null, null, null,
-						null, null, null, null, "hourID", null, null, null,
+				new NRTableToCopy("nrhourallocation", null, null, null, null,
+						null, null, null, null, "hourid", null, null, null,
 						null, null, null, null, null, null),
-				new NRTableToCopy("NRHourAllocPattern", null, null, null, null,
+				new NRTableToCopy("nrhourallocpattern", null, null, null, null,
 						null, null, null, null, null, null, null, null, null,
 						null, null, null, null, null),
-				new NRTableToCopy("NRHourPatternFinder", null, null, null,
+				new NRTableToCopy("nrhourpatternfinder", null, null, null,
 						null, null, null, null, null, null, null, null, null,
-						null, null, null, null, "NREquipTypeID", null),
-				new NRTableToCopy("NRHPRangeBin", null, null, null, null, null,
+						null, null, null, null, "nrequiptypeid", null),
+				new NRTableToCopy("nrhprangebin", null, null, null, null, null,
 						null, null, null, null, null, null, null, null, null,
 						null, null, null, null),
-				new NRTableToCopy("nrMethaneTHCRatio", null, null, null,
-						null, null, null, "processID", null, null, null,
-						null, null, null, "fuelSubTypeID", null, null,
+				new NRTableToCopy("nrmethanethcratio", null, null, null,
+						null, null, null, "processid", null, null, null,
+						null, null, null, "fuelsubtypeid", null, null,
 						null, null),
-				new NRTableToCopy("NRMonthAllocation", null, "monthID", null,
-						null, "stateID", null, null, null, null, null, null,
-						null, null, null, null, null, "NREquipTypeID", null),
-				new NRTableToCopy("NRUSMonthAllocation", null, "monthID", null,
+				new NRTableToCopy("nrmonthallocation", null, "monthid", null,
+						null, "stateid", null, null, null, null, null, null,
+						null, null, null, null, null, "nrequiptypeid", null),
+				new NRTableToCopy("nrusmonthallocation", null, "monthid", null,
 						null, null, null, null, null, null, null, null,
-						null, null, null, null, null, "NREquipTypeID", null),
-				new NRTableToCopy("NRPollutantProcessModelYear", null, null,
+						null, null, null, null, null, "nrequiptypeid", null),
+				new NRTableToCopy("nrpollutantprocessmodelyear", null, null,
 						null, null, null, null, null, null, null, null,
-						"polProcessID", null, null, null, null, null, null,
+						"polprocessid", null, null, null, null, null, null,
 						null),
-				new NRTableToCopy("NRProcessEmissionRate", null, null, null,
+				new NRTableToCopy("nrprocessemissionrate", null, null, null,
 						null, null, null, null, null, null, null,
-						"polProcessID", "sourceTypeID", null, null, null, null,
+						"polprocessid", "sourcetypeid", null, null, null, null,
 						null, null),
-				new NRTableToCopy("NRSCC", null, null, null, null, null, null,
-						null, null, null, null, null, null, "fueltypeID", null,
-						null, null, "NREquipTypeID", null),
-				new NRTableToCopy("NRScrappageCurve", null, null, null, null,
+				new NRTableToCopy("nrscc", null, null, null, null, null, null,
+						null, null, null, null, null, null, "fueltypeid", null,
+						null, null, "nrequiptypeid", null),
+				new NRTableToCopy("nrscrappagecurve", null, null, null, null,
 						null, null, null, null, null, null, null, null, null,
-						null, null, null, "NREquipTypeID", null),
-				new NRTableToCopy("NRSourceBin", null, null, null, null, null,
-						null, null, null, null, null, null, null, "fueltypeID",
+						null, null, null, "nrequiptypeid", null),
+				new NRTableToCopy("nrsourcebin", null, null, null, null, null,
+						null, null, null, null, null, null, null, "fueltypeid",
 						null, null, null, null, null),
-				new NRTableToCopy("NRSourceUseType", null, null, null, null,
+				new NRTableToCopy("nrsourceusetype", null, null, null, null,
 						null, null, null, null, null, null, null,
-						"sourcetypeID", null, null, null, null, null, null),
-				new NRTableToCopy("NRStateSurrogateTotal", null, null, null,
-						null, "stateID", null, null, null, null, null, null,
+						"sourcetypeid", null, null, null, null, null, null),
+				new NRTableToCopy("nrstatesurrogatetotal", null, null, null,
+						null, "stateid", null, null, null, null, null, null,
 						null, null, null, null, null, null, null),
-				new NRTableToCopy("NRSulfurAdjustment", null, null, null, null,
+				new NRTableToCopy("nrsulfuradjustment", null, null, null, null,
 						null, null, null, null, null, null, null, null,
-						"fueltypeID", null, null, null, null, null),
-				new NRTableToCopy("NRSurrogate", null, null, null, null, null,
+						"fueltypeid", null, null, null, null, null),
+				new NRTableToCopy("nrsurrogate", null, null, null, null, null,
 						null, null, null, null, null, null, null, null, null,
 						null, null, null, null),
-				new NRTableToCopy("NRTemperatureAdjustment", null, null, null,
+				new NRTableToCopy("nrtemperatureadjustment", null, null, null,
 						null, null, null, null, null, null, null,
-						"polProcessID", null, "fueltypeID", null, null, null,
+						"polprocessid", null, "fueltypeid", null, null, null,
 						null, null),
-				new NRTableToCopy("NRTransientAdjustFactor", null, null, null,
+				new NRTableToCopy("nrtransientadjustfactor", null, null, null,
 						null, null, null, null, null, null, null,
-						"polProcessID", null, "fueltypeID", null, null, null,
-						"NREquipTypeID", null),
-				new NRTableToCopy("NRZoneAllocation", null, null, "zoneID",
-						null, "stateID", null, null, null, null, null, null,
+						"polprocessid", null, "fueltypeid", null, null, null,
+						"nrequiptypeid", null),
+				new NRTableToCopy("nrzoneallocation", null, null, "zoneid",
+						null, "stateid", null, null, null, null, null, null,
 						null, null, null, null, null, null, null),
 
 		};
@@ -4501,26 +4501,26 @@ if(shouldLog) System.out.println("IDM No clause sets for " + t.tableName);
 	/** Ensure each vehID and dayID combination gets a unique vehID. **/
 	public static void createUniqueVehicleIDs() {
 		String[] statements = {
-			"alter table SampleVehicleDay add column originalVehID int null",
-			"alter table SampleVehicleTrip add column originalVehID int null",
-			"alter table SampleVehicleTrip add column isConverted int default 0",
-			"alter table SampleVehicleDay drop primary key",
-			"alter table SampleVehicleDay add index (vehID, dayID)",
-			"alter table SampleVehicleDay add column uniqueVehID int not null auto_increment"
-					+ ", add primary key (uniqueVehID)",
-			"update SampleVehicleDay set originalVehID=vehID",
-			"update SampleVehicleTrip set originalVehID=vehID",
-			"update SampleVehicleTrip, SampleVehicleDay"
-					+ " set SampleVehicleTrip.vehID=SampleVehicleDay.uniqueVehID,"
-					+ " SampleVehicleTrip.isConverted=1"
-					+ " where SampleVehicleTrip.dayID=SampleVehicleDay.dayID"
-					+ " and SampleVehicleTrip.vehID=SampleVehicleDay.vehID"
-					+ " and SampleVehicleTrip.isConverted=0",
-			"update SampleVehicleDay set vehID=uniqueVehID",
-			"alter table SampleVehicleDay drop column uniqueVehID",
-			"alter table SampleVehicleDay drop column originalVehID",
-			"alter table SampleVehicleTrip drop column originalVehID",
-			"alter table SampleVehicleTrip drop column isConverted"
+			"alter table samplevehicleday add column originalvehid int null",
+			"alter table samplevehicletrip add column originalvehid int null",
+			"alter table samplevehicletrip add column isconverted int default 0",
+			"alter table samplevehicleday drop primary key",
+			"alter table samplevehicleday add index (vehid, dayid)",
+			"alter table samplevehicleday add column uniquevehid int not null auto_increment"
+					+ ", add primary key (uniquevehid)",
+			"update samplevehicleday set originalvehid=vehid",
+			"update samplevehicletrip set originalvehid=vehid",
+			"update samplevehicletrip, samplevehicleday"
+					+ " set samplevehicletrip.vehid=samplevehicleday.uniquevehid,"
+					+ " samplevehicletrip.isconverted=1"
+					+ " where samplevehicletrip.dayid=samplevehicleday.dayid"
+					+ " and samplevehicletrip.vehid=samplevehicleday.vehid"
+					+ " and samplevehicletrip.isconverted=0",
+			"update samplevehicleday set vehid=uniquevehid",
+			"alter table samplevehicleday drop column uniquevehid",
+			"alter table samplevehicleday drop column originalvehid",
+			"alter table samplevehicletrip drop column originalvehid",
+			"alter table samplevehicletrip drop column isconverted"
 		};
 		String sql = "";
 
@@ -4717,8 +4717,8 @@ if(shouldLog) System.out.println("IDM No clause sets for " + t.tableName);
 			}
 			for(Iterator<MergedTable> i=mergeSession.orderedMerges.iterator();i.hasNext();) {
 				MergedTable mt = (MergedTable)i.next();
-				sql = "insert into MOVESTablesUsed (MOVESRunID, databaseServer, databaseName,"
-						+ "tableName, dataFileSize, dataFileModificationDate) "
+				sql = "insert into movestablesused (movesrunid, databaseserver, databasename,"
+						+ "tablename, datafilesize, datafilemodificationdate) "
 						+ " values (" + runID
 						+ "," + DatabaseUtilities.escapeSQL(mt.serverName,true)
 						+ "," + DatabaseUtilities.escapeSQL(mt.databaseName,true)

@@ -86,8 +86,8 @@ public class AirToxicsDistanceCalculator extends EmissionCalculator {
 
 		String sql = "";
 		String[] tableNames = {
-			"dioxinEmissionRate",
-			"metalEmissionRate"
+			"dioxinemissionrate",
+			"metalemissionrate"
 		};
 
 		Connection db = null;
@@ -96,7 +96,7 @@ public class AirToxicsDistanceCalculator extends EmissionCalculator {
 		try {
 			db = DatabaseConnectionManager.checkOutConnection(MOVESDatabaseType.EXECUTION);
 			for(int i=0;i<tableNames.length;i++) {
-				sql = "select distinct polProcessID from " + tableNames[i];
+				sql = "select distinct polprocessid from " + tableNames[i];
 				query.open(db,sql);
 				while(query.rs.next()) {
 					ATRatioEntry a = new ATRatioEntry(tableNames[i],query.rs.getInt(1));
@@ -170,10 +170,10 @@ public class AirToxicsDistanceCalculator extends EmissionCalculator {
 
 		// Get the first Pollutant/Process for the Running Exhaust process that is in the
 		// SourceBinDistribution and runspec.
-		String sql = "SELECT sbd.polProcessID FROM SourceBinDistribution sbd"
-				+ " INNER JOIN PollutantProcessAssoc ppa ON ppa.polProcessID = sbd.polProcessID"
-				+ " INNER JOIN RunspecPollutantProcess rpp ON rpp.polProcessID = sbd.polProcessID"
-				+ " WHERE ppa.processID = 1 LIMIT 1";
+		String sql = "SELECT sbd.polprocessid FROM sourcebindistribution sbd"
+				+ " INNER JOIN pollutantprocessassoc ppa ON ppa.polprocessid = sbd.polprocessid"
+				+ " INNER JOIN runspecpollutantprocess rpp ON rpp.polprocessid = sbd.polprocessid"
+				+ " WHERE ppa.processid = 1 LIMIT 1";
 
 		String pollutantProcessID = "";
 		SQLRunner.Query query = new SQLRunner.Query();

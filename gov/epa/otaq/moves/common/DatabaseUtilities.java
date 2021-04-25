@@ -1123,18 +1123,18 @@ public class DatabaseUtilities {
 			
 			// create output table
 			sql = "CREATE TABLE IF NOT EXISTS `" + tempDatabaseName + "`.`ONIToolOutput` ( "
-					+ "`yearID` smallint(6) NOT NULL, "
-			        + "`monthID` smallint(6) NOT NULL, "
-			        + "`dayID` smallint(6) NOT NULL, "
-			        + "`hourID` smallint(6) NOT NULL DEFAULT 0, "
-			        + "`sourceTypeID` smallint(6) NOT NULL, "
-			        + "`minModelYearID` int(11) NOT NULL, "
-			        + "`maxModelYearID` int(11) NOT NULL, "
-					+ "`onroadSHO (hr)` double DEFAULT NULL, "
-					+ "`VMT (mi)` double DEFAULT NULL, "
-					+ "`ONI (hr)` double DEFAULT NULL, "
-			        + "`ONI per VMT (hr idle/mi)` double DEFAULT NULL, "
-			        + "`ONI per SHO (hr idle/hr operating)` double DEFAULT NULL "
+					+ "`yearid` smallint(6) NOT NULL, "
+			        + "`monthid` smallint(6) NOT NULL, "
+			        + "`dayid` smallint(6) NOT NULL, "
+			        + "`hourid` smallint(6) NOT NULL DEFAULT 0, "
+			        + "`sourcetypeid` smallint(6) NOT NULL, "
+			        + "`minmodelyearid` int(11) NOT NULL, "
+			        + "`maxmodelyearid` int(11) NOT NULL, "
+					+ "`onroadsho (hr)` double DEFAULT NULL, "
+					+ "`vmt (mi)` double DEFAULT NULL, "
+					+ "`oni (hr)` double DEFAULT NULL, "
+			        + "`oni per vmt (hr idle/mi)` double DEFAULT NULL, "
+			        + "`oni per sho (hr idle/hr operating)` double DEFAULT NULL "
 			        + ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 			SQLRunner.executeSQL(inputDB,sql);
 			sql = "truncate table `" + tempDatabaseName + "`.`ONIToolOutput`";
