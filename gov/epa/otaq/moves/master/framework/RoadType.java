@@ -55,7 +55,7 @@ public class RoadType implements Comparable {
 		boolean foundRoadType = false;
 		Connection db = null;
 
-		String sql = "SELECT COUNT(*) FROM RoadType WHERE roadTypeID = " + roadTypeID + " AND roadDesc = '"
+		String sql = "SELECT COUNT(*) FROM roadtype where roadtypeid = " + roadTypeID + " AND roaddesc = '"
 				+ roadTypeName + "'";
 		SQLRunner.Query query = new SQLRunner.Query();
 		try {

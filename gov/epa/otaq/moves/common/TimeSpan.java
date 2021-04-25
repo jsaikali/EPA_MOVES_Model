@@ -246,48 +246,48 @@ public class TimeSpan {
 			Connection db = DatabaseConnectionManager.getGUIConnection(MOVESDatabaseType.DEFAULT);
 
 			allMonths.clear();
-			sql = "select monthID, monthName"
-					+ " from monthOfAnyYear"
-					+ " order by monthID";
+			sql = "select monthid, monthname"
+					+ " from monthofanyyear"
+					+ " order by monthid";
 			query.open(db,sql);
 			while(query.rs.next()) {
 				Month m = new Month();
-				m.monthID = query.rs.getInt("monthID");
-				m.name = query.rs.getString("monthName");
+				m.monthID = query.rs.getInt("monthid");
+				m.name = query.rs.getString("monthname");
 				allMonths.add(m);
 			}
 			query.close();
 
 			allDays.clear();
-			sql = "select dayID, dayName, noOfRealDays"
-					+ " from dayOfAnyWeek"
-					+ " order by dayID";
+			sql = "select dayid, dayname, noofrealdays"
+					+ " from dayofanyweek"
+					+ " order by dayid";
 			query.open(db,sql);
 			while(query.rs.next()) {
 				Day d = new Day();
-				d.dayID = query.rs.getInt("dayID");
-				d.name = query.rs.getString("dayName");
-				d.noOfRealDays = query.rs.getFloat("noOfRealDays");
+				d.dayID = query.rs.getInt("dayid");
+				d.name = query.rs.getString("dayname");
+				d.noOfRealDays = query.rs.getFloat("noofrealdays");
 				allDays.add(d);
 			}
 			query.close();
 
 			allHours.clear();
-			sql = "select hourID, hourName"
-					+ " from hourOfAnyDay"
-					+ " order by hourID";
+			sql = "select hourid, hourname"
+					+ " from hourofanyday"
+					+ " order by hourid";
 			query.open(db,sql);
 			while(query.rs.next()) {
 				Hour h = new Hour();
-				h.hourID = query.rs.getInt("hourID");
-				h.name = query.rs.getString("hourName");
+				h.hourID = query.rs.getInt("hourid");
+				h.name = query.rs.getString("hourname");
 				h.standardizeName();
 				allHours.add(h);
 			}
 			query.close();
 
 			allYears.clear();
-			sql = "select yearID from year";
+			sql = "select yearid from year";
 			query.open(db,sql);
 			while(query.rs.next()) {
 				Integer y = Integer.valueOf(query.rs.getInt(1));

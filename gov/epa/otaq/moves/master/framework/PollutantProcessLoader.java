@@ -40,7 +40,7 @@ public class PollutantProcessLoader {
 	 *  table.  Task 1902
 	**/
 	private static String addEmissionProcessOrderBy() {
-		StringBuilder sb = new StringBuilder(" order by case processId ");
+		StringBuilder sb = new StringBuilder(" order by case processid ");
 		int x = 1;
 		sb.append("when 1 then " + x++);
 		sb.append(" when 15 then " + x++);
@@ -95,7 +95,7 @@ public class PollutantProcessLoader {
 			}
 		}
 
-		String sql = "SELECT processID,processName,occursOnRealRoads,isAffectedByOnroad,isAffectedByNonroad FROM emissionprocess where processId not in (99) " + addEmissionProcessOrderBy();
+		String sql = "SELECT processid,processname,occursonrealroads,isaffectedbyonroad,isaffectedbynonroad from emissionprocess where processid not in (99) " + addEmissionProcessOrderBy();
 		try {
 			db = DatabaseConnectionManager.checkOutConnection(MOVESDatabaseType.DEFAULT);
 
@@ -112,11 +112,11 @@ public class PollutantProcessLoader {
 			}
 			statement.close();
 
-			sql = "SELECT p.pollutantID, p.pollutantName, p.pollutantDisplayGroupID, p.isAffectedByOnroad, p.isAffectedByNonroad, "
-					+ " pdg.displayAsGroup, pdg.pollutantDisplayGroupName"
-					+ " FROM Pollutant p"
-					+ " INNER JOIN PollutantDisplayGroup pdg USING (pollutantDisplayGroupID)"
-					+ " ORDER BY p.pollutantDisplayGroupID, p.pollutantID";
+			sql = "SELECT p.pollutantid, p.pollutantname, p.pollutantdisplaygroupid, p.isaffectedbyonroad, p.isaffectedbynonroad, "
+					+ " pdg.displayasgroup, pdg.pollutantdisplaygroupname"
+					+ " from pollutant p"
+					+ " inner join pollutantdisplaygroup pdg using (pollutantdisplaygroupid)"
+					+ " order by p.pollutantdisplaygroupid, p.pollutantid";
 			
 			statement = db.prepareStatement(sql);
 			results = SQLRunner.executeQuery(statement,sql);
@@ -145,8 +145,8 @@ public class PollutantProcessLoader {
 			}
 		
 			// "Load" the pollutants required if this one is run.
-			sql = "SELECT processID,pollutantID,polProcessID,chainedto1,chainedto2,nrChainedTo1,nrChainedTo2"
-					+ " FROM pollutantprocessassoc";
+			sql = "SELECT processid,pollutantid,polprocessid,chainedto1,chainedto2,nrchainedto1,nrchainedto2"
+					+ " from pollutantprocessassoc";
 			statement = db.prepareStatement(sql);
 			results = SQLRunner.executeQuery(statement,sql);
 			if(results != null) {
@@ -217,9 +217,9 @@ public class PollutantProcessLoader {
 	public static void setPollutantProcessAssoc(PollutantProcessAssociation assoc) {
 		Connection db = null;
 
-		String sql = "SELECT isAffectedByOnroad, isAffectedByNonroad"
-				+ " FROM pollutantprocessassoc where pollutantID="
-				+ assoc.pollutant.databaseKey + " and processID="
+		String sql = "SELECT isaffectedbyonroad, isaffectedbynonroad"
+				+ " from pollutantprocessassoc where pollutantid="
+				+ assoc.pollutant.databaseKey + " and processid="
 				+ assoc.emissionProcess.databaseKey;
 		SQLRunner.Query query = new SQLRunner.Query();
 
@@ -256,8 +256,8 @@ public class PollutantProcessLoader {
 		Connection db = null;
 
 		String sql = "SELECT " + col
-				+ " FROM pollutantprocessassoc where pollutantID="
-				+ pollutantID + " and processID=" + processID;
+				+ " FROM pollutantprocessassoc where pollutantid="
+				+ pollutantID + " and processid=" + processID;
 
 		Boolean boolVal = null;
 		PreparedStatement statement = null;
