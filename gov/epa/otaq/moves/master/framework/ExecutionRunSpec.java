@@ -231,7 +231,7 @@ public class ExecutionRunSpec {
 					}
 					sql += y;
 				}
-				sql = "select distinct fuelYearID from year where yearID in (" + sql + ")";
+				sql = "select distinct fuelyearid from year where yearid in (" + sql + ")";
 				fuelYears.clear();
 				query.open(executionDB,sql);
 				while(query.rs.next()) {
@@ -243,7 +243,7 @@ public class ExecutionRunSpec {
 			// for the counties in the runspec.
 			regions.clear();
 			regions.add(Integer.valueOf(0));
-			sql = "select distinct regionID from regionCounty";
+			sql = "select distinct regionid from regioncounty";
 			query.open(executionDB,sql);
 			while(query.rs.next()) {
 				regions.add(Integer.valueOf(query.rs.getInt(1)));
@@ -258,7 +258,7 @@ public class ExecutionRunSpec {
 					}
 					sql += m;
 				}
-				sql = "select distinct monthGroupID from monthOfAnyYear where monthID in (" + sql + ")";
+				sql = "select distinct monthgroupid from monthofanyyear where monthid in (" + sql + ")";
 				monthGroups.clear();
 				query.open(executionDB,sql);
 				while(query.rs.next()) {
@@ -267,7 +267,7 @@ public class ExecutionRunSpec {
 				query.close();
 			}
 		} catch(SQLException e) {
-			Logger.logSqlError(e,"Unable to query year and regionCounty tables",sql);
+			Logger.logSqlError(e,"Unable to query year and regioncounty tables",sql);
 		} finally {
 			query.onFinally();
 			DatabaseConnectionManager.checkInConnection(MOVESDatabaseType.EXECUTION,executionDB);
@@ -319,14 +319,14 @@ public class ExecutionRunSpec {
 			String sql = "";
 			try {
 				modelYearMapper.buildMappings(executionDB);
-				sql = "insert ignore into PollutantProcessMappedModelYear (polProcessID,modelYearID,modelYearGroupID,fuelMYGroupID,IMModelYearGroupID)"
+				sql = "insert ignore into pollutantprocessmappedmodelyear (polprocessid,modelyearid,modelyeargroupid,fuelmygroupid,immodelyeargroupid)"
 						+ " select"
-						+ " 	polProcessID,"
-						+ " 	MYRMAP(modelYearID) as modelYearID,"
-						+ " 	modelYearGroupID,"
-						+ " 	fuelMYGroupID,"
-						+ " 	IMModelYearGroupID"
-						+ " from pollutantProcessModelYear";
+						+ " 	polprocessid,"
+						+ " 	MYRMAP(modelyearid) as modelyearid,"
+						+ " 	modelyeargroupid,"
+						+ " 	fuelmygroupid,"
+						+ " 	immodelyeargroupid"
+						+ " from pollutantprocessmodelyear";
 				sql = modelYearMapper.findAndConvert(sql);
 				SQLRunner.executeSQL(executionDB,sql);
 			} catch(SQLException e) {
@@ -375,9 +375,9 @@ public class ExecutionRunSpec {
 						shouldKeepWorkerDatabases = true;
 						// NOTE: The following are in reverse order due to their need to
 						// be at the beginning of the SQL list
-						workerSQLs.add(0,"create table MOVESWorkerOutput_BeforeRetrofit"
-								+ " select * from MOVESWorkerOutput;");
-						workerSQLs.add(0,"drop table if exists MOVESWorkerOutput_BeforeRetrofit;");
+						workerSQLs.add(0,"create table movesworkeroutput_beforeretrofit"
+								+ " select * from movesworkeroutput;");
+						workerSQLs.add(0,"drop table if exists movesworkeroutput_beforeretrofit;");
 					}
 				}
 			}
@@ -451,7 +451,7 @@ public class ExecutionRunSpec {
 					days.add(Integer.valueOf(d.dayID));
 				}
 			} else {
-				sql = "SELECT dayID FROM DayOfAnyWeek ORDER BY dayID";
+				sql = "SELECT dayid FROM dayofanyweek ORDER BY dayid";
 				results = SQLRunner.executeQuery(targetDB,sql);
 				for(int i=0;results.next();i++) {
 					days.add(Integer.valueOf(results.getInt(1)));
@@ -478,7 +478,7 @@ public class ExecutionRunSpec {
 					}
 				}
 			} else {
-				sql = "SELECT hourID FROM HourOfAnyDay ORDER BY hourID";
+				sql = "SELECT hourid from hourofanyday order by hourid";
 				results = SQLRunner.executeQuery(targetDB,sql);
 				for(int i=0;results.next();i++) {
 					hours.add(Integer.valueOf(results.getInt(1)));
@@ -493,11 +493,11 @@ public class ExecutionRunSpec {
 				for(Iterator d=days.iterator();d.hasNext();) {
 					Integer day = (Integer)d.next();
 					if(sql.length()==0) {
-						sql = "SELECT hourDayID FROM HourDay WHERE ";
+						sql = "SELECT hourdayid FROM hourday WHERE ";
 					} else {
 						sql += " OR ";
 					}
-					sql += "(dayID=" + day + " AND hourID=" + hour + ")";
+					sql += "(dayid=" + day + " AND hourid=" + hour + ")";
 				}
 				results = SQLRunner.executeQuery(targetDB,sql);
 				hourdays.clear();
@@ -752,8 +752,8 @@ public class ExecutionRunSpec {
 		if(removeUnwantedDataOnWorkerSQLs == null) {
 			removeUnwantedDataOnWorkerSQLs = new Vector<String>();
 		}
-		String sql = "delete from MOVESWorkerOutput where pollutantID=" + ppa.pollutant.databaseKey
-				+ " and processID=" + ppa.emissionProcess.databaseKey + ";";
+		String sql = "delete from movesworkeroutput where pollutantid=" + ppa.pollutant.databaseKey
+				+ " and processid=" + ppa.emissionProcess.databaseKey + ";";
 		removeUnwantedDataOnWorkerSQLs.add(sql);
 		return true;
 	}
@@ -1251,9 +1251,9 @@ public class ExecutionRunSpec {
 			fillSectors(executionDB,sectors);
 
 			// Build the fueltype selections
-			sql = "TRUNCATE RunSpecSourceFuelType";
+			sql = "TRUNCATE runspecsourcefueltype";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecSourceFuelType (sourceTypeID, fuelTypeID) VALUES (?,?)";
+			sql = "INSERT INTO runspecsourcefueltype (sourcetypeid, fueltypeid) VALUES (?,?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<OnRoadVehicleSelection>
 					i = targetRunSpec.onRoadVehicleSelections.iterator(); i.hasNext();) {
@@ -1264,9 +1264,9 @@ public class ExecutionRunSpec {
 			}
 			statement.close();
 
-			sql = "TRUNCATE RunSpecSectorFuelType";
+			sql = "TRUNCATE runspecsectorfueltype";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecSectorFuelType (sectorID, fuelTypeID) VALUES (?,?)";
+			sql = "INSERT INTO runspecsectorfueltype (sectorid, fueltypeid) VALUES (?,?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<OffRoadVehicleSelection>
 					i = targetRunSpec.offRoadVehicleSelections.iterator(); i.hasNext();) {
@@ -1278,9 +1278,9 @@ public class ExecutionRunSpec {
 			statement.close();
 
 			// Build the roadtype selections
-			sql = "TRUNCATE RunSpecRoadType";
+			sql = "TRUNCATE runspecroadtype";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT IGNORE INTO RunSpecRoadType (roadTypeID) VALUES (?)";
+			sql = "INSERT IGNORE INTO runspecroadtype (roadtypeid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			//for(Iterator<RoadType> i = targetRunSpec.roadTypes.iterator(); i.hasNext();) {
 			for(Iterator<RoadType> i = getRoadTypes().iterator(); i.hasNext();) {
@@ -1297,9 +1297,9 @@ public class ExecutionRunSpec {
 			fillYearsAndModelYears(executionDB,years);
 
 			// Build the month selection
-			sql = "TRUNCATE RunSpecMonth";
+			sql = "TRUNCATE runspecmonth";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecMonth (monthID) VALUES (?)";
+			sql = "INSERT INTO runspecmonth (monthid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<Integer> iter=months.iterator();iter.hasNext();) {
 				statement.setInt(1,((Integer)iter.next()).intValue());
@@ -1307,16 +1307,16 @@ public class ExecutionRunSpec {
 			}
 			statement.close();
 			// Build the month group selection
-			sql = "TRUNCATE RunSpecMonthGroup";
+			sql = "TRUNCATE runspecmonthgroup";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecMonthGroup (monthGroupID) "
-					+ "SELECT DISTINCT monthGroupID FROM MonthOfAnyYear, RunSpecMonth "
-					+ "WHERE MonthOfAnyYear.monthID = RunSpecMonth.monthID";
+			sql = "INSERT INTO runspecmonthgroup (monthgroupid) "
+					+ "SELECT DISTINCT monthgroupid FROM monthofanyyear, runspecmonth "
+					+ "WHERE monthofanyyear.monthid = runspecmonth.monthid";
 			SQLRunner.executeSQL(executionDB,sql);
 			// Build the days selections
-			sql = "TRUNCATE RunSpecDay";
+			sql = "TRUNCATE runspecday";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecDay (dayID) VALUES (?)";
+			sql = "INSERT INTO runspecday (dayid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<Integer> iter=days.iterator();iter.hasNext();) {
 				statement.setInt(1,((Integer)iter.next()).intValue());
@@ -1324,9 +1324,9 @@ public class ExecutionRunSpec {
 			}
 			statement.close();
 			// Build the hours selections
-			sql = "TRUNCATE RunSpecHour";
+			sql = "TRUNCATE runspechour";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecHour (hourID) VALUES (?)";
+			sql = "INSERT INTO runspechour (hourid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<Integer> iter=hours.iterator();iter.hasNext();) {
 				statement.setInt(1,((Integer)iter.next()).intValue());
@@ -1334,9 +1334,9 @@ public class ExecutionRunSpec {
 			}
 			statement.close();
 			// Build the hour day selections
-			sql = "TRUNCATE RunSpecHourDay";
+			sql = "TRUNCATE runspechourday";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecHourDay (HourDayID) VALUES (?)";
+			sql = "INSERT INTO runspechourday (hourdayid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<Integer> iter=hourdays.iterator();iter.hasNext();) {
 				statement.setInt(1,((Integer)iter.next()).intValue());
@@ -1345,9 +1345,9 @@ public class ExecutionRunSpec {
 			statement.close();
 
 			// Build the processes selections
-			sql = "TRUNCATE RunSpecProcess";
+			sql = "TRUNCATE runspecprocess";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecProcess (processID) VALUES (?)";
+			sql = "INSERT INTO runspecprocess (processid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<EmissionProcess> i = targetProcesses.iterator(); i.hasNext();) {
 				statement.setInt(1,((EmissionProcess)(i.next())).databaseKey);
@@ -1355,9 +1355,9 @@ public class ExecutionRunSpec {
 			}
 			statement.close();
 			// Build the pollutants selections
-			sql = "TRUNCATE RunSpecPollutant";
+			sql = "TRUNCATE runspecpollutant";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecPollutant(pollutantID) VALUES (?)";
+			sql = "INSERT INTO runspecpollutant(pollutantid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<Pollutant> i = targetPollutants.iterator(); i.hasNext();) {
 				statement.setInt(1,((Pollutant)i.next()).databaseKey);
@@ -1365,9 +1365,9 @@ public class ExecutionRunSpec {
 			}
 			statement.close();
 			// Build the pollutants processes selections
-			sql = "TRUNCATE RunSpecPollutantProcess";
+			sql = "TRUNCATE runspecpollutantprocess";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecPollutantProcess(polProcessID) VALUES (?)";
+			sql = "INSERT INTO runspecpollutantprocess(polprocessid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<Integer> i = targetPollutantProcesses.iterator(); i.hasNext();) {
 				statement.setInt(1,((Integer)(i.next())).intValue());
@@ -1376,9 +1376,9 @@ public class ExecutionRunSpec {
 			statement.close();
 
 			// Build the states selections
-			sql = "TRUNCATE RunSpecState";
+			sql = "TRUNCATE runspecstate";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecState (stateID) VALUES (?)";
+			sql = "INSERT INTO runspecstate (stateid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<Integer> iter=states.iterator();iter.hasNext();) {
 				statement.setInt(1,((Integer)iter.next()).intValue());
@@ -1386,9 +1386,9 @@ public class ExecutionRunSpec {
 			}
 			statement.close();
 			// Build the counties selections
-			sql = "TRUNCATE RunSpecCounty";
+			sql = "TRUNCATE runspeccounty";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecCounty (countyID) VALUES (?)";
+			sql = "INSERT INTO runspeccounty (countyid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<Integer> iter=counties.iterator();iter.hasNext();) {
 				statement.setInt(1,((Integer)iter.next()).intValue());
@@ -1396,9 +1396,9 @@ public class ExecutionRunSpec {
 			}
 			statement.close();
 			// Build the zones selections
-			sql = "TRUNCATE RunSpecZone";
+			sql = "TRUNCATE runspeczone";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecZone (zoneID) VALUES (?)";
+			sql = "INSERT INTO runspeczone (zoneid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<Integer> iter=zones.iterator();iter.hasNext();) {
 				statement.setInt(1,((Integer)iter.next()).intValue());
@@ -1406,9 +1406,9 @@ public class ExecutionRunSpec {
 			}
 			statement.close();
 			// Build the links selections
-			sql = "TRUNCATE RunSpecLink";
+			sql = "TRUNCATE runspeclink";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecLink (linkID) VALUES (?)";
+			sql = "INSERT INTO runspeclink (linkid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<Integer> iter=links.iterator();iter.hasNext();) {
 				statement.setInt(1,((Integer)iter.next()).intValue());
@@ -1418,30 +1418,30 @@ public class ExecutionRunSpec {
 
 			// Build RunSpecChainedTo
 			/** NR_IMP: need to get this query for onroad based on new PollutantProcessAssoc **/
-			sql = "TRUNCATE RunSpecChainedTo";
+			sql = "TRUNCATE runspecchainedto";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "insert into RunSpecChainedTo ("
-					+ " outputPolProcessID, outputPollutantID, outputProcessID,"
-					+ " inputPolProcessID, inputPollutantID, inputProcessID)"
-					+ " select ppa.polProcessID, ppa.pollutantID, ppa.processID,"
-					+ " ppaIn.polProcessID, ppaIn.pollutantID, ppaIn.processID"
-					+ " from PollutantProcessAssoc ppa"
-					+ " inner join PollutantProcessAssoc ppaIn "
-					+ " on (ppaIn.polProcessID=ppa.chainedto1 or ppaIn.polProcessID=ppa.chainedto2)";
+			sql = "insert into runspecchainedto ("
+					+ " outputpolprocessid, outputpollutantid, outputprocessid,"
+					+ " inputpolprocessid, inputpollutantid, inputprocessid)"
+					+ " select ppa.polprocessid, ppa.pollutantid, ppa.processid,"
+					+ " ppain.polprocessid, ppain.pollutantid, ppain.processid"
+					+ " from pollutantprocessassoc ppa"
+					+ " inner join pollutantprocessassoc ppain "
+					+ " on (ppain.polprocessid=ppa.chainedto1 or ppain.polprocessid=ppa.chainedto2)";
 			SQLRunner.executeSQL(executionDB,sql);
 
 			// Build RunSpecNonRoadChainedTo
 			/** NR_IMP: need to get this query for nonroad based on new PollutantProcessAssoc **/
-			sql = "TRUNCATE RunSpecNonRoadChainedTo";
+			sql = "TRUNCATE runspecnonroadchainedto";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "insert into RunSpecNonRoadChainedTo ("
-					+ " outputPolProcessID, outputPollutantID, outputProcessID,"
-					+ " inputPolProcessID, inputPollutantID, inputProcessID)"
-					+ " select ppa.polProcessID, ppa.pollutantID, ppa.processID,"
-					+ " ppaIn.polProcessID, ppaIn.pollutantID, ppaIn.processID"
-					+ " from PollutantProcessAssoc ppa"
-					+ " inner join PollutantProcessAssoc ppaIn "
-					+ " on (ppaIn.polProcessID=ppa.chainedto1 or ppaIn.polProcessID=ppa.chainedto2)";
+			sql = "insert into runspecnonroadchainedto ("
+					+ " outputpolprocessid, outputpollutantid, outputprocessid,"
+					+ " inputpolprocessid, inputpollutantid, inputprocessid)"
+					+ " select ppa.polprocessid, ppa.pollutantid, ppa.processid,"
+					+ " ppain.polprocessid, ppain.pollutantid, ppain.processid"
+					+ " from pollutantprocessassoc ppa"
+					+ " inner join pollutantprocessassoc ppain "
+					+ " on (ppain.polprocessid=ppa.chainedto1 or ppain.polprocessid=ppa.chainedto2)";
 			SQLRunner.executeSQL(executionDB,sql);
 		} catch(SQLException e) {
 			final String eol = System.getProperty("line.separator");
@@ -1473,9 +1473,9 @@ public class ExecutionRunSpec {
 				DatabaseConnectionManager.checkOutConnection(MOVESDatabaseType.EXECUTION);
 		try {
 			// Build the states selections
-			sql = "TRUNCATE RunSpecState";
+			sql = "TRUNCATE runspecstate";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecState (stateID) VALUES (?)";
+			sql = "INSERT INTO runspecstate (stateid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<Integer> iter=states.iterator();iter.hasNext();) {
 				statement.setInt(1,((Integer)iter.next()).intValue());
@@ -1483,9 +1483,9 @@ public class ExecutionRunSpec {
 			}
 			statement.close();
 			// Build the counties selections
-			sql = "TRUNCATE RunSpecCounty";
+			sql = "TRUNCATE runspeccounty";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecCounty (countyID) VALUES (?)";
+			sql = "INSERT INTO runspeccounty (countyid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<Integer> iter=counties.iterator();iter.hasNext();) {
 				statement.setInt(1,((Integer)iter.next()).intValue());
@@ -1493,9 +1493,9 @@ public class ExecutionRunSpec {
 			}
 			statement.close();
 			// Build the zones selections
-			sql = "TRUNCATE RunSpecZone";
+			sql = "TRUNCATE runspeczone";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecZone (zoneID) VALUES (?)";
+			sql = "INSERT INTO runspeczone (zoneid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<Integer> iter=zones.iterator();iter.hasNext();) {
 				statement.setInt(1,((Integer)iter.next()).intValue());
@@ -1503,9 +1503,9 @@ public class ExecutionRunSpec {
 			}
 			statement.close();
 			// Build the links selections
-			sql = "TRUNCATE RunSpecLink";
+			sql = "TRUNCATE runspeclink";
 			SQLRunner.executeSQL(executionDB,sql);
-			sql = "INSERT INTO RunSpecLink (linkID) VALUES (?)";
+			sql = "INSERT INTO runspeclink (linkid) VALUES (?)";
 			statement = executionDB.prepareStatement(sql);
 			for(Iterator<Integer> iter=links.iterator();iter.hasNext();) {
 				statement.setInt(1,((Integer)iter.next()).intValue());
@@ -1643,34 +1643,34 @@ public class ExecutionRunSpec {
 	private void createMesoscaleLookupLinks(Connection executionDB) {
 		String sql = "";
 		String[] statements = {
-			"delete from Link",
-			"insert into Link (linkID,countyID,zoneID,roadTypeID,linkLength,linkVolume)"
-					+ " select ((zoneID*10+roadTypeID)*100) as linkID,"
-					+ " countyID, zoneID, roadTypeID,"
-					+ " null as linkLength,null as linkVolume"
-					+ " from Zone,"
-					+ " RunSpecRoadType"
-					+ " where roadTypeID=1",
-			"insert into Link (linkID,countyID,zoneID,roadTypeID,linkLength,linkVolume)"
-					+ " select ((zoneID*10+roadTypeID)*100+avgSpeedBinID) as linkID,"
-					+ " countyID, zoneID, roadTypeID,"
-					+ " null as linkLength,null as linkVolume"
-					+ " from Zone,"
-					+ " RunSpecRoadType,"
-					+ " AvgSpeedBin"
-					+ " where roadTypeID<>1",
-			"delete from LinkAverageSpeed",
-			"insert into LinkAverageSpeed (linkID,averageSpeed)"
-					+ " select ((zoneID*10+roadTypeID)*100) as linkID,0 as averageSpeed"
-					+ " from Zone,"
-					+ " RunSpecRoadType"
-					+ " where roadTypeID=1",
-			"insert into LinkAverageSpeed (linkID,averageSpeed)"
-					+ " select ((zoneID*10+roadTypeID)*100+avgSpeedBinID) as linkID,avgBinSpeed"
-					+ " from Zone,"
-					+ " RunSpecRoadType,"
-					+ " AvgSpeedBin"
-					+ " where roadTypeID<>1"
+			"delete from link",
+			"insert into link (linkid,countyid,zoneid,roadtypeid,linklength,linkvolume)"
+					+ " select ((zoneid*10+roadtypeid)*100) as linkid,"
+					+ " countyid, zoneid, roadtypeid,"
+					+ " null as linklength,null as linkvolume"
+					+ " from zone,"
+					+ " runspecroadtype"
+					+ " where roadtypeid=1",
+			"insert into link (linkid,countyid,zoneid,roadtypeid,linklength,linkvolume)"
+					+ " select ((zoneid*10+roadtypeid)*100+avgspeedbinid) as linkid,"
+					+ " countyid, zoneid, roadtypeid,"
+					+ " null as linklength,null as linkvolume"
+					+ " from zone,"
+					+ " runspecroadtype,"
+					+ " avgspeedbin"
+					+ " where roadtypeid<>1",
+			"delete from linkaveragespeed",
+			"insert into linkaveragespeed (linkid,averagespeed)"
+					+ " select ((zoneid*10+roadtypeid)*100) as linkid,0 as averagespeed"
+					+ " from zone,"
+					+ " runspecroadtype"
+					+ " where roadtypeid=1",
+			"insert into linkaveragespeed (linkid,averagespeed)"
+					+ " select ((zoneid*10+roadtypeid)*100+avgspeedbinid) as linkid,avgbinspeed"
+					+ " from zone,"
+					+ " runspecroadtype,"
+					+ " avgspeedbin"
+					+ " where roadtypeid<>1"
 		};
 		try {
 			for(int i=0;i<statements.length;i++) {
@@ -1690,16 +1690,16 @@ public class ExecutionRunSpec {
 	private void addIndexes(Connection executionDB) {
 		String sql = "";
 		String[] statements = {
-			"alter table link add key (zoneID, roadTypeID, linkID)",
-			"alter table link add key (roadTypeID, zoneID, linkID)",
+			"alter table link add key (zoneid, roadtypeid, linkid)",
+			"alter table link add key (roadtypeid, zoneid, linkid)",
 			"analyze table link",
-			"alter table hourDay add key (hourID, dayID, hourDayID)",
-			"alter table hourDay add key (dayID, hourID, hourDayID)",
-			"analyze table hourDay",
-			"alter table ColdSoakInitialHourFraction add key (zoneID, monthID)",
-			"alter table AverageTankTemperature add key (zoneID, monthID)",
-			"alter table SoakActivityFraction add key (monthID, zoneID, opModeID, sourceTypeID, hourDayID)",
-			"alter table sourceHours add key (linkID, yearID, monthID, hourDayID, sourceTypeID, ageID)"
+			"alter table hourday add key (hourid, dayid, hourdayid)",
+			"alter table hourday add key (dayid, hourid, hourdayid)",
+			"analyze table hourday",
+			"alter table coldsoakinitialhourfraction add key (zoneid, monthid)",
+			"alter table averagetanktemperature add key (zoneid, monthid)",
+			"alter table soakactivityfraction add key (monthid, zoneid, opmodeid, sourcetypeid, hourdayid)",
+			"alter table sourcehours add key (linkid, yearid, monthid, hourdayid, sourcetypeid, ageid)"
 		};
 		try {
 			for(int i=0;i<statements.length;i++) {
@@ -1779,11 +1779,11 @@ public class ExecutionRunSpec {
 	private boolean checkMissingEmissionRates(Connection executionDB) {
 		String[] statementsAndMessages = {
 			// Find missing rates
-			"select sourceBin.sourceBinID"
-			+ " from fuelType"
-			+ " inner join sourceBin on sourceBin.fuelTypeID=fuelType.fuelTypeID"
-			+ " left outer join emissionRate e on e.sourceBinID=sourceBin.sourceBinID"
-			+ " where e.sourceBinID is null"
+			"select sourcebin.sourcebinid"
+			+ " from fueltype"
+			+ " inner join sourcebin on sourcebin.fueltypeid=fueltype.fueltypeid"
+			+ " left outer join emissionrate e on e.sourcebinid=sourcebin.sourcebinid"
+			+ " where e.sourcebinid is null"
 			+ " limit 10",
 			/**
 			 * @issue Warning: Missing emission rates detected
@@ -1792,11 +1792,11 @@ public class ExecutionRunSpec {
 			**/
 			"Missing emission rates detected",
 
-			"select sourceBin.sourceBinID"
-			+ " from fuelType"
-			+ " inner join sourceBin on sourceBin.fuelTypeID=fuelType.fuelTypeID"
-			+ " left outer join emissionRateByAge e on e.sourceBinID=sourceBin.sourceBinID"
-			+ " where e.sourceBinID is null"
+			"select sourcebin.sourcebinid"
+			+ " from fueltype"
+			+ " inner join sourcebin on sourcebin.fueltypeid=fueltype.fueltypeid"
+			+ " left outer join emissionratebyage e on e.sourcebinid=sourcebin.sourcebinid"
+			+ " where e.sourcebinid is null"
 			+ " limit 10",
 			/**
 			 * @issue Warning: Missing emission rates by age detected
@@ -1806,12 +1806,12 @@ public class ExecutionRunSpec {
 			"Missing emission rates by age detected",
 
 			// Find zero rates
-			"select sourceBin.sourceBinID"
-			+ " from fuelType"
-			+ " inner join sourceBin on sourceBin.fuelTypeID=fuelType.fuelTypeID"
-			+ " inner join emissionRate e on e.sourceBinID=sourceBin.sourceBinID"
-			+ " where fuelTypeDesc<>'Electricity'"
-			+ " and e.meanBaseRate <= 0"
+			"select sourcebin.sourcebinid"
+			+ " from fueltype"
+			+ " inner join sourcebin on sourcebin.fueltypeid=fueltype.fueltypeid"
+			+ " inner join emissionrate e on e.sourcebinid=sourcebin.sourcebinid"
+			+ " where fueltypedesc<>'electricity'"
+			+ " and e.meanbaserate <= 0"
 			+ " limit 10",
 			/**
 			 * @issue Warning: Some emission rates are zero for non-electric vehicles
@@ -1820,12 +1820,12 @@ public class ExecutionRunSpec {
 			**/
 			"Some emission rates are zero for non-electric vehicles",
 
-			"select sourceBin.sourceBinID"
-			+ " from fuelType"
-			+ " inner join sourceBin on sourceBin.fuelTypeID=fuelType.fuelTypeID"
-			+ " inner join emissionRateByAge e on e.sourceBinID=sourceBin.sourceBinID"
-			+ " where fuelTypeDesc<>'Electricity'"
-			+ " and e.meanBaseRate <= 0"
+			"select sourcebin.sourcebinid"
+			+ " from fueltype"
+			+ " inner join sourcebin on sourcebin.fueltypeid=fueltype.fueltypeid"
+			+ " inner join emissionratebyage e on e.sourcebinid=sourcebin.sourcebinid"
+			+ " where fueltypedesc<>'electricity'"
+			+ " and e.meanbaserate <= 0"
 			+ " limit 10",
 			/**
 			 * @issue Warning: Some emission rates by age are zero for non-electric vehicles
@@ -2133,22 +2133,22 @@ public class ExecutionRunSpec {
 			throws SQLException {
 		TreeSet<Integer> onRoadModelYears = new TreeSet<Integer>();
 		TreeSet<Integer> offRoadModelYears = new TreeSet<Integer>();
-		String sql = "truncate RunSpecYear";
+		String sql = "truncate runspecyear";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "truncate RunSpecModelYearAge";
+		sql = "truncate runspecmodelyearage";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "truncate RunSpecModelYearAgeGroup";
+		sql = "truncate runspecmodelyearagegroup";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "truncate RunSpecModelYear";
+		sql = "truncate runspecmodelyear";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "truncate RunSpecNonRoadModelYearAge";
+		sql = "truncate runspecnonroadmodelyearage";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "truncate RunSpecNonRoadModelYear";
+		sql = "truncate runspecnonroadmodelyear";
 		SQLRunner.executeSQL(db,sql);
 
 		String yearSQL = "";
@@ -2165,10 +2165,10 @@ public class ExecutionRunSpec {
 				Integer modelYearObject = Integer.valueOf(modelYear);
 				if(!onRoadModelYears.contains(modelYearObject)) {
 					onRoadModelYears.add(modelYearObject);
-					sql = "insert into RunSpecModelYear (modelYearID) values (" + modelYear + ")";
+					sql = "insert into runspecmodelyear (modelyearid) values (" + modelYear + ")";
 					SQLRunner.executeSQL(db,sql);
 				}
-				sql = "insert into RunSpecModelYearAge (yearID, modelYearID, ageID)"
+				sql = "insert into runspecmodelyearage (yearid, modelyearid, ageid)"
 						+ " values (" + year + "," + modelYear + "," + age + ")";
 				SQLRunner.executeSQL(db,sql);
 			}
@@ -2179,21 +2179,21 @@ public class ExecutionRunSpec {
 				Integer modelYearObject = Integer.valueOf(modelYear);
 				if(!offRoadModelYears.contains(modelYearObject)) {
 					offRoadModelYears.add(modelYearObject);
-					sql = "insert into RunSpecNonRoadModelYear (modelYearID) values (" + modelYear + ")";
+					sql = "insert into runspecnonroadmodelyear (modelyearid) values (" + modelYear + ")";
 					SQLRunner.executeSQL(db,sql);
 				}
-				sql = "insert into RunSpecNonRoadModelYearAge (yearID, modelYearID, ageID)"
+				sql = "insert into runspecnonroadmodelyearage (yearid, modelyearid, ageid)"
 						+ " values (" + year + "," + modelYear + "," + age + ")";
 				SQLRunner.executeSQL(db,sql);
 			}
 		}
-		yearSQL = "insert into RunSpecYear (yearID) values " + yearSQL;
+		yearSQL = "insert into runspecyear (yearid) values " + yearSQL;
 		SQLRunner.executeSQL(db,yearSQL);
 
-		sql = "insert into runSpecModelYearAgeGroup (yearID, modelYearID, ageGroupID)"
-				+ " select yearID, modelYearID, ageGroupID"
-				+ " from runSpecModelYearAge rsmya"
-				+ " inner join ageCategory ac on (ac.ageID = rsmya.ageID)";
+		sql = "insert into runspecmodelyearagegroup (yearid, modelyearid, agegroupid)"
+				+ " select yearid, modelyearid, agegroupid"
+				+ " from runspecmodelyearage rsmya"
+				+ " inner join agecategory ac on (ac.ageid = rsmya.ageid)";
 		SQLRunner.executeSQL(db,sql);
 	}
 
@@ -2205,11 +2205,11 @@ public class ExecutionRunSpec {
 	**/
 	public static void fillSourceTypes(Connection db, TreeSet<Integer> sourceTypes)
 			throws SQLException {
-		String sql = "TRUNCATE RunSpecSourceType";
+		String sql = "TRUNCATE runspecsourcetype";
 		SQLRunner.executeSQL(db,sql);
 
 		for(Iterator<Integer> i = sourceTypes.iterator(); i.hasNext();) {
-			sql = "insert into RunSpecSourceType (sourceTypeID) values (" + i.next() + ")";
+			sql = "insert into runspecsourcetype (sourcetypeid) values (" + i.next() + ")";
 			SQLRunner.executeSQL(db,sql);
 		}
 	}
@@ -2222,11 +2222,11 @@ public class ExecutionRunSpec {
 	**/
 	public static void fillSectors(Connection db, TreeSet<Integer> sectors)
 			throws SQLException {
-		String sql = "TRUNCATE RunSpecSector";
+		String sql = "TRUNCATE runspecsector";
 		SQLRunner.executeSQL(db,sql);
 
 		for(Iterator<Integer> i = sectors.iterator(); i.hasNext();) {
-			sql = "insert into RunSpecSector (sectorID) values (" + i.next() + ")";
+			sql = "insert into runspecsector (sectorid) values (" + i.next() + ")";
 			SQLRunner.executeSQL(db,sql);
 		}
 	}
@@ -2238,35 +2238,35 @@ public class ExecutionRunSpec {
 	public static void setupMacroExpander(Connection db) {
 		SQLMacroExpander.reset();
 		String[] sets = {
-			"", "select sourceTypeID from RunSpecSourceType",
-			"", "select roadTypeID from RunSpecRoadType",
-			"", "select monthID from RunSpecMonth",
-			"", "select dayID from RunSpecDay",
-			"", "select hourID from RunSpecHour",
-			"", "select monthGroupID from RunSpecMonthGroup",
-			"", "select yearID from RunSpecYear",
-			"", "select modelYearID from RunSpecModelYear",
-			"mya.", "select yearID, modelYearID, ageID from RunSpecModelYearAge",
-			"sf.", "select sourceTypeID, fuelTypeID from RunSpecSourceFuelType",
-			"", "select hourDayID from RunSpecHourDay",
-			"", "select stateID from RunSpecState",
-			"", "select countyID from RunSpecCounty",
-			"", "select zoneID from RunSpecZone",
-			"", "select linkID from RunSpecLink",
-			"", "select pollutantID from RunSpecPollutant",
-			"", "select processID from RunSpecProcess",
-			"", "select polProcessID from RunSpecPollutantProcess",
-			"", "select distinct soakDayID from sampleVehicleSoaking",
-			"", "select distinct soakDayID as dayTwoPlusSoakDayID from sampleVehicleSoaking where soakDayID>1",
-			"hd.", "select HourDay.hourDayID as hourDayID, dayID, hourID"
-					+ " from RunSpecHourDay"
-					+ " inner join HourDay using (hourDayID)",
-			"ppa.", "select PollutantProcessAssoc.polProcessID as polProcessID, processID, pollutantID"
-					+ " from RunSpecPollutantProcess"
-					+ " inner join PollutantProcessAssoc using (polProcessID)",
-			"mg.", "select monthOfAnyYear.monthID as monthID, monthGroupID"
-					+ " from RunSpecMonth"
-					+ " inner join monthOfAnyYear using (monthID)"
+			"", "select sourcetypeid from runspecsourcetype",
+			"", "select roadtypeid from runspecroadtype",
+			"", "select monthid from runspecmonth",
+			"", "select dayid from runspecday",
+			"", "select hourid from runspechour",
+			"", "select monthgroupid from runspecmonthgroup",
+			"", "select yearid from runspecyear",
+			"", "select modelyearid from runspecmodelyear",
+			"mya.", "select yearid, modelyearid, ageid from runspecmodelyearage",
+			"sf.", "select sourcetypeid, fueltypeid from runspecsourcefueltype",
+			"", "select hourdayid from runspechourday",
+			"", "select stateid from runspecstate",
+			"", "select countyid from runspeccounty",
+			"", "select zoneid from runspeczone",
+			"", "select linkid from runspeclink",
+			"", "select pollutantid from runspecpollutant",
+			"", "select processid from runspecprocess",
+			"", "select polprocessid from runspecpollutantprocess",
+			"", "select distinct soakdayid from samplevehiclesoaking",
+			"", "select distinct soakdayid as daytwoplussoakdayid from samplevehiclesoaking where soakdayid>1",
+			"hd.", "select hourday.hourdayid as hourdayid, dayid, hourid"
+					+ " from runspechourday"
+					+ " inner join hourday using (hourdayid)",
+			"ppa.", "select pollutantprocessassoc.polprocessid as polprocessid, processid, pollutantid"
+					+ " from runspecpollutantprocess"
+					+ " inner join pollutantprocessassoc using (polprocessid)",
+			"mg.", "select monthofanyyear.monthid as monthid, monthgroupid"
+					+ " from runspecmonth"
+					+ " inner join monthofanyyear using (monthid)"
 		};
 		for(int i=0;i<sets.length;i+=2) {
 			try {
@@ -2277,27 +2277,27 @@ public class ExecutionRunSpec {
 		}
 
 		String[] csvsets = {
-			"select sourceTypeID from RunSpecSourceType",
-			"select distinct fuelTypeID from RunSpecSourceFuelType union select distinct fuelTypeID from RunSpecSectorFuelType",
-			"select distinct fuelTypeID as nrFuelTypeID from RunSpecSectorFuelType",
-			"select distinct fuelSubTypeID from fuelSubType where fuelTypeID in (select distinct fuelTypeID from RunSpecSourceFuelType union select distinct fuelTypeID from RunSpecSectorFuelType)",
-			"select distinct fuelSubTypeID as nrFuelSubTypeID from nrFuelSubType where fuelTypeID in (select distinct fuelTypeID from RunSpecSourceFuelType union select distinct fuelTypeID from RunSpecSectorFuelType)",
-			"select roadTypeID from RunSpecRoadType",
-			"select monthID from RunSpecMonth",
-			"select dayID from RunSpecDay",
-			"select hourID from RunSpecHour",
-			"select monthGroupID from RunSpecMonthGroup",
-			"select yearID from RunSpecYear",
-			"select modelYearID from RunSpecModelYear",
-			"select hourDayID from RunSpecHourDay",
-			//"select stateID from RunSpecState",
-			//"select countyID from RunSpecCounty",
-			//"select zoneID from RunSpecZone",
-			//"select linkID from RunSpecLink",
-			"select pollutantID from RunSpecPollutant",
-			"select processID from RunSpecProcess",
-			"select polProcessID from RunSpecPollutantProcess",
-			"select sourceBinID from SourceBin"
+			"select sourcetypeid from runspecsourcetype",
+			"select distinct fueltypeid from runspecsourcefueltype union select distinct fueltypeid from runspecsectorfueltype",
+			"select distinct fueltypeid as nrfueltypeid from runspecsectorfueltype",
+			"select distinct fuelsubtypeid from fuelsubtype where fueltypeid in (select distinct fueltypeid from runspecsourcefueltype union select distinct fueltypeid from runspecsectorfueltype)",
+			"select distinct fuelsubtypeid as nrfuelsubtypeid from nrfuelsubtype where fueltypeid in (select distinct fueltypeid from runspecsourcefueltype union select distinct fueltypeid from runspecsectorfueltype)",
+			"select roadtypeid from runspecroadtype",
+			"select monthid from runspecmonth",
+			"select dayid from runspecday",
+			"select hourid from runspechour",
+			"select monthgroupid from runspecmonthgroup",
+			"select yearid from runspecyear",
+			"select modelyearid from runspecmodelyear",
+			"select hourdayid from runspechourday",
+			//"select stateid from runspecstate",
+			//"select countyid from runspeccounty",
+			//"select zoneid from runspeczone",
+			//"select linkid from runspeclink",
+			"select pollutantid from runspecpollutant",
+			"select processid from runspecprocess",
+			"select polprocessid from runspecpollutantprocess",
+			"select sourcebinid from sourcebin"
 		};
 		for(int i=0;i<csvsets.length;i++) {
 			try {
@@ -2316,7 +2316,7 @@ public class ExecutionRunSpec {
 	**/
 	public static void refreshMacroExpanderSourceBins(Connection db) {
 		String[] csvsets = {
-			"select sourceBinID from SourceBin"
+			"select sourcebinid from sourcebin"
 		};
 		for(int i=0;i<csvsets.length;i++) {
 			try {
