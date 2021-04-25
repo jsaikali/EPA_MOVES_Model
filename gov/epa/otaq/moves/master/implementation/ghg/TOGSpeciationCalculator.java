@@ -35,10 +35,10 @@ public class TOGSpeciationCalculator extends EmissionCalculator {
 			return cachedMechanismPollutants;
 		}
 		SQLRunner.Query query = new SQLRunner.Query();
-		String sql = "select pollutantID"
+		String sql = "select pollutantid"
 				+ " from pollutant"
-				+ " inner join pollutantDisplayGroup using (pollutantDisplayGroupID)"
-				+ " where pollutantDisplayGroupName='Mechanisms'";
+				+ " inner join pollutantdisplaygroup using (pollutantdisplaygroupid)"
+				+ " where pollutantdisplaygroupname='Mechanisms'";
 		try {
 			ArrayList<Pollutant> pollutants = new ArrayList<Pollutant>();
 			query.open(db,sql);
@@ -75,14 +75,14 @@ public class TOGSpeciationCalculator extends EmissionCalculator {
 		}
 		int mechanismID = 1 + ((mechanismPollutant.databaseKey - 1000) / 500);
 		SQLRunner.Query query = new SQLRunner.Query();
-		String sql = "select distinct processID"
-				+ " from integratedSpeciesSet iss"
-				+ " inner join TOGSpeciationProfile sp on ("
-				+ " 	sp.mechanismID = iss.mechanismID"
-				+ " 	and sp.integratedSpeciesSetID = iss.integratedSpeciesSetID"
-				+ " 	and iss.useISSyn='Y')"
-				+ " inner join TOGSpeciation spec on (spec.togSpeciationProfileID = sp.togSpeciationProfileID)"
-				+ " where iss.mechanismID=" + mechanismID;
+		String sql = "select distinct processid"
+				+ " from integratedspeciesset iss"
+				+ " inner join togspeciationprofile sp on ("
+				+ " 	sp.mechanismid = iss.mechanismid"
+				+ " 	and sp.integratedspeciessetid = iss.integratedspeciessetid"
+				+ " 	and iss.useissyn='Y')"
+				+ " inner join togspeciation spec on (spec.togspeciationprofileid = sp.togspeciationprofileid)"
+				+ " where iss.mechanismid=" + mechanismID;
 		try {
 			ArrayList<EmissionProcess> processes = new ArrayList<EmissionProcess>();
 			query.open(db,sql);
@@ -122,15 +122,15 @@ public class TOGSpeciationCalculator extends EmissionCalculator {
 		}
 		int mechanismID = 1 + ((mechanism.pollutant.databaseKey - 1000) / 500);
 		SQLRunner.Query query = new SQLRunner.Query();
-		String sql = "select distinct pollutantID"
-				+ " from integratedSpeciesSet"
-				+ " where useISSyn='Y'"
-				+ " and mechanismID=" + mechanismID
+		String sql = "select distinct pollutantid"
+				+ " from integratedspeciesset"
+				+ " where useissyn='Y'"
+				+ " and mechanismid=" + mechanismID
 				+ " union"
-				+ " select distinct pollutantID"
-				+ " from togSpeciationProfile"
-				+ " where pollutantID <> 88"
-				+ " and mechanismID=" + mechanismID;
+				+ " select distinct pollutantid"
+				+ " from togspeciationprofile"
+				+ " where pollutantid <> 88"
+				+ " and mechanismid=" + mechanismID;
 		try {
 			ArrayList<PollutantProcessAssociation> results = new ArrayList<PollutantProcessAssociation>();
 			// NMOG (80) is always required. It is already TOG - Methane so we avoid
@@ -178,16 +178,16 @@ public class TOGSpeciationCalculator extends EmissionCalculator {
 			throws SQLException {
 		int mechanismID = 1 + ((mechanism.pollutant.databaseKey - 1000) / 500);
 		SQLRunner.Query query = new SQLRunner.Query();
-		String sql = "select distinct 1000+(iss.mechanismID-1)*500+lumpedSpeciesID as pollutantID"
-				+ " from integratedSpeciesSet iss"
-				+ " inner join TOGSpeciationProfile sp on ("
-				+ " 	sp.mechanismID = iss.mechanismID"
-				+ " 	and sp.integratedSpeciesSetID = iss.integratedSpeciesSetID"
-				+ " 	and iss.useISSyn='Y')"
-				+ " inner join TOGSpeciation spec on (spec.togSpeciationProfileID = sp.togSpeciationProfileID)"
-				+ " inner join lumpedSpeciesName using (lumpedSpeciesName)"
-				+ " where iss.mechanismID=" + mechanismID
-				+ " and spec.processID=" + mechanism.emissionProcess.databaseKey;
+		String sql = "select distinct 1000+(iss.mechanismid-1)*500+lumpedspeciesid as pollutantid"
+				+ " from integratedspeciesset iss"
+				+ " inner join togspeciationprofile sp on ("
+				+ " 	sp.mechanismid = iss.mechanismid"
+				+ " 	and sp.integratedspeciessetid = iss.integratedspeciessetid"
+				+ " 	and iss.useissyn='Y')"
+				+ " inner join togspeciation spec on (spec.togspeciationprofileid = sp.togspeciationprofileid)"
+				+ " inner join lumpedspeciesname using (lumpedspeciesname)"
+				+ " where iss.mechanismid=" + mechanismID
+				+ " and spec.processid=" + mechanism.emissionProcess.databaseKey;
 		try {
 			ArrayList<PollutantProcessAssociation> results = new ArrayList<PollutantProcessAssociation>();
 			query.open(db,sql);

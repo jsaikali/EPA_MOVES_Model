@@ -243,8 +243,8 @@ public class PollutantProcessAssociation implements Comparable {
 		PreparedStatement statement = null;
 		ResultSet results = null;
 		try {
-			sql = "SELECT polProcessID FROM PollutantProcessAssoc "
-					+ "WHERE processID = ? AND pollutantID = ?";
+			sql = "SELECT polprocessid from pollutantprocessassoc "
+					+ "where processid = ? and pollutantid = ?";
 			statement = database.prepareStatement(sql);
 			statement.setInt(1,emissionProcess.databaseKey);
 			statement.setInt(2,pollutant.databaseKey);
@@ -289,7 +289,7 @@ public class PollutantProcessAssociation implements Comparable {
 		PreparedStatement statement = null;
 		ResultSet results = null;
 		try {
-			sql = "SELECT COUNT(*) FROM OpModePolProcAssoc WHERE polProcessID=?";
+			sql = "SELECT COUNT(*) FROM opmodepolprocassoc where polprocessid=?";
 			statement = database.prepareStatement(sql);
 			statement.setInt(1,databaseKey);
 			results = SQLRunner.executeQuery(statement,sql);
@@ -335,7 +335,7 @@ public class PollutantProcessAssociation implements Comparable {
 		PreparedStatement statement = null;
 		ResultSet results = null;
 		try {
-			sql = "SELECT opModeID FROM OpModePolProcAssoc WHERE polProcessID=? LIMIT 1";
+			sql = "SELECT opmodeid from opmodepolprocassoc where polprocessid=? LIMIT 1";
 			statement = database.prepareStatement(sql);
 			statement.setInt(1,databaseKey);
 			results = SQLRunner.executeQuery(statement,sql);
