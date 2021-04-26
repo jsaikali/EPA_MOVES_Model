@@ -1092,7 +1092,7 @@ public class BaseRateGenerator extends Generator {
 			**/
 
 			"#baserate",
-			"insert into baserate_" + processid + "_" + yearid + " ("
+			"insert into baserate_" + processID + "_" + yearID + " ("
 			+ " 	sourcetypeid, roadtypeid, avgspeedbinid, polprocessid, hourdayid, modelyearid, fueltypeid, regclassid, opmodeid,"
 			+ " 	opmodefraction, opmodefractionrate, meanbaserate, meanbaserateim, meanbaserateacadj, meanbaserateimacadj, emissionrate, emissionrateim, emissionrateacadj, emissionrateimacadj, processid, pollutantid)"
 			+ " select"
