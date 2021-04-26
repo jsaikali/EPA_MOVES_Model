@@ -2809,7 +2809,7 @@ public class InputDataManager {
 		if(includeIMCoverage && isDefaultDatabase) {
 			// If there is already data in the destination IMCoverage table, do not import
 			// the default database's IMCoverage table.
-			if(DatabaseUtilities.getRowCount(destination,"IMCoverage") > 0) {
+			if(DatabaseUtilities.getRowCount(destination,"imcoverage") > 0) {
 				includeIMCoverage = false;
 			}
 		}
@@ -2818,7 +2818,7 @@ public class InputDataManager {
 		if(includeFuelUsageFraction && isDefaultDatabase) {
 			// If there is already data in the destination FuelUsageFraction table, do not import
 			// the default database's FuelUsageFraction table.
-			if(DatabaseUtilities.getRowCount(destination,"FuelUsageFraction") > 0) {
+			if(DatabaseUtilities.getRowCount(destination,"fuelusagefraction") > 0) {
 				includeFuelUsageFraction = false;
 			}
 		}
@@ -2830,9 +2830,9 @@ public class InputDataManager {
 		if(includeHPMSVtypeYear && isDefaultDatabase) {
 			// If there is already data in a destination table that supplies VMT, do not
 			// import the default database's HPMSVtypeYear table.
-			if(DatabaseUtilities.getRowCount(destination,"HPMSVtypeDay") > 0
-					|| DatabaseUtilities.getRowCount(destination,"SourceTypeDayVMT") > 0
-					|| DatabaseUtilities.getRowCount(destination,"SourceTypeYearVMT") > 0) {
+			if(DatabaseUtilities.getRowCount(destination,"hpmsvtypeday") > 0
+					|| DatabaseUtilities.getRowCount(destination,"sourcetypedayvmt") > 0
+					|| DatabaseUtilities.getRowCount(destination,"sourcetypeyearvmt") > 0) {
 				includeHPMSVtypeYear = false;
 			}
 		}
@@ -3822,7 +3822,7 @@ if(shouldLog) System.out.println("IDM No clause sets for " + t.tableName);
 		if(isDefaultDatabase) {
 			// If there is already data in the destination nrFuelSupply table, do not import
 			// the default database's nrFuelSupply table.
-			if(DatabaseUtilities.getRowCount(destination,"nrFuelSupply") > 0) {
+			if(DatabaseUtilities.getRowCount(destination,"nrfuelsupply") > 0) {
 				includeNRFuelSupply = false;
 			}
 		}
