@@ -1536,19 +1536,19 @@ public class AggregationSQLGenerator {
 					nrActivityWeightSQL.add("drop table if exists nractivityweightsummary;");
 					nrActivityWeightSQL.add("drop table if exists nractivityweightdetail;");
 					nrActivityWeightSQL.add("create table nractivityweightsummary like movesworkeractivityoutput;");
-					nrActivityWeightSQL.add("alter table nractivityweightsummary add primary key (" + keycolumnnames + ");");
-					nrActivityWeightSQL.add("insert into nractivityweightsummary (" + keycolumnnames + ",activity)"
-							+ " select " + keycolumnnames + ",sum(activity) as activity"
+					nrActivityWeightSQL.add("alter table nractivityweightsummary add primary key (" + keyColumnNames + ");");
+					nrActivityWeightSQL.add("insert into nractivityweightsummary (" + keyColumnNames + ",activity)"
+							+ " select " + keyColumnNames + ",sum(activity) as activity"
 							+ " from movesworkeractivityoutput where activitytypeid=2" // weight by source hours (activity type 2)
 							+ " group by " + keyColumnNames
 							+ " order by null;");
 					nrActivityWeightSQL.add("create table nractivityweightdetail like movesworkeractivityoutput;");
-					nrActivityWeightSQL.add("alter table nractivityweightdetail add primary key (" + detailkey + ");");
-					nrActivityWeightSQL.add("insert into nractivityweightdetail(" + detailkey + ",activity,activitytypeid)"
-							+ " select " + detailselect + ","
+					nrActivityWeightSQL.add("alter table nractivityweightdetail add primary key (" + detailKey + ");");
+					nrActivityWeightSQL.add("insert into nractivityweightdetail(" + detailKey + ",activity,activitytypeid)"
+							+ " select " + detailSelect + ","
 							+ " case when s.activity>0 then a.activity/s.activity else 0.0 end as activity,2 as activitytypeid"
 							+ " from movesworkeractivityoutput a"
-							+ " inner join nractivityweightsummary s using (" + keycolumnnames + ")"
+							+ " inner join nractivityweightsummary s using (" + keyColumnNames + ")"
 							+ " where a.activitytypeid=2;"); // weight by source hours (activity type 2)
 					nrActivityWeightSQL.add("update movesworkeractivityoutput, nractivityweightdetail set movesworkeractivityoutput.activity=nractivityweightdetail.activity*movesworkeractivityoutput.activity"
 							+ " where " + updateWhere
@@ -1814,21 +1814,21 @@ public class AggregationSQLGenerator {
 				finalProcessSQLs.add("drop table if exists nractivityweightsummary;");
 				finalProcessSQLs.add("drop table if exists nractivityweightdetail;");
 				finalProcessSQLs.add("create table nractivityweightsummary like " + executionrunspec.getactivityoutputtable() + ";");
-				finalProcessSQLs.add("alter table nractivityweightsummary add primary key (" + keycolumnnames + ");");
-				finalProcessSQLs.add("insert into nractivityweightsummary (" + keycolumnnames + ",activity)"
-						+ " select " + keycolumnnames + ",sum(activity) as activity"
+				finalProcessSQLs.add("alter table nractivityweightsummary add primary key (" + keyColumnNames + ");");
+				finalProcessSQLs.add("insert into nractivityweightsummary (" + keyColumnNames + ",activity)"
+						+ " select " + keyColumnNames + ",sum(activity) as activity"
 						+ " from " + executionrunspec.getactivityoutputtable() + " where activitytypeid=2" // weight by source hours (activity type 2)
 						+ " and movesrunid = "+ activeRunID
 						+ " and iterationid = " + activeIterationID
 						+ " group by " + keyColumnNames
 						+ " order by null;");
 				finalProcessSQLs.add("create table nractivityweightdetail like " + executionrunspec.getactivityoutputtable() + ";");
-				finalProcessSQLs.add("alter table nractivityweightdetail add primary key (" + detailkey + ");");
-				finalProcessSQLs.add("insert into nractivityweightdetail(" + detailkey + ",activity,activitytypeid)"
-						+ " select " + detailselect + ","
+				finalProcessSQLs.add("alter table nractivityweightdetail add primary key (" + detailKey + ");");
+				finalProcessSQLs.add("insert into nractivityweightdetail(" + detailKey + ",activity,activitytypeid)"
+						+ " select " + detailSelect + ","
 						+ " case when s.activity>0 then a.activity/s.activity else 0.0 end as activity,2 as activitytypeid"
 						+ " from " + executionrunspec.getactivityoutputtable() + " a"
-						+ " inner join nractivityweightsummary s using (" + keycolumnnames + ")"
+						+ " inner join nractivityweightsummary s using (" + keyColumnNames + ")"
 						+ " where a.activitytypeid=2" // weight by source hours (activity type 2)
 						+ " and movesrunid = "+ activeRunID
 						+ " and iterationid = " + activeiterationid + ";");
