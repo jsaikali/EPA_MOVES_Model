@@ -176,202 +176,202 @@ public class MesoscaleLookupTotalActivityGenerator extends Generator {
 		// Succeeding years may(if there is not an intervening base year) grow values from the
 		// following tables to the current year so the data in these tables must be kept for
 		// the full run.
-		sql = "CREATE TABLE IF NOT EXISTS SourceTypeAgePopulation ("+
-					"yearID         SMALLINT NOT NULL,"+
-					"sourceTypeID   SMALLINT NOT NULL,"+
-					"ageID          SMALLINT NOT NULL,"+
-					"population     FLOAT NOT NULL,"+
-					"UNIQUE INDEX XPKSourceTypeAgePopulation ("+
-						"yearID, sourceTypeID, ageID))";
+		sql = "create table if not exists sourcetypeagepopulation ("+
+					"yearid         smallint not null,"+
+					"sourcetypeid   smallint not null,"+
+					"ageid          smallint not null,"+
+					"population     float not null,"+
+					"unique index xpksourcetypeagepopulation ("+
+						"yearid, sourcetypeid, ageid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE SourceTypeAgePopulation";
+		sql = "TRUNCATE sourcetypeagepopulation";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS AnalysisYearVMT ("+
-					"yearID      SMALLINT NOT NULL,"+
-					"HPMSVTypeID SMALLINT NOT NULL,"+
-					"VMT         FLOAT NOT NULL,"+
-					"UNIQUE INDEX XPKAnalysisYearVMT ("+
-						"yearID, HPMSVTypeID))";
+		sql = "CREATE TABLE IF NOT EXISTS analysisyearvmt ("+
+					"yearid      smallint not null,"+
+					"hpmsvtypeid smallint not null,"+
+					"vmt         float not null,"+
+					"unique index xpkanalysisyearvmt ("+
+						"yearid, hpmsvtypeid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE AnalysisYearVMT";
+		sql = "TRUNCATE analysisyearvmt";
 		SQLRunner.executeSQL(db,sql);
 
 		//
 		// The following tables contain data that are used during every loop.
-		sql = "CREATE TABLE IF NOT EXISTS SHOByAgeRoadwayHour ("+
-				"yearID         SMALLINT NOT NULL,"+
-				"roadTypeID     SMALLINT NOT NULL,"+
-				"sourceTypeID   SMALLINT NOT NULL,"+
-				"ageID          SMALLINT NOT NULL,"+
-				"monthID        SMALLINT NOT NULL,"+
-				"dayID          SMALLINT NOT NULL,"+
-				"hourID         SMALLINT NOT NULL,"+
-				"SHO            FLOAT NOT NULL,"+
-				"UNIQUE INDEX XPKSHOByAgeRoadwayHour ("+
-					"yearID, roadTypeID, sourceTypeID, ageID, monthID, dayID, hourID))";
+		sql = "CREATE TABLE IF NOT EXISTS shobyageroadwayhour ("+
+				"yearid         smallint not null,"+
+				"roadtypeid     smallint not null,"+
+				"sourcetypeid   smallint not null,"+
+				"ageid          smallint not null,"+
+				"monthid        smallint not null,"+
+				"dayid          smallint not null,"+
+				"hourid         smallint not null,"+
+				"sho            float not null,"+
+				"unique index xpkshobyageroadwayhour ("+
+					"yearid, roadtypeid, sourcetypeid, ageid, monthid, dayid, hourid))";
 		SQLRunner.executeSQL(db, sql);
 
-		sql = "TRUNCATE SHOByAgeRoadwayHour";
+		sql = "TRUNCATE shobyageroadwayhour";
 		SQLRunner.executeSQL(db, sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS StartsByAgeHour ("+
-				"yearID         SMALLINT NOT NULL,"+
-				"sourceTypeID   SMALLINT NOT NULL,"+
-				"ageID          SMALLINT NOT NULL,"+
-				"monthID        SMALLINT NOT NULL,"+
-				"dayID          SMALLINT NOT NULL,"+
-				"hourID         SMALLINT NOT NULL,"+
-				"starts         FLOAT NOT NULL,"+
-				"UNIQUE INDEX XPKStartsByAgeHour ("+
-					"yearID, sourceTypeID, ageID, monthID, dayID, hourID))";
+		sql = "CREATE TABLE IF NOT EXISTS startsbyagehour ("+
+				"yearid         smallint not null,"+
+				"sourcetypeid   smallint not null,"+
+				"ageid          smallint not null,"+
+				"monthid        smallint not null,"+
+				"dayid          smallint not null,"+
+				"hourid         smallint not null,"+
+				"starts         float not null,"+
+				"unique index xpkstartsbyagehour ("+
+					"yearid, sourcetypeid, ageid, monthid, dayid, hourid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE StartsByAgeHour";
+		sql = "TRUNCATE startsbyagehour";
 		SQLRunner.executeSQL(db, sql);
 		
-		sql = "CREATE TABLE IF NOT EXISTS IdleHoursByAgeHour ("+
-				"yearID         SMALLINT NOT NULL,"+
-				"sourceTypeID   SMALLINT NOT NULL,"+
-				"ageID          SMALLINT NOT NULL,"+
-				"monthID        SMALLINT NOT NULL,"+
-				"dayID          SMALLINT NOT NULL,"+
-				"hourID         SMALLINT NOT NULL,"+
-				"idleHours      FLOAT NOT NULL,"+
-				"UNIQUE INDEX XPKIdleHoursByAgeHour ("+
-					"yearID, sourceTypeID, ageID, monthID, dayID, hourID))";
+		sql = "CREATE TABLE IF NOT EXISTS idlehoursbyagehour ("+
+				"yearid         smallint not null,"+
+				"sourcetypeid   smallint not null,"+
+				"ageid          smallint not null,"+
+				"monthid        smallint not null,"+
+				"dayid          smallint not null,"+
+				"hourid         smallint not null,"+
+				"idlehours      float not null,"+
+				"unique index xpkidlehoursbyagehour ("+
+					"yearid, sourcetypeid, ageid, monthid, dayid, hourid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE IdleHoursByAgeHour";
+		sql = "TRUNCATE idlehoursbyagehour";
 		SQLRunner.executeSQL(db,sql);
 
 		//
 		// The following tables contain data that should be cleaned out each loop.
-		sql = "CREATE TABLE IF NOT EXISTS VMTByAgeRoadwayHour ("+
-					"yearID        SMALLINT NOT NULL,"+
-					"roadTypeID    SMALLINT NOT NULL,"+
-					"sourceTypeID  SMALLINT NOT NULL,"+
-					"ageID         SMALLINT NOT NULL,"+
-					"monthID       SMALLINT NOT NULL,"+
-					"dayID         SMALLINT NOT NULL,"+
-					"hourID        SMALLINT NOT NULL,"+
-					"VMT           FLOAT NOT NULL,"+
-					"UNIQUE INDEX XPKVMTByAgeRoadwayHour("+
-						"yearID, roadTypeID, sourceTypeID, ageID, monthID, dayID, hourID))";
+		sql = "CREATE TABLE IF NOT EXISTS vmtbyageroadwayhour ("+
+					"yearid        smallint not null,"+
+					"roadtypeid    smallint not null,"+
+					"sourcetypeid  smallint not null,"+
+					"ageid         smallint not null,"+
+					"monthid       smallint not null,"+
+					"dayid         smallint not null,"+
+					"hourid        smallint not null,"+
+					"vmt           float not null,"+
+					"unique index xpkvmtbyageroadwayhour("+
+						"yearid, roadtypeid, sourcetypeid, ageid, monthid, dayid, hourid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE VMTByAgeRoadwayHour";
+		sql = "TRUNCATE vmtbyageroadwayhour";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS SourceTypeAgePopulation2 ("+
-					"yearID         SMALLINT NOT NULL,"+
-					"sourceTypeID   SMALLINT NOT NULL,"+
-					"ageID          SMALLINT NOT NULL,"+
-					"population     FLOAT NOT NULL,"+
-					"UNIQUE INDEX XPKSourceTypeAgePopulation2 ("+
-						"yearID, sourceTypeID, ageID))";
+		sql = "CREATE TABLE IF NOT EXISTS sourcetypeagepopulation2 ("+
+					"yearid         smallint not null,"+
+					"sourcetypeid   smallint not null,"+
+					"ageid          smallint not null,"+
+					"population     float not null,"+
+					"unique index xpksourcetypeagepopulation2 ("+
+						"yearid, sourcetypeid, ageid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE SourceTypeAgePopulation2";
+		sql = "TRUNCATE sourcetypeagepopulation2";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS HPMSVTypePopulation ("+
-					"yearID       SMALLINT NOT NULL,"+
-					"HPMSVTypeID  SMALLINT NOT NULL,"+
-					"population   FLOAT NOT NULL,"+
-					"UNIQUE INDEX XPKHPMSVTypePopulation("+
-						"yearID, HPMSVTypeID))";
+		sql = "CREATE TABLE IF NOT EXISTS hpmsvtypepopulation ("+
+					"yearid       smallint not null,"+
+					"hpmsvtypeid  smallint not null,"+
+					"population   float not null,"+
+					"unique index xpkhpmsvtypepopulation("+
+						"yearid, hpmsvtypeid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE HPMSVTypePopulation";
+		sql = "TRUNCATE hpmsvtypepopulation";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS FractionWithinHPMSVType ("+
-					"yearID       SMALLINT NOT NULL,"+
-					"sourceTypeID SMALLINT NOT NULL,"+
-					"ageID        SMALLINT NOT NULL,"+
-					"fraction     FLOAT NOT NULL,"+
-					"UNIQUE INDEX XPKFractionWithinHPMSVType ("+
-						"yearID, sourceTypeID, ageID))";
+		sql = "CREATE TABLE IF NOT EXISTS fractionwithinhpmsvtype ("+
+					"yearid       smallint not null,"+
+					"sourcetypeid smallint not null,"+
+					"ageid        smallint not null,"+
+					"fraction     float not null,"+
+					"unique index xpkfractionwithinhpmsvtype ("+
+						"yearid, sourcetypeid, ageid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE FractionWithinHPMSVType";
+		sql = "TRUNCATE fractionwithinhpmsvtype";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS HPMSTravelFraction ("+
-				"yearID      SMALLINT NOT NULL,"+
-				"HPMSVTypeID SMALLINT NOT NULL,"+
-				"fraction    FLOAT NOT NULL,"+
-				"UNIQUE INDEX XPKHPMSTravelFraction ("+
-					"yearID, HPMSVTypeID))";
+		sql = "CREATE TABLE IF NOT EXISTS hpmstravelfraction ("+
+				"yearid      smallint not null,"+
+				"hpmsvtypeid smallint not null,"+
+				"fraction    float not null,"+
+				"unique index xpkhpmstravelfraction ("+
+					"yearid, hpmsvtypeid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE HPMSTravelFraction";
+		sql = "TRUNCATE hpmstravelfraction";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS TravelFraction ("+
-					"yearID        SMALLINT NOT NULL,"+
-					"sourceTypeID  SMALLINT NOT NULL,"+
-					"ageID         SMALLINT NOT NULL,"+
-					"fraction      FLOAT NOT NULL,"+
-					"UNIQUE INDEX XPKTravelFraction("+
-						"yearID, sourceTypeID, ageID))";
+		sql = "CREATE TABLE IF NOT EXISTS travelfraction ("+
+					"yearid        smallint not null,"+
+					"sourcetypeid  smallint not null,"+
+					"ageid         smallint not null,"+
+					"fraction      float not null,"+
+					"unique index xpktravelfraction("+
+						"yearid, sourcetypeid, ageid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE TravelFraction";
+		sql = "TRUNCATE travelfraction";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS AnalysisYearVMT2 ("+
-					"yearID      SMALLINT NOT NULL,"+
-					"HPMSVTypeID SMALLINT NOT NULL,"+
-					"VMT         FLOAT NOT NULL,"+
-					"UNIQUE INDEX AnalysisYearVMT2("+
-						"yearID, HPMSVTypeID))";
+		sql = "CREATE TABLE IF NOT EXISTS analysisyearvmt2 ("+
+					"yearid      smallint not null,"+
+					"hpmsvtypeid smallint not null,"+
+					"vmt         float not null,"+
+					"unique index analysisyearvmt2("+
+						"yearid, hpmsvtypeid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE AnalysisYearVMT2";
+		sql = "TRUNCATE analysisyearvmt2";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS AnnualVMTByAgeRoadway ("+
-				"yearID        SMALLINT NOT NULL,"+
-				"roadTypeID    SMALLINT NOT NULL,"+
-				"sourceTypeID  SMALLINT NOT NULL,"+
-				"ageID         SMALLINT NOT NULL,"+
-				"VMT           FLOAT NOT NULL,"+
-				"UNIQUE INDEX XPKAnnualVMTByAgeRoadway("+
-					"yearID, roadTypeID, sourceTypeID, ageID))";
+		sql = "CREATE TABLE IF NOT EXISTS annualvmtbyageroadway ("+
+				"yearid        smallint not null,"+
+				"roadtypeid    smallint not null,"+
+				"sourcetypeid  smallint not null,"+
+				"ageid         smallint not null,"+
+				"vmt           float not null,"+
+				"unique index xpkannualvmtbyageroadway("+
+					"yearid, roadtypeid, sourcetypeid, ageid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE AnnualVMTByAgeRoadway";
+		sql = "TRUNCATE annualvmtbyageroadway";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS AverageSpeed ("+
-				"roadTypeID    SMALLINT NOT NULL,"+
-				"sourceTypeID  SMALLINT NOT NULL,"+
-				"dayID         SMALLINT NOT NULL,"+
-				"hourID        SMALLINT NOT NULL,"+
-				"averageSpeed  FLOAT NOT NULL,"+
-				"UNIQUE INDEX XPKAverageSpeed ("+
-					"roadTypeID, sourceTypeID, dayID, hourID))";
+		sql = "CREATE TABLE IF NOT EXISTS averagespeed ("+
+				"roadtypeid    smallint not null,"+
+				"sourcetypeid  smallint not null,"+
+				"dayid         smallint not null,"+
+				"hourid        smallint not null,"+
+				"averagespeed  float not null,"+
+				"unique index xpkaveragespeed ("+
+					"roadtypeid, sourcetypeid, dayid, hourid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE AverageSpeed";
+		sql = "TRUNCATE averagespeed";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS SHOByAgeDay ("+
-					"yearID         SMALLINT NOT NULL,"+
-					"sourceTypeID   SMALLINT NOT NULL,"+
-					"ageID          SMALLINT NOT NULL,"+
-					"monthID        SMALLINT NOT NULL,"+
-					"dayID          SMALLINT NOT NULL,"+
-					"SHO            FLOAT NOT NULL,"+
-					"UNIQUE INDEX XPKSHOByAgeDay("+
-						"yearID, sourceTypeID, ageID, monthID, dayID))";
+		sql = "CREATE TABLE IF NOT EXISTS shobyageday ("+
+					"yearid         smallint not null,"+
+					"sourcetypeid   smallint not null,"+
+					"ageid          smallint not null,"+
+					"monthid        smallint not null,"+
+					"dayid          smallint not null,"+
+					"sho            float not null,"+
+					"unique index xpkshobyageday("+
+						"yearid, sourcetypeid, ageid, monthid, dayid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE SHOByAgeDay";
+		sql = "TRUNCATE shobyageday";
 		SQLRunner.executeSQL(db,sql);
 /*
 		sql = "CREATE TABLE IF NOT EXISTS SH ("+
@@ -391,19 +391,19 @@ public class MesoscaleLookupTotalActivityGenerator extends Generator {
 		sql = "TRUNCATE SH";
 		SQLRunner.executeSQL(db,sql);
 */
-		sql = "CREATE TABLE IF NOT EXISTS SHP ("+
-				"hourDayID         SMALLINT NOT NULL,"+
-				"monthID              SMALLINT NOT NULL,"+
-				"yearID               SMALLINT NOT NULL,"+
-				"ageID                SMALLINT NOT NULL,"+
-				"zoneID               INTEGER NOT NULL,"+
-				"sourceTypeID         SMALLINT NOT NULL,"+
-				"SHP                  FLOAT NULL,"+
-				"UNIQUE INDEX XPKSPH("+
-				"hourDayID, monthID, yearID, ageID, zoneID, sourceTypeID))";
+		sql = "CREATE TABLE IF NOT EXISTS shp ("+
+				"hourdayid         smallint not null,"+
+				"monthid              smallint not null,"+
+				"yearid               smallint not null,"+
+				"ageid                smallint not null,"+
+				"zoneid               integer not null,"+
+				"sourcetypeid         smallint not null,"+
+				"shp                  float null,"+
+				"unique index xpksph("+
+				"hourdayid, monthid, yearid, ageid, zoneid, sourcetypeid))";
 		SQLRunner.executeSQL(db,sql);
 		
-		sql = "TRUNCATE SHP";
+		sql = "TRUNCATE shp";
 		SQLRunner.executeSQL(db,sql);
 	}
 
@@ -419,12 +419,12 @@ public class MesoscaleLookupTotalActivityGenerator extends Generator {
 		ResultSet results = null;
 		try {
 			sql = "SELECT "+
-						"MAX(yearId) "+
+						"MAX(yearid) "+
 					"FROM "+
-						"Year "+
+						"year "+
 					"WHERE "+
-						"yearId <= ? AND "+
-						"(isBaseYear = 'Y' OR isBaseyear = 'y')";
+						"yearid <= ? AND "+
+						"(isbaseyear = 'Y' OR isbaseyear = 'y')";
 			statement=db.prepareStatement(sql);
 			statement.setInt(1,analysisYear);
 
@@ -470,23 +470,23 @@ public class MesoscaleLookupTotalActivityGenerator extends Generator {
 		String sql = "";
 		PreparedStatement statement = null;
 		try {
-			sql = "INSERT INTO SourceTypeAgePopulation ("+
-						"yearID,"+
-						"sourceTypeID,"+
-						"ageID, "+
+			sql = "INSERT INTO sourcetypeagepopulation ("+
+						"yearid,"+
+						"sourcetypeid,"+
+						"ageid, "+
 						"population) "+
-					"SELECT "+
-						"sty.YearID,"+
-						"sty.SourceTypeID,"+
-						"stad.AgeID, "+
-						"sty.SourceTypePopulation * stad.AgeFraction "+
-					"FROM "+
-						"SourceTypeYear sty,"+
-						"SourceTypeAgeDistribution stad "+
-					"WHERE "+
-						"sty.sourceTypeID = stad.sourceTypeID AND "+
-						"sty.yearID = stad.yearID AND "+
-						"sty.yearID = ?";
+					"select "+
+						"sty.yearid,"+
+						"sty.sourcetypeid,"+
+						"stad.ageid, "+
+						"sty.sourcetypepopulation * stad.agefraction "+
+					"from "+
+						"sourcetypeyear sty,"+
+						"sourcetypeagedistribution stad "+
+					"where "+
+						"sty.sourcetypeid = stad.sourcetypeid and "+
+						"sty.yearid = stad.yearid and "+
+						"sty.yearid = ?";
 			statement = db.prepareStatement(sql);
 			statement.setInt(1,baseYear);
 			int rows = SQLRunner.executeSQL(statement,sql);
@@ -515,110 +515,110 @@ public class MesoscaleLookupTotalActivityGenerator extends Generator {
 		PreparedStatement ageXStatement = null;
 		PreparedStatement age30PlusStatement = null;
 		try {
-			sql = "TRUNCATE SourceTypeAgePopulation2";
+			sql = "TRUNCATE sourcetypeagepopulation2";
 			SQLRunner.executeSQL(db,sql);
 
 			//
 			// Setup the SQL strings used in the loops
 			String copySql =
-					"INSERT INTO SourceTypeAgePopulation ("+
-						"yearID,"+
-						"sourceTypeID,"+
-						"ageID,"+
+					"INSERT INTO sourcetypeagepopulation ("+
+						"yearid,"+
+						"sourcetypeid,"+
+						"ageid,"+
 						"population) "+
-					"SELECT "+
-						"yearID,"+
-						"sourceTypeID,"+
-						"ageID,"+
+					"select "+
+						"yearid,"+
+						"sourcetypeid,"+
+						"ageid,"+
 						"population "+
-					"FROM "+
-						"SourceTypeAgePopulation2";
+					"from "+
+						"sourcetypeagepopulation2";
 			copyStatement = db.prepareStatement(copySql);
 
-			String purgeSql = "TRUNCATE SourceTypeAgePopulation2";
+			String purgeSql = "TRUNCATE sourcetypeagepopulation2";
 			purgeStatement = db.prepareStatement(purgeSql);
 
 			String age0Sql =
-					"INSERT INTO SourceTypeAgePopulation2 ("+
-						"yearID,"+
-						"sourceTypeID,"+
-						"ageID,"+
+					"INSERT INTO sourcetypeagepopulation2 ("+
+						"yearid,"+
+						"sourcetypeid,"+
+						"ageid,"+
 						"population) "+
-					"SELECT "+
-						"sty2.yearID,"+
-						"sty.sourceTypeID,"+
-						"stap.ageID,"+
-						"(stap.population/sty.migrationRate)*sty2.salesGrowthFactor*"+
-								"sty2.migrationRate "+
-					"FROM "+
-						"SourceTypeYear sty,"+
-						"SourceTypeYear sty2,"+
-						"SourceTypeAgePopulation stap "+
-					"WHERE "+
-						"sty.yearID = sty2.yearID-1 AND "+
-						"sty.sourceTypeID = stap.sourceTypeID AND "+
-						"sty2.yearID = ? AND "+
-						"sty2.sourceTypeID = stap.sourceTypeID AND "+
-						"stap.yearID = sty.yearID AND "+
-						"stap.ageID = 0 AND "+
-						"sty.migrationRate <> 0";
+					"select "+
+						"sty2.yearid,"+
+						"sty.sourcetypeid,"+
+						"stap.ageid,"+
+						"(stap.population/sty.migrationrate)*sty2.salesgrowthfactor*"+
+								"sty2.migrationrate "+
+					"from "+
+						"sourcetypeyear sty,"+
+						"sourcetypeyear sty2,"+
+						"sourcetypeagepopulation stap "+
+					"where "+
+						"sty.yearid = sty2.yearid-1 and "+
+						"sty.sourcetypeid = stap.sourcetypeid and "+
+						"sty2.yearid = ? and "+
+						"sty2.sourcetypeid = stap.sourcetypeid and "+
+						"stap.yearid = sty.yearid and "+
+						"stap.ageid = 0 and "+
+						"sty.migrationrate <> 0";
 			age0Statement = db.prepareStatement(age0Sql);
 
 			String ageXSql =
-					"INSERT INTO SourceTypeAgePopulation2 ("+
-						"yearID,"+
-						"sourceTypeID,"+
-						"ageID,"+
+					"INSERT INTO sourcetypeagepopulation2 ("+
+						"yearid,"+
+						"sourcetypeid,"+
+						"ageid,"+
 						"population) "+
-					"SELECT "+
-						"sty.yearID,"+
-						"sty.sourceTypeID,"+
-						"sta.ageID+1,"+
-						"stap.population * sta.survivalRate * sty.migrationRate "+
-					"FROM "+
-						"SourceTypeYear sty, "+
-						"SourceTypeAge sta, "+
-						"SourceTypeAgePopulation stap "+
-					"WHERE "+
-						"sty.yearID = ? AND "+
-						"sty.sourceTypeID = stap.sourceTypeID AND "+
-						"sta.ageID = ?-1 AND "+
-						"sta.sourceTypeID = stap.sourceTypeID AND "+
-						"stap.yearID = sty.yearID-1 AND "+
-						"stap.ageID = sta.ageID";
+					"select "+
+						"sty.yearid,"+
+						"sty.sourcetypeid,"+
+						"sta.ageid+1,"+
+						"stap.population * sta.survivalrate * sty.migrationrate "+
+					"from "+
+						"sourcetypeyear sty, "+
+						"sourcetypeage sta, "+
+						"sourcetypeagepopulation stap "+
+					"where "+
+						"sty.yearid = ? and "+
+						"sty.sourcetypeid = stap.sourcetypeid and "+
+						"sta.ageid = ?-1 and "+
+						"sta.sourcetypeid = stap.sourcetypeid and "+
+						"stap.yearid = sty.yearid-1 and "+
+						"stap.ageid = sta.ageid";
 			ageXStatement = db.prepareStatement(ageXSql);
 
 			String age30PlusSql =
-					"INSERT INTO SourceTypeAgePopulation2 ("+
-						"yearID,"+
-						"sourceTypeID,"+
-						"ageID,"+
+					"INSERT INTO sourcetypeagepopulation2 ("+
+						"yearid,"+
+						"sourcetypeid,"+
+						"ageid,"+
 						"population) "+
-					"SELECT "+
-						"sty.yearID,"+
-						"sty.sourceTypeID,"+
-						"sta2.ageID,"+
-						"stap.population*sta.survivalRate*sty.migrationRate + stap2.population*"+
-								"sta2.survivalRate*sty.migrationRate "+
-					"FROM "+
-						"SourceTypeYear sty,"+
-						"SourceTypeAge sta,"+
-						"SourceTypeAge sta2,"+
-						"SourceTypeAgePopulation stap,"+
-						"SourceTypeAgePopulation stap2 "+
-					"WHERE "+
-						"sty.yearID = ? AND "+
-						"sty.sourceTypeID = stap.sourceTypeID AND "+
-						"sta.ageID = 29 AND "+
-						"sta.sourceTypeID = stap.sourceTypeID AND "+
-						"sta2.ageID = 30 AND "+
-						"sta2.sourceTypeID = stap.sourceTypeID AND "+
-						"sta.sourceTypeID = stap.sourceTypeID AND "+
-						"stap.yearID = sty.yearID-1 AND "+
-						"stap.ageID = 29 AND "+
-						"stap2.sourceTypeID = stap.sourceTypeID AND "+
-						"stap2.yearID = stap.yearID AND "+
-						"stap2.ageID = 30";
+					"select "+
+						"sty.yearid,"+
+						"sty.sourcetypeid,"+
+						"sta2.ageid,"+
+						"stap.population*sta.survivalrate*sty.migrationrate + stap2.population*"+
+								"sta2.survivalrate*sty.migrationrate "+
+					"from "+
+						"sourcetypeyear sty,"+
+						"sourcetypeage sta,"+
+						"sourcetypeage sta2,"+
+						"sourcetypeagepopulation stap,"+
+						"sourcetypeagepopulation stap2 "+
+					"where "+
+						"sty.yearid = ? and "+
+						"sty.sourcetypeid = stap.sourcetypeid and "+
+						"sta.ageid = 29 and "+
+						"sta.sourcetypeid = stap.sourcetypeid and "+
+						"sta2.ageid = 30 and "+
+						"sta2.sourcetypeid = stap.sourcetypeid and "+
+						"sta.sourcetypeid = stap.sourcetypeid and "+
+						"stap.yearid = sty.yearid-1 and "+
+						"stap.ageid = 29 and "+
+						"stap2.sourcetypeid = stap.sourcetypeid and "+
+						"stap2.yearid = stap.yearid and "+
+						"stap2.ageid = 30";
 			age30PlusStatement = db.prepareStatement(age30PlusSql);
 
 			int newYear = resultsYear;
@@ -711,49 +711,49 @@ public class MesoscaleLookupTotalActivityGenerator extends Generator {
 	void calculateFractionOfTravelUsingHPMS(int analysisYear) throws SQLException {
 		String sql = "";
 
-		sql = "TRUNCATE HPMSVTypePopulation";
+		sql = "TRUNCATE hpmsvtypepopulation";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "INSERT INTO HPMSVTypePopulation ("+
-					"yearID,"+
-					"HPMSVTypeID,"+
+		sql = "INSERT INTO hpmsvtypepopulation ("+
+					"yearid,"+
+					"hpmsvtypeid,"+
 					"population) "+
-				"SELECT "+
-					"stap.yearID,"+
-					"sut.HPMSVTypeID,"+
+				"select "+
+					"stap.yearid,"+
+					"sut.hpmsvtypeid,"+
 					"sum(stap.population) "+
-				"FROM "+
-					"SourceTypeAgePopulation stap,"+
-					"SourceUseType sut "+
-				"WHERE "+
-					"stap.sourceTypeID = sut.sourceTypeID AND "+
-					"stap.yearID = " + analysisYear +
+				"from "+
+					"sourcetypeagepopulation stap,"+
+					"sourceusetype sut "+
+				"where "+
+					"stap.sourcetypeid = sut.sourcetypeid and "+
+					"stap.yearid = " + analysisYear +
 				" GROUP BY "+
-					"stap.yearID,"+
-					"sut.HPMSVTypeID";
+					"stap.yearid,"+
+					"sut.hpmsvtypeid";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE FractionWithinHPMSVType";
+		sql = "TRUNCATE fractionwithinhpmsvtype";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "INSERT INTO FractionWithinHPMSVType ("+
-					"yearID,"+
-					"sourceTypeID,"+
-					"ageID,"+
+		sql = "INSERT INTO fractionwithinhpmsvtype ("+
+					"yearid,"+
+					"sourcetypeid,"+
+					"ageid,"+
 					"fraction) "+
-				"SELECT "+
-					"stap.yearID,"+
-					"stap.sourceTypeID,"+
-					"stap.ageID,"+
+				"select "+
+					"stap.yearid,"+
+					"stap.sourcetypeid,"+
+					"stap.ageid,"+
 					"stap.population / hvtp.population "+
-				"FROM "+
-					"SourceTypeAgePopulation stap,"+
-					"SourceUseType sut,"+
-					"HPMSVTypePopulation hvtp "+
-				"WHERE "+
-					"stap.sourceTypeID = sut.sourceTypeID AND "+
-					"sut.HPMSVTypeID = hvtp.HPMSVTypeID AND "+
-					"stap.yearID = hvtp.yearID AND "+
+				"from "+
+					"sourcetypeagepopulation stap,"+
+					"sourceusetype sut,"+
+					"hpmsvtypepopulation hvtp "+
+				"where "+
+					"stap.sourcetypeid = sut.sourcetypeid and "+
+					"sut.hpmsvtypeid = hvtp.hpmsvtypeid and "+
+					"stap.yearid = hvtp.yearid and "+
 					"hvtp.population <> 0";
 		SQLRunner.executeSQL(db,sql);
 									//
@@ -762,57 +762,57 @@ public class MesoscaleLookupTotalActivityGenerator extends Generator {
 									// analysisYear, there is no need to specify the
 									// analysisYear here.
 
-		sql = "TRUNCATE HPMSTravelFraction";
+		sql = "TRUNCATE hpmstravelfraction";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "INSERT INTO HPMSTravelFraction ("+
-					"yearID,"+
-					"HPMSVTypeID,"+
+		sql = "INSERT INTO hpmstravelfraction ("+
+					"yearid,"+
+					"hpmsvtypeid,"+
 					"fraction) "+
-				"SELECT "+
-					"fwhvt.yearID,"+
-					"sut.HPMSVTypeID,"+
-					"sum(fwhvt.fraction * sta.relativeMAR) "+
-				"FROM "+
-					"FractionWithinHPMSVType fwhvt,"+
-					"SourceUseType sut,"+
-					"SourceTypeAge sta "+
-				"WHERE "+
-					"sta.sourceTypeID = fwhvt.sourceTypeID AND "+
-					"sta.ageID = fwhvt.ageID AND "+
-					"fwhvt.sourceTypeID = sut.sourceTypeID "+
-				"GROUP BY "+
-					"fwhvt.yearID,"+
-					"sut.HPMSVTypeID";
+				"select "+
+					"fwhvt.yearid,"+
+					"sut.hpmsvtypeid,"+
+					"sum(fwhvt.fraction * sta.relativemar) "+
+				"from "+
+					"fractionwithinhpmsvtype fwhvt,"+
+					"sourceusetype sut,"+
+					"sourcetypeage sta "+
+				"where "+
+					"sta.sourcetypeid = fwhvt.sourcetypeid and "+
+					"sta.ageid = fwhvt.ageid and "+
+					"fwhvt.sourcetypeid = sut.sourcetypeid "+
+				"group by "+
+					"fwhvt.yearid,"+
+					"sut.hpmsvtypeid";
 		SQLRunner.executeSQL(db,sql);
 									//
 									// Same as previous table except limiting table is
 									// the previous table.
 
-		sql = "TRUNCATE TravelFraction";
+		sql = "TRUNCATE travelfraction";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "INSERT INTO TravelFraction ("+
-					"yearID,"+
-					"sourceTypeID,"+
-					"ageID,"+
+		sql = "INSERT INTO travelfraction ("+
+					"yearid,"+
+					"sourcetypeid,"+
+					"ageid,"+
 					"fraction) "+
-				"SELECT "+
-					"fwhvt.yearID,"+
-					"fwhvt.sourceTypeID,"+
-					"fwhvt.ageID,"+
-					"(fwhvt.fraction*sta.relativeMAR)/hpmstf.fraction "+
-				"FROM "+
-					"FractionWithinHPMSVType fwhvt,"+
-					"SourceUseType sut,"+
-					"SourceTypeAge sta,"+
-					"HPMSTravelFraction hpmstf "+
-				"WHERE "+
-					"sta.sourceTypeID = fwhvt.sourceTypeID AND "+
-					"sta.ageID = fwhvt.ageID AND "+
-					"fwhvt.sourceTypeID = sut.sourceTypeID AND "+
-					"hpmstf.yearID = fwhvt.yearID AND "+
-					"hpmstf.HPMSVTypeID = sut.HPMSVTypeID AND "+
+				"select "+
+					"fwhvt.yearid,"+
+					"fwhvt.sourcetypeid,"+
+					"fwhvt.ageid,"+
+					"(fwhvt.fraction*sta.relativemar)/hpmstf.fraction "+
+				"from "+
+					"fractionwithinhpmsvtype fwhvt,"+
+					"sourceusetype sut,"+
+					"sourcetypeage sta,"+
+					"hpmstravelfraction hpmstf "+
+				"where "+
+					"sta.sourcetypeid = fwhvt.sourcetypeid and "+
+					"sta.ageid = fwhvt.ageid and "+
+					"fwhvt.sourcetypeid = sut.sourcetypeid and "+
+					"hpmstf.yearid = fwhvt.yearid and "+
+					"hpmstf.hpmsvtypeid = sut.hpmsvtypeid and "+
 					"hpmstf.fraction <> 0";
 		SQLRunner.executeSQL(db,sql);
 									//
@@ -826,24 +826,24 @@ public class MesoscaleLookupTotalActivityGenerator extends Generator {
 	**/
 	void allocateVMTByRoadTypeSourceAge( ) throws SQLException {
 		String sql = "";
-		sql = "TRUNCATE AnnualVMTByAgeRoadway";
+		sql = "TRUNCATE annualvmtbyageroadway";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "INSERT INTO AnnualVMTByAgeRoadway ("
-				+ " yearID,"
-				+ " roadTypeID,"
-				+ " sourceTypeID,"
-				+ " ageID,"
-				+ " VMT) "
-				+ " SELECT" 
-				+ " tf.yearID,"
-				+ " rt.roadTypeID,"
-				+ " tf.sourceTypeID,"
-				+ " tf.ageID,"
+		sql = "INSERT INTO annualvmtbyageroadway ("
+				+ " yearid,"
+				+ " roadtypeid,"
+				+ " sourcetypeid,"
+				+ " ageid,"
+				+ " vmt) "
+				+ " select" 
+				+ " tf.yearid,"
+				+ " rt.roadtypeid,"
+				+ " tf.sourcetypeid,"
+				+ " tf.ageid,"
 				+ " tf.fraction "
-				+ " FROM "
-				+ " RoadType rt,"
-				+ " TravelFraction tf";
+				+ " from "
+				+ " roadtype rt,"
+				+ " travelfraction tf";
 		SQLRunner.executeSQL(db,sql);
 	}
 
@@ -854,50 +854,50 @@ public class MesoscaleLookupTotalActivityGenerator extends Generator {
 	void calculateVMTByRoadwayHour() throws SQLException {
 		WeeksInMonthHelper weekHelper = new WeeksInMonthHelper();
 		String weeksPerMonthClause = 
-				weekHelper.getWeeksPerMonthSQLClause("avar.yearID","avar.monthID");
+				weekHelper.getWeeksPerMonthSQLClause("avar.yearid","avar.monthid");
 		String sql = "";
 
-		sql = "TRUNCATE VMTByAgeRoadwayHour";
+		sql = "TRUNCATE vmtbyageroadwayhour";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "DROP TABLE IF EXISTS AvarMonth ";
+		sql = "DROP TABLE IF EXISTS avarmonth ";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "DROP TABLE IF EXISTS AvarMonthDay ";
+		sql = "DROP TABLE IF EXISTS avarmonthday ";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE AvarMonth " +
-				"SELECT avar.*, monthID, monthVMTFraction " +
-				"FROM AnnualVMTByAgeRoadway as avar " +
-				"INNER JOIN MonthVMTFraction AS mvf USING (sourceTypeID)";
+		sql = "CREATE TABLE avarmonth " +
+				"select avar.*, monthid, monthvmtfraction " +
+				"from annualvmtbyageroadway as avar " +
+				"inner join monthvmtfraction as mvf using (sourcetypeid)";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE INDEX index1 ON AvarMonth (sourceTypeID, monthID, roadTypeID) ";
+		sql = "CREATE INDEX index1 on avarmonth (sourcetypeid, monthid, roadtypeid) ";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE AvarMonthDay " +
-				"SELECT avarm.*, dayID, dayVMTFraction " +
-				"FROM AvarMonth AS avarm INNER JOIN DayVMTFraction AS dvf " +
-				"USING (sourceTypeID, monthID, roadTypeID) ";
+		sql = "CREATE TABLE avarmonthday " +
+				"select avarm.*, dayid, dayvmtfraction " +
+				"from avarmonth as avarm inner join dayvmtfraction as dvf " +
+				"using (sourcetypeid, monthid, roadtypeid) ";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE INDEX index1 ON AvarMonthDay(sourceTypeID, roadTypeID, dayID) ";
+		sql = "CREATE INDEX index1 on avarmonthday(sourcetypeid, roadtypeid, dayid) ";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "INSERT INTO VMTByAgeRoadwayHour (yearID, roadTypeID, sourceTypeID, " +
-					"ageID, monthID, dayID, hourID, VMT) " +
-				"SELECT avar.yearID, avar.roadTypeID, avar.sourceTypeID, " +
-					"avar.ageID, avar.monthID, avar.dayID, hvf.hourID, " +
-					"avar.VMT*avar.monthVMTFraction*avar.dayVMTFraction*hvf.hourVMTFraction " +
+		sql = "INSERT INTO vmtbyageroadwayhour (yearid, roadtypeid, sourcetypeid, " +
+					"ageid, monthid, dayid, hourid, vmt) " +
+				"select avar.yearid, avar.roadtypeid, avar.sourcetypeid, " +
+					"avar.ageid, avar.monthid, avar.dayid, hvf.hourid, " +
+					"avar.vmt*avar.monthvmtfraction*avar.dayvmtfraction*hvf.hourvmtfraction " +
 					" / " + weeksPerMonthClause + " "+
-					"FROM AvarMonthDay AS avar INNER JOIN HourVMTFraction AS hvf " +
-				"USING(sourceTypeID, roadTypeID, dayID) ";
+					"from avarmonthday as avar inner join hourvmtfraction as hvf " +
+				"using(sourcetypeid, roadtypeid, dayid) ";
 		SQLRunner.executeSQL(db,sql);
 		
-		sql = "DROP TABLE IF EXISTS AvarMonth ";
+		sql = "DROP TABLE IF EXISTS avarmonth ";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "DROP TABLE IF EXISTS AvarMonthDay ";
+		sql = "DROP TABLE IF EXISTS avarmonthday ";
 		SQLRunner.executeSQL(db,sql);
 		// end of rewritten statement
 	}
@@ -912,52 +912,52 @@ public class MesoscaleLookupTotalActivityGenerator extends Generator {
 		// Because Distance is calculated from SHO and is divided out in the end, 
 		// the actual SHO doesn't matter. But the proportional distribution of SHO 
 		// among ages, sourcetypes and times must be preserved. This step sets SHO = VMT.
-		sql = "INSERT INTO SHOByAgeRoadwayHour ("+
-					"yearID,"+
-					"roadTypeID,"+
-					"sourceTypeID,"+
-					"ageID,"+
-					"monthID,"+
-					"dayID,"+
-					"hourID,"+
-					"SHO) "+
-				"SELECT "+
-					"varh.yearID,"+
-					"varh.roadTypeID,"+
-					"varh.sourceTypeID,"+
-					"varh.ageID,"+
-					"varh.monthID,"+
-					"varh.dayID,"+
-					"varh.hourID,"+
-					"varh.VMT "+
-				"FROM VMTByAgeRoadwayHour varh ";
+		sql = "INSERT INTO shobyageroadwayhour ("+
+					"yearid,"+
+					"roadtypeid,"+
+					"sourcetypeid,"+
+					"ageid,"+
+					"monthid,"+
+					"dayid,"+
+					"hourid,"+
+					"sho) "+
+				"select "+
+					"varh.yearid,"+
+					"varh.roadtypeid,"+
+					"varh.sourcetypeid,"+
+					"varh.ageid,"+
+					"varh.monthid,"+
+					"varh.dayid,"+
+					"varh.hourid,"+
+					"varh.vmt "+
+				"from vmtbyageroadwayhour varh ";
 		SQLRunner.executeSQL(db,sql);
 		
-		sql = "TRUNCATE SHOByAgeDay";
+		sql = "TRUNCATE shobyageday";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "INSERT INTO SHOByAgeDay ("+
-					"yearID,"+
-					"sourceTypeID,"+
-					"ageID,"+
-					"monthID,"+
-					"dayID,"+
-					"SHO) "+
-				"SELECT "+
-					"sho.yearID,"+
-					"sho.sourceTypeID,"+
-					"sho.ageID,"+
-					"sho.monthID,"+
-					"sho.dayID,"+
-					"sum(sho.SHO) "+
-				"FROM "+
-					"SHOByAgeRoadwayHour sho "+
-				"GROUP BY "+
-					"sho.yearID,"+
-					"sho.sourceTypeID,"+
-					"sho.ageID,"+
-					"sho.monthID,"+
-					"sho.dayID";
+		sql = "INSERT INTO shobyageday ("+
+					"yearid,"+
+					"sourcetypeid,"+
+					"ageid,"+
+					"monthid,"+
+					"dayid,"+
+					"sho) "+
+				"select "+
+					"sho.yearid,"+
+					"sho.sourcetypeid,"+
+					"sho.ageid,"+
+					"sho.monthid,"+
+					"sho.dayid,"+
+					"sum(sho.sho) "+
+				"from "+
+					"shobyageroadwayhour sho "+
+				"group by "+
+					"sho.yearid,"+
+					"sho.sourcetypeid,"+
+					"sho.ageid,"+
+					"sho.monthid,"+
+					"sho.dayid";
 		SQLRunner.executeSQL(db,sql);
 	}
 
@@ -977,20 +977,20 @@ public class MesoscaleLookupTotalActivityGenerator extends Generator {
 		}
 		String sql = "";
 		try {
-			sql = "DELETE FROM SHO WHERE isUserInput='N' AND linkID IN ("
+			sql = "DELETE FROM sho WHERE isuserinput='N' AND linkid IN ("
 					+ linksInZone.substring(1) + ")";
 			SQLRunner.executeSQL(db, sql);
 		
-			sql = "DELETE FROM SourceHours WHERE isUserInput='N' "
-					+ "AND linkID IN (" + linksInZone.substring(1) + ")";
+			sql = "DELETE FROM sourcehours WHERE isuserinput='N' "
+					+ "AND linkid IN (" + linksInZone.substring(1) + ")";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "DELETE FROM ExtendedIdleHours WHERE isUserInput='N' "
-					+ "AND zoneID = " + currentZoneID;
+			sql = "DELETE FROM extendedidlehours WHERE isuserinput='N' "
+					+ "AND zoneid = " + currentZoneID;
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "DELETE FROM Starts WHERE isUserInput='N' "
-					+ "AND zoneID = " + currentZoneID;
+			sql = "DELETE FROM starts WHERE isuserinput='N' "
+					+ "AND zoneid = " + currentZoneID;
 			SQLRunner.executeSQL(db, sql);
 		} catch(Exception e) {
 			Logger.logSqlError(e,"Could not delete Total Activity data from previous run.",sql);
@@ -1066,32 +1066,32 @@ public class MesoscaleLookupTotalActivityGenerator extends Generator {
 				// Zones can be uniform. Similarly, allocation to links is not important as 
 				// long as the distribution among ages, sourcetypes & times is preserved. So we
 				// set SHO(link) = SHO(roadType).  SHOCV is ignored.
-				sql = "INSERT IGNORE INTO SHO ("+
-							"hourDayID,"+
-							"monthID,"+
-							"yearID,"+
-							"ageID,"+
-							"linkID,"+
-							"sourceTypeID,"+
-							"SHO) "+
-						"SELECT "+
-							"hd.hourDayID,"+
-							"sarh.monthID,"+
-							"sarh.yearID,"+
-							"sarh.ageID,"+
-							"l.linkID,"+
-							"sarh.sourceTypeID,"+
-							"sarh.SHO "+
-						"FROM "+
-							"SHOByAgeRoadwayHour sarh,"+
-							"Link l,"+
-							"HourDay hd "+
-						"WHERE "+
-							"l.roadTypeID = sarh.roadTypeID AND "+
-							"hd.hourID = sarh.hourID AND "+
-							"hd.dayID = sarh.dayID AND "+
-							"sarh.yearID = " + analysisYear + " AND "+
-							"l.zoneID = " + zoneID;
+				sql = "INSERT IGNORE INTO sho ("+
+							"hourdayid,"+
+							"monthid,"+
+							"yearid,"+
+							"ageid,"+
+							"linkid,"+
+							"sourcetypeid,"+
+							"sho) "+
+						"select "+
+							"hd.hourdayid,"+
+							"sarh.monthid,"+
+							"sarh.yearid,"+
+							"sarh.ageid,"+
+							"l.linkid,"+
+							"sarh.sourcetypeid,"+
+							"sarh.sho "+
+						"from "+
+							"shobyageroadwayhour sarh,"+
+							"link l,"+
+							"hourday hd "+
+						"where "+
+							"l.roadtypeid = sarh.roadtypeid and "+
+							"hd.hourid = sarh.hourid and "+
+							"hd.dayid = sarh.dayid and "+
+							"sarh.yearid = " + analysisYear + " AND "+
+							"l.zoneid = " + zoneID;
 				SQLRunner.executeSQL(db,sql);
 			}
 		}
@@ -1099,11 +1099,11 @@ public class MesoscaleLookupTotalActivityGenerator extends Generator {
 		// Allocate SHO to SourceHours
 		if(makeSH) {
 			if(inContext.iterLocation.roadTypeRecordID!=1) {
-				sql= "INSERT IGNORE INTO SourceHours (hourDayID, monthID, yearID, ageID, linkID, " +
-						"sourceTypeID, sourceHours, sourceHoursCV, isUserInput) SELECT hourDayID, " +
-						"monthID, yearID, ageID, linkID, sourceTypeID, SHO, SHOCV, 'N' " +
-						"FROM SHO sho WHERE sho.yearID = " + analysisYear +
-						" AND linkID = " + currentLinkID;
+				sql= "INSERT IGNORE INTO sourcehours (hourdayid, monthid, yearid, ageid, linkid, " +
+						"sourcetypeid, sourcehours, sourcehourscv, isuserinput) select hourdayid, " +
+						"monthid, yearid, ageid, linkid, sourcetypeid, sho, shocv, 'N' " +
+						"FROM sho sho where sho.yearid = " + analysisYear +
+						" AND linkid = " + currentLinkID;
 				SQLRunner.executeSQL(db,sql);
 			}
 		}
@@ -1120,10 +1120,10 @@ public class MesoscaleLookupTotalActivityGenerator extends Generator {
 		if(!inContext.iterProcess.processName.equals(runningExhaustProcess.processName)) {
 			return;
 		}
-		String sql = "update SHO, LinkAverageSpeed"
-				+ " set SHO.distance=SHO.SHO*averageSpeed"
-				+ " where LinkAverageSpeed.linkID=SHO.linkID"
-				+ " and SHO.distance is null";
+		String sql = "update sho, linkaveragespeed"
+				+ " set sho.distance=sho.sho*averagespeed"
+				+ " where linkaveragespeed.linkid=sho.linkid"
+				+ " and sho.distance is null";
 		SQLRunner.executeSQL(db,sql);
 	}
 }

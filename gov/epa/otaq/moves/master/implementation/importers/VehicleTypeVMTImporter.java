@@ -232,7 +232,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 			}
 			String sql = "";
 			try {
-				sql = "select count(*) from MonthVMTFraction";
+				sql = "select count(*) from monthvmtfraction";
 				hasMonthVMTFraction = SQLRunner.executeScalar(db,sql) > 0;
 			} catch(Exception e) {
 				if(e.getMessage().indexOf("exist") > 0) {
@@ -242,7 +242,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 				}
 			}
 			try {
-				sql = "select count(*) from DayVMTFraction";
+				sql = "select count(*) from dayvmtfraction";
 				hasDayVMTFraction = SQLRunner.executeScalar(db,sql) > 0;
 			} catch(Exception e) {
 				if(e.getMessage().indexOf("exist") > 0) {
@@ -252,7 +252,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 				}
 			}
 			try {
-				sql = "select count(*) from HPMSVtypeYear";
+				sql = "select count(*) from hpmsvtypeyear";
 				hasHPMSAnnual = SQLRunner.executeScalar(db,sql) > 0;
 			} catch(Exception e) {
 				if(e.getMessage().indexOf("exist") > 0) {
@@ -262,7 +262,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 				}
 			}
 			try {
-				sql = "select count(*) from HPMSVtypeDay";
+				sql = "select count(*) from hpmsvtypeday";
 				hasHPMSDaily = SQLRunner.executeScalar(db,sql) > 0;
 			} catch(Exception e) {
 				if(e.getMessage().indexOf("exist") > 0) {
@@ -273,7 +273,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 			}
 
 			try {
-				sql = "select count(*) from SourceTypeYearVMT";
+				sql = "select count(*) from sourcetypeyearvmt";
 				hasSourceTypeAnnual = SQLRunner.executeScalar(db,sql) > 0;
 			} catch(Exception e) {
 				if(e.getMessage().indexOf("exist") > 0) {
@@ -283,7 +283,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 				}
 			}
 			try {
-				sql = "select count(*) from SourceTypeDayVMT";
+				sql = "select count(*) from sourcetypedayvmt";
 				hasSourceTypeDaily = SQLRunner.executeScalar(db,sql) > 0;
 			} catch(Exception e) {
 				if(e.getMessage().indexOf("exist") > 0) {
@@ -302,7 +302,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 		/** Create and arrange the controls for this panel **/
 		void createControls() {
 			hpmsVsSourceTypePanel = new JPanel();
-			hpmsVsSourceTypePanel.setName("hpmsVsSourceTypePanel");
+			hpmsVsSourceTypePanel.setName("hpmsvssourcetypepanel");
 			hpmsVsSourceTypePanel.setBorder(BorderFactory.createTitledBorder("Input VMT by:"));
 
 			hpmsVsSourceButtons = new ButtonGroup();
@@ -365,13 +365,13 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 		public void actionPerformed(ActionEvent e) {
  			if(isChangingControls <= 0) {
  				if(e.getSource() == clearAll) {
-					clearTable("SourceTypeYearVMT");
-					clearTable("HPMSVtypeYear");
-					clearTable("SourceTypeDayVMT");
-					clearTable("HPMSVtypeDay");
-					clearTable("MonthVMTFraction");
-					clearTable("DayVMTFraction");
-					clearTable("HourVMTFraction");
+					clearTable("sourcetypeyearvmt");
+					clearTable("hpmsvtypeyear");
+					clearTable("sourcetypedayvmt");
+					clearTable("hpmsvtypeday");
+					clearTable("monthvmtfraction");
+					clearTable("dayvmtfraction");
+					clearTable("hourvmtfraction");
 
 					// Add diagnostic message
 					owner.messages.clear();
@@ -449,30 +449,30 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 			
 			boolean runViaGUI = importer.getImporterManager().RunMode == importer.getImporterManager().RUN_VIA_GUI;
 			if(hpms.isSelected()) {
-				clearTable("SourceTypeYearVMT");
-				clearTable("SourceTypeDayVMT");
-				clearTable(annual.isSelected()? "HPMSVtypeDay" : "HPMSVtypeYear");
+				clearTable("sourcetypeyearvmt");
+				clearTable("sourcetypedayvmt");
+				clearTable(annual.isSelected()? "hpmsvtypeday" : "hpmsvtypeyear");
 			}
 			if(runViaGUI && sourceType.isSelected()) {
 				assessSituation();
-				clearTable("HPMSVtypeYear");
-				clearTable("HPMSVtypeDay");
-				clearTable(annual.isSelected()? "SourceTypeDayVMT" : "SourceTypeYearVMT");
+				clearTable("hpmsvtypeyear");
+				clearTable("hpmsvtypeday");
+				clearTable(annual.isSelected()? "sourcetypedayvmt" : "sourcetypeyearvmt");
 			}
 			if(runViaGUI && daily.isSelected()) {
-				clearTable("MonthVMTFraction");
-				clearTable("DayVMTFraction");
+				clearTable("monthvmtfraction");
+				clearTable("dayvmtfraction");
 			}
 			
 			// nothing "is selected" since we are not running via GUI, so we don't know what is going to be imported yet, so clear everything
 			if(!runViaGUI) {
-				clearTable("SourceTypeYearVMT");
-				clearTable("SourceTypeDayVMT");
-				clearTable("HPMSVtypeYear");
-				clearTable("HPMSVtypeDay");
-				clearTable("MonthVMTFraction");
-				clearTable("DayVMTFraction");
-				clearTable("HourVMTFraction");
+				clearTable("sourcetypeyearvmt");
+				clearTable("sourcetypedayvmt");
+				clearTable("hpmsvtypeyear");
+				clearTable("hpmsvtypeday");
+				clearTable("monthvmtfraction");
+				clearTable("dayvmtfraction");
+				clearTable("hourvmtfraction");
 			}
 		}
 
@@ -579,50 +579,50 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 	 * The format is compatible with BasicDataHandler.
 	**/
 	static String[] dataTableDescriptor = {
-		BasicDataHandler.BEGIN_TABLE, "HPMSVTypeYear",
-		"HPMSVtypeID", "HPMSVType", ImporterManager.FILTER_HPMS_VTYPE,
-		"yearID", "Year", ImporterManager.FILTER_YEAR,
+		BasicDataHandler.BEGIN_TABLE, "hpmsvtypeyear",
+		"hpmsvtypeid", "hpmsvtype", ImporterManager.FILTER_HPMS_VTYPE,
+		"yearid", "year", ImporterManager.FILTER_YEAR,
 		//"VMTGrowthFactor", "", ImporterManager.FILTER_NON_NEGATIVE,  Since this is forced to 0
 		//                                                             do not export/import it.
-		"HPMSBaseYearVMT", "", ImporterManager.FILTER_NON_NEGATIVE,
+		"hpmsbaseyearvmt", "", ImporterManager.FILTER_NON_NEGATIVE,
 
-		BasicDataHandler.BEGIN_TABLE, "HPMSVTypeDay",
-		"HPMSVtypeID", "HPMSVType", ImporterManager.FILTER_HPMS_VTYPE,
-		"yearID", "Year", ImporterManager.FILTER_YEAR,
-		"monthID", "MonthOfAnyYear", ImporterManager.FILTER_MONTH,
-		"dayID", "DayOfAnyWeek", ImporterManager.FILTER_DAY,
-		"VMT", "", ImporterManager.FILTER_NON_NEGATIVE,
+		BasicDataHandler.BEGIN_TABLE, "hpmsvtypeday",
+		"hpmsvtypeid", "hpmsvtype", ImporterManager.FILTER_HPMS_VTYPE,
+		"yearid", "year", ImporterManager.FILTER_YEAR,
+		"monthid", "monthofanyyear", ImporterManager.FILTER_MONTH,
+		"dayid", "dayofanyweek", ImporterManager.FILTER_DAY,
+		"vmt", "", ImporterManager.FILTER_NON_NEGATIVE,
 
-		BasicDataHandler.BEGIN_TABLE, "SourceTypeYearVMT",
-		"sourceTypeID", "SourceUseType", ImporterManager.FILTER_SOURCE,
-		"yearID", "Year", ImporterManager.FILTER_YEAR,
-		"VMT", "", ImporterManager.FILTER_NON_NEGATIVE,
+		BasicDataHandler.BEGIN_TABLE, "sourcetypeyearvmt",
+		"sourcetypeid", "sourceusetype", ImporterManager.FILTER_SOURCE,
+		"yearid", "year", ImporterManager.FILTER_YEAR,
+		"vmt", "", ImporterManager.FILTER_NON_NEGATIVE,
 
-		BasicDataHandler.BEGIN_TABLE, "SourceTypeDayVMT",
-		"sourceTypeID", "SourceUseType", ImporterManager.FILTER_SOURCE,
-		"yearID", "Year", ImporterManager.FILTER_YEAR,
-		"monthID", "MonthOfAnyYear", ImporterManager.FILTER_MONTH,
-		"dayID", "DayOfAnyWeek", ImporterManager.FILTER_DAY,
-		"VMT", "", ImporterManager.FILTER_NON_NEGATIVE,
+		BasicDataHandler.BEGIN_TABLE, "sourcetypedayvmt",
+		"sourcetypeid", "sourceusetype", ImporterManager.FILTER_SOURCE,
+		"yearid", "year", ImporterManager.FILTER_YEAR,
+		"monthid", "monthofanyyear", ImporterManager.FILTER_MONTH,
+		"dayid", "dayofanyweek", ImporterManager.FILTER_DAY,
+		"vmt", "", ImporterManager.FILTER_NON_NEGATIVE,
 
-		BasicDataHandler.BEGIN_TABLE, "MonthVMTFraction",
-		"sourceTypeID", "SourceUseType", ImporterManager.FILTER_SOURCE,
-		"monthID", "MonthOfAnyYear", ImporterManager.FILTER_MONTH,
-		"monthVMTFraction", "", ImporterManager.FILTER_NON_NEGATIVE,
+		BasicDataHandler.BEGIN_TABLE, "monthvmtfraction",
+		"sourcetypeid", "sourceusetype", ImporterManager.FILTER_SOURCE,
+		"monthid", "monthofanyyear", ImporterManager.FILTER_MONTH,
+		"monthvmtfraction", "", ImporterManager.FILTER_NON_NEGATIVE,
 
-		BasicDataHandler.BEGIN_TABLE, "DayVMTFraction",
-		"sourceTypeID", "SourceUseType", ImporterManager.FILTER_SOURCE,
-		"monthID", "MonthOfAnyYear", ImporterManager.FILTER_MONTH,
-		"roadTypeID", "RoadType", ImporterManager.FILTER_ROAD_TYPE,
-		"dayID", "DayOfAnyWeek", ImporterManager.FILTER_DAY,
-		"dayVMTFraction", "", ImporterManager.FILTER_NON_NEGATIVE,
+		BasicDataHandler.BEGIN_TABLE, "dayvmtfraction",
+		"sourcetypeid", "sourceusetype", ImporterManager.FILTER_SOURCE,
+		"monthid", "monthofanyyear", ImporterManager.FILTER_MONTH,
+		"roadtypeid", "roadtype", ImporterManager.FILTER_ROAD_TYPE,
+		"dayid", "dayofanyweek", ImporterManager.FILTER_DAY,
+		"dayvmtfraction", "", ImporterManager.FILTER_NON_NEGATIVE,
 
-		BasicDataHandler.BEGIN_TABLE, "HourVMTFraction",
-		"sourceTypeID", "SourceUseType", ImporterManager.FILTER_SOURCE,
-		"roadTypeID", "RoadType", ImporterManager.FILTER_ROAD_TYPE,
-		"dayID", "DayOfAnyWeek", ImporterManager.FILTER_DAY,
-		"hourID", "HourOfAnyDay", ImporterManager.FILTER_HOUR,
-		"hourVMTFraction", "", ImporterManager.FILTER_NON_NEGATIVE
+		BasicDataHandler.BEGIN_TABLE, "hourvmtfraction",
+		"sourcetypeid", "sourceusetype", ImporterManager.FILTER_SOURCE,
+		"roadtypeid", "roadtype", ImporterManager.FILTER_ROAD_TYPE,
+		"dayid", "dayofanyweek", ImporterManager.FILTER_DAY,
+		"hourid", "hourofanyday", ImporterManager.FILTER_HOUR,
+		"hourvmtfraction", "", ImporterManager.FILTER_NON_NEGATIVE
 	};
 
 	/** Class for editing the data source **/
@@ -632,7 +632,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 		 * @return the name of the table being managed
 		**/
 		public String getTableName() {
-			return "HPMSVtypeYear";
+			return "hpmsvtypeyear";
 		}
 
 		/**
@@ -653,7 +653,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 		 * @return the name of the table being managed
 		**/
 		public String getTableName() {
-			return "HPMSVtypeDay";
+			return "hpmsvtypeday";
 		}
 
 		/**
@@ -674,7 +674,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 		 * @return the name of the table being managed
 		**/
 		public String getTableName() {
-			return "SourceTypeYearVMT";
+			return "sourcetypeyearvmt";
 		}
 
 		/**
@@ -695,7 +695,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 		 * @return the name of the table being managed
 		**/
 		public String getTableName() {
-			return "SourceTypeDayVMT";
+			return "sourcetypedayvmt";
 		}
 
 		/**
@@ -716,7 +716,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 		 * @return the name of the table being managed
 		**/
 		public String getTableName() {
-			return "monthVMTFraction";
+			return "monthvmtfraction";
 		}
 
 		/**
@@ -737,7 +737,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 		 * @return the name of the table being managed
 		**/
 		public String getTableName() {
-			return "dayVMTFraction";
+			return "dayvmtfraction";
 		}
 
 		/**
@@ -758,7 +758,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 		 * @return the name of the table being managed
 		**/
 		public String getTableName() {
-			return "hourVMTFraction";
+			return "hourvmtfraction";
 		}
 
 		/**
@@ -793,37 +793,37 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 			// if we are running via the GUI, import files based on what is visible
 			// if we are not running via the GUI, import everything that is presented to us
 			
-			if(tableName.equalsIgnoreCase("HPMSVtypeYear")) {
+			if(tableName.equalsIgnoreCase("hpmsvtypeyear")) {
 				if(runViaGUI && !HPMSVtypeYearPart.isVisible()) {
 					return "\rSKIP\r";
 				}
 				return HPMSVtypeYearPart.fileName;
-			} else if(tableName.equalsIgnoreCase("HPMSVtypeDay")) {
+			} else if(tableName.equalsIgnoreCase("hpmsvtypeday")) {
 				if(runViaGUI && !HPMSVtypeDayPart.isVisible()) {
 					return "\rSKIP\r";
 				}
 				return HPMSVtypeDayPart.fileName;
-			} else if(tableName.equalsIgnoreCase("SourceTypeYearVMT")) {
+			} else if(tableName.equalsIgnoreCase("sourcetypeyearvmt")) {
 				if(runViaGUI && !SourceTypeYearVMTPart.isVisible()) {
 					return "\rSKIP\r";
 				}
 				return SourceTypeYearVMTPart.fileName;
-			} else if(tableName.equalsIgnoreCase("SourceTypeDayVMT")) {
+			} else if(tableName.equalsIgnoreCase("sourcetypedayvmt")) {
 				if(runViaGUI && !SourceTypeDayVMTPart.isVisible()) {
 					return "\rSKIP\r";
 				}
 				return SourceTypeDayVMTPart.fileName;
-			} else if(tableName.equalsIgnoreCase("monthVMTFraction")) {
+			} else if(tableName.equalsIgnoreCase("monthvmtfraction")) {
 				if(runViaGUI && !monthPart.isVisible()) {
 					return "\rSKIP\r";
 				}
 				return monthPart.fileName;
-			} else if(tableName.equalsIgnoreCase("dayVMTFraction")) {
+			} else if(tableName.equalsIgnoreCase("dayvmtfraction")) {
 				if(runViaGUI && !dayPart.isVisible()) {
 					return "\rSKIP\r";
 				}
 				return dayPart.fileName;
-			} else if(tableName.equalsIgnoreCase("hourVMTFraction")) {
+			} else if(tableName.equalsIgnoreCase("hourvmtfraction")) {
 				if(runViaGUI && !hourPart.isVisible()) {
 					return "\rSKIP\r";
 				}
@@ -839,19 +839,19 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 		 * worksheet has been specified or if the file is not an XLS file.
 		**/
 		public String getTableWorksheetSource(String tableName) {
-			if(tableName.equalsIgnoreCase("HPMSVtypeYear")) {
+			if(tableName.equalsIgnoreCase("hpmsvtypeyear")) {
 				return HPMSVtypeYearPart.worksheetName;
-			} else if(tableName.equalsIgnoreCase("HPMSVtypeDay")) {
+			} else if(tableName.equalsIgnoreCase("hpmsvtypeday")) {
 				return HPMSVtypeDayPart.worksheetName;
-			} else if(tableName.equalsIgnoreCase("SourceTypeYearVMT")) {
+			} else if(tableName.equalsIgnoreCase("sourcetypeyearvmt")) {
 				return SourceTypeYearVMTPart.worksheetName;
-			} else if(tableName.equalsIgnoreCase("SourceTypeDayVMT")) {
+			} else if(tableName.equalsIgnoreCase("sourcetypedayvmt")) {
 				return SourceTypeDayVMTPart.worksheetName;
-			} else if(tableName.equalsIgnoreCase("monthVMTFraction")) {
+			} else if(tableName.equalsIgnoreCase("monthvmtfraction")) {
 				return monthPart.worksheetName;
-			} else if(tableName.equalsIgnoreCase("dayVMTFraction")) {
+			} else if(tableName.equalsIgnoreCase("dayvmtfraction")) {
 				return dayPart.worksheetName;
-			} else if(tableName.equalsIgnoreCase("hourVMTFraction")) {
+			} else if(tableName.equalsIgnoreCase("hourvmtfraction")) {
 				return hourPart.worksheetName;
 			}
 			return null;
@@ -868,7 +868,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 		**/
 		public String getAlternateExportSQL(MOVESDatabaseType type, Connection db,
 				String tableName) {
-			if(!tableName.equalsIgnoreCase("HPMSVTypeYear")) {
+			if(!tableName.equalsIgnoreCase("hpmsvtypeyear")) {
 				// Only HPMSVTypeYear needs custom export logic
 				return null;
 			}
@@ -879,10 +879,10 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 				// a user from obtaining national default VMT and confusing it with
 				// a single county's VMT.
 				if(type == MOVESDatabaseType.DEFAULT
-						&& manager.isCounty() && tableName.equalsIgnoreCase("HPMSVtypeYear")) {
-					return "select HPMSVtypeID, yearID, HPMSBaseYearVMT"
-							+ " from HPMSVTypeYear"
-							+ " where yearID = 0";
+						&& manager.isCounty() && tableName.equalsIgnoreCase("hpmsvtypeyear")) {
+					return "select hpmsvtypeid, yearid, hpmsbaseyearvmt"
+							+ " from hpmsvtypeyear"
+							+ " where yearid = 0";
 				}
 				// Other domains and databases should use the default export logic.
 				return null;
@@ -905,28 +905,28 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 				String yearsCSV = manager.getFilterValuesCSV(ImporterManager.FILTER_YEAR);
 
 				String[] statements = {
-					"drop table if exists fractionWithinHPMSVTypeSummary",
+					"drop table if exists fractionwithinhpmsvtypesummary",
 
-					"create table fractionWithinHPMSVTypeSummary"
-							+ " select yearID, sourceTypeID, sum(fraction) as vmtFraction"
-							+ " from fractionWithinHPMSVType"
-							+ " where yearID in (" + yearsCSV + ")"
-							+ " group by yearID, sourceTypeID"
+					"create table fractionwithinhpmsvtypesummary"
+							+ " select yearid, sourcetypeid, sum(fraction) as vmtfraction"
+							+ " from fractionwithinhpmsvtype"
+							+ " where yearid in (" + yearsCSV + ")"
+							+ " group by yearid, sourcetypeid"
 							+ " order by null",
 
-					"drop table if exists vmtBySourceTypeTemp",
+					"drop table if exists vmtbysourcetypetemp",
 
-					"create table vmtBySourceTypeTemp"
-							+ " select ayvmt.yearID, zrt.zoneID, sut.sourceTypeID,"
-							+ " 	sum(ayvmt.VMT*rtd.roadTypeVMTFraction*zrt.shoAllocFactor*f.vmtFraction) as sutVMT"
-							+ " from analysisYearVMT ayvmt"
-							+ " inner join sourceUseType sut on (sut.hpmsVTypeID=ayvmt.hpmsVTypeID)"
-							+ " inner join fractionWithinHPMSVTypeSummary f on (f.yearID=ayvmt.yearID and f.sourceTypeID=sut.sourceTypeID)"
-							+ " inner join roadTypeDistribution rtd on (rtd.sourceTypeID=f.sourceTypeID)"
-							+ " inner join zoneRoadType zrt on (zrt.roadTypeID=rtd.roadTypeID)"
-							+ " inner join zone z on (z.zoneID=zrt.zoneID)"
-							+ " where z.countyID in (" + countyCSV + ")"
-							+ " group by ayvmt.yearID, zrt.zoneID, sut.sourceTypeID"
+					"create table vmtbysourcetypetemp"
+							+ " select ayvmt.yearid, zrt.zoneid, sut.sourcetypeid,"
+							+ " 	sum(ayvmt.vmt*rtd.roadtypevmtfraction*zrt.shoallocfactor*f.vmtfraction) as sutvmt"
+							+ " from analysisyearvmt ayvmt"
+							+ " inner join sourceusetype sut on (sut.hpmsvtypeid=ayvmt.hpmsvtypeid)"
+							+ " inner join fractionwithinhpmsvtypesummary f on (f.yearid=ayvmt.yearid and f.sourcetypeid=sut.sourcetypeid)"
+							+ " inner join roadtypedistribution rtd on (rtd.sourcetypeid=f.sourcetypeid)"
+							+ " inner join zoneroadtype zrt on (zrt.roadtypeid=rtd.roadtypeid)"
+							+ " inner join zone z on (z.zoneid=zrt.zoneid)"
+							+ " where z.countyid in (" + countyCSV + ")"
+							+ " group by ayvmt.yearid, zrt.zoneid, sut.sourcetypeid"
 							+ " order by null"
 				};
 				for(int i=0;i<statements.length;i++) {
@@ -934,12 +934,12 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 					SQLRunner.executeSQL(db,sql);
 				}
 
-				return "select HPMSVtypeID, yearID, sum(sutVMT) as HPMSBaseYearVMT "
-						+ " from vmtBySourceTypeTemp vst"
-						+ " inner join sourceUseType sut using (sourceTypeID)"
-						+ " where yearID in (" + yearsCSV + ")"
-						+ " group by HPMSVtypeID, yearID"
-						+ " order by HPMSVtypeID, yearID";
+				return "select hpmsvtypeid, yearid, sum(sutvmt) as hpmsbaseyearvmt "
+						+ " from vmtbysourcetypetemp vst"
+						+ " inner join sourceusetype sut using (sourcetypeid)"
+						+ " where yearid in (" + yearsCSV + ")"
+						+ " group by hpmsvtypeid, yearid"
+						+ " order by hpmsvtypeid, yearid";
 			} catch(Exception e) {
 				Logger.logError(e,"Unable to grow VMT");
 			}
@@ -956,7 +956,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 		**/
 		public void cleanupAlternateExportSQL(MOVESDatabaseType type, Connection db,
 				String tableName) {
-			if(!tableName.equalsIgnoreCase("HPMSVTypeYear")) {
+			if(!tableName.equalsIgnoreCase("hpmsvtypeyear")) {
 				// Only HPMSVTypeYear needs custom export logic
 				return;
 			}
@@ -974,7 +974,7 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 	public VehicleTypeVMTImporter() {
 		super("Vehicle Type VMT", // common name
 				"vehicletypevmt", // XML node name
-				new String[] { "HPMSVTypeYear", "HPMSVtypeDay", "SourceTypeYearVMT", "SourceTypeDayVMT", "MonthVMTFraction", "DayVMTFraction", "HourVMTFraction" } // required tables
+				new String[] { "hpmsvtypeyear", "hpmsvtypeday", "sourcetypeyearvmt", "sourcetypedayvmt", "monthvmtfraction", "dayvmtfraction", "hourvmtfraction" } // required tables
 				);
 		shouldDoExecutionDataExport = false;
 		shouldDoDefaultDataExport = true;
@@ -1045,54 +1045,54 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 
 		if(selectorPart.hasHPMSAnnual) {
 			// HPMSVTypeYear: hpmsVTypeID, yearID
-			if(!manager.tableHasHPMSVTypes(db,"select distinct hpmsVTypeID from HPMSVTypeYear",
+			if(!manager.tableHasHPMSVTypes(db,"select distinct hpmsvtypeid from hpmsvtypeyear",
 					this,"HPMSVTypeYear is missing hpmsVTypeID(s)")) {
 				return false;
 			}
-			if(!manager.tableHasYears(db,"select distinct yearID from HPMSVTypeYear",
+			if(!manager.tableHasYears(db,"select distinct yearid from hpmsvtypeyear",
 					this,"HPMSVTypeYear is missing yearID(s)")) {
 				return false;
 			}
 		} else if(selectorPart.hasHPMSDaily) {
-			if(!manager.tableHasHPMSVTypes(db,"select distinct hpmsVTypeID from HPMSVTypeDay",
+			if(!manager.tableHasHPMSVTypes(db,"select distinct hpmsvtypeid from hpmsvtypeday",
 					this,"HPMSVTypeDay is missing hpmsVTypeID(s)")) {
 				return false;
 			}
-			if(!manager.tableHasYears(db,"select distinct yearID from HPMSVTypeDay",
+			if(!manager.tableHasYears(db,"select distinct yearid from hpmsvtypeday",
 					this,"HPMSVTypeDay is missing yearID(s)")) {
 				return false;
 			}
-			if(!manager.tableHasMonths(db,"select distinct monthID from HPMSVTypeDay",
+			if(!manager.tableHasMonths(db,"select distinct monthid from hpmsvtypeday",
 					this,"HPMSVTypeDay is missing monthID(s)")) {
 				return false;
 			}
-			if(!manager.tableHasDays(db,"select distinct dayID from HPMSVTypeDay",
+			if(!manager.tableHasDays(db,"select distinct dayid from hpmsvtypeday",
 					this,"HPMSVTypeDay is missing dayID(s)")) {
 				return false;
 			}
 		} else if(selectorPart.hasSourceTypeAnnual) {
-			if(!manager.tableHasSourceTypes(db,"select distinct sourceTypeID from SourceTypeYearVMT",
+			if(!manager.tableHasSourceTypes(db,"select distinct sourcetypeid from sourcetypeyearvmt",
 					this,"SourceTypeYearVMT is missing sourceTypeID(s)")) {
 				return false;
 			}
-			if(!manager.tableHasYears(db,"select distinct yearID from SourceTypeYearVMT",
+			if(!manager.tableHasYears(db,"select distinct yearid from sourcetypeyearvmt",
 					this,"sourceTypeYearVMT is missing yearID(s)")) {
 				return false;
 			}
 		} else if(selectorPart.hasSourceTypeDaily) {
-			if(!manager.tableHasSourceTypes(db,"select distinct sourceTypeID from SourceTypeDayVMT",
+			if(!manager.tableHasSourceTypes(db,"select distinct sourcetypeid from sourcetypedayvmt",
 					this,"SourceTypeDayVMT is missing sourceTypeID(s)")) {
 				return false;
 			}
-			if(!manager.tableHasYears(db,"select distinct yearID from SourceTypeDayVMT",
+			if(!manager.tableHasYears(db,"select distinct yearid from sourcetypedayvmt",
 					this,"sourceTypeDayVMT is missing yearID(s)")) {
 				return false;
 			}
-			if(!manager.tableHasMonths(db,"select distinct monthID from SourceTypeDayVMT",
+			if(!manager.tableHasMonths(db,"select distinct monthid from sourcetypedayvmt",
 					this,"SourceTypeDayVMT is missing monthID(s)")) {
 				return false;
 			}
-			if(!manager.tableHasDays(db,"select distinct dayID from SourceTypeDayVMT",
+			if(!manager.tableHasDays(db,"select distinct dayid from sourcetypedayvmt",
 					this,"SourceTypeDayVMT is missing dayID(s)")) {
 				return false;
 			}
@@ -1103,29 +1103,29 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 
 		if(selectorPart.hasHPMSAnnual || selectorPart.hasSourceTypeAnnual) {
 			// monthVMTFraction: sourceTypeID, monthID
-			if(!manager.tableHasSourceTypes(db,"select distinct sourceTypeID from monthVMTFraction where monthVMTFraction > 0",
+			if(!manager.tableHasSourceTypes(db,"select distinct sourcetypeid from monthvmtfraction where monthvmtfraction > 0",
 					this,"monthVMTFraction is missing sourceTypeID(s)")) {
 				return false;
 			}
-			if(!manager.tableHasMonths(db,"select distinct monthID from monthVMTFraction where monthVMTFraction > 0",
+			if(!manager.tableHasMonths(db,"select distinct monthid from monthvmtfraction where monthvmtfraction > 0",
 					this,"monthVMTFraction is missing monthID(s)")) {
 				return false;
 			}
 
 			// dayVMTFraction: sourceTypeID, monthID, roadTypeID, dayID
-			if(!manager.tableHasSourceTypes(db,"select distinct sourceTypeID from dayVMTFraction where dayVMTFraction > 0",
+			if(!manager.tableHasSourceTypes(db,"select distinct sourcetypeid from dayvmtfraction where dayvmtfraction > 0",
 					this,"dayVMTFraction is missing sourceTypeID(s)")) {
 				return false;
 			}
-			if(!manager.tableHasMonths(db,"select distinct monthID from dayVMTFraction where dayVMTFraction > 0",
+			if(!manager.tableHasMonths(db,"select distinct monthid from dayvmtfraction where dayvmtfraction > 0",
 					this,"dayVMTFraction is missing monthID(s)")) {
 				return false;
 			}
-			if(!manager.tableHasRoadTypes(db,"select distinct roadTypeID from dayVMTFraction where dayVMTFraction > 0",
+			if(!manager.tableHasRoadTypes(db,"select distinct roadtypeid from dayvmtfraction where dayvmtfraction > 0",
 					this,"dayVMTFraction is missing roadTypeID(s)")) {
 				return false;
 			}
-			if(!manager.tableHasDays(db,"select distinct dayID from dayVMTFraction where dayVMTFraction > 0",
+			if(!manager.tableHasDays(db,"select distinct dayid from dayvmtfraction where dayvmtfraction > 0",
 					this,"dayVMTFraction is missing dayID(s)")) {
 				return false;
 			}
@@ -1133,19 +1133,19 @@ public class VehicleTypeVMTImporter extends ImporterBase {
 
 		if(requireUserInput) {
 			// hourVMTFraction: sourceTypeID, roadTypeID, dayID, hourID
-			if(!manager.tableHasSourceTypes(db,"select distinct sourceTypeID from hourVMTFraction where hourVMTFraction > 0",
+			if(!manager.tableHasSourceTypes(db,"select distinct sourcetypeid from hourvmtfraction where hourvmtfraction > 0",
 					this,"hourVMTFraction is missing sourceTypeID(s)")) {
 				return false;
 			}
-			if(!manager.tableHasRoadTypes(db,"select distinct roadTypeID from hourVMTFraction where hourVMTFraction > 0",
+			if(!manager.tableHasRoadTypes(db,"select distinct roadtypeid from hourvmtfraction where hourvmtfraction > 0",
 					this,"hourVMTFraction is missing roadTypeID(s)")) {
 				return false;
 			}
-			if(!manager.tableHasDays(db,"select distinct dayID from hourVMTFraction where hourVMTFraction > 0",
+			if(!manager.tableHasDays(db,"select distinct dayid from hourvmtfraction where hourvmtfraction > 0",
 					this,"hourVMTFraction is missing dayID(s)")) {
 				return false;
 			}
-			if(!manager.tableHasHours(db,"select distinct hourID from hourVMTFraction where hourVMTFraction > 0",
+			if(!manager.tableHasHours(db,"select distinct hourid from hourvmtfraction where hourvmtfraction > 0",
 					this,"hourVMTFraction is missing hourID(s)")) {
 				return false;
 			}

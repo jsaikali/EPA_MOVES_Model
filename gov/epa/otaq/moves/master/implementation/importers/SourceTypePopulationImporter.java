@@ -34,18 +34,18 @@ public class SourceTypePopulationImporter extends ImporterBase {
 	 * Name of the primary table handled by the importer.
 	 * Note the MOVES database naming convention.
 	**/
-	String primaryTableName = "sourceTypeYear";
+	String primaryTableName = "sourcetypeyear";
 
 	/**
 	 * Descriptor of the table(s) imported, exported, and cleared by this importer.
 	 * The format is compatible with BasicDataHandler.
 	**/
 	static String[] dataTableDescriptor = {
-		BasicDataHandler.BEGIN_TABLE, "SourceTypeYear",
-		"yearID", "Year", ImporterManager.FILTER_YEAR,
-		"sourceTypeID", "SourceUseType", ImporterManager.FILTER_SOURCE,
+		BasicDataHandler.BEGIN_TABLE, "sourcetypeyear",
+		"yearid", "year", ImporterManager.FILTER_YEAR,
+		"sourcetypeid", "sourceusetype", ImporterManager.FILTER_SOURCE,
 		//"salesGrowthFactor", "", "",  This is not a user supplied input and is forced to 0
-		"sourceTypePopulation", "", ImporterManager.FILTER_NON_NEGATIVE
+		"sourcetypepopulation", "", ImporterManager.FILTER_NON_NEGATIVE
 		//"migrationRate", "", "" This is not a user supplied input and is forced to 0
 	};
 
@@ -138,61 +138,61 @@ public class SourceTypePopulationImporter extends ImporterBase {
 				TotalActivityGenerator.growPopulation(db,firstYear.intValue(),lastYear.intValue());
 				*/
 				String[] statements = {
-					"drop table if exists fractionWithinHPMSVTypeSummary",
+					"drop table if exists fractionwithinhpmsvtypesummary",
 
-					"create table fractionWithinHPMSVTypeSummary"
-							+ " select yearID, sourceTypeID, sum(fraction) as vmtFraction"
-							+ " from fractionWithinHPMSVType"
-							+ " where yearID in (" + yearsCSV + ")"
-							+ " group by yearID, sourceTypeID"
+					"create table fractionwithinhpmsvtypesummary"
+							+ " select yearid, sourcetypeid, sum(fraction) as vmtfraction"
+							+ " from fractionwithinhpmsvtype"
+							+ " where yearid in (" + yearsCSV + ")"
+							+ " group by yearid, sourcetypeid"
 							+ " order by null",
 					
-					"drop table if exists vmtBySourceTypeTemp",
+					"drop table if exists vmtbysourcetypetemp",
 					
-					"create table vmtBySourceTypeTemp"
-							+ " select ayvmt.yearID, sut.sourceTypeID,"
-							+ " 	sum(ayvmt.VMT*rtd.roadTypeVMTFraction*zrt.shoAllocFactor*f.vmtFraction) as sutVMT"
-							+ " from analysisYearVMT ayvmt"
-							+ " inner join sourceUseType sut on (sut.hpmsVTypeID=ayvmt.hpmsVTypeID)"
-							+ " inner join fractionWithinHPMSVTypeSummary f on (f.yearID=ayvmt.yearID and f.sourceTypeID=sut.sourceTypeID)"
-							+ " inner join roadTypeDistribution rtd on (rtd.sourceTypeID=f.sourceTypeID)"
-							+ " inner join zoneRoadType zrt on (zrt.roadTypeID=rtd.roadTypeID)"
-							+ " inner join zone z on (z.zoneID=zrt.zoneID)"
-							+ " where z.countyID in (" + countyCSV + ")"
-							+ " group by ayvmt.yearID, sut.sourceTypeID"
+					"create table vmtbysourcetypetemp"
+							+ " select ayvmt.yearid, sut.sourcetypeid,"
+							+ " 	sum(ayvmt.vmt*rtd.roadtypevmtfraction*zrt.shoallocfactor*f.vmtfraction) as sutvmt"
+							+ " from analysisyearvmt ayvmt"
+							+ " inner join sourceusetype sut on (sut.hpmsvtypeid=ayvmt.hpmsvtypeid)"
+							+ " inner join fractionwithinhpmsvtypesummary f on (f.yearid=ayvmt.yearid and f.sourcetypeid=sut.sourcetypeid)"
+							+ " inner join roadtypedistribution rtd on (rtd.sourcetypeid=f.sourcetypeid)"
+							+ " inner join zoneroadtype zrt on (zrt.roadtypeid=rtd.roadtypeid)"
+							+ " inner join zone z on (z.zoneid=zrt.zoneid)"
+							+ " where z.countyid in (" + countyCSV + ")"
+							+ " group by ayvmt.yearid, sut.sourcetypeid"
 							+ " order by null",
 
-					"drop table if exists vmtBySourceTypeTempSummary",
+					"drop table if exists vmtbysourcetypetempsummary",
 					
-					"create table vmtBySourceTypeTempSummary"
-							+ " select ayvmt.yearID, sut.sourceTypeID,"
-							+ " 	sum(ayvmt.VMT*rtd.roadTypeVMTFraction*zrt.shoAllocFactor*f.vmtFraction) as vmtTotal"
-							+ " from analysisYearVMT ayvmt"
-							+ " inner join sourceUseType sut on (sut.hpmsVTypeID=ayvmt.hpmsVTypeID)"
-							+ " inner join fractionWithinHPMSVTypeSummary f on (f.yearID=ayvmt.yearID and f.sourceTypeID=sut.sourceTypeID)"
-							+ " inner join roadTypeDistribution rtd on (rtd.sourceTypeID=f.sourceTypeID)"
-							+ " inner join zoneRoadType zrt on (zrt.roadTypeID=rtd.roadTypeID)"
-							+ " group by ayvmt.yearID, sut.sourceTypeID"
+					"create table vmtbysourcetypetempsummary"
+							+ " select ayvmt.yearid, sut.sourcetypeid,"
+							+ " 	sum(ayvmt.vmt*rtd.roadtypevmtfraction*zrt.shoallocfactor*f.vmtfraction) as vmttotal"
+							+ " from analysisyearvmt ayvmt"
+							+ " inner join sourceusetype sut on (sut.hpmsvtypeid=ayvmt.hpmsvtypeid)"
+							+ " inner join fractionwithinhpmsvtypesummary f on (f.yearid=ayvmt.yearid and f.sourcetypeid=sut.sourcetypeid)"
+							+ " inner join roadtypedistribution rtd on (rtd.sourcetypeid=f.sourcetypeid)"
+							+ " inner join zoneroadtype zrt on (zrt.roadtypeid=rtd.roadtypeid)"
+							+ " group by ayvmt.yearid, sut.sourcetypeid"
 							+ " order by null",
 
-					"drop table if exists vmtBySourceTypeTempFraction",
+					"drop table if exists vmtbysourcetypetempfraction",
 
-					"create table vmtBySourceTypeTempFraction"
-							+ " select t.yearID, t.sourceTypeID, (sutVMT*1.0/vmtTotal) as vmtFraction"
-							+ " from vmtBySourceTypeTemp t"
-							+ " inner join vmtBySourceTypeTempSummary s on (s.yearID=t.yearID and s.sourceTypeID=t.sourceTypeID)"
+					"create table vmtbysourcetypetempfraction"
+							+ " select t.yearid, t.sourcetypeid, (sutvmt*1.0/vmttotal) as vmtfraction"
+							+ " from vmtbysourcetypetemp t"
+							+ " inner join vmtbysourcetypetempsummary s on (s.yearid=t.yearid and s.sourcetypeid=t.sourcetypeid)"
 				};
 				for(int i=0;i<statements.length;i++) {
 					sql = statements[i];
 					SQLRunner.executeSQL(db,sql);
 				}
-				return "select stap.yearID, stap.sourceTypeID, "
-						+ " (sum(population)*vmtFraction) as sourceTypePopulation"
-						+ " from sourceTypeAgePopulation stap"
-						+ " inner join vmtBySourceTypeTempFraction f on (f.yearID=stap.yearID and f.sourceTypeID=stap.sourceTypeID)"
-						+ " where stap.sourceTypeID in (" + sourceTypesCSV + ")"
-						+ " group by stap.yearID, stap.sourceTypeID"
-						+ " order by stap.yearID, stap.sourceTypeID";
+				return "select stap.yearid, stap.sourcetypeid, "
+						+ " (sum(population)*vmtfraction) as sourcetypepopulation"
+						+ " from sourcetypeagepopulation stap"
+						+ " inner join vmtbysourcetypetempfraction f on (f.yearid=stap.yearid and f.sourcetypeid=stap.sourcetypeid)"
+						+ " where stap.sourcetypeid in (" + sourceTypesCSV + ")"
+						+ " group by stap.yearid, stap.sourcetypeid"
+						+ " order by stap.yearid, stap.sourcetypeid";
 			} catch(Exception e) {
 				Logger.logError(e,"Unable to get source type population");
 			}
@@ -223,7 +223,7 @@ public class SourceTypePopulationImporter extends ImporterBase {
 	public SourceTypePopulationImporter() {
 		super("Source Type Population", // common name
 				"sourcetypepopulation", // XML node name
-				new String[] { "SourceTypeYear" } // required tables
+				new String[] { "sourcetypeyear" } // required tables
 				);
 		shouldDoExecutionDataExport = true;
 		subjectToExportRestrictions = true;
@@ -247,11 +247,11 @@ public class SourceTypePopulationImporter extends ImporterBase {
 			return new RunSpecSectionStatus(RunSpecSectionStatus.OK);
 		}
 		boolean hasSourceTypes = manager.tableHasSourceTypes(db,
-				"select distinct sourceTypeID from " + primaryTableName,
-				this,primaryTableName + " is missing sourceTypeID(s)");
+				"select distinct sourcetypeid from " + primaryTableName,
+				this,primaryTableName + " is missing sourcetypeid(s)");
 		boolean hasYears = manager.tableHasYears(db,
-				"select distinct yearID from " + primaryTableName,
-				this,primaryTableName + " is missing yearID(s)");
+				"select distinct yearid from " + primaryTableName,
+				this,primaryTableName + " is missing yearid(s)");
 		if(hasSourceTypes && hasYears) {
 			return getImporterDataStatus(db);
 		}

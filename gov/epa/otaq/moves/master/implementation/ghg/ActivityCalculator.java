@@ -297,14 +297,14 @@ public class ActivityCalculator extends EmissionCalculator {
 			// These tables are created during execution and aren't learned at the beginning
 			// of the master loop.
 			String[] extraTableNames = {
-				"sourceTypeAgePopulation",
-				"fractionWithinHPMSVType",
-				"analysisYearVMT",
-				"roadTypeDistribution",
-				"zoneRoadType",
-				"monthVMTFraction",
-				"hourVMTFraction",
-				"SHP"
+				"sourcetypeagepopulation",
+				"fractionwithinhpmsvtype",
+				"analysisyearvmt",
+				"roadtypedistribution",
+				"zoneroadtype",
+				"monthvmtfraction",
+				"hourvmtfraction",
+				"shp"
 			};
 			Connection executionDB = null;
 			SQLRunner.Query query = new SQLRunner.Query();

@@ -265,191 +265,191 @@ public class TotalActivityGenerator extends Generator {
 
 		//
 		// The following tables contain data that are used during every loop.
-		sql = "CREATE TABLE IF NOT EXISTS SHOByAgeRoadwayHour ("+
-				"yearID         SMALLINT NOT NULL,"+
-				"roadTypeID     SMALLINT NOT NULL,"+
-				"sourceTypeID   SMALLINT NOT NULL,"+
-				"ageID          SMALLINT NOT NULL,"+
-				"monthID        SMALLINT NOT NULL,"+
-				"dayID          SMALLINT NOT NULL,"+
-				"hourID         SMALLINT NOT NULL,"+
-				"hourDayID      SMALLINT NOT NULL DEFAULT 0,"+
-				"SHO            DOUBLE NOT NULL,"+
-				"VMT            DOUBLE NOT NULL,"+
-				"UNIQUE INDEX XPKSHOByAgeRoadwayHour ("+
-					"yearID, roadTypeID, sourceTypeID, ageID, monthID, dayID, hourID))";
+		sql = "CREATE TABLE IF NOT EXISTS shobyageroadwayhour ("+
+				"yearid         smallint not null,"+
+				"roadtypeid     smallint not null,"+
+				"sourcetypeid   smallint not null,"+
+				"ageid          smallint not null,"+
+				"monthid        smallint not null,"+
+				"dayid          smallint not null,"+
+				"hourid         smallint not null,"+
+				"hourdayid      smallint not null default 0,"+
+				"sho            double not null,"+
+				"vmt            double not null,"+
+				"unique index xpkshobyageroadwayhour ("+
+					"yearid, roadtypeid, sourcetypeid, ageid, monthid, dayid, hourid))";
 		SQLRunner.executeSQL(db, sql);
 
-		sql = "TRUNCATE SHOByAgeRoadwayHour";
+		sql = "TRUNCATE shobyageroadwayhour";
 		SQLRunner.executeSQL(db, sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS StartsByAgeHour ("+
-				"yearID         SMALLINT NOT NULL,"+
-				"sourceTypeID   SMALLINT NOT NULL,"+
-				"ageID          SMALLINT NOT NULL,"+
-				"monthID        SMALLINT NOT NULL,"+
-				"dayID          SMALLINT NOT NULL,"+
-				"hourID         SMALLINT NOT NULL,"+
-				"starts         DOUBLE NOT NULL,"+
-				"UNIQUE INDEX XPKStartsByAgeHour ("+
-					"yearID, sourceTypeID, ageID, monthID, dayID, hourID))";
+		sql = "CREATE TABLE IF NOT EXISTS startsbyagehour ("+
+				"yearid         smallint not null,"+
+				"sourcetypeid   smallint not null,"+
+				"ageid          smallint not null,"+
+				"monthid        smallint not null,"+
+				"dayid          smallint not null,"+
+				"hourid         smallint not null,"+
+				"starts         double not null,"+
+				"unique index xpkstartsbyagehour ("+
+					"yearid, sourcetypeid, ageid, monthid, dayid, hourid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE StartsByAgeHour";
+		sql = "TRUNCATE startsbyagehour";
 		SQLRunner.executeSQL(db, sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS IdleHoursByAgeHour ("+
-				"yearID         SMALLINT NOT NULL,"+
-				"sourceTypeID   SMALLINT NOT NULL,"+
-				"ageID          SMALLINT NOT NULL,"+
-				"monthID        SMALLINT NOT NULL,"+
-				"dayID          SMALLINT NOT NULL,"+
-				"hourID         SMALLINT NOT NULL,"+
-				"idleHours      DOUBLE NOT NULL,"+
-				"UNIQUE INDEX XPKIdleHoursByAgeHour ("+
-					"yearID, sourceTypeID, ageID, monthID, dayID, hourID))";
+		sql = "CREATE TABLE IF NOT EXISTS idlehoursbyagehour ("+
+				"yearid         smallint not null,"+
+				"sourcetypeid   smallint not null,"+
+				"ageid          smallint not null,"+
+				"monthid        smallint not null,"+
+				"dayid          smallint not null,"+
+				"hourid         smallint not null,"+
+				"idlehours      double not null,"+
+				"unique index xpkidlehoursbyagehour ("+
+					"yearid, sourcetypeid, ageid, monthid, dayid, hourid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE IdleHoursByAgeHour";
+		sql = "TRUNCATE idlehoursbyagehour";
 		SQLRunner.executeSQL(db,sql);
 
 		//
 		// The following tables contain data that should be cleaned out each loop.
-		sql = "CREATE TABLE IF NOT EXISTS VMTByAgeRoadwayHour ("+
-					"yearID        SMALLINT NOT NULL,"+
-					"roadTypeID    SMALLINT NOT NULL,"+
-					"sourceTypeID  SMALLINT NOT NULL,"+
-					"ageID         SMALLINT NOT NULL,"+
-					"monthID       SMALLINT NOT NULL,"+
-					"dayID         SMALLINT NOT NULL,"+
-					"hourID        SMALLINT NOT NULL,"+
-					"VMT           DOUBLE NOT NULL,"+
-					"hourDayID     SMALLINT NOT NULL DEFAULT 0,"+
-					"UNIQUE INDEX XPKVMTByAgeRoadwayHour("+
-						"yearID, roadTypeID, sourceTypeID, ageID, monthID, dayID, hourID))";
+		sql = "CREATE TABLE IF NOT EXISTS vmtbyageroadwayhour ("+
+					"yearid        smallint not null,"+
+					"roadtypeid    smallint not null,"+
+					"sourcetypeid  smallint not null,"+
+					"ageid         smallint not null,"+
+					"monthid       smallint not null,"+
+					"dayid         smallint not null,"+
+					"hourid        smallint not null,"+
+					"vmt           double not null,"+
+					"hourdayid     smallint not null default 0,"+
+					"unique index xpkvmtbyageroadwayhour("+
+						"yearid, roadtypeid, sourcetypeid, ageid, monthid, dayid, hourid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE VMTByAgeRoadwayHour";
+		sql = "TRUNCATE vmtbyageroadwayhour";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "create table vmtByMYRoadHourFraction ("
-				+ " 	yearID smallint not null,"
-				+ " 	roadTypeID smallint not null,"
-				+ " 	sourceTypeID smallint not null,"
-				+ " 	modelYearID smallint not null,"
-				+ " 	monthID smallint not null,"
-				+ " 	dayID smallint not null,"
-				+ " 	hourID smallint not null,"
-				+ " 	hourDayID smallint not null,"
-				+ " 	vmtFraction double,"
-				+ " 	unique key (yearID, roadTypeID, sourceTypeID, modelYearID, monthID, hourID, dayID),"
-				+ " 	unique key (yearID, roadTypeID, sourceTypeID, modelYearID, monthID, hourDayID)"
+		sql = "create table vmtbymyroadhourfraction ("
+				+ " 	yearid smallint not null,"
+				+ " 	roadtypeid smallint not null,"
+				+ " 	sourcetypeid smallint not null,"
+				+ " 	modelyearid smallint not null,"
+				+ " 	monthid smallint not null,"
+				+ " 	dayid smallint not null,"
+				+ " 	hourid smallint not null,"
+				+ " 	hourdayid smallint not null,"
+				+ " 	vmtfraction double,"
+				+ " 	unique key (yearid, roadtypeid, sourcetypeid, modelyearid, monthid, hourid, dayid),"
+				+ " 	unique key (yearid, roadtypeid, sourcetypeid, modelyearid, monthid, hourdayid)"
 				+ " )";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE vmtByMYRoadHourFraction";
+		sql = "TRUNCATE vmtbymyroadhourfraction";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS HPMSVTypePopulation ("+
-					"yearID       SMALLINT NOT NULL,"+
-					"HPMSVTypeID  SMALLINT NOT NULL,"+
-					"population   FLOAT NOT NULL,"+
-					"UNIQUE INDEX XPKHPMSVTypePopulation("+
-						"yearID, HPMSVTypeID))";
+		sql = "CREATE TABLE IF NOT EXISTS hpmsvtypepopulation ("+
+					"yearid       smallint not null,"+
+					"hpmsvtypeid  smallint not null,"+
+					"population   float not null,"+
+					"unique index xpkhpmsvtypepopulation("+
+						"yearid, hpmsvtypeid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE HPMSVTypePopulation";
+		sql = "TRUNCATE hpmsvtypepopulation";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS FractionWithinHPMSVType ("+
-					"yearID       SMALLINT NOT NULL,"+
-					"sourceTypeID SMALLINT NOT NULL,"+
-					"ageID        SMALLINT NOT NULL,"+
-					"fraction     FLOAT NOT NULL,"+
-					"UNIQUE INDEX XPKFractionWithinHPMSVType ("+
-						"yearID, sourceTypeID, ageID))";
+		sql = "CREATE TABLE IF NOT EXISTS fractionwithinhpmsvtype ("+
+					"yearid       smallint not null,"+
+					"sourcetypeid smallint not null,"+
+					"ageid        smallint not null,"+
+					"fraction     float not null,"+
+					"unique index xpkfractionwithinhpmsvtype ("+
+						"yearid, sourcetypeid, ageid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE FractionWithinHPMSVType";
+		sql = "TRUNCATE fractionwithinhpmsvtype";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS HPMSTravelFraction ("+
-				"yearID      SMALLINT NOT NULL,"+
-				"HPMSVTypeID SMALLINT NOT NULL,"+
-				"fraction    FLOAT NOT NULL,"+
-				"UNIQUE INDEX XPKHPMSTravelFraction ("+
-					"yearID, HPMSVTypeID))";
+		sql = "CREATE TABLE IF NOT EXISTS hpmstravelfraction ("+
+				"yearid      smallint not null,"+
+				"hpmsvtypeid smallint not null,"+
+				"fraction    float not null,"+
+				"unique index xpkhpmstravelfraction ("+
+					"yearid, hpmsvtypeid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE HPMSTravelFraction";
+		sql = "TRUNCATE hpmstravelfraction";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS TravelFraction ("+
-					"yearID        SMALLINT NOT NULL,"+
-					"sourceTypeID  SMALLINT NOT NULL,"+
-					"ageID         SMALLINT NOT NULL,"+
-					"fraction      FLOAT NOT NULL,"+
-					"UNIQUE INDEX XPKTravelFraction("+
-						"yearID, sourceTypeID, ageID))";
+		sql = "CREATE TABLE IF NOT EXISTS travelfraction ("+
+					"yearid        smallint not null,"+
+					"sourcetypeid  smallint not null,"+
+					"ageid         smallint not null,"+
+					"fraction      float not null,"+
+					"unique index xpktravelfraction("+
+						"yearid, sourcetypeid, ageid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE TravelFraction";
+		sql = "TRUNCATE travelfraction";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS AnnualVMTByAgeRoadway ("+
-				"yearID        SMALLINT NOT NULL,"+
-				"roadTypeID    SMALLINT NOT NULL,"+
-				"sourceTypeID  SMALLINT NOT NULL,"+
-				"ageID         SMALLINT NOT NULL,"+
-				"VMT           FLOAT NOT NULL,"+
-				"UNIQUE INDEX XPKAnnualVMTByAgeRoadway("+
-					"yearID, roadTypeID, sourceTypeID, ageID))";
+		sql = "CREATE TABLE IF NOT EXISTS annualvmtbyageroadway ("+
+				"yearid        smallint not null,"+
+				"roadtypeid    smallint not null,"+
+				"sourcetypeid  smallint not null,"+
+				"ageid         smallint not null,"+
+				"vmt           float not null,"+
+				"unique index xpkannualvmtbyageroadway("+
+					"yearid, roadtypeid, sourcetypeid, ageid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE AnnualVMTByAgeRoadway";
+		sql = "TRUNCATE annualvmtbyageroadway";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS AverageSpeed ("+
-				"roadTypeID    SMALLINT NOT NULL,"+
-				"sourceTypeID  SMALLINT NOT NULL,"+
-				"dayID         SMALLINT NOT NULL,"+
-				"hourID        SMALLINT NOT NULL,"+
-				"averageSpeed  FLOAT NOT NULL,"+
-				"UNIQUE INDEX XPKAverageSpeed ("+
-					"roadTypeID, sourceTypeID, dayID, hourID))";
+		sql = "CREATE TABLE IF NOT EXISTS averagespeed ("+
+				"roadtypeid    smallint not null,"+
+				"sourcetypeid  smallint not null,"+
+				"dayid         smallint not null,"+
+				"hourid        smallint not null,"+
+				"averagespeed  float not null,"+
+				"unique index xpkaveragespeed ("+
+					"roadtypeid, sourcetypeid, dayid, hourid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE AverageSpeed";
+		sql = "TRUNCATE averagespeed";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS SHOByAgeDay ("+
-					"yearID         SMALLINT NOT NULL,"+
-					"sourceTypeID   SMALLINT NOT NULL,"+
-					"ageID          SMALLINT NOT NULL,"+
-					"monthID        SMALLINT NOT NULL,"+
-					"dayID          SMALLINT NOT NULL,"+
-					"SHO            DOUBLE NOT NULL,"+
-					"VMT            DOUBLE NOT NULL,"+
-					"UNIQUE INDEX XPKSHOByAgeDay("+
-						"yearID, sourceTypeID, ageID, monthID, dayID))";
+		sql = "CREATE TABLE IF NOT EXISTS shobyageday ("+
+					"yearid         smallint not null,"+
+					"sourcetypeid   smallint not null,"+
+					"ageid          smallint not null,"+
+					"monthid        smallint not null,"+
+					"dayid          smallint not null,"+
+					"sho            double not null,"+
+					"vmt            double not null,"+
+					"unique index xpkshobyageday("+
+						"yearid, sourcetypeid, ageid, monthid, dayid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE SHOByAgeDay";
+		sql = "TRUNCATE shobyageday";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS VMTByAgeRoadwayDay ("+
-					"yearID         SMALLINT NOT NULL,"+
-					"roadTypeID     SMALLINT NOT NULL,"+
-					"sourceTypeID   SMALLINT NOT NULL,"+
-					"ageID          SMALLINT NOT NULL,"+
-					"monthID        SMALLINT NOT NULL,"+
-					"dayID          SMALLINT NOT NULL,"+
-					"VMT            DOUBLE NOT NULL,"+
-					"hotellingHours DOUBLE NOT NULL,"+
-					"primary key (yearID, roadTypeID, sourceTypeID, ageID, monthID, dayID))";
+		sql = "CREATE TABLE IF NOT EXISTS vmtbyageroadwayday ("+
+					"yearid         smallint not null,"+
+					"roadtypeid     smallint not null,"+
+					"sourcetypeid   smallint not null,"+
+					"ageid          smallint not null,"+
+					"monthid        smallint not null,"+
+					"dayid          smallint not null,"+
+					"vmt            double not null,"+
+					"hotellinghours double not null,"+
+					"primary key (yearid, roadtypeid, sourcetypeid, ageid, monthid, dayid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE VMTByAgeRoadwayDay";
+		sql = "TRUNCATE vmtbyageroadwayday";
 		SQLRunner.executeSQL(db,sql);
 /*
 		sql = "CREATE TABLE IF NOT EXISTS SH ("+
@@ -469,19 +469,19 @@ public class TotalActivityGenerator extends Generator {
 		sql = "TRUNCATE SH";
 		SQLRunner.executeSQL(db,sql);
 */
-		sql = "CREATE TABLE IF NOT EXISTS SHP ("+
-				"hourDayID         SMALLINT NOT NULL,"+
-				"monthID              SMALLINT NOT NULL,"+
-				"yearID               SMALLINT NOT NULL,"+
-				"ageID                SMALLINT NOT NULL,"+
-				"zoneID               INTEGER NOT NULL,"+
-				"sourceTypeID         SMALLINT NOT NULL,"+
-				"SHP                  DOUBLE NULL,"+
-				"UNIQUE INDEX XPKSPH("+
-				"hourDayID, monthID, yearID, ageID, zoneID, sourceTypeID))";
+		sql = "CREATE TABLE IF NOT EXISTS shp ("+
+				"hourdayid         smallint not null,"+
+				"monthid              smallint not null,"+
+				"yearid               smallint not null,"+
+				"ageid                smallint not null,"+
+				"zoneid               integer not null,"+
+				"sourcetypeid         smallint not null,"+
+				"shp                  double null,"+
+				"unique index xpksph("+
+				"hourdayid, monthid, yearid, ageid, zoneid, sourcetypeid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE SHP";
+		sql = "TRUNCATE shp";
 		SQLRunner.executeSQL(db,sql);
 	}
 
@@ -493,26 +493,26 @@ public class TotalActivityGenerator extends Generator {
 	public static void setupAnalysisYearVMTTables(Connection db) throws SQLException {
 		String sql = "";
 
-		sql = "CREATE TABLE IF NOT EXISTS AnalysisYearVMT ("+
-					"yearID      SMALLINT NOT NULL,"+
-					"HPMSVTypeID SMALLINT NOT NULL,"+
-					"VMT         FLOAT NOT NULL,"+
-					"UNIQUE INDEX XPKAnalysisYearVMT ("+
-						"yearID, HPMSVTypeID))";
+		sql = "CREATE TABLE IF NOT EXISTS analysisyearvmt ("+
+					"yearid      smallint not null,"+
+					"hpmsvtypeid smallint not null,"+
+					"vmt         float not null,"+
+					"unique index xpkanalysisyearvmt ("+
+						"yearid, hpmsvtypeid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE AnalysisYearVMT";
+		sql = "TRUNCATE analysisyearvmt";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS AnalysisYearVMT2 ("+
-					"yearID      SMALLINT NOT NULL,"+
-					"HPMSVTypeID SMALLINT NOT NULL,"+
-					"VMT         FLOAT NOT NULL,"+
-					"UNIQUE INDEX AnalysisYearVMT2("+
-						"yearID, HPMSVTypeID))";
+		sql = "CREATE TABLE IF NOT EXISTS analysisyearvmt2 ("+
+					"yearid      smallint not null,"+
+					"hpmsvtypeid smallint not null,"+
+					"vmt         float not null,"+
+					"unique index analysisyearvmt2("+
+						"yearid, hpmsvtypeid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE AnalysisYearVMT2";
+		sql = "TRUNCATE analysisyearvmt2";
 		SQLRunner.executeSQL(db,sql);
 	}
 
@@ -524,10 +524,10 @@ public class TotalActivityGenerator extends Generator {
 	public static void removeAnalysisYearVMTTables(Connection db) throws SQLException {
 		String sql = "";
 
-		sql = "drop table if exists AnalysisYearVMT";
+		sql = "drop table if exists analysisyearvmt";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "drop table if exists AnalysisYearVMT2";
+		sql = "drop table if exists analysisyearvmt2";
 		SQLRunner.executeSQL(db,sql);
 	}
 
@@ -543,28 +543,28 @@ public class TotalActivityGenerator extends Generator {
 		// Succeeding years may(if there is not an intervening base year) grow values from the
 		// following tables to the current year so the data in these tables must be kept for
 		// the full run.
-		sql = "CREATE TABLE IF NOT EXISTS SourceTypeAgePopulation ("+
-					"yearID         SMALLINT NOT NULL,"+
-					"sourceTypeID   SMALLINT NOT NULL,"+
-					"ageID          SMALLINT NOT NULL,"+
-					"population     FLOAT NOT NULL,"+
-					"UNIQUE INDEX XPKSourceTypeAgePopulation ("+
-						"yearID, sourceTypeID, ageID))";
+		sql = "CREATE TABLE IF NOT EXISTS sourcetypeagepopulation ("+
+					"yearid         smallint not null,"+
+					"sourcetypeid   smallint not null,"+
+					"ageid          smallint not null,"+
+					"population     float not null,"+
+					"unique index xpksourcetypeagepopulation ("+
+						"yearid, sourcetypeid, ageid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE SourceTypeAgePopulation";
+		sql = "TRUNCATE sourcetypeagepopulation";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE TABLE IF NOT EXISTS SourceTypeAgePopulation2 ("+
-					"yearID         SMALLINT NOT NULL,"+
-					"sourceTypeID   SMALLINT NOT NULL,"+
-					"ageID          SMALLINT NOT NULL,"+
-					"population     FLOAT NOT NULL,"+
-					"UNIQUE INDEX XPKSourceTypeAgePopulation2 ("+
-						"yearID, sourceTypeID, ageID))";
+		sql = "CREATE TABLE IF NOT EXISTS sourcetypeagepopulation2 ("+
+					"yearid         smallint not null,"+
+					"sourcetypeid   smallint not null,"+
+					"ageid          smallint not null,"+
+					"population     float not null,"+
+					"unique index xpksourcetypeagepopulation2 ("+
+						"yearid, sourcetypeid, ageid))";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE SourceTypeAgePopulation2";
+		sql = "TRUNCATE sourcetypeagepopulation2";
 		SQLRunner.executeSQL(db,sql);
 	}
 
@@ -576,10 +576,10 @@ public class TotalActivityGenerator extends Generator {
 	public static void removeAgeTables(Connection db) throws SQLException {
 		String sql = "";
 
-		sql = "drop table if exists SourceTypeAgePopulation";
+		sql = "drop table if exists sourcetypeagepopulation";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "drop table if exists SourceTypeAgePopulation2";
+		sql = "drop table if exists sourcetypeagepopulation2";
 		SQLRunner.executeSQL(db,sql);
 	}
 
@@ -611,12 +611,12 @@ public class TotalActivityGenerator extends Generator {
 			 * @input year
 			**/
 			sql = "SELECT "+
-						"MAX(yearId) "+
+						"MAX(yearid) "+
 					"FROM "+
-						"Year "+
+						"year "+
 					"WHERE "+
-						"yearId <= ? AND "+
-						"(isBaseYear = 'Y' OR isBaseyear = 'y')";
+						"yearid <= ? AND "+
+						"(isbaseyear = 'Y' OR isbaseyear = 'y')";
 			statement=db.prepareStatement(sql);
 			statement.setInt(1,analysisYear);
 
@@ -693,8 +693,8 @@ public class TotalActivityGenerator extends Generator {
 			throws SQLException {
 		String sql = "";
 
-		sql = "delete from SourceTypeAgePopulation"
-					+ " where yearID >= " + baseYear;
+		sql = "delete from sourcetypeagepopulation"
+					+ " where yearid >= " + baseYear;
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -704,23 +704,23 @@ public class TotalActivityGenerator extends Generator {
 		 * @input SourceTypeYear
 		 * @input SourceTypeAgeDistribution
 		**/
-		sql = "INSERT INTO SourceTypeAgePopulation ("+
-					"yearID,"+
-					"sourceTypeID,"+
-					"ageID, "+
+		sql = "INSERT INTO sourcetypeagepopulation ("+
+					"yearid,"+
+					"sourcetypeid,"+
+					"ageid, "+
 					"population) "+
-				"SELECT "+
-					"sty.YearID,"+
-					"sty.SourceTypeID,"+
-					"stad.AgeID, "+
-					"sty.SourceTypePopulation * stad.AgeFraction "+
-				"FROM "+
-					"SourceTypeYear sty,"+
-					"SourceTypeAgeDistribution stad "+
-				"WHERE "+
-					"sty.sourceTypeID = stad.sourceTypeID AND "+
-					"sty.yearID = stad.yearID AND "+
-					"sty.yearID = " + baseYear;
+				"select "+
+					"sty.yearid,"+
+					"sty.sourcetypeid,"+
+					"stad.ageid, "+
+					"sty.sourcetypepopulation * stad.agefraction "+
+				"from "+
+					"sourcetypeyear sty,"+
+					"sourcetypeagedistribution stad "+
+				"where "+
+					"sty.sourcetypeid = stad.sourcetypeid and "+
+					"sty.yearid = stad.yearid and "+
+					"sty.yearid = " + baseYear;
 		SQLRunner.executeSQL(db,sql);
 	}
 
@@ -757,7 +757,7 @@ public class TotalActivityGenerator extends Generator {
 		PreparedStatement ageXStatement = null;
 		PreparedStatement age30PlusStatement = null;
 		try {
-			sql = "TRUNCATE SourceTypeAgePopulation2";
+			sql = "TRUNCATE sourcetypeagepopulation2";
 			SQLRunner.executeSQL(db,sql);
 
 			//
@@ -773,29 +773,29 @@ public class TotalActivityGenerator extends Generator {
 			 * @input SourceTypeAgePopulation for year y-1
 			**/
 			String age0Sql =
-					"INSERT INTO SourceTypeAgePopulation2 ("+
-						"yearID,"+
-						"sourceTypeID,"+
-						"ageID,"+
+					"INSERT INTO sourcetypeagepopulation2 ("+
+						"yearid,"+
+						"sourcetypeid,"+
+						"ageid,"+
 						"population) "+
-					"SELECT "+
-						"sty2.yearID,"+
-						"sty.sourceTypeID,"+
-						"stap.ageID,"+
-						"(stap.population/sty.migrationRate)*sty2.salesGrowthFactor*"+
-								"sty2.migrationRate "+
-					"FROM "+
-						"SourceTypeYear sty,"+
-						"SourceTypeYear sty2,"+
-						"SourceTypeAgePopulation stap "+
-					"WHERE "+
-						"sty.yearID = sty2.yearID-1 AND "+
-						"sty.sourceTypeID = stap.sourceTypeID AND "+
-						"sty2.yearID = ? AND "+
-						"sty2.sourceTypeID = stap.sourceTypeID AND "+
-						"stap.yearID = sty.yearID AND "+
-						"stap.ageID = 0 AND "+
-						"sty.migrationRate <> 0";
+					"select "+
+						"sty2.yearid,"+
+						"sty.sourcetypeid,"+
+						"stap.ageid,"+
+						"(stap.population/sty.migrationrate)*sty2.salesgrowthfactor*"+
+								"sty2.migrationrate "+
+					"from "+
+						"sourcetypeyear sty,"+
+						"sourcetypeyear sty2,"+
+						"sourcetypeagepopulation stap "+
+					"where "+
+						"sty.yearid = sty2.yearid-1 and "+
+						"sty.sourcetypeid = stap.sourcetypeid and "+
+						"sty2.yearid = ? and "+
+						"sty2.sourcetypeid = stap.sourcetypeid and "+
+						"stap.yearid = sty.yearid and "+
+						"stap.ageid = 0 and "+
+						"sty.migrationrate <> 0";
 			age0Statement = db.prepareStatement(age0Sql);
 
 			/**
@@ -805,21 +805,21 @@ public class TotalActivityGenerator extends Generator {
 			 * @output SourceTypeAgePopulation
 			**/
 			String copySql =
-					"INSERT INTO SourceTypeAgePopulation ("+
-						"yearID,"+
-						"sourceTypeID,"+
-						"ageID,"+
+					"INSERT INTO sourcetypeagepopulation ("+
+						"yearid,"+
+						"sourcetypeid,"+
+						"ageid,"+
 						"population) "+
-					"SELECT "+
-						"yearID,"+
-						"sourceTypeID,"+
-						"ageID,"+
+					"select "+
+						"yearid,"+
+						"sourcetypeid,"+
+						"ageid,"+
 						"population "+
-					"FROM "+
-						"SourceTypeAgePopulation2";
+					"from "+
+						"sourcetypeagepopulation2";
 			copyStatement = db.prepareStatement(copySql);
 
-			String purgeSql = "TRUNCATE SourceTypeAgePopulation2";
+			String purgeSql = "TRUNCATE sourcetypeagepopulation2";
 			purgeStatement = db.prepareStatement(purgeSql);
 
 			/**
@@ -832,27 +832,27 @@ public class TotalActivityGenerator extends Generator {
 			 * @input SourceTypeAgePopulation for year y-1
 			**/
 			String ageXSql =
-					"INSERT INTO SourceTypeAgePopulation2 ("+
-						"yearID,"+
-						"sourceTypeID,"+
-						"ageID,"+
+					"INSERT INTO sourcetypeagepopulation2 ("+
+						"yearid,"+
+						"sourcetypeid,"+
+						"ageid,"+
 						"population) "+
-					"SELECT "+
-						"sty.yearID,"+
-						"sty.sourceTypeID,"+
-					 	"sta.ageID+0,"+
-						"stap.population * sta.survivalRate * sty.migrationRate "+
-					"FROM "+
-						"SourceTypeYear sty, "+
-						"SourceTypeAge sta, "+
-						"SourceTypeAgePopulation stap "+
-					"WHERE "+
-						"sty.yearID = ? AND "+
-						"sty.sourceTypeID = stap.sourceTypeID AND "+
-					 	"sta.ageID = ? AND "+
-						"sta.sourceTypeID = stap.sourceTypeID AND "+
-						"stap.yearID = sty.yearID-1 AND "+
-						"stap.ageID = sta.ageID-1";
+					"select "+
+						"sty.yearid,"+
+						"sty.sourcetypeid,"+
+					 	"sta.ageid+0,"+
+						"stap.population * sta.survivalrate * sty.migrationrate "+
+					"from "+
+						"sourcetypeyear sty, "+
+						"sourcetypeage sta, "+
+						"sourcetypeagepopulation stap "+
+					"where "+
+						"sty.yearid = ? and "+
+						"sty.sourcetypeid = stap.sourcetypeid and "+
+					 	"sta.ageid = ? and "+
+						"sta.sourcetypeid = stap.sourcetypeid and "+
+						"stap.yearid = sty.yearid-1 and "+
+						"stap.ageid = sta.ageid-1";
 			ageXStatement = db.prepareStatement(ageXSql);
 
 			/**
@@ -867,36 +867,36 @@ public class TotalActivityGenerator extends Generator {
 			 * @input stap2 SourceTypeAgePopulation for year y and ageID=30
 			**/
 			String age30PlusSql =
-					"INSERT INTO SourceTypeAgePopulation2 ("+
-						"yearID,"+
-						"sourceTypeID,"+
-						"ageID,"+
+					"INSERT INTO sourcetypeagepopulation2 ("+
+						"yearid,"+
+						"sourcetypeid,"+
+						"ageid,"+
 						"population) "+
-					"SELECT "+
-						"sty.yearID,"+
-						"sty.sourceTypeID,"+
-						"sta2.ageID,"+
-						"stap.population*sta.survivalRate*sty.migrationRate + stap2.population*"+
-								"sta2.survivalRate*sty.migrationRate "+
-					"FROM "+
-						"SourceTypeYear sty,"+
-						"SourceTypeAge sta,"+
-						"SourceTypeAge sta2,"+
-						"SourceTypeAgePopulation stap,"+
-						"SourceTypeAgePopulation stap2 "+
-					"WHERE "+
-						"sty.yearID = ? AND "+
-						"sty.sourceTypeID = stap.sourceTypeID AND "+
-						"sta.ageID = 29 AND "+
-						"sta.sourceTypeID = stap.sourceTypeID AND "+
-						"sta2.ageID = 30 AND "+
-						"sta2.sourceTypeID = stap.sourceTypeID AND "+
-						"sta.sourceTypeID = stap.sourceTypeID AND "+
-						"stap.yearID = sty.yearID-1 AND "+
-						"stap.ageID = 29 AND "+
-						"stap2.sourceTypeID = stap.sourceTypeID AND "+
-						"stap2.yearID = stap.yearID AND "+
-						"stap2.ageID = 30";
+					"select "+
+						"sty.yearid,"+
+						"sty.sourcetypeid,"+
+						"sta2.ageid,"+
+						"stap.population*sta.survivalrate*sty.migrationrate + stap2.population*"+
+								"sta2.survivalrate*sty.migrationrate "+
+					"from "+
+						"sourcetypeyear sty,"+
+						"sourcetypeage sta,"+
+						"sourcetypeage sta2,"+
+						"sourcetypeagepopulation stap,"+
+						"sourcetypeagepopulation stap2 "+
+					"where "+
+						"sty.yearid = ? and "+
+						"sty.sourcetypeid = stap.sourcetypeid and "+
+						"sta.ageid = 29 and "+
+						"sta.sourcetypeid = stap.sourcetypeid and "+
+						"sta2.ageid = 30 and "+
+						"sta2.sourcetypeid = stap.sourcetypeid and "+
+						"sta.sourcetypeid = stap.sourcetypeid and "+
+						"stap.yearid = sty.yearid-1 and "+
+						"stap.ageid = 29 and "+
+						"stap2.sourcetypeid = stap.sourcetypeid and "+
+						"stap2.yearid = stap.yearid and "+
+						"stap2.ageid = 30";
 			age30PlusStatement = db.prepareStatement(age30PlusSql);
 
 			int newYear = resultsYear;
@@ -939,14 +939,14 @@ public class TotalActivityGenerator extends Generator {
 			// Populate sourceTypeAgeDistribution with the distribution
 			// within the analysis year.
 			String[] statements = {
-				"drop table if exists sourceTypeAgePopulationTotal",
+				"drop table if exists sourcetypeagepopulationtotal",
 				
-				"create table sourceTypeAgePopulationTotal ("
-				+ " 	sourceTypeID smallint not null,"
-				+ " 	yearID smallint not null,"
-				+ " 	totalPopulation double not null,"
-				+ " 	primary key (yearID, sourceTypeID),"
-				+ " 	unique key (sourceTypeID, yearID)"
+				"create table sourcetypeagepopulationtotal ("
+				+ " 	sourcetypeid smallint not null,"
+				+ " 	yearid smallint not null,"
+				+ " 	totalpopulation double not null,"
+				+ " 	primary key (yearid, sourcetypeid),"
+				+ " 	unique key (sourcetypeid, yearid)"
 				+ " )",
 
 				/**
@@ -955,11 +955,11 @@ public class TotalActivityGenerator extends Generator {
 				 * @output sourceTypeAgePopulationTotal
 				 * @input sourceTypeagePopulation
 				**/
-				"insert into sourceTypeAgePopulationTotal (sourceTypeID, yearID, totalPopulation)"
-				+ " select sourceTypeID, yearID, sum(population)"
-				+ " from sourceTypeagePopulation"
-				+ " where yearID=" + analysisYear
-				+ " group by yearID, sourceTypeID"
+				"insert into sourcetypeagepopulationtotal (sourcetypeid, yearid, totalpopulation)"
+				+ " select sourcetypeid, yearid, sum(population)"
+				+ " from sourcetypeagepopulation"
+				+ " where yearid=" + analysisYear
+				+ " group by yearid, sourcetypeid"
 				+ " order by null",
 
 				/**
@@ -969,16 +969,16 @@ public class TotalActivityGenerator extends Generator {
 				 * @input sourceTypeAgePopulation
 				 * @input sourceTypeAgePopulationTotal
 				**/
-				"insert ignore into sourceTypeAgeDistribution ("
-				+ " 	sourceTypeID, yearID, ageID, ageFraction)"
-				+ " select detail.sourceTypeID, detail.yearID, detail.ageID, detail.population / total.totalPopulation"
-				+ " from sourceTypeAgePopulation detail"
-				+ " inner join sourceTypeAgePopulationTotal total on ("
-				+ " 	total.sourceTypeID = detail.sourceTypeID"
-				+ " 	and total.yearID = detail.yearID)"
-				+ " where detail.yearID=" + analysisYear,
+				"insert ignore into sourcetypeagedistribution ("
+				+ " 	sourcetypeid, yearid, ageid, agefraction)"
+				+ " select detail.sourcetypeid, detail.yearid, detail.ageid, detail.population / total.totalpopulation"
+				+ " from sourcetypeagepopulation detail"
+				+ " inner join sourcetypeagepopulationtotal total on ("
+				+ " 	total.sourcetypeid = detail.sourcetypeid"
+				+ " 	and total.yearid = detail.yearid)"
+				+ " where detail.yearid=" + analysisYear,
 
-				"drop table if exists sourceTypeAgePopulationTotal"
+				"drop table if exists sourcetypeagepopulationtotal"
 			};
 			for(int i=0;i<statements.length;i++) {
 				sql = statements[i];
@@ -1038,7 +1038,7 @@ public class TotalActivityGenerator extends Generator {
 	void calculateFractionOfTravelUsingHPMS(int analysisYear) throws SQLException {
 		String sql = "";
 
-		sql = "TRUNCATE HPMSVTypePopulation";
+		sql = "TRUNCATE hpmsvtypepopulation";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1048,26 +1048,26 @@ public class TotalActivityGenerator extends Generator {
 		 * @input SourceTypeAgePopulation
 		 * @input SourceUseType
 		**/
-		sql = "INSERT INTO HPMSVTypePopulation ("+
-					"yearID,"+
-					"HPMSVTypeID,"+
+		sql = "INSERT INTO hpmsvtypepopulation ("+
+					"yearid,"+
+					"hpmsvtypeid,"+
 					"population) "+
-				"SELECT "+
-					"stap.yearID,"+
-					"sut.HPMSVTypeID,"+
+				"select "+
+					"stap.yearid,"+
+					"sut.hpmsvtypeid,"+
 					"sum(stap.population) "+
-				"FROM "+
-					"SourceTypeAgePopulation stap,"+
-					"SourceUseType sut "+
-				"WHERE "+
-					"stap.sourceTypeID = sut.sourceTypeID AND "+
-					"stap.yearID = " + analysisYear +
+				"from "+
+					"sourcetypeagepopulation stap,"+
+					"sourceusetype sut "+
+				"where "+
+					"stap.sourcetypeid = sut.sourcetypeid and "+
+					"stap.yearid = " + analysisYear +
 				" GROUP BY "+
-					"stap.yearID,"+
-					"sut.HPMSVTypeID";
+					"stap.yearid,"+
+					"sut.hpmsvtypeid";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE FractionWithinHPMSVType";
+		sql = "TRUNCATE fractionwithinhpmsvtype";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1078,24 +1078,24 @@ public class TotalActivityGenerator extends Generator {
 		 * @input SourceTypeAgePopulation
 		 * @input SourceUseType
 		**/
-		sql = "INSERT INTO FractionWithinHPMSVType ("+
-					"yearID,"+
-					"sourceTypeID,"+
-					"ageID,"+
+		sql = "INSERT INTO fractionwithinhpmsvtype ("+
+					"yearid,"+
+					"sourcetypeid,"+
+					"ageid,"+
 					"fraction) "+
-				"SELECT "+
-					"stap.yearID,"+
-					"stap.sourceTypeID,"+
-					"stap.ageID,"+
+				"select "+
+					"stap.yearid,"+
+					"stap.sourcetypeid,"+
+					"stap.ageid,"+
 					"stap.population / hvtp.population "+
-				"FROM "+
-					"SourceTypeAgePopulation stap,"+
-					"SourceUseType sut,"+
-					"HPMSVTypePopulation hvtp "+
-				"WHERE "+
-					"stap.sourceTypeID = sut.sourceTypeID AND "+
-					"sut.HPMSVTypeID = hvtp.HPMSVTypeID AND "+
-					"stap.yearID = hvtp.yearID AND "+
+				"from "+
+					"sourcetypeagepopulation stap,"+
+					"sourceusetype sut,"+
+					"hpmsvtypepopulation hvtp "+
+				"where "+
+					"stap.sourcetypeid = sut.sourcetypeid and "+
+					"sut.hpmsvtypeid = hvtp.hpmsvtypeid and "+
+					"stap.yearid = hvtp.yearid and "+
 					"hvtp.population <> 0";
 		SQLRunner.executeSQL(db,sql);
 									//
@@ -1104,7 +1104,7 @@ public class TotalActivityGenerator extends Generator {
 									// analysisYear, there is no need to specify the
 									// analysisYear here.
 
-		sql = "TRUNCATE HPMSTravelFraction";
+		sql = "TRUNCATE hpmstravelfraction";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1115,28 +1115,28 @@ public class TotalActivityGenerator extends Generator {
 		 * @input SourceUseType
 		 * @input SourceTypeAge
 		**/
-		sql = "INSERT INTO HPMSTravelFraction ("+
-					"yearID,"+
-					"HPMSVTypeID,"+
+		sql = "INSERT INTO hpmstravelfraction ("+
+					"yearid,"+
+					"hpmsvtypeid,"+
 					"fraction) "+
-				"SELECT "+
-					"fwhvt.yearID,"+
-					"sut.HPMSVTypeID,"+
-					"sum(fwhvt.fraction * sta.relativeMAR) "+
-				"FROM "+
-					"FractionWithinHPMSVType fwhvt,"+
-					"SourceUseType sut,"+
-					"SourceTypeAge sta "+
-				"WHERE "+
-					"sta.sourceTypeID = fwhvt.sourceTypeID AND "+
-					"sta.ageID = fwhvt.ageID AND "+
-					"fwhvt.sourceTypeID = sut.sourceTypeID "+
-				"GROUP BY "+
-					"fwhvt.yearID,"+
-					"sut.HPMSVTypeID";
+				"select "+
+					"fwhvt.yearid,"+
+					"sut.hpmsvtypeid,"+
+					"sum(fwhvt.fraction * sta.relativemar) "+
+				"from "+
+					"fractionwithinhpmsvtype fwhvt,"+
+					"sourceusetype sut,"+
+					"sourcetypeage sta "+
+				"where "+
+					"sta.sourcetypeid = fwhvt.sourcetypeid and "+
+					"sta.ageid = fwhvt.ageid and "+
+					"fwhvt.sourcetypeid = sut.sourcetypeid "+
+				"group by "+
+					"fwhvt.yearid,"+
+					"sut.hpmsvtypeid";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "TRUNCATE TravelFraction";
+		sql = "TRUNCATE travelfraction";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1148,35 +1148,35 @@ public class TotalActivityGenerator extends Generator {
 		 * @input SourceUseType
 		 * @input SourceTypeAge
 		**/
-		sql = "INSERT INTO TravelFraction ("+
-					"yearID,"+
-					"sourceTypeID,"+
-					"ageID,"+
+		sql = "INSERT INTO travelfraction ("+
+					"yearid,"+
+					"sourcetypeid,"+
+					"ageid,"+
 					"fraction) "+
-				"SELECT "+
-					"fwhvt.yearID,"+
-					"fwhvt.sourceTypeID,"+
-					"fwhvt.ageID,"+
-					"(fwhvt.fraction*sta.relativeMAR)/hpmstf.fraction "+
-				"FROM "+
-					"FractionWithinHPMSVType fwhvt,"+
-					"SourceUseType sut,"+
-					"SourceTypeAge sta,"+
-					"HPMSTravelFraction hpmstf "+
-				"WHERE "+
-					"sta.sourceTypeID = fwhvt.sourceTypeID AND "+
-					"sta.ageID = fwhvt.ageID AND "+
-					"fwhvt.sourceTypeID = sut.sourceTypeID AND "+
-					"hpmstf.yearID = fwhvt.yearID AND "+
-					"hpmstf.HPMSVTypeID = sut.HPMSVTypeID AND "+
+				"select "+
+					"fwhvt.yearid,"+
+					"fwhvt.sourcetypeid,"+
+					"fwhvt.ageid,"+
+					"(fwhvt.fraction*sta.relativemar)/hpmstf.fraction "+
+				"from "+
+					"fractionwithinhpmsvtype fwhvt,"+
+					"sourceusetype sut,"+
+					"sourcetypeage sta,"+
+					"hpmstravelfraction hpmstf "+
+				"where "+
+					"sta.sourcetypeid = fwhvt.sourcetypeid and "+
+					"sta.ageid = fwhvt.ageid and "+
+					"fwhvt.sourcetypeid = sut.sourcetypeid and "+
+					"hpmstf.yearid = fwhvt.yearid and "+
+					"hpmstf.hpmsvtypeid = sut.hpmsvtypeid and "+
 					"hpmstf.fraction <> 0";
 		SQLRunner.executeSQL(db,sql);
 
 		// If VMT by source type has been provided, instead of by HPMSVType, then
 		// normalize TravelFraction by year and sourcetype.
-		sql = "select (select count(*) as howMany from SourceTypeDayVMT)+(select count(*) as howMany from SourceTypeYearVMT)";
+		sql = "select (select count(*) as howmany from sourcetypedayvmt)+(select count(*) as howmany from sourcetypeyearvmt)";
 		if(SQLRunner.executeScalar(db,sql) > 0) {
-			sql = "drop table if exists TravelFractionSourceTypeSum";
+			sql = "drop table if exists travelfractionsourcetypesum";
 			SQLRunner.executeSQL(db,sql);
 	
 			/**
@@ -1186,10 +1186,10 @@ public class TotalActivityGenerator extends Generator {
 			 * @input TravelFraction
 			 * @condition VMT provided by sourcetype not HPMSVType
 			**/
-			sql = "create table TravelFractionSourceTypeSum"
-					+ " select yearID, sourceTypeID, sum(fraction) as totalTravelFraction"
-					+ " from travelFraction"
-					+ " group by yearID, sourceTypeID"
+			sql = "create table travelfractionsourcetypesum"
+					+ " select yearid, sourcetypeid, sum(fraction) as totaltravelfraction"
+					+ " from travelfraction"
+					+ " group by yearid, sourcetypeid"
 					+ " order by null";
 			SQLRunner.executeSQL(db,sql);
 	
@@ -1201,10 +1201,10 @@ public class TotalActivityGenerator extends Generator {
 			 * @input TravelFractionSourceTypeSum
 			 * @condition VMT provided by sourcetype not HPMSVType
 			**/
-			sql = "update TravelFraction, TravelFractionSourceTypeSum"
-					+ " set fraction = case when totalTravelFraction > 0 then fraction / totalTravelFraction else 0 end"
-					+ " where TravelFraction.yearID = TravelFractionSourceTypeSum.yearID"
-					+ " and TravelFraction.sourceTypeID = TravelFractionSourceTypeSum.sourceTypeID";
+			sql = "update travelfraction, travelfractionsourcetypesum"
+					+ " set fraction = case when totaltravelfraction > 0 then fraction / totaltravelfraction else 0 end"
+					+ " where travelfraction.yearid = travelfractionsourcetypesum.yearid"
+					+ " and travelfraction.sourcetypeid = travelfractionsourcetypesum.sourcetypeid";
 			SQLRunner.executeSQL(db,sql);
 		}
 	}
@@ -1252,7 +1252,7 @@ public class TotalActivityGenerator extends Generator {
 		PreparedStatement purgeStatement = null;
 		try {
 			if(baseYear > resultsYear) {
-				sql = "DELETE FROM AnalysisYearVMT WHERE yearID >=" + baseYear;
+				sql = "DELETE FROM analysisyearvmt WHERE yearid >=" + baseYear;
 				SQLRunner.executeSQL(db,sql);
 
 				/**
@@ -1263,29 +1263,29 @@ public class TotalActivityGenerator extends Generator {
 				 * @input SourceUseType
 				 * @input HPMSVTypeYear
 				**/
-				sql = "INSERT IGNORE INTO AnalysisYearVMT ("+
-							"yearID,"+
-							"HPMSVTypeID,"+
-							"VMT) "+
-						"SELECT "+
-							"hvty.yearID,"+
-							"hvty.HPMSVTypeID,"+
-							"hvty.HPMSBaseYearVMT "+
-						"FROM "+
-							"RunSpecSourceType rsst,"+
-							"SourceUseType sut,"+
-							"HPMSVTypeYear hvty "+
-						"WHERE "+
-							"rsst.sourceTypeID = sut.sourceTypeID AND "+
-							"sut.HPMSVTypeID = hvty.HPMSVTypeID AND "+
-							"hvty.yearID = ?";
+				sql = "INSERT IGNORE INTO analysisyearvmt ("+
+							"yearid,"+
+							"hpmsvtypeid,"+
+							"vmt) "+
+						"select "+
+							"hvty.yearid,"+
+							"hvty.hpmsvtypeid,"+
+							"hvty.hpmsbaseyearvmt "+
+						"from "+
+							"runspecsourcetype rsst,"+
+							"sourceusetype sut,"+
+							"hpmsvtypeyear hvty "+
+						"where "+
+							"rsst.sourcetypeid = sut.sourcetypeid and "+
+							"sut.hpmsvtypeid = hvty.hpmsvtypeid and "+
+							"hvty.yearid = ?";
 				statement = db.prepareStatement(sql);
 				statement.setInt(1,baseYear);
 				SQLRunner.executeSQL(statement,sql);
 				statement.close();
 			}
 
-			sql = "TRUNCATE AnalysisYearVMT2";
+			sql = "TRUNCATE analysisyearvmt2";
 			statement = db.prepareStatement(sql);
 			SQLRunner.executeSQL(statement,sql);
 
@@ -1297,21 +1297,21 @@ public class TotalActivityGenerator extends Generator {
 			 * @input AnalysisYearVMT for year y-1
 			 * @input HPMSVTypeYear for year y
 			**/
-			sql = "INSERT INTO AnalysisYearVMT2 ("+
-						"yearID,"+
-						"HPMSVTypeID,"+
-						"VMT) "+
-					"SELECT "+
-						"hvty.yearID,"+
-						"ayv.HPMSVTypeID,"+
-						"ayv.VMT * hvty.VMTGrowthFactor "+
-					"FROM "+
-						"AnalysisYearVMT ayv,"+
-						"HPMSVTypeYear hvty "+
-					"WHERE "+
-						"ayv.yearID = hvty.yearID-1 AND "+
-						"ayv.HPMSVTypeID = hvty.HPMSVTypeID AND "+
-						"hvty.yearID = ?";
+			sql = "INSERT INTO analysisyearvmt2 ("+
+						"yearid,"+
+						"hpmsvtypeid,"+
+						"vmt) "+
+					"select "+
+						"hvty.yearid,"+
+						"ayv.hpmsvtypeid,"+
+						"ayv.vmt * hvty.vmtgrowthfactor "+
+					"from "+
+						"analysisyearvmt ayv,"+
+						"hpmsvtypeyear hvty "+
+					"where "+
+						"ayv.yearid = hvty.yearid-1 and "+
+						"ayv.hpmsvtypeid = hvty.hpmsvtypeid and "+
+						"hvty.yearid = ?";
 			statement.close();
 			statement = db.prepareStatement(sql);
 
@@ -1322,19 +1322,19 @@ public class TotalActivityGenerator extends Generator {
 			 * @output AnalysisYearVMT
 			**/
 			String copySql =
-					"INSERT INTO AnalysisYearVMT ("+
-						"yearID,"+
-						"HPMSVTypeID,"+
-						"VMT) "+
-					"SELECT "+
-						"ayv2.yearID,"+
-						"ayv2.HPMSVTypeID,"+
-						"ayv2.VMT "+
-					"FROM "+
-						"AnalysisYearVMT2 ayv2";
+					"INSERT INTO analysisyearvmt ("+
+						"yearid,"+
+						"hpmsvtypeid,"+
+						"vmt) "+
+					"select "+
+						"ayv2.yearid,"+
+						"ayv2.hpmsvtypeid,"+
+						"ayv2.vmt "+
+					"from "+
+						"analysisyearvmt2 ayv2";
 			copyStatement = db.prepareStatement(copySql);
 
-			String purgeSql = "TRUNCATE AnalysisYearVMT2";
+			String purgeSql = "TRUNCATE analysisyearvmt2";
 			purgeStatement = db.prepareStatement(purgeSql);
 
 			int newYear = resultsYear;
@@ -1352,8 +1352,8 @@ public class TotalActivityGenerator extends Generator {
 			if(shouldDeletePriorYears) {
 				//
 				// VMT for years prior to the analysis year are no longer needed.
-				sql = "DELETE FROM AnalysisYearVMT WHERE "+
-							"yearID<?";
+				sql = "DELETE FROM analysisyearvmt WHERE "+
+							"yearid<?";
 				statement.close();
 				statement = db.prepareStatement(sql);
 				statement.setInt(1,analysisYear);
@@ -1392,7 +1392,7 @@ public class TotalActivityGenerator extends Generator {
 	void allocateVMTByRoadTypeSourceAge(int yearID) throws SQLException {
 		String sql = "";
 
-		sql = "TRUNCATE AnnualVMTByAgeRoadway";
+		sql = "TRUNCATE annualvmtbyageroadway";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1406,30 +1406,30 @@ public class TotalActivityGenerator extends Generator {
 		 * @input SourceUseType
 		 * @condition VMT provided by HPMSVType
 		**/
-		sql = "INSERT INTO AnnualVMTByAgeRoadway ("+
-					"yearID,"+
-					"roadTypeID,"+
-					"sourceTypeID,"+
-					"ageID,"+
-					"VMT) "+
-				"SELECT "+
-					"tf.yearID,"+
-					"rtd.roadTypeID,"+
-					"tf.sourceTypeID,"+
-					"tf.ageID,"+
-					"ayv.vmt*rtd.roadTypeVMTFraction*tf.fraction "+
-				"FROM "+
-					"RoadType rsrt,"+ // was RunSpecRoadType
-					"TravelFraction tf,"+
-					"AnalysisYearVMT ayv,"+
-					"RoadTypeDistribution rtd,"+
-					"SourceUseType sut "+
-				"WHERE "+
-					"rsrt.roadTypeID = rtd.roadTypeID AND "+
-					"ayv.yearID = tf.yearID AND "+
-					"tf.sourceTypeID = sut.sourceTypeID AND "+
-					"sut.HPMSVTypeID = ayv.HPMSVTypeID AND "+
-					"rtd.sourceTypeID = tf.sourceTypeID";
+		sql = "INSERT INTO annualvmtbyageroadway ("+
+					"yearid,"+
+					"roadtypeid,"+
+					"sourcetypeid,"+
+					"ageid,"+
+					"vmt) "+
+				"select "+
+					"tf.yearid,"+
+					"rtd.roadtypeid,"+
+					"tf.sourcetypeid,"+
+					"tf.ageid,"+
+					"ayv.vmt*rtd.roadtypevmtfraction*tf.fraction "+
+				"from "+
+					"roadtype rsrt,"+ // was runspecroadtype
+					"travelfraction tf,"+
+					"analysisyearvmt ayv,"+
+					"roadtypedistribution rtd,"+
+					"sourceusetype sut "+
+				"where "+
+					"rsrt.roadtypeid = rtd.roadtypeid and "+
+					"ayv.yearid = tf.yearid and "+
+					"tf.sourcetypeid = sut.sourcetypeid and "+
+					"sut.hpmsvtypeid = ayv.hpmsvtypeid and "+
+					"rtd.sourcetypeid = tf.sourcetypeid";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1442,29 +1442,29 @@ public class TotalActivityGenerator extends Generator {
 		 * @input RoadTypeDistribution
 		 * @condition VMT provided by source type
 		**/
-		sql = "INSERT INTO AnnualVMTByAgeRoadway ("
-				+ " 	yearID,"
-				+ " 	roadTypeID,"
-				+ " 	sourceTypeID,"
-				+ " 	ageID,"
-				+ " 	VMT)"
-				+ " SELECT"
-				+ " 	tf.yearID,"
-				+ " 	rtd.roadTypeID,"
-				+ " 	tf.sourceTypeID,"
-				+ " 	tf.ageID,"
-				+ " 	v.vmt*rtd.roadTypeVMTFraction*tf.fraction"
-				+ " FROM"
-				+ " 	RoadType rsrt,"
-				+ " 	TravelFraction tf,"
-				+ " 	SourceTypeYearVMT v,"
-				+ " 	RoadTypeDistribution rtd"
-				+ " WHERE"
-				+ " 	rsrt.roadTypeID = rtd.roadTypeID AND"
-				+ " 	v.yearID = tf.yearID AND"
-				+ " 	tf.sourceTypeID = v.sourceTypeID AND"
-				+ " 	rtd.sourceTypeID = tf.sourceTypeID AND"
-				+ " 	v.yearID = " + yearID;
+		sql = "INSERT INTO annualvmtbyageroadway ("
+				+ " 	yearid,"
+				+ " 	roadtypeid,"
+				+ " 	sourcetypeid,"
+				+ " 	ageid,"
+				+ " 	vmt)"
+				+ " select"
+				+ " 	tf.yearid,"
+				+ " 	rtd.roadtypeid,"
+				+ " 	tf.sourcetypeid,"
+				+ " 	tf.ageid,"
+				+ " 	v.vmt*rtd.roadtypevmtfraction*tf.fraction"
+				+ " from"
+				+ " 	roadtype rsrt,"
+				+ " 	travelfraction tf,"
+				+ " 	sourcetypeyearvmt v,"
+				+ " 	roadtypedistribution rtd"
+				+ " where"
+				+ " 	rsrt.roadtypeid = rtd.roadtypeid and"
+				+ " 	v.yearid = tf.yearid and"
+				+ " 	tf.sourcetypeid = v.sourcetypeid and"
+				+ " 	rtd.sourcetypeid = tf.sourcetypeid and"
+				+ " 	v.yearid = " + yearID;
 		SQLRunner.executeSQL(db,sql);
 	}
 
@@ -1476,16 +1476,16 @@ public class TotalActivityGenerator extends Generator {
 	void calculateVMTByRoadwayHour(int analysisYear) throws SQLException {
 		WeeksInMonthHelper weekHelper = new WeeksInMonthHelper();
 		String weeksPerMonthClause =
-				weekHelper.getWeeksPerMonthSQLClause("avar.yearID","avar.monthID");
+				weekHelper.getWeeksPerMonthSQLClause("avar.yearid","avar.monthid");
 		String sql = "";
 
-		sql = "TRUNCATE VMTByAgeRoadwayHour";
+		sql = "TRUNCATE vmtbyageroadwayhour";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "DROP TABLE IF EXISTS AvarMonth ";
+		sql = "DROP TABLE IF EXISTS avarmonth ";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "DROP TABLE IF EXISTS AvarMonthDay ";
+		sql = "DROP TABLE IF EXISTS avarmonthday ";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1495,13 +1495,13 @@ public class TotalActivityGenerator extends Generator {
 		 * @input AnnualVMTByAgeRoadway
 		 * @input MonthVMTFraction
 		**/
-		sql = "CREATE TABLE AvarMonth " +
-				"SELECT avar.*, monthID, monthVMTFraction " +
-				"FROM AnnualVMTByAgeRoadway as avar " +
-				"INNER JOIN MonthVMTFraction AS mvf USING (sourceTypeID)";
+		sql = "CREATE TABLE avarmonth " +
+				"select avar.*, monthid, monthvmtfraction " +
+				"from annualvmtbyageroadway as avar " +
+				"inner join monthvmtfraction as mvf using (sourcetypeid)";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE INDEX index1 ON AvarMonth (sourceTypeID, monthID, roadTypeID) ";
+		sql = "CREATE INDEX index1 on avarmonth (sourcetypeid, monthid, roadtypeid) ";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1511,13 +1511,13 @@ public class TotalActivityGenerator extends Generator {
 		 * @input AvarMonth
 		 * @input DayVMTFraction
 		**/
-		sql = "CREATE TABLE AvarMonthDay " +
-				"SELECT avarm.*, dayID, dayVMTFraction, monthVMTFraction*dayVMTFraction as monthDayFraction " +
-				"FROM AvarMonth AS avarm INNER JOIN DayVMTFraction AS dvf " +
-				"USING (sourceTypeID, monthID, roadTypeID) ";
+		sql = "CREATE TABLE avarmonthday " +
+				"select avarm.*, dayid, dayvmtfraction, monthvmtfraction*dayvmtfraction as monthdayfraction " +
+				"from avarmonth as avarm inner join dayvmtfraction as dvf " +
+				"using (sourcetypeid, monthid, roadtypeid) ";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "CREATE INDEX index1 ON AvarMonthDay(sourceTypeID, roadTypeID, dayID) ";
+		sql = "CREATE INDEX index1 ON avarmonthday(sourcetypeid, roadtypeid, dayid) ";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1529,17 +1529,17 @@ public class TotalActivityGenerator extends Generator {
 		 * @input HourDay
 		 * @condition Annual VMT provided, either by HPMSVType or sourceTypeID
 		**/
-		sql = "INSERT INTO VMTByAgeRoadwayHour (yearID, roadTypeID, sourceTypeID, " +
-					"ageID, monthID, dayID, hourID, VMT, hourDayID) " +
-				"SELECT avar.yearID, avar.roadTypeID, avar.sourceTypeID, " +
-					"avar.ageID, avar.monthID, avar.dayID, hvf.hourID, " +
-//					"avar.VMT*avar.monthVMTFraction*avar.dayVMTFraction*hvf.hourVMTFraction " +
-					"avar.VMT*avar.monthDayFraction*hvf.hourVMTFraction " +
+		sql = "INSERT INTO vmtbyageroadwayhour (yearid, roadtypeid, sourcetypeid, " +
+					"ageid, monthid, dayid, hourid, vmt, hourdayid) " +
+				"select avar.yearid, avar.roadtypeid, avar.sourcetypeid, " +
+					"avar.ageid, avar.monthid, avar.dayid, hvf.hourid, " +
+//					"avar.vmt*avar.monthvmtfraction*avar.dayvmtfraction*hvf.hourvmtfraction " +
+					"avar.vmt*avar.monthdayfraction*hvf.hourvmtfraction " +
 					" / " + weeksPerMonthClause + ", "+
-					"hd.hourDayID " +
-				"FROM AvarMonthDay AS avar INNER JOIN HourVMTFraction AS hvf " +
-				"USING(sourceTypeID, roadTypeID, dayID) " +
-				"INNER JOIN HourDay hd ON (hd.hourID=hvf.hourID and hd.dayID=avar.dayID)";
+					"hd.hourdayid " +
+				"from avarmonthday as avar inner join hourvmtfraction as hvf " +
+				"using(sourcetypeid, roadtypeid, dayid) " +
+				"inner join hourday hd on (hd.hourid=hvf.hourid and hd.dayid=avar.dayid)";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1554,19 +1554,19 @@ public class TotalActivityGenerator extends Generator {
 		 * @input DayOfAnyWeek
 		 * @condition Daily VMT provided by sourceTypeID
 		**/
-		sql = "insert ignore into VMTByAgeRoadwayHour (yearID, roadTypeID, sourceTypeID,"
-				+ " 	ageID, monthID, dayID, hourID, VMT, hourDayID)"
-				+ " select vmt.yearID, rtd.roadTypeID, vmt.sourceTypeID,"
-				+ " 	tf.ageID, vmt.monthID, vmt.dayID, h.hourID,"
-				+ " 	vmt.VMT*h.hourVMTFraction*rtd.roadTypeVMTFraction*tf.fraction*dow.noOfRealDays as VMT,"
-				+ " 	hd.hourDayID"
-				+ " from SourceTypeDayVMT vmt"
-				+ " inner join RoadTypeDistribution rtd on (rtd.sourceTypeID=vmt.sourceTypeID)"
-				+ " inner join HourDay hd on (hd.dayID=vmt.dayID)"
-				+ " inner join hourVMTFraction h on (h.hourID=hd.hourID and h.roadTypeID=rtd.roadTypeID and h.sourceTypeID=rtd.sourceTypeID)"
-				+ " inner join TravelFraction tf on (tf.yearID=vmt.yearID and tf.sourceTypeID=rtd.sourceTypeID)"
-				+ " inner join DayOfAnyWeek dow on (dow.dayID=vmt.dayID)"
-				+ " where vmt.yearID=" + analysisYear;
+		sql = "insert ignore into vmtbyageroadwayhour (yearid, roadtypeid, sourcetypeid,"
+				+ " 	ageid, monthid, dayid, hourid, vmt, hourdayid)"
+				+ " select vmt.yearid, rtd.roadtypeid, vmt.sourcetypeid,"
+				+ " 	tf.ageid, vmt.monthid, vmt.dayid, h.hourid,"
+				+ " 	vmt.vmt*h.hourvmtfraction*rtd.roadtypevmtfraction*tf.fraction*dow.noofrealdays as vmt,"
+				+ " 	hd.hourdayid"
+				+ " from sourcetypedayvmt vmt"
+				+ " inner join roadtypedistribution rtd on (rtd.sourcetypeid=vmt.sourcetypeid)"
+				+ " inner join hourday hd on (hd.dayid=vmt.dayid)"
+				+ " inner join hourvmtfraction h on (h.hourid=hd.hourid and h.roadtypeid=rtd.roadtypeid and h.sourcetypeid=rtd.sourcetypeid)"
+				+ " inner join travelfraction tf on (tf.yearid=vmt.yearid and tf.sourcetypeid=rtd.sourcetypeid)"
+				+ " inner join dayofanyweek dow on (dow.dayid=vmt.dayid)"
+				+ " where vmt.yearid=" + analysisYear;
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1582,42 +1582,42 @@ public class TotalActivityGenerator extends Generator {
 		 * @input DayOfAnyWeek
 		 * @condition Daily VMT provided by HPMSVType
 		**/
-		sql = "insert ignore into VMTByAgeRoadwayHour (yearID, roadTypeID, sourceTypeID,"
-				+ " 	ageID, monthID, dayID, hourID, VMT, hourDayID)"
-				+ " select vmt.yearID, rtd.roadTypeID, sut.sourceTypeID,"
-				+ " 	tf.ageID, vmt.monthID, vmt.dayID, h.hourID,"
-				+ " 	vmt.VMT*h.hourVMTFraction*rtd.roadTypeVMTFraction*tf.fraction*dow.noOfRealDays as VMT,"
-				+ " 	hd.hourDayID"
-				+ " from HPMSVTypeDay vmt"
-				+ " inner join SourceUseType sut on (sut.HPMSVTypeID=vmt.HPMSVTypeID)"
-				+ " inner join RoadTypeDistribution rtd on (rtd.sourceTypeID=sut.sourceTypeID)"
-				+ " inner join HourDay hd on (hd.dayID=vmt.dayID)"
-				+ " inner join hourVMTFraction h on (h.hourID=hd.hourID and h.roadTypeID=rtd.roadTypeID and h.sourceTypeID=rtd.sourceTypeID)"
-				+ " inner join TravelFraction tf on (tf.yearID=vmt.yearID and tf.sourceTypeID=rtd.sourceTypeID)"
-				+ " inner join DayOfAnyWeek dow on (dow.dayID=vmt.dayID)"
-				+ " where vmt.yearID=" + analysisYear;
+		sql = "insert ignore into vmtbyageroadwayhour (yearid, roadtypeid, sourcetypeid,"
+				+ " 	ageid, monthid, dayid, hourid, vmt, hourdayid)"
+				+ " select vmt.yearid, rtd.roadtypeid, sut.sourcetypeid,"
+				+ " 	tf.ageid, vmt.monthid, vmt.dayid, h.hourid,"
+				+ " 	vmt.vmt*h.hourvmtfraction*rtd.roadtypevmtfraction*tf.fraction*dow.noofrealdays as vmt,"
+				+ " 	hd.hourdayid"
+				+ " from hpmsvtypeday vmt"
+				+ " inner join sourceusetype sut on (sut.hpmsvtypeid=vmt.hpmsvtypeid)"
+				+ " inner join roadtypedistribution rtd on (rtd.sourcetypeid=sut.sourcetypeid)"
+				+ " inner join hourday hd on (hd.dayid=vmt.dayid)"
+				+ " inner join hourvmtfraction h on (h.hourid=hd.hourid and h.roadtypeid=rtd.roadtypeid and h.sourcetypeid=rtd.sourcetypeid)"
+				+ " inner join travelfraction tf on (tf.yearid=vmt.yearid and tf.sourcetypeid=rtd.sourcetypeid)"
+				+ " inner join dayofanyweek dow on (dow.dayid=vmt.dayid)"
+				+ " where vmt.yearid=" + analysisYear;
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "DROP TABLE IF EXISTS AvarMonth ";
+		sql = "DROP TABLE IF EXISTS avarmonth ";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "DROP TABLE IF EXISTS AvarMonthDay ";
+		sql = "DROP TABLE IF EXISTS avarmonthday ";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "drop table if exists vmtByMYRoadHourSummary";
+		sql = "drop table if exists vmtbymyroadhoursummary";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "create table vmtByMYRoadHourSummary ("
-				+ " 	yearID smallint not null,"
-				+ " 	roadTypeID smallint not null,"
-				+ " 	sourceTypeID smallint not null,"
-				+ " 	monthID smallint not null,"
-				+ " 	dayID smallint not null,"
-				+ " 	hourID smallint not null,"
-				+ " 	hourDayID smallint not null,"
-				+ " 	totalVMT double,"
-				+ " 	unique key (yearID, roadTypeID, sourceTypeID, monthID, hourID, dayID),"
-				+ " 	unique key (yearID, roadTypeID, sourceTypeID, monthID, hourDayID)"
+		sql = "create table vmtbymyroadhoursummary ("
+				+ " 	yearid smallint not null,"
+				+ " 	roadtypeid smallint not null,"
+				+ " 	sourcetypeid smallint not null,"
+				+ " 	monthid smallint not null,"
+				+ " 	dayid smallint not null,"
+				+ " 	hourid smallint not null,"
+				+ " 	hourdayid smallint not null,"
+				+ " 	totalvmt double,"
+				+ " 	unique key (yearid, roadtypeid, sourcetypeid, monthid, hourid, dayid),"
+				+ " 	unique key (yearid, roadtypeid, sourcetypeid, monthid, hourdayid)"
 				+ " )";
 		SQLRunner.executeSQL(db,sql);
 
@@ -1627,15 +1627,15 @@ public class TotalActivityGenerator extends Generator {
 		 * @output vmtByMYRoadHourSummary
 		 * @input vmtByAgeRoadwayHour
 		**/
-		sql = "insert into vmtByMYRoadHourSummary (yearID, roadTypeID, sourceTypeID,"
-				+ " 	monthID, hourID, dayID, hourDayID, totalVMT)"
-				+ " select yearID, roadTypeID, sourceTypeID,"
-				+ " 	monthID, hourID, dayID, hourDayID,"
-				+ " 	sum(VMT) as totalVMT"
-				+ " from vmtByAgeRoadwayHour"
-				+ " where yearID = " + analysisYear
-				+ " group by yearID, roadTypeID, sourceTypeID, monthID, hourID, dayID"
-				+ " having sum(VMT) > 0";
+		sql = "insert into vmtbymyroadhoursummary (yearid, roadtypeid, sourcetypeid,"
+				+ " 	monthid, hourid, dayid, hourdayid, totalvmt)"
+				+ " select yearid, roadtypeid, sourcetypeid,"
+				+ " 	monthid, hourid, dayid, hourdayid,"
+				+ " 	sum(vmt) as totalvmt"
+				+ " from vmtbyageroadwayhour"
+				+ " where yearid = " + analysisYear
+				+ " group by yearid, roadtypeid, sourcetypeid, monthid, hourid, dayid"
+				+ " having sum(vmt) > 0";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1646,14 +1646,14 @@ public class TotalActivityGenerator extends Generator {
 		 * @input vmtByMYRoadHourSummary
 		 * @input vmtByAgeRoadwayHour
 		**/
-		sql = "insert into vmtByMYRoadHourFraction (yearID, roadTypeID, sourceTypeID,"
-				+ " 	modelYearID, monthID, hourID, dayID, hourDayID, vmtFraction)"
-				+ " select s.yearID, s.roadTypeID, s.sourceTypeID,"
-				+ " 	(v.yearID-v.ageID) as modelYearID, s.monthID, s.hourID, s.dayID, s.hourDayID, "
-				+ " 	(VMT/totalVMT) as vmtFraction"
-				+ " from vmtByMYRoadHourSummary s"
-				+ " inner join vmtByAgeRoadwayHour v using ("
-				+ " 	yearID, roadTypeID, sourceTypeID, monthID, dayID, hourID)";
+		sql = "insert into vmtbymyroadhourfraction (yearid, roadtypeid, sourcetypeid,"
+				+ " 	modelyearid, monthid, hourid, dayid, hourdayid, vmtfraction)"
+				+ " select s.yearid, s.roadtypeid, s.sourcetypeid,"
+				+ " 	(v.yearid-v.ageid) as modelyearid, s.monthid, s.hourid, s.dayid, s.hourdayid, "
+				+ " 	(vmt/totalvmt) as vmtfraction"
+				+ " from vmtbymyroadhoursummary s"
+				+ " inner join vmtbyageroadwayhour v using ("
+				+ " 	yearid, roadtypeid, sourcetypeid, monthid, dayid, hourid)";
 		SQLRunner.executeSQL(db,sql);
 	}
 
@@ -1668,7 +1668,7 @@ public class TotalActivityGenerator extends Generator {
 		String sql = "";
 
 		start = System.currentTimeMillis();
-		sql = "DROP TABLE IF EXISTS SourceTypeHour2";
+		sql = "DROP TABLE IF EXISTS sourcetypehour2";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1679,8 +1679,8 @@ public class TotalActivityGenerator extends Generator {
 		 * @input HourDay
 		 * @input RunSpecDay
 		**/
-		sql = "delete from sourceTypeHour"
-				+ " where hourDayID not in (select hourDayID from hourDay inner join runspecDay using (dayID))";
+		sql = "delete from sourcetypehour"
+				+ " where hourdayid not in (select hourdayid from hourday inner join runspecday using (dayid))";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1690,17 +1690,17 @@ public class TotalActivityGenerator extends Generator {
 		 * @input SourceTypeHour
 		 * @input HourDay
 		**/
-		sql= "CREATE TABLE SourceTypeHour2 " +
-				"SELECT sth.sourceTypeID, hd.dayID, hd.hourID, sth.idleSHOFactor, sth.hotellingDist " +
-				"FROM SourceTypeHour AS sth INNER JOIN HourDay AS hd USING (hourDayID)";
+		sql= "CREATE TABLE sourcetypehour2 " +
+				"select sth.sourcetypeid, hd.dayid, hd.hourid, sth.idleshofactor, sth.hotellingdist " +
+				"from sourcetypehour as sth inner join hourday as hd using (hourdayid)";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "alter table sourceTypeHour2 add key (sourceTypeID, dayID)";
+		sql = "alter table sourcetypehour2 add key (sourcetypeid, dayid)";
 		SQLRunner.executeSQL(db,sql);
 
 		Logger.log(LogMessageCategory.INFO,"TAG SourceTypeHour2 ms=" + (System.currentTimeMillis()-start));
 
-		sql = "TRUNCATE AverageSpeed";
+		sql = "TRUNCATE averagespeed";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1716,41 +1716,41 @@ public class TotalActivityGenerator extends Generator {
 		 * @input HourDay
 		**/
 		start = System.currentTimeMillis();
-		sql = "INSERT INTO AverageSpeed ("+
-					"roadTypeID,"+
-					"sourceTypeID,"+
-					"dayID,"+
-					"hourID,"+
-					"averageSpeed) "+
-				"SELECT "+
-					"asd.roadTypeID,"+
-					"asd.sourceTypeID,"+
-					"hd.dayID,"+
-					"hd.hourID,"+
-					"sum(asb.avgBinSpeed*asd.avgSpeedFraction) "+
-				"FROM "+
-					"RoadType rsrt,"+ // was RunSpecRoadType
-					"RunSpecSourceType rsst,"+
-					"RunSpecDay rsd,"+
-					"HourOfAnyDay rsh,"+ // "RunSpecHour rsh,"+
-					"AvgSpeedBin asb,"+
-					"AvgSpeedDistribution asd,"+
-					"HourDay hd "+
-				"WHERE "+
-					"rsrt.roadTypeID = asd.roadTypeID AND "+
-					"rsst.sourceTypeID = asd.sourceTypeID AND "+
-					"hd.dayID = rsd.dayID AND "+
-					"hd.hourID = rsh.hourID AND "+
-					"asb.avgSpeedBinID = asd.avgSpeedBinID AND "+
-					"asd.hourDayID = hd.hourDayID "+
-				"GROUP BY "+
-					"asd.roadTypeID,"+
-					"asd.sourceTypeID,"+
-					"hd.dayID,"+
-					"hd.hourID";
+		sql = "INSERT INTO averagespeed ("+
+					"roadtypeid,"+
+					"sourcetypeid,"+
+					"dayid,"+
+					"hourid,"+
+					"averagespeed) "+
+				"select "+
+					"asd.roadtypeid,"+
+					"asd.sourcetypeid,"+
+					"hd.dayid,"+
+					"hd.hourid,"+
+					"sum(asb.avgbinspeed*asd.avgspeedfraction) "+
+				"from "+
+					"roadtype rsrt,"+ // was runspecroadtype
+					"runspecsourcetype rsst,"+
+					"runspecday rsd,"+
+					"hourofanyday rsh,"+ // "runspechour rsh,"+
+					"avgspeedbin asb,"+
+					"avgspeeddistribution asd,"+
+					"hourday hd "+
+				"where "+
+					"rsrt.roadtypeid = asd.roadtypeid and "+
+					"rsst.sourcetypeid = asd.sourcetypeid and "+
+					"hd.dayid = rsd.dayid and "+
+					"hd.hourid = rsh.hourid and "+
+					"asb.avgspeedbinid = asd.avgspeedbinid and "+
+					"asd.hourdayid = hd.hourdayid "+
+				"group by "+
+					"asd.roadtypeid,"+
+					"asd.sourcetypeid,"+
+					"hd.dayid,"+
+					"hd.hourid";
 		SQLRunner.executeSQL(db,sql);
 
-		Logger.log(LogMessageCategory.INFO,"TAG AverageSpeed ms=" + (System.currentTimeMillis()-start));
+		Logger.log(LogMessageCategory.INFO,"TAG averagespeed ms=" + (System.currentTimeMillis()-start));
 
 		/**
 		 * @step 180
@@ -1760,39 +1760,39 @@ public class TotalActivityGenerator extends Generator {
 		 * @input AverageSpeed
 		**/
 		start = System.currentTimeMillis();
-		DatabaseUtilities.insertSelect(false,db,"SHOByAgeRoadwayHour",
-					"yearID,"+
-					"roadTypeID,"+
-					"sourceTypeID,"+
-					"ageID,"+
-					"monthID,"+
-					"dayID,"+
-					"hourID,"+
-					"hourDayID,"+
-					"SHO,"+
-					"VMT",
-				"SELECT "+
-					"varh.yearID,"+
-					"varh.roadTypeID,"+
-					"varh.sourceTypeID,"+
-					"varh.ageID,"+
-					"varh.monthID,"+
-					"varh.dayID,"+
-					"varh.hourID,"+
-					"varh.hourDayID,"+
-					"IF(asp.averageSpeed<>0,"+
-					"COALESCE(varh.VMT/asp.averageSpeed,0.0),0.0),"+
-					"varh.VMT "+
-				"FROM VMTByAgeRoadwayHour varh "+
-				"LEFT JOIN AverageSpeed asp ON ("+
-					"asp.roadTypeID = varh.roadTypeID AND "+
-					"asp.sourceTypeID = varh.sourceTypeID AND "+
-					"asp.dayID = varh.dayID AND "+
-					"asp.hourID = varh.hourID)");
+		DatabaseUtilities.insertSelect(false,db,"shobyageroadwayhour",
+					"yearid,"+
+					"roadtypeid,"+
+					"sourcetypeid,"+
+					"ageid,"+
+					"monthid,"+
+					"dayid,"+
+					"hourid,"+
+					"hourdayid,"+
+					"sho,"+
+					"vmt",
+				"select "+
+					"varh.yearid,"+
+					"varh.roadtypeid,"+
+					"varh.sourcetypeid,"+
+					"varh.ageid,"+
+					"varh.monthid,"+
+					"varh.dayid,"+
+					"varh.hourid,"+
+					"varh.hourdayid,"+
+					"if(asp.averagespeed<>0,"+
+					"coalesce(varh.vmt/asp.averagespeed,0.0),0.0),"+
+					"varh.vmt "+
+				"from vmtbyageroadwayhour varh "+
+				"left join averagespeed asp on ("+
+					"asp.roadtypeid = varh.roadtypeid and "+
+					"asp.sourcetypeid = varh.sourcetypeid and "+
+					"asp.dayid = varh.dayid and "+
+					"asp.hourid = varh.hourid)");
 
 		// Not needed, is only insert, so indexes will be all setup
 		//SQLRunner.executeSQL(db,"analyze table SHOByAgeRoadwayHour");
-		Logger.log(LogMessageCategory.INFO,"TAG SHOByAgeRoadwayHour ms=" + (System.currentTimeMillis()-start));
+		Logger.log(LogMessageCategory.INFO,"TAG shobyageroadwayhour ms=" + (System.currentTimeMillis()-start));
 
 		// Calculate idle hours
 		start = System.currentTimeMillis();
@@ -1806,12 +1806,12 @@ public class TotalActivityGenerator extends Generator {
 		 * @output VMTByAgeRoadwayDay
 		 * @input VMTByAgeRoadwayHour
 		**/
-		sql = "insert ignore into VMTByAgeRoadwayDay ("
-				+ " 	yearID, roadTypeID, sourceTypeID, ageID, monthID, dayID, VMT, hotellingHours)"
-				+ " select yearID, roadTypeID, sourceTypeID, ageID, monthID, dayID, sum(VMT), 0 as hotellingHours"
-				+ " from VMTByAgeRoadwayHour"
-				+ " where roadTypeID in (2,4) and sourceTypeID=62"
-				+ " group by yearID, roadTypeID, sourceTypeID, ageID, monthID, dayID"
+		sql = "insert ignore into vmtbyageroadwayday ("
+				+ " 	yearid, roadtypeid, sourcetypeid, ageid, monthid, dayid, vmt, hotellinghours)"
+				+ " select yearid, roadtypeid, sourcetypeid, ageid, monthid, dayid, sum(vmt), 0 as hotellinghours"
+				+ " from vmtbyageroadwayhour"
+				+ " where roadtypeid in (2,4) and sourcetypeid=62"
+				+ " group by yearid, roadtypeid, sourcetypeid, ageid, monthid, dayid"
 				+ " order by null";
 		SQLRunner.executeSQL(db,sql);
 
@@ -1822,11 +1822,11 @@ public class TotalActivityGenerator extends Generator {
 		 * @input hotellingCalendarYear
 		 * VMT = VMT * shoallocfactor from zoneroadtype table (join)
 		**/
-		sql = "update VMTByAgeRoadwayDay, hotellingCalendarYear, ZoneRoadType"
-				+ " set hotellingHours = VMT * ZoneRoadType.SHOAllocFactor * hotellingRate"
-				+ " where VMTByAgeRoadwayDay.yearID = hotellingCalendarYear.yearID"
-				+ " and VMTByAgeRoadwayDay.roadTypeID = ZoneRoadType.roadTypeID"
-				+ " and VMTByAgeRoadwayDay.roadTypeID in (2,4)";
+		sql = "update vmtbyageroadwayday, hotellingcalendaryear, zoneroadtype"
+				+ " set hotellinghours = vmt * zoneroadtype.shoallocfactor * hotellingrate"
+				+ " where vmtbyageroadwayday.yearid = hotellingcalendaryear.yearid"
+				+ " and vmtbyageroadwayday.roadtypeid = zoneroadtype.roadtypeid"
+				+ " and vmtbyageroadwayday.roadtypeid in (2,4)";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1836,28 +1836,28 @@ public class TotalActivityGenerator extends Generator {
 		 * @input VMTByAgeRoadwayDay
 		 * @input SourceTypeHour2
 		**/
-		sql = "insert ignore into IdleHoursByAgeHour ("
-				+ " 	yearID,sourceTypeID,ageID,"
-				+ " 	monthID,dayID,hourID,idleHours)"
-				+ " select v.yearID,v.sourceTypeID,v.ageID,"
-				+ " 	v.monthID,sth.dayID,sth.hourID,sum(v.hotellingHours*sth.hotellingDist)"
-				+ " from VMTByAgeRoadwayDay as v"
-				+ " inner join sourceTypeHour2 as sth using (sourceTypeID, dayID)"
-				+ " where v.roadTypeID in (2,4)"
-				+ " group by v.yearID,v.sourceTypeID,v.ageID,"
-				+ " 	v.monthID,sth.dayID,sth.hourID";
+		sql = "insert ignore into idlehoursbyagehour ("
+				+ " 	yearid,sourcetypeid,ageid,"
+				+ " 	monthid,dayid,hourid,idlehours)"
+				+ " select v.yearid,v.sourcetypeid,v.ageid,"
+				+ " 	v.monthid,sth.dayid,sth.hourid,sum(v.hotellinghours*sth.hotellingdist)"
+				+ " from vmtbyageroadwayday as v"
+				+ " inner join sourcetypehour2 as sth using (sourcetypeid, dayid)"
+				+ " where v.roadtypeid in (2,4)"
+				+ " group by v.yearid,v.sourcetypeid,v.ageid,"
+				+ " 	v.monthid,sth.dayid,sth.hourid";
 		SQLRunner.executeSQL(db,sql);
 
-		SQLRunner.executeSQL(db,"analyze table IdleHoursByAgeHour");
+		SQLRunner.executeSQL(db,"analyze table idlehoursbyagehour");
 		Logger.log(LogMessageCategory.INFO,"TAG IdleHoursByAgeHour ms=" + (System.currentTimeMillis()-start));
 
-		sql = "DROP TABLE IF EXISTS SourceTypeHour2";
+		sql = "DROP TABLE IF EXISTS sourcetypehour2";
 		SQLRunner.executeSQL(db,sql);
 
 		// Calculate starts
 		if(initialLoop) {
 			start = System.currentTimeMillis();
-			sql = "DROP TABLE IF EXISTS StartsPerSampleVehicle";
+			sql = "DROP TABLE IF EXISTS startspersamplevehicle";
 			SQLRunner.executeSQL(db,sql);
 
 			/**
@@ -1871,26 +1871,26 @@ public class TotalActivityGenerator extends Generator {
 			 * @input DayOfAnyWeek
 			 * @condition Ignore marker trips
 			**/
-			sql = "CREATE TABLE StartsPerSampleVehicle " +
-					"SELECT sv.sourceTypeID, hd.hourDayID, " +
-					"(COUNT(*)*noOfRealDays) AS starts, hd.dayID " +
-					"FROM SampleVehicleDay sv " +
-					"INNER JOIN SampleVehicleTrip svt USING (vehID) " +
-					"INNER JOIN HourDay hd ON (hd.dayID=svt.dayID and hd.hourID=svt.hourID) " +
-					"INNER JOIN DayOfAnyWeek d ON (d.dayID=hd.dayID) " +
-					"WHERE svt.keyOnTime IS NOT NULL " + // Ignore Marker trips
-					"GROUP BY sv.sourceTypeID, hd.hourDayID " +
-					"ORDER BY NULL";
+			sql = "CREATE TABLE startspersamplevehicle " +
+					"select sv.sourcetypeid, hd.hourdayid, " +
+					"(count(*)*noofrealdays) as starts, hd.dayid " +
+					"from samplevehicleday sv " +
+					"inner join samplevehicletrip svt using (vehid) " +
+					"inner join hourday hd on (hd.dayid=svt.dayid and hd.hourid=svt.hourid) " +
+					"inner join dayofanyweek d on (d.dayid=hd.dayid) " +
+					"where svt.keyontime is not null " + // ignore marker trips
+					"group by sv.sourcetypeid, hd.hourdayid " +
+					"order by null";
 			SQLRunner.executeSQL(db,sql);
 
 			Logger.log(LogMessageCategory.INFO,"TAG StartsPerSampleVehicle ms=" + (System.currentTimeMillis()-start));
 
 			start = System.currentTimeMillis();
-			sql = "DROP TABLE IF EXISTS SourceTypesInStartsPerVehicle";
+			sql = "DROP TABLE IF EXISTS sourcetypesinstartspervehicle";
 			SQLRunner.executeSQL(db,sql);
 
-			sql = "CREATE TABLE SourceTypesInStartsPerVehicle SELECT sourceTypeID FROM " +
-					"StartsPerVehicle GROUP BY sourceTypeID ORDER BY NULL";
+			sql = "CREATE TABLE sourcetypesinstartspervehicle select sourcetypeid from " +
+					"startspervehicle group by sourcetypeid order by null";
 			SQLRunner.executeSQL(db,sql);
 
 			Logger.log(LogMessageCategory.INFO,"TAG SourceTypesInStartsPerVehicle ms=" + (System.currentTimeMillis()-start));
@@ -1903,27 +1903,27 @@ public class TotalActivityGenerator extends Generator {
 			 * @input StartsPerSampleVehicle
 			**/
 			start = System.currentTimeMillis();
-			sql = "INSERT INTO StartsPerVehicle(sourceTypeID, hourDayID, startsPerVehicle, " +
-					"startsPerVehicleCV) " +
-					"SELECT sv.sourceTypeID, ssv.hourDayID, " +
-					"starts/COUNT(vehID) AS startsPerVehicle,0 " +
-					"FROM SampleVehicleDay sv " +
-					"INNER JOIN StartsPerSampleVehicle ssv ON (ssv.sourceTypeID = " +
-					"sv.sourceTypeID AND ssv.dayID=sv.dayID) " +
-					"LEFT JOIN SourceTypesInStartsPerVehicle stsv ON " +
-					"(stsv.sourceTypeID =  sv.sourceTypeID) " +
-					"WHERE stsv.sourceTypeID IS NULL " +
-					"GROUP BY sv.SourceTypeID, ssv.hourDayID " +
-					"ORDER BY NULL";
+			sql = "INSERT INTO startspervehicle(sourcetypeid, hourdayid, startspervehicle, " +
+					"startspervehiclecv) " +
+					"select sv.sourcetypeid, ssv.hourdayid, " +
+					"starts/count(vehid) as startspervehicle,0 " +
+					"from samplevehicleday sv " +
+					"inner join startspersamplevehicle ssv on (ssv.sourcetypeid = " +
+					"sv.sourcetypeid and ssv.dayid=sv.dayid) " +
+					"left join sourcetypesinstartspervehicle stsv on " +
+					"(stsv.sourcetypeid =  sv.sourcetypeid) " +
+					"where stsv.sourcetypeid is null " +
+					"group by sv.sourcetypeid, ssv.hourdayid " +
+					"order by null";
 			int rows = SQLRunner.executeSQL(db,sql);
 			Logger.log(LogMessageCategory.INFO,"TAG StartsPerVehicle ms=" + (System.currentTimeMillis()-start));
 
-			sql = "DROP TABLE IF EXISTS StartsPerSampleVehicle";
+			sql = "DROP TABLE IF EXISTS startspersamplevehicle";
 			SQLRunner.executeSQL(db,sql);
 		}
 
 		start = System.currentTimeMillis();
-		sql = "DROP TABLE IF EXISTS StartsByAgeHour";
+		sql = "DROP TABLE IF EXISTS startsbyagehour";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1933,20 +1933,20 @@ public class TotalActivityGenerator extends Generator {
 		 * @input SourceTypeAgePopulation
 		 * @input StartsPerVehicle
 		**/
-		sql = "CREATE TABLE IF NOT EXISTS StartsByAgeHour " +
-				"SELECT stap.sourceTypeID, yearID, " +
-				"hourDayID, ageID, population*startsPerVehicle AS starts " +
-				"FROM SourceTypeAgePopulation stap " +
-				"INNER JOIN StartsPerVehicle USING (sourceTypeID)";
+		sql = "CREATE TABLE IF NOT EXISTS startsbyagehour " +
+				"select stap.sourcetypeid, yearid, " +
+				"hourdayid, ageid, population*startspervehicle as starts " +
+				"from sourcetypeagepopulation stap " +
+				"inner join startspervehicle using (sourcetypeid)";
 		int rows = SQLRunner.executeSQL(db,sql);
 
-		SQLRunner.executeSQL(db,"analyze table StartsByAgeHour");
+		SQLRunner.executeSQL(db,"analyze table startsbyagehour");
 
 		Logger.log(LogMessageCategory.INFO,"TAG StartsByAgeHour ms=" + (System.currentTimeMillis()-start));
 
 		start = System.currentTimeMillis();
 		// Calculate source hours parked by age hour
-		sql = "DROP TABLE IF EXISTS SHPByAgeHour";
+		sql = "DROP TABLE IF EXISTS shpbyagehour";
 		SQLRunner.executeSQL(db,sql);
 
 		/**
@@ -1957,17 +1957,17 @@ public class TotalActivityGenerator extends Generator {
 		 * @input SourceTypeAgePopulation
 		 * @input DayOfAnyWeek
 		**/
-		sql = "CREATE TABLE IF NOT EXISTS SHPByAgeHour " +
-				"SELECT sarh.yearID, sarh.sourceTypeID, sarh.ageID, monthID, " +
-				"sarh.dayID, hourID, (population*noOfRealDays) - SUM(sho) AS SHP " +
-				"FROM ShoByAgeRoadwayHour sarh " +
-				"INNER JOIN SourceTypeAgePopulation stap USING (yearID, sourceTypeID, " +
-				"ageID) " +
-				"INNER JOIN DayOfAnyWeek d ON (d.dayID=sarh.dayID) " +
-				"WHERE VMT > 0 " +
-				"GROUP BY sarh.yearID, sarh.sourceTypeID, sarh.ageID, monthID, " +
-				"sarh.dayID, hourID " +
-				"ORDER BY NULL";
+		sql = "CREATE TABLE IF NOT EXISTS shpbyagehour " +
+				"select sarh.yearid, sarh.sourcetypeid, sarh.ageid, monthid, " +
+				"sarh.dayid, hourid, (population*noofrealdays) - sum(sho) as shp " +
+				"from shobyageroadwayhour sarh " +
+				"inner join sourcetypeagepopulation stap using (yearid, sourcetypeid, " +
+				"ageid) " +
+				"inner join dayofanyweek d on (d.dayid=sarh.dayid) " +
+				"where vmt > 0 " +
+				"group by sarh.yearid, sarh.sourcetypeid, sarh.ageid, monthid, " +
+				"sarh.dayid, hourid " +
+				"order by null";
 		SQLRunner.executeSQL(db,sql);
 
 		Logger.log(LogMessageCategory.INFO,"TAG SHPByAgeHour ms=" + (System.currentTimeMillis()-start));
@@ -2001,22 +2001,22 @@ public class TotalActivityGenerator extends Generator {
 			clearFlags("SourceHours");
 			*/
 
-			sql = "DELETE FROM ExtendedIdleHours WHERE isUserInput='N' "
-					+ "AND zoneID = " + currentZoneID;
+			sql = "DELETE FROM extendedidlehours WHERE isuserinput='N' "
+					+ "AND zoneid = " + currentZoneID;
 			SQLRunner.executeSQL(db, sql);
-			clearFlags("ExtendedIdleHours");
+			clearFlags("extendedidlehours");
 
 			if(CompilationFlags.ENABLE_AUXILIARY_POWER_EXHAUST) {
-				sql = "DELETE FROM hotellingHours WHERE isUserInput='N' "
-						+ "AND zoneID = " + currentZoneID;
+				sql = "DELETE FROM hotellinghours WHERE isuserinput='N' "
+						+ "AND zoneid = " + currentZoneID;
 				SQLRunner.executeSQL(db, sql);
-				clearFlags("hotellingHours");
+				clearFlags("hotellinghours");
 			}
 
-			sql = "DELETE FROM Starts WHERE isUserInput='N' "
-					+ "AND zoneID = " + currentZoneID;
+			sql = "DELETE FROM starts WHERE isuserinput='N' "
+					+ "AND zoneid = " + currentZoneID;
 			SQLRunner.executeSQL(db, sql);
-			clearFlags("Starts");
+			clearFlags("starts");
 		} catch(Exception e) {
 			Logger.logSqlError(e,"Could not delete Total Activity data from previous run.",sql);
 		}
@@ -2086,17 +2086,17 @@ public class TotalActivityGenerator extends Generator {
 
 		// Don't update the activity tables unless the zone changes
 		if(newYearForZone) {
-			if(needSHO && !checkAndMark("SHO",zoneID,analysisYear)) {
-				if(!checkAndMark("ZoneRoadTypeLinkTemp",zoneID,0)) {
-					sql = "drop table if exists ZoneRoadTypeLinkTemp";
+			if(needSHO && !checkAndMark("sho",zoneID,analysisYear)) {
+				if(!checkAndMark("zoneroadtypelinktemp",zoneID,0)) {
+					sql = "drop table if exists zoneroadtypelinktemp";
 					SQLRunner.executeSQL(db,sql);
 	
-					sql = "create table if not exists ZoneRoadTypeLinkTemp ("
-							+ " roadTypeID smallint not null,"
-							+ " linkID int(11) not null,"
-							+ " SHOAllocFactor double,"
-							+ " unique index XPKZoneRoadTypeLinkTemp ("
-							+ "     roadTypeID, linkID))";
+					sql = "create table if not exists zoneroadtypelinktemp ("
+							+ " roadtypeid smallint not null,"
+							+ " linkid int(11) not null,"
+							+ " shoallocfactor double,"
+							+ " unique index xpkzoneroadtypelinktemp ("
+							+ "     roadtypeid, linkid))";
 					SQLRunner.executeSQL(db,sql);
 	
 					/**
@@ -2106,13 +2106,13 @@ public class TotalActivityGenerator extends Generator {
 					 * @input ZoneRoadType
 					 * @input Link
 					**/
-					DatabaseUtilities.insertSelect(false,db,"ZoneRoadTypeLinkTemp",
-							"roadTypeID, linkID, SHOAllocFactor",
-							"select zrt.roadTypeID, linkID, SHOAllocFactor"
-								+ " from ZoneRoadType zrt"
-								+ " inner join Link l on l.roadTypeID=zrt.roadTypeID"
-								+ " where zrt.zoneID=" + zoneID
-								+ " and l.zoneID=" + zoneID);
+					DatabaseUtilities.insertSelect(false,db,"zoneroadtypelinktemp",
+							"roadtypeid, linkid, shoallocfactor",
+							"select zrt.roadtypeid, linkid, shoallocfactor"
+								+ " from zoneroadtype zrt"
+								+ " inner join link l on l.roadtypeid=zrt.roadtypeid"
+								+ " where zrt.zoneid=" + zoneID
+								+ " and l.zoneid=" + zoneID);
 				}
 				if(ExecutionRunSpec.getRunSpec().scale == ModelScale.MESOSCALE_LOOKUP) {
 					/**
@@ -2126,36 +2126,36 @@ public class TotalActivityGenerator extends Generator {
 					 * @input AverageSpeed
 					 * @condition Rates
 					**/
-					DatabaseUtilities.insertSelect(false,db,"SHO",
-								"hourDayID,"+
-								"monthID,"+
-								"yearID,"+
-								"ageID,"+
-								"linkID,"+
-								"sourceTypeID,"+
-								"SHO",
-							"SELECT "+
-								"sarh.hourDayID,"+
-								"sarh.monthID,"+
-								"sarh.yearID,"+
-								"sarh.ageID,"+
-								"zrt.linkID,"+
-								"sarh.sourceTypeID,"+
-								"sarh.SHO*zrt.SHOAllocFactor "+ //EM - there used to be a COALESCE on averageSpeed, but that writes VMT not SHO
-							"FROM "+
-								"SHOByAgeRoadwayHour sarh "+
-								"inner join RunSpecHourDay rshd on (rshd.hourDayID=sarh.hourDayID) "+
-								"inner join ZoneRoadTypeLinkTemp zrt "+
-									"on zrt.roadTypeID=sarh.roadTypeID "+
-								"inner join LinkAverageSpeed las "+
-									"on las.linkID=zrt.linkID "+
-								"left join AverageSpeed asp on ("+
-									"asp.roadTypeID = zrt.roadTypeID and "+
-									"asp.sourceTypeID = sarh.sourceTypeID and "+
-									"asp.dayID = sarh.dayID and "+
-									"asp.hourID = sarh.hourID) "+
-							"WHERE "+
-								"sarh.yearID = " + analysisYear
+					DatabaseUtilities.insertSelect(false,db,"sho",
+								"hourdayid,"+
+								"monthid,"+
+								"yearid,"+
+								"ageid,"+
+								"linkid,"+
+								"sourcetypeid,"+
+								"sho",
+							"select "+
+								"sarh.hourdayid,"+
+								"sarh.monthid,"+
+								"sarh.yearid,"+
+								"sarh.ageid,"+
+								"zrt.linkid,"+
+								"sarh.sourcetypeid,"+
+								"sarh.sho*zrt.shoallocfactor "+ //em - there used to be a coalesce on averagespeed, but that writes vmt not sho
+							"from "+
+								"shobyageroadwayhour sarh "+
+								"inner join runspechourday rshd on (rshd.hourdayid=sarh.hourdayid) "+
+								"inner join zoneroadtypelinktemp zrt "+
+									"on zrt.roadtypeid=sarh.roadtypeid "+
+								"inner join linkaveragespeed las "+
+									"on las.linkid=zrt.linkid "+
+								"left join averagespeed asp on ("+
+									"asp.roadtypeid = zrt.roadtypeid and "+
+									"asp.sourcetypeid = sarh.sourcetypeid and "+
+									"asp.dayid = sarh.dayid and "+
+									"asp.hourid = sarh.hourid) "+
+							"where "+
+								"sarh.yearid = " + analysisYear
 							);
 				} else {
 					/**
@@ -2167,34 +2167,34 @@ public class TotalActivityGenerator extends Generator {
 					 * @input ZoneRoadTypeLinkTemp
 					 * @condition Inventory
 					**/
-					DatabaseUtilities.insertSelect(false,db,"SHO",
-								"hourDayID,"+
-								"monthID,"+
-								"yearID,"+
-								"ageID,"+
-								"linkID,"+
-								"sourceTypeID,"+
-								"SHO",
-							"SELECT "+
-								"sarh.hourDayID,"+
-								"sarh.monthID,"+
-								"sarh.yearID,"+
-								"sarh.ageID,"+
-								"zrt.linkID,"+
-								"sarh.sourceTypeID,"+
-								"sarh.SHO*zrt.SHOAllocFactor "+
-							"FROM "+
-								"SHOByAgeRoadwayHour sarh "+
-								"inner join RunSpecHourDay rshd on (rshd.hourDayID=sarh.hourDayID) "+
-								"inner join ZoneRoadTypeLinkTemp zrt " +
-								"on zrt.roadTypeID=sarh.roadTypeID "+
-							"WHERE "+
-								"sarh.yearID = " + analysisYear
+					DatabaseUtilities.insertSelect(false,db,"sho",
+								"hourdayid,"+
+								"monthid,"+
+								"yearid,"+
+								"ageid,"+
+								"linkid,"+
+								"sourcetypeid,"+
+								"sho",
+							"select "+
+								"sarh.hourdayid,"+
+								"sarh.monthid,"+
+								"sarh.yearid,"+
+								"sarh.ageid,"+
+								"zrt.linkid,"+
+								"sarh.sourcetypeid,"+
+								"sarh.sho*zrt.shoallocfactor "+
+							"from "+
+								"shobyageroadwayhour sarh "+
+								"inner join runspechourday rshd on (rshd.hourdayid=sarh.hourdayid) "+
+								"inner join zoneroadtypelinktemp zrt " +
+								"on zrt.roadtypeid=sarh.roadtypeid "+
+							"where "+
+								"sarh.yearid = " + analysisYear
 							);
 				}
 
 				// Adjust, or create, TotalIdleFraction one time only.
-				if(!checkAndMark("TotalIdleFraction",0,0)) {
+				if(!checkAndMark("totalidlefraction",0,0)) {
 					adjustTotalIdleFraction();
 				}
 
@@ -2217,90 +2217,90 @@ public class TotalActivityGenerator extends Generator {
 				// 		In rates, we need to divide SHO by 16 becuase each road type has 16 rows for each avgSpeedBin
 				//		Inventory is left how it was originally written
 				if(ExecutionRunSpec.getRunSpec().scale == ModelScale.MESOSCALE_LOOKUP) {
-					DatabaseUtilities.insertSelect(false,db,"SHO", // ONI=Off network idle=SHO on road type 1
-								"hourDayID,"+
-								"monthID,"+
-								"yearID,"+
-								"ageID,"+
-								"linkID,"+
-								"sourceTypeID,"+
-								"SHO",
-							"select s.hourDayID,s.monthID,s.yearID,s.ageID, lo.linkID,s.sourceTypeID, "+
+					DatabaseUtilities.insertSelect(false,db,"sho", // ONI=Off network idle=SHO on road type 1
+								"hourdayid,"+
+								"monthid,"+
+								"yearid,"+
+								"ageid,"+
+								"linkid,"+
+								"sourcetypeid,"+
+								"sho",
+							"select s.hourdayid,s.monthid,s.yearid,s.ageid, lo.linkid,s.sourcetypeid, "+
 							"(" + 
-							"		case when totalIdleFraction <> 1 then "+
-							"			greatest(sum((s.sho/16))*(totalIdleFraction-sum((s.sho/16)*drivingIdleFraction) /sum((s.sho/16)))/(1-totalIdleFraction),0) "+
+							"		case when totalidlefraction <> 1 then "+
+							"			greatest(sum((s.sho/16))*(totalidlefraction-sum((s.sho/16)*drivingidlefraction) /sum((s.sho/16)))/(1-totalidlefraction),0) "+
 							"		else 0 "+
 							"		end "+
-							"	) as SHO "+
+							"	) as sho "+
 							"from sho s "+
 							"inner join link l on ( "+
-							"	l.linkID = s.linkID "+
-							"	and l.roadTypeID <> 1) "+
+							"	l.linkid = s.linkid "+
+							"	and l.roadtypeid <> 1) "+
 							"inner join link lo on ( "+
-							"	l.zoneID = lo.zoneID "+
-							"	and lo.roadTypeID = 1) "+
-							"inner join county c on (lo.countyID = c.countyID) "+
-							"inner join state st using (stateID) "+
-							"inner join hourDay hd on (s.hourDayID = hd.hourDayID) "+
-							"inner join totalIdleFraction tif on ( "+
-							"	tif.idleRegionID = st.idleRegionID "+
-							"	and tif.countyTypeID = c.countyTypeID "+
-							"	and tif.sourceTypeID = s.sourceTypeID "+
-							"	and tif.monthID = s.monthID "+
-							"	and tif.dayID = hd.dayID "+
-							"	and tif.minModelYearID <= s.yearID - s.ageID "+
-							"	and tif.maxModelYearID >= s.yearID - s.ageID) "+
-							"inner join drivingIdleFraction dif on ( "+
-							"	dif.hourDayID = s.hourDayID "+
-							"	and dif.yearID = s.yearID "+
-							"	and dif.roadTypeID = l.roadTypeID "+
-							"	and dif.sourceTypeID = s.sourceTypeID) "+
-							"where s.yearID = " + analysisYear + " "+
-							"and lo.zoneID = " + zoneID + " "+
-							"group by s.hourDayID,s.monthID,s.yearID,s.ageID, lo.linkID,s.sourceTypeID"
+							"	l.zoneid = lo.zoneid "+
+							"	and lo.roadtypeid = 1) "+
+							"inner join county c on (lo.countyid = c.countyid) "+
+							"inner join state st using (stateid) "+
+							"inner join hourday hd on (s.hourdayid = hd.hourdayid) "+
+							"inner join totalidlefraction tif on ( "+
+							"	tif.idleregionid = st.idleregionid "+
+							"	and tif.countytypeid = c.countytypeid "+
+							"	and tif.sourcetypeid = s.sourcetypeid "+
+							"	and tif.monthid = s.monthid "+
+							"	and tif.dayid = hd.dayid "+
+							"	and tif.minmodelyearid <= s.yearid - s.ageid "+
+							"	and tif.maxmodelyearid >= s.yearid - s.ageid) "+
+							"inner join drivingidlefraction dif on ( "+
+							"	dif.hourdayid = s.hourdayid "+
+							"	and dif.yearid = s.yearid "+
+							"	and dif.roadtypeid = l.roadtypeid "+
+							"	and dif.sourcetypeid = s.sourcetypeid) "+
+							"where s.yearid = " + analysisYear + " "+
+							"and lo.zoneid = " + zoneID + " "+
+							"group by s.hourdayid,s.monthid,s.yearid,s.ageid, lo.linkid,s.sourcetypeid"
 							);
 				} else {
-					DatabaseUtilities.insertSelect(false,db,"SHO", // ONI=Off network idle=SHO on road type 1
-								"hourDayID,"+
-								"monthID,"+
-								"yearID,"+
-								"ageID,"+
-								"linkID,"+
-								"sourceTypeID,"+
-								"SHO",
-							"select s.hourDayID,s.monthID,s.yearID,s.ageID, lo.linkID,s.sourceTypeID, "+
+					DatabaseUtilities.insertSelect(false,db,"sho", // ONI=Off network idle=SHO on road type 1
+								"hourdayid,"+
+								"monthid,"+
+								"yearid,"+
+								"ageid,"+
+								"linkid,"+
+								"sourcetypeid,"+
+								"sho",
+							"select s.hourdayid,s.monthid,s.yearid,s.ageid, lo.linkid,s.sourcetypeid, "+
 							"(" + 
-							"		case when totalIdleFraction <> 1 then "+
-							"			greatest(sum((s.sho))*(totalIdleFraction-sum((s.sho)*drivingIdleFraction) /sum((s.sho)))/(1-totalIdleFraction),0) "+
+							"		case when totalidlefraction <> 1 then "+
+							"			greatest(sum((s.sho))*(totalidlefraction-sum((s.sho)*drivingidlefraction) /sum((s.sho)))/(1-totalidlefraction),0) "+
 							"		else 0 "+
 							"		end "+
-							"	) as SHO "+
+							"	) as sho "+
 							"from sho s "+
 							"inner join link l on ( "+
-							"	l.linkID = s.linkID "+
-							"	and l.roadTypeID <> 1) "+
+							"	l.linkid = s.linkid "+
+							"	and l.roadtypeid <> 1) "+
 							"inner join link lo on ( "+
-							"	l.zoneID = lo.zoneID "+
-							"	and lo.roadTypeID = 1) "+
-							"inner join county c on (lo.countyID = c.countyID) "+
-							"inner join state st using (stateID) "+
-							"inner join hourDay hd on (s.hourDayID = hd.hourDayID) "+
-							"inner join totalIdleFraction tif on ( "+
-							"	tif.idleRegionID = st.idleRegionID "+
-							"	and tif.countyTypeID = c.countyTypeID "+
-							"	and tif.sourceTypeID = s.sourceTypeID "+
-							"	and tif.monthID = s.monthID "+
-							"	and tif.dayID = hd.dayID "+
-							"	and tif.minModelYearID <= s.yearID - s.ageID "+
-							"	and tif.maxModelYearID >= s.yearID - s.ageID) "+
-							"inner join drivingIdleFraction dif on ( "+
-							"	dif.hourDayID = s.hourDayID "+
-							"	and dif.yearID = s.yearID "+
-							"	and dif.roadTypeID = l.roadTypeID "+
-							"	and dif.sourceTypeID = s.sourceTypeID) "+
-							"where s.yearID = " + analysisYear + " "+
-							"and lo.zoneID = " + zoneID + " "+
-							"group by s.hourDayID,s.monthID,s.yearID,s.ageID, lo.linkID,s.sourceTypeID"
+							"	l.zoneid = lo.zoneid "+
+							"	and lo.roadtypeid = 1) "+
+							"inner join county c on (lo.countyid = c.countyid) "+
+							"inner join state st using (stateid) "+
+							"inner join hourday hd on (s.hourdayid = hd.hourdayid) "+
+							"inner join totalidlefraction tif on ( "+
+							"	tif.idleregionid = st.idleregionid "+
+							"	and tif.countytypeid = c.countytypeid "+
+							"	and tif.sourcetypeid = s.sourcetypeid "+
+							"	and tif.monthid = s.monthid "+
+							"	and tif.dayid = hd.dayid "+
+							"	and tif.minmodelyearid <= s.yearid - s.ageid "+
+							"	and tif.maxmodelyearid >= s.yearid - s.ageid) "+
+							"inner join drivingidlefraction dif on ( "+
+							"	dif.hourdayid = s.hourdayid "+
+							"	and dif.yearid = s.yearid "+
+							"	and dif.roadtypeid = l.roadtypeid "+
+							"	and dif.sourcetypeid = s.sourcetypeid) "+
+							"where s.yearid = " + analysisYear + " "+
+							"and lo.zoneid = " + zoneID + " "+
+							"group by s.hourdayid,s.monthid,s.yearid,s.ageid, lo.linkid,s.sourcetypeid"
 							);
 				}
 				
@@ -2308,7 +2308,7 @@ public class TotalActivityGenerator extends Generator {
 			}
 			if(startExhaustProcess!=null
 					&& inContext.iterProcess.compareTo(startExhaustProcess)==0
-					&& !checkAndMark("Starts",zoneID,analysisYear)) {
+					&& !checkAndMark("starts",zoneID,analysisYear)) {
 				/**
 				 * @step 190
 				 * @algorithm starts = starts * startAllocFactor.
@@ -2334,15 +2334,15 @@ public class TotalActivityGenerator extends Generator {
 				// Filter to analysisYear and zoneID.
 				// Don't do this before adjusting the starts though as StartsPerDay requires
 				// a full 24-hour distribution.
-				sql = "delete from Starts"
-						+ " where hourDayID not in (select hourDayID from runSpecHourDay)"
-						+ " and zoneID=" + zoneID
-						+ " and yearID=" + analysisYear;
+				sql = "delete from starts"
+						+ " where hourdayid not in (select hourdayid from runspechourday)"
+						+ " and zoneid=" + zoneID
+						+ " and yearid=" + analysisYear;
 //				SQLRunner.executeSQL(db,sql);
 			} else if((extendedIdleProcess!=null && inContext.iterProcess.compareTo(extendedIdleProcess)==0)
 					|| (CompilationFlags.ENABLE_AUXILIARY_POWER_EXHAUST && auxiliaryPowerProcess!=null && inContext.iterProcess.compareTo(auxiliaryPowerProcess)==0)) {
 				if(extendedIdleProcess!=null && inContext.iterProcess.compareTo(extendedIdleProcess)==0
-						&& !checkAndMark("ExtendedIdleHours",zoneID,analysisYear)) {
+						&& !checkAndMark("extendedidlehours",zoneID,analysisYear)) {
 					if(CompilationFlags.ENABLE_AUXILIARY_POWER_EXHAUST) {
 						int hotellingActivityZoneID = findHotellingActivityDistributionZoneIDToUse(db,stateID,zoneID);
 						/*
@@ -2362,29 +2362,29 @@ public class TotalActivityGenerator extends Generator {
 						 * @input hotellingActivityDistribution
 						 * @condition HotellingHours contains user-supplied hotelling information
 						**/
-						DatabaseUtilities.insertSelect(false,db,"extendedIdleHours",
-								"hourDayID,"+
-								"monthID,"+
-								"yearID,"+
-								"ageID,"+
-								"zoneID,"+
-								"sourceTypeID,"+
-								"extendedIdleHours",
-							"SELECT"
-								+ " 	hourDayID,"
-								+ " 	monthID,"
-								+ " 	yearID,"
-								+ " 	ageID,"
-								+ " 	h.zoneID,"
-								+ " 	sourceTypeID,"
-								+ " 	hotellingHours*opModeFraction as extendedIdleHours"
-								+ " FROM hotellingHours h"
-								+ " inner join hotellingActivityDistribution a"
-								+ " where a.zoneID=" + hotellingActivityZoneID + " and h.zoneID=" + zoneID
-								+ " and h.yearID=" + analysisYear
-								+ " and a.beginModelYearID <= h.yearID - h.ageID"
-								+ " and a.endModelYearID >= h.yearID - h.ageID"
-								+ " and opModeID=200");
+						DatabaseUtilities.insertSelect(false,db,"extendedidlehours",
+								"hourdayid,"+
+								"monthid,"+
+								"yearid,"+
+								"ageid,"+
+								"zoneid,"+
+								"sourcetypeid,"+
+								"extendedidlehours",
+							"select"
+								+ " 	hourdayid,"
+								+ " 	monthid,"
+								+ " 	yearid,"
+								+ " 	ageid,"
+								+ " 	h.zoneid,"
+								+ " 	sourcetypeid,"
+								+ " 	hotellinghours*opmodefraction as extendedidlehours"
+								+ " from hotellinghours h"
+								+ " inner join hotellingactivitydistribution a"
+								+ " where a.zoneid=" + hotellingActivityZoneID + " and h.zoneid=" + zoneID
+								+ " and h.yearid=" + analysisYear
+								+ " and a.beginmodelyearid <= h.yearid - h.ageid"
+								+ " and a.endmodelyearid >= h.yearid - h.ageid"
+								+ " and opmodeid=200");
 
 						/**
 						 * @step 190
@@ -2397,128 +2397,128 @@ public class TotalActivityGenerator extends Generator {
 						 * @input hotellingActivityDistribution
 						 * take out the shoallocfactor
 						**/
-						DatabaseUtilities.insertSelect(false,db,"extendedIdleHours",
-							"hourDayID,"+
-							"monthID,"+
-							"yearID,"+
-							"ageID,"+
-							"zoneID,"+
-							"sourceTypeID,"+
-							"extendedIdleHours",
-						"SELECT "+
-							"hd.hourDayID,"+
-							"ihah.monthID,"+
-							"ihah.yearID,"+
-							"ihah.ageID,"+
-							"z.zoneID,"+
-							"ihah.sourceTypeID,"+
-							"sum(ihah.idleHours*hac.opModeFraction) "+
-						"FROM "+
-							"IdleHoursByAgeHour ihah,"+
-							"Zone z,"+
-							"HourDay hd, "+
-							"hotellingActivityDistribution hac "+
-						"WHERE "+
-							"hd.hourID = ihah.hourID AND "+
-							"hd.dayID = ihah.dayID AND "+
-							"hac.opModeID = 200 AND "+
-							"hac.beginModelYearID <= ihah.yearID - ihah.ageID AND "+
-							"hac.endModelYearID >= ihah.yearID - ihah.ageID AND "+
-							"ihah.yearID = " + analysisYear + " AND "+
-							"hac.zoneID = " + hotellingActivityZoneID + " AND z.zoneID = " + zoneID  + " AND "+
-							"ihah.sourceTypeID = 62 "+
-						"GROUP BY "+
-							"hd.hourDayID,"+
-							"ihah.monthID,"+
-							"ihah.yearID,"+
-							"ihah.ageID,"+
-							"z.zoneID,"+
-							"ihah.sourceTypeID"
+						DatabaseUtilities.insertSelect(false,db,"extendedidlehours",
+							"hourdayid,"+
+							"monthid,"+
+							"yearid,"+
+							"ageid,"+
+							"zoneid,"+
+							"sourcetypeid,"+
+							"extendedidlehours",
+						"select "+
+							"hd.hourdayid,"+
+							"ihah.monthid,"+
+							"ihah.yearid,"+
+							"ihah.ageid,"+
+							"z.zoneid,"+
+							"ihah.sourcetypeid,"+
+							"sum(ihah.idlehours*hac.opmodefraction) "+
+						"from "+
+							"idlehoursbyagehour ihah,"+
+							"zone z,"+
+							"hourday hd, "+
+							"hotellingactivitydistribution hac "+
+						"where "+
+							"hd.hourid = ihah.hourid and "+
+							"hd.dayid = ihah.dayid and "+
+							"hac.opmodeid = 200 and "+
+							"hac.beginmodelyearid <= ihah.yearid - ihah.ageid and "+
+							"hac.endmodelyearid >= ihah.yearid - ihah.ageid and "+
+							"ihah.yearid = " + analysisYear + " AND "+
+							"hac.zoneid = " + hotellingActivityZoneID + " AND z.zoneid = " + zoneID  + " AND "+
+							"ihah.sourcetypeid = 62 "+
+						"group by "+
+							"hd.hourdayid,"+
+							"ihah.monthid,"+
+							"ihah.yearid,"+
+							"ihah.ageid,"+
+							"z.zoneid,"+
+							"ihah.sourcetypeid"
 						);
 						adjustExtendedIdle(zoneID,analysisYear,hotellingActivityZoneID);
 						// Remove ExtendedIdleHours entries that are for hours outside of the user's selections.
 						// Filter to analysisYear and zoneID.
 						// Don't do this before adjusting the hours though as HotellingHoursPerDay requires
 						// a full 24-hour distribution.
-						sql = "delete from ExtendedIdleHours"
-								+ " where hourDayID not in (select hourDayID from runSpecHourDay)"
-								+ " and zoneID=" + zoneID
-								+ " and yearID=" + analysisYear;
+						sql = "delete from extendedidlehours"
+								+ " where hourdayid not in (select hourdayid from runspechourday)"
+								+ " and zoneid=" + zoneID
+								+ " and yearid=" + analysisYear;
 						SQLRunner.executeSQL(db,sql);
 					} else {
-						DatabaseUtilities.insertSelect(false,db,"extendedIdleHours",
-							"hourDayID,"+
-							"monthID,"+
-							"yearID,"+
-							"ageID,"+
-							"zoneID,"+
-							"sourceTypeID,"+
-							"extendedIdleHours",
-						"SELECT "+
-							"hd.hourDayID,"+
-							"ihah.monthID,"+
-							"ihah.yearID,"+
-							"ihah.ageID,"+
-							"z.zoneID,"+
-							"ihah.sourceTypeID,"+
-							"sum(ihah.idleHours) "+
-						"FROM "+
-							"IdleHoursByAgeHour ihah,"+
-							"runSpecHourDay rshd,"+
-							"Zone z,"+
-							"HourDay hd "+
-						"WHERE "+
-							"hd.hourDayID = rshd.hourDayID AND "+
-							"hd.hourID = ihah.hourID AND "+
-							"hd.dayID = ihah.dayID AND "+
-							"ihah.yearID = " + analysisYear + " AND "+
-							"z.zoneID = " + zoneID  + " AND "+
-							"ihah.sourceTypeID = 62 "+
-						"GROUP BY "+
-							"hd.hourDayID,"+
-							"ihah.monthID,"+
-							"ihah.yearID,"+
-							"ihah.ageID,"+
-							"z.zoneID,"+
-							"ihah.sourceTypeID"
+						DatabaseUtilities.insertSelect(false,db,"extendedidlehours",
+							"hourdayid,"+
+							"monthid,"+
+							"yearid,"+
+							"ageid,"+
+							"zoneid,"+
+							"sourcetypeid,"+
+							"extendedidlehours",
+						"select "+
+							"hd.hourdayid,"+
+							"ihah.monthid,"+
+							"ihah.yearid,"+
+							"ihah.ageid,"+
+							"z.zoneid,"+
+							"ihah.sourcetypeid,"+
+							"sum(ihah.idlehours) "+
+						"from "+
+							"idlehoursbyagehour ihah,"+
+							"runspechourday rshd,"+
+							"zone z,"+
+							"hourday hd "+
+						"where "+
+							"hd.hourdayid = rshd.hourdayid and "+
+							"hd.hourid = ihah.hourid and "+
+							"hd.dayid = ihah.dayid and "+
+							"ihah.yearid = " + analysisYear + " AND "+
+							"z.zoneid = " + zoneID  + " AND "+
+							"ihah.sourcetypeid = 62 "+
+						"group by "+
+							"hd.hourdayid,"+
+							"ihah.monthid,"+
+							"ihah.yearid,"+
+							"ihah.ageid,"+
+							"z.zoneid,"+
+							"ihah.sourcetypeid"
 						);
 					}
 				} else if(CompilationFlags.ENABLE_AUXILIARY_POWER_EXHAUST
 						&& auxiliaryPowerProcess!=null && inContext.iterProcess.compareTo(auxiliaryPowerProcess)==0) {
-					if(!checkAndMark("hotellingHours",zoneID,analysisYear)) {
-						DatabaseUtilities.insertSelect(false,db,"hotellingHours",
-									"hourDayID,"+
-									"monthID,"+
-									"yearID,"+
-									"ageID,"+
-									"zoneID,"+
-									"sourceTypeID,"+
-									"hotellingHours",
-								"SELECT "+
-									"hd.hourDayID,"+
-									"ihah.monthID,"+
-									"ihah.yearID,"+
-									"ihah.ageID,"+
-									"z.zoneID,"+
-									"ihah.sourceTypeID,"+
-									"sum(ihah.idleHours) "+ // This must be total hotelling hours, including extended idle
-								"FROM "+
-									"IdleHoursByAgeHour ihah,"+
-									"Zone z,"+
-									"HourDay hd "+
-								"WHERE "+
-									"hd.hourID = ihah.hourID AND "+
-									"hd.dayID = ihah.dayID AND "+
-									"ihah.yearID = " + analysisYear + " AND "+
-									"z.zoneID = " + zoneID  + " AND "+
-									"ihah.sourceTypeID = 62 "+
+					if(!checkAndMark("hotellinghours",zoneID,analysisYear)) {
+						DatabaseUtilities.insertSelect(false,db,"hotellinghours",
+									"hourdayid,"+
+									"monthid,"+
+									"yearid,"+
+									"ageid,"+
+									"zoneid,"+
+									"sourcetypeid,"+
+									"hotellinghours",
+								"select "+
+									"hd.hourdayid,"+
+									"ihah.monthid,"+
+									"ihah.yearid,"+
+									"ihah.ageid,"+
+									"z.zoneid,"+
+									"ihah.sourcetypeid,"+
+									"sum(ihah.idlehours) "+ // this must be total hotelling hours, including extended idle
+								"from "+
+									"idlehoursbyagehour ihah,"+
+									"zone z,"+
+									"hourday hd "+
+								"where "+
+									"hd.hourid = ihah.hourid and "+
+									"hd.dayid = ihah.dayid and "+
+									"ihah.yearid = " + analysisYear + " AND "+
+									"z.zoneid = " + zoneID  + " AND "+
+									"ihah.sourcetypeid = 62 "+
 								"GROUP BY "+
-									"hd.hourDayID,"+
-									"ihah.monthID,"+
-									"ihah.yearID,"+
-									"ihah.ageID,"+
-									"z.zoneID,"+
-									"ihah.sourceTypeID"
+									"hd.hourdayid,"+
+									"ihah.monthid,"+
+									"ihah.yearid,"+
+									"ihah.ageid,"+
+									"z.zoneid,"+
+									"ihah.sourcetypeid"
 								);
 						int hotellingActivityZoneID = findHotellingActivityDistributionZoneIDToUse(db,stateID,zoneID);
 						adjustHotelling(zoneID,analysisYear,hotellingActivityZoneID);
@@ -2526,10 +2526,10 @@ public class TotalActivityGenerator extends Generator {
 						// Filter to analysisYear and zoneID.
 						// Don't do this before adjusting the hours though as HotellingHoursPerDay requires
 						// a full 24-hour distribution.
-						sql = "delete from HotellingHours"
-								+ " where hourDayID not in (select hourDayID from runSpecHourDay)"
-								+ " and zoneID=" + zoneID
-								+ " and yearID=" + analysisYear;
+						sql = "delete from hotellinghours"
+								+ " where hourdayid not in (select hourdayid from runspechourday)"
+								+ " and zoneid=" + zoneID
+								+ " and yearid=" + analysisYear;
 						SQLRunner.executeSQL(db,sql);
 					}
 				}
@@ -2537,7 +2537,7 @@ public class TotalActivityGenerator extends Generator {
 		}
 
 		// Allocate SHP and SHO to SourceHours
-		if(makeSH && !checkAndMark("SourceHours",currentLinkID,analysisYear)) {
+		if(makeSH && !checkAndMark("sourcehours",currentLinkID,analysisYear)) {
 			if(inContext.iterLocation.roadTypeRecordID==1) {
 				if(newYearForZone) {
 					/**
@@ -2548,15 +2548,15 @@ public class TotalActivityGenerator extends Generator {
 					 * @input RunSpecHourDay
 					 * @input Zone
 					**/
-					DatabaseUtilities.insertSelect(false,db,"SHP",
-							"hourDayID, monthID, yearID, ageID, zoneID, " +
-							"sourceTypeID, SHP ",
-							"SELECT hd.hourDayID, monthID, yearID, ageID, zoneID, sourceTypeID, " +
-							"SHP * SHPAllocFactor " +
-							"FROM SHPByAgeHour sah INNER JOIN HourDay hd USING (hourID, dayID) " +
-							"INNER JOIN RunSpecHourDay rshd ON (rshd.hourDayID=hd.hourDayID) "+
-							"INNER JOIN Zone z WHERE sah.yearID = " + analysisYear +
-							" AND z.zoneID = " + zoneID
+					DatabaseUtilities.insertSelect(false,db,"shp",
+							"hourdayid, monthid, yearid, ageid, zoneid, " +
+							"sourcetypeid, shp ",
+							"select hd.hourdayid, monthid, yearid, ageid, zoneid, sourcetypeid, " +
+							"shp * shpallocfactor " +
+							"from shpbyagehour sah inner join hourday hd using (hourid, dayid) " +
+							"inner join runspechourday rshd on (rshd.hourdayid=hd.hourdayid) "+
+							"inner join zone z where sah.yearid = " + analysisYear +
+							" AND z.zoneid = " + zoneID
 							);
 				}
 
@@ -2567,14 +2567,14 @@ public class TotalActivityGenerator extends Generator {
 				 * @input SHP
 				 * @input Link
 				**/
-				DatabaseUtilities.insertSelect(false,db,"SourceHours",
-						"hourDayID, monthID, yearID, ageID, linkID, " +
-						"sourceTypeID, sourceHours, sourceHoursCV, isUserInput ",
-						"SELECT hourDayID, " +
-						"monthID, yearID, ageID, linkID, sourceTypeID, SHP, 0, 'N' " +
-						"FROM SHP INNER JOIN Link ON (Link.zoneID = SHP.zoneID) " +
-						"WHERE roadTypeID = 1 AND yearID = " + analysisYear +
-						" AND linkID = " + currentLinkID
+				DatabaseUtilities.insertSelect(false,db,"sourcehours",
+						"hourdayid, monthid, yearid, ageid, linkid, " +
+						"sourcetypeid, sourcehours, sourcehourscv, isuserinput ",
+						"select hourdayid, " +
+						"monthid, yearid, ageid, linkid, sourcetypeid, shp, 0, 'N' " +
+						"from shp inner join link on (link.zoneid = shp.zoneid) " +
+						"where roadtypeid = 1 and yearid = " + analysisYear +
+						" AND linkid = " + currentLinkID
 						);
 			} else {
 				/**
@@ -2583,13 +2583,13 @@ public class TotalActivityGenerator extends Generator {
 				 * @output SourceHours
 				 * @input SHO
 				**/
-				DatabaseUtilities.insertSelect(false,db,"SourceHours",
-						"hourDayID, monthID, yearID, ageID, linkID, " +
-						"sourceTypeID, sourceHours, sourceHoursCV, isUserInput",
-						"SELECT hourDayID, " +
-						"monthID, yearID, ageID, linkID, sourceTypeID, SHO, SHOCV, 'N' " +
-						"FROM SHO sho WHERE sho.yearID = " + analysisYear +
-						" AND linkID = " + currentLinkID
+				DatabaseUtilities.insertSelect(false,db,"sourcehours",
+						"hourdayid, monthid, yearid, ageid, linkid, " +
+						"sourcetypeid, sourcehours, sourcehourscv, isuserinput",
+						"select hourdayid, " +
+						"monthid, yearid, ageid, linkid, sourcetypeid, sho, shocv, 'N' " +
+						"from sho sho where sho.yearid = " + analysisYear +
+						" AND linkid = " + currentLinkID
 						);
 			}
 		}
@@ -2619,15 +2619,15 @@ public class TotalActivityGenerator extends Generator {
 				 * @input LinkAverageSpeed
 				 * @condition Rates
 				**/
-				sql = "update SHO, LinkAverageSpeed"
-						+ " set SHO.distance=SHO.SHO*averageSpeed"
-						+ " where LinkAverageSpeed.linkID=SHO.linkID"
-						+ " and SHO.distance is null";
+				sql = "update sho, linkaveragespeed"
+						+ " set sho.distance=sho.sho*averagespeed"
+						+ " where linkaveragespeed.linkid=sho.linkid"
+						+ " and sho.distance is null";
 				SQLRunner.executeSQL(db,sql);
 				return;
 			}
 
-			sql = "DROP TABLE IF EXISTS SHOTemp ";
+			sql = "DROP TABLE IF EXISTS shotemp ";
 			SQLRunner.executeSQL(db,sql);
 
 			/**
@@ -2638,16 +2638,16 @@ public class TotalActivityGenerator extends Generator {
 			 * @input Link
 			 * @condition Inventory
 			**/
-			sql = "CREATE TABLE SHOTemp " +
-					"SELECT hourDayID, monthID, yearID, ageID, sho.linkID, " +
-					"sourceTypeID, roadTypeID, sho.shoCV, sho.sho " +
-					"FROM SHO AS sho INNER JOIN Link USING (linkID) ";
+			sql = "CREATE TABLE shotemp " +
+					"select hourdayid, monthid, yearid, ageid, sho.linkid, " +
+					"sourcetypeid, roadtypeid, sho.shocv, sho.sho " +
+					"from sho as sho inner join link using (linkid) ";
 			SQLRunner.executeSQL(db,sql);
 
-			sql = "CREATE INDEX index1 ON SHOTemp (hourDayID, sourceTypeID, roadTypeID) ";
+			sql = "CREATE INDEX index1 ON shotemp (hourdayid, sourcetypeid, roadtypeid) ";
 			SQLRunner.executeSQL(db,sql);
 
-			sql = "DROP TABLE IF EXISTS AverageSpeedTemp ";
+			sql = "DROP TABLE IF EXISTS averagespeedtemp ";
 			SQLRunner.executeSQL(db,sql);
 
 			/**
@@ -2658,19 +2658,19 @@ public class TotalActivityGenerator extends Generator {
 			 * @input HourDay
 			 * @condition Inventory
 			**/
-			sql = "CREATE TABLE AverageSpeedTemp " +
-					"SELECT hourDayID, sourceTypeID, roadTypeID, averageSpeed " +
-					"FROM AverageSpeed INNER JOIN HourDay  USING(dayID, hourID) ";
+			sql = "CREATE TABLE averagespeedtemp " +
+					"select hourdayid, sourcetypeid, roadtypeid, averagespeed " +
+					"from averagespeed inner join hourday  using(dayid, hourid) ";
 			SQLRunner.executeSQL(db,sql);
 
 			sql = "CREATE INDEX index1 " +
-					"ON AverageSpeedTemp(hourDayID, sourceTypeID, roadTypeID) ";
+					"ON averagespeedtemp(hourdayid, sourcetypeid, roadtypeid) ";
 			SQLRunner.executeSQL(db,sql);
 
-			sql = "CREATE TABLE IF NOT EXISTS SHO2 " +
-					"(hourDayID SMALLINT, monthID SMALLINT, yearID SMALLINT, " +
-					"ageID SMALLINT,linkID INTEGER, sourceTypeID SMALLINT, " +
-					"SHO FLOAT, SHOCV FLOAT, distance FLOAT) ";
+			sql = "CREATE TABLE IF NOT EXISTS sho2 " +
+					"(hourdayid smallint, monthid smallint, yearid smallint, " +
+					"ageid smallint,linkid integer, sourcetypeid smallint, " +
+					"sho float, shocv float, distance float) ";
 			SQLRunner.executeSQL(db,sql);
 
 			/**
@@ -2681,12 +2681,12 @@ public class TotalActivityGenerator extends Generator {
 			 * @input AverageSpeedTemp
 			 * @condition Inventory
 			**/
-			sql = "INSERT INTO SHO2 " +
-					"SELECT shot.hourDayID, shot.monthID, shot.yearID, shot.ageID, " +
-					"shot.linkID, shot.sourceTypeID, shot.SHO, shot.SHOCV, " +
-					"(shot.sho * avsp.averageSpeed) " +
-					"FROM SHOTEMP AS shot INNER JOIN AverageSpeedTemp AS avsp " +
-					"USING(hourDayID, sourceTypeID, roadTypeID) ";
+			sql = "INSERT INTO sho2 " +
+					"select shot.hourdayid, shot.monthid, shot.yearid, shot.ageid, " +
+					"shot.linkid, shot.sourcetypeid, shot.sho, shot.shocv, " +
+					"(shot.sho * avsp.averagespeed) " +
+					"from shotemp as shot inner join averagespeedtemp as avsp " +
+					"using(hourdayid, sourcetypeid, roadtypeid) ";
 			SQLRunner.executeSQL(db,sql);
 
 			/**
@@ -2695,7 +2695,7 @@ public class TotalActivityGenerator extends Generator {
 			 * @output SHO
 			 * @condition Inventory
 			**/
-			sql = "TRUNCATE SHO";
+			sql = "TRUNCATE sho";
 			SQLRunner.executeSQL(db,sql);
 
 			/**
@@ -2705,10 +2705,10 @@ public class TotalActivityGenerator extends Generator {
 			 * @input SHO2
 			 * @condition Inventory
 			**/
-			sql = "INSERT INTO SHO (hourDayID, monthID, yearID, ageID,"+
-					"linkID, sourceTypeID, SHO, SHOCV, distance) "+
-					"SELECT hourDayID, monthID,yearID, ageID, linkID,"+
-					"sourceTypeID, SHO, SHOCV, distance FROM SHO2 ";
+			sql = "INSERT INTO sho (hourdayid, monthid, yearid, ageid,"+
+					"linkid, sourcetypeid, sho, shocv, distance) "+
+					"select hourdayid, monthid,yearid, ageid, linkid,"+
+					"sourcetypeid, sho, shocv, distance from sho2 ";
 			SQLRunner.executeSQL(db,sql);
 
 			/**
@@ -2719,17 +2719,17 @@ public class TotalActivityGenerator extends Generator {
 			 * @input SHOTemp
 			 * @condition Inventory
 			**/
-			sql = "INSERT IGNORE INTO SHO (hourDayID, monthID, yearID, ageID,"+
-					"linkID, sourceTypeID, SHO, SHOCV, distance) "+
-					"SELECT hourDayID, monthID,yearID, ageID, linkID,"+
-					"sourceTypeID, SHO, SHOCV, 0 as distance FROM SHOTemp ";
+			sql = "INSERT IGNORE INTO sho (hourdayid, monthid, yearid, ageid,"+
+					"linkid, sourcetypeid, sho, shocv, distance) "+
+					"select hourdayid, monthid,yearid, ageid, linkid,"+
+					"sourcetypeid, sho, shocv, 0 as distance from shotemp ";
 			SQLRunner.executeSQL(db,sql);
 
-			sql = "DROP TABLE IF EXISTS SHO2 ";
+			sql = "DROP TABLE IF EXISTS sho2 ";
 			SQLRunner.executeSQL(db,sql);
-			sql = "DROP TABLE IF EXISTS SHOTemp ";
+			sql = "DROP TABLE IF EXISTS shotemp ";
 			SQLRunner.executeSQL(db,sql);
-			sql = "DROP TABLE IF EXISTS AverageSpeedTemp ";
+			sql = "DROP TABLE IF EXISTS averagespeedtemp ";
 			SQLRunner.executeSQL(db,sql);
 		}
 	}
@@ -2782,16 +2782,16 @@ public class TotalActivityGenerator extends Generator {
 		String mainDatabaseName = SystemConfiguration.getTheSystemConfiguration().databaseSelections[MOVESDatabaseType.EXECUTION.getIndex()].databaseName;
 
 		TreeMapIgnoreCase replacements = new TreeMapIgnoreCase();
-		replacements.put("##zoneID##","" + zoneID);
-		replacements.put("##yearID##","" + yearID);
+		replacements.put("##zoneid##","" + zoneID);
+		replacements.put("##yearid##","" + yearID);
 		
 		String sql = "";
 		SQLRunner.Query query = new SQLRunner.Query();
 		try {
-			sql = "create table if not exists tempMessages "
+			sql = "create table if not exists tempmessages "
 					+ "( message varchar(1000) not null )";
 			SQLRunner.executeSQL(db,sql);
-			sql = "truncate table tempMessages";
+			sql = "truncate table tempmessages";
 			SQLRunner.executeSQL(db,sql);
 
 			try {
@@ -2801,7 +2801,7 @@ public class TotalActivityGenerator extends Generator {
 			}
 
 			// Retrieve the results from tempMessages
-			sql = "select message from tempMessages";
+			sql = "select message from tempmessages";
 			query.open(db,sql);
 			String m = "";
 			while(query.rs.next()) {
@@ -2811,7 +2811,7 @@ public class TotalActivityGenerator extends Generator {
 			if (m != null && m.length() > 0) {
 				Logger.log(LogMessageCategory.WARNING,m);
 			}
-			sql = "drop table if exists tempMessages";
+			sql = "drop table if exists tempmessages";
 			SQLRunner.executeSQL(db,sql);
 		} catch(Exception e) {
 			// Nothing to do here
@@ -2828,9 +2828,9 @@ public class TotalActivityGenerator extends Generator {
 	**/	
 	void adjustHotelling(int zoneID, int yearID, int hotellingActivityZoneID) {
 		TreeMapIgnoreCase replacements = new TreeMapIgnoreCase();
-		replacements.put("##zoneID##","" + zoneID);
-		replacements.put("##yearID##","" + yearID);
-		replacements.put("##activityZoneID##","" + hotellingActivityZoneID);
+		replacements.put("##zoneid##","" + zoneID);
+		replacements.put("##yearid##","" + yearID);
+		replacements.put("##activityzoneid##","" + hotellingActivityZoneID);
 		try {
 			DatabaseUtilities.executeScript(db,new File("database/AdjustHotelling.sql"),replacements,false);
 		} catch(Exception e) {
@@ -2846,9 +2846,9 @@ public class TotalActivityGenerator extends Generator {
 	**/	
 	void adjustExtendedIdle(int zoneID, int yearID, int hotellingActivityZoneID) {
 		TreeMapIgnoreCase replacements = new TreeMapIgnoreCase();
-		replacements.put("##zoneID##","" + zoneID);
-		replacements.put("##yearID##","" + yearID);
-		replacements.put("##activityZoneID##","" + hotellingActivityZoneID);
+		replacements.put("##zoneid##","" + zoneID);
+		replacements.put("##yearid##","" + yearID);
+		replacements.put("##activityzoneid##","" + hotellingActivityZoneID);
 		try {
 			DatabaseUtilities.executeScript(db,new File("database/AdjustExtendedIdle.sql"),replacements,false);
 		} catch(Exception e) {
@@ -2867,24 +2867,24 @@ public class TotalActivityGenerator extends Generator {
 	 * @throws SQLException if something goes wrong finding the zone
 	**/	
 	public static int findHotellingActivityDistributionZoneIDToUse(Connection db, int stateID, int zoneID) throws SQLException {
-		String sql = "select zoneID"
+		String sql = "select zoneid"
 				+ " from ("
-				+ " select distinct zoneID,"
-				+ " 	case when zoneID=" + zoneID + " then 1" // The best match is the actual zone
-				+ " 	when zoneID=" + (stateID*10000) + " then 2" // The second best match is the zone's state
-				+ " 	when zoneID=990000 then 3" // The third best match is the national default
-				+ " 	else 4 end as zoneMerit" // Anything else is tied for last place
-				+ " from hotellingActivityDistribution"
-				+ " where zoneID in ("+zoneID+","+(stateID*10000)+",990000)"
+				+ " select distinct zoneid,"
+				+ " 	case when zoneid=" + zoneID + " then 1" // The best match is the actual zone
+				+ " 	when zoneid=" + (stateID*10000) + " then 2" // The second best match is the zone's state
+				+ " 	when zoneid=990000 then 3" // The third best match is the national default
+				+ " 	else 4 end as zonemerit" // Anything else is tied for last place
+				+ " from hotellingactivitydistribution"
+				+ " where zoneid in ("+zoneID+","+(stateID*10000)+",990000)"
 				+ " ) t"
-				+ " order by zoneMerit" // Order by best (1) to worst (4)
+				+ " order by zonemerit" // Order by best (1) to worst (4)
 				+ " limit 1"; // Only get the best scoring
 		int resultZoneID = 0;
 		SQLRunner.Query query = new SQLRunner.Query();
 		try {
 			query.open(db,sql);
 			if(query.rs.next()) {
-				resultZoneID = query.rs.getInt("zoneID");
+				resultZoneID = query.rs.getInt("zoneid");
 			}
 			query.close();
 		} catch(SQLException e) {
