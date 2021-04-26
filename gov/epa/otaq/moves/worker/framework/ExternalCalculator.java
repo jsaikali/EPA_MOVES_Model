@@ -118,59 +118,59 @@ public class ExternalCalculator {
 				String[] statements = {
 					"use movesworker;",
 
-					"drop table if exists ExtMOVESWorkerOutputDetail;",
+					"drop table if exists extmovesworkeroutputdetail;",
 	
-					"create table ExtMOVESWorkerOutputDetail like movesworkeroutput;",
+					"create table extmovesworkeroutputdetail like movesworkeroutput;",
 					
 					//"alter table ExtMOVESWorkerOutputDetail add fuelSubTypeID int null;",
 
-					"alter table ExtMOVESWorkerOutputDetail add fuelFormulationID int null;",
+					"alter table extmovesworkeroutputdetail add fuelformulationid int null;",
 
-					"create table ExtMOVESWorkerOutputDetailSum like ExtMOVESWorkerOutputDetail;",
+					"create table extmovesworkeroutputdetailsum like extmovesworkeroutputdetail;",
 	
 					"load data infile " + DatabaseUtilities.escapeSQL(detailsPath)
-						+ " into table ExtMOVESWorkerOutputDetail ("
-						+ " 	MOVESRunID,iterationID,"
-						+ " 	yearID,monthID,dayID,hourID,"
-						+ " 	stateID,countyID,zoneID,linkID,"
-						+ " 	pollutantID,processID,"
-						+ " 	sourceTypeID,regClassID,"
-						+ " 	fuelTypeID,modelYearID,"
-						+ " 	roadTypeID,SCC,"
-						+ " 	engTechID,sectorID,hpID,"
-						+ " 	emissionQuant,emissionRate,"
-						+ " 	fuelSubTypeID,fuelFormulationID);",
+						+ " into table extmovesworkeroutputdetail ("
+						+ " 	movesrunid,iterationid,"
+						+ " 	yearid,monthid,dayid,hourid,"
+						+ " 	stateid,countyid,zoneid,linkid,"
+						+ " 	pollutantid,processid,"
+						+ " 	sourcetypeid,regclassid,"
+						+ " 	fueltypeid,modelyearid,"
+						+ " 	roadtypeid,scc,"
+						+ " 	engtechid,sectorid,hpid,"
+						+ " 	emissionquant,emissionrate,"
+						+ " 	fuelsubtypeid,fuelformulationid);",
 	
-					"insert into ExtMOVESWorkerOutputDetailSum ("
-							+ " 	MOVESRunID,iterationID,"
-							+ " 	yearID,monthID,dayID,hourID,"
-							+ " 	stateID,countyID,zoneID,linkID,"
-							+ " 	pollutantID,processID,"
-							+ " 	sourceTypeID,regClassID,"
-							+ " 	fuelTypeID,modelYearID,"
-							+ " 	roadTypeID,SCC,"
-							+ " 	engTechID,sectorID,hpID,"
-							+ " 	emissionQuant,emissionRate,"
-							+ " 	fuelSubTypeID,fuelFormulationID)"
-							+ " select MOVESRunID,iterationID,"
-							+ " 	yearID,monthID,dayID,hourID,"
-							+ " 	stateID,countyID,zoneID,linkID,"
-							+ " 	pollutantID,processID,"
-							+ " 	sourceTypeID,regClassID,"
-							+ " 	fuelTypeID,modelYearID,"
-							+ " 	roadTypeID,SCC,"
-							+ " 	engTechID,sectorID,hpID,"
-							+ " 	sum(emissionQuant) as emissionQuant, sum(emissionRate) as emissionRate,"
-							+ "		fuelSubTypeID,fuelFormulationID"
-							+ " from ExtMOVESWorkerOutputDetail"
-							+ " group by yearID,monthID,dayID,hourID,"
-							+ " 	stateID,countyID,zoneID,linkID,"
-							+ " 	pollutantID,processID,"
-							+ " 	sourceTypeID,regClassID,"
-							+ " 	fuelTypeID,modelYearID,"
-							+ " 	roadTypeID,SCC,"
-							+ " 	engTechID,sectorID,hpID,"
-							+ " 	fuelSubTypeID,fuelFormulationID;",
+					"insert into extmovesworkeroutputdetailsum ("
+							+ " 	movesrunid,iterationid,"
+							+ " 	yearid,monthid,dayid,hourid,"
+							+ " 	stateid,countyid,zoneid,linkid,"
+							+ " 	pollutantid,processid,"
+							+ " 	sourcetypeid,regclassid,"
+							+ " 	fueltypeid,modelyearid,"
+							+ " 	roadtypeid,scc,"
+							+ " 	engtechid,sectorid,hpid,"
+							+ " 	emissionquant,emissionrate,"
+							+ " 	fuelsubtypeid,fuelformulationid)"
+							+ " select movesrunid,iterationid,"
+							+ " 	yearid,monthid,dayid,hourid,"
+							+ " 	stateid,countyid,zoneid,linkid,"
+							+ " 	pollutantid,processid,"
+							+ " 	sourcetypeid,regclassid,"
+							+ " 	fueltypeid,modelyearid,"
+							+ " 	roadtypeid,scc,"
+							+ " 	engtechid,sectorid,hpid,"
+							+ " 	sum(emissionquant) as emissionquant, sum(emissionrate) as emissionrate,"
+							+ "		fuelsubtypeid,fuelformulationid"
+							+ " from extmovesworkeroutputdetail"
+							+ " group by yearid,monthid,dayid,hourid,"
+							+ " 	stateid,countyid,zoneid,linkid,"
+							+ " 	pollutantid,processid,"
+							+ " 	sourcetypeid,regclassid,"
+							+ " 	fueltypeid,modelyearid,"
+							+ " 	roadtypeid,scc,"
+							+ " 	engtechid,sectorid,hpid,"
+							+ " 	fuelsubtypeid,fuelformulationid;",
 				};
 				for(int i=0;i<statements.length;i++) {
 					sql = statements[i];
@@ -183,7 +183,7 @@ public class ExternalCalculator {
 				loadDetailsWriter.close();
 				loadDetailsWriter = null;
 			}
-			owner.startTimer("ExternalCalcWriteInput");
+			owner.startTimer("externalcalcwriteinput");
 			extmodulesWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(workingFolderPath,"extmodules"))));
 			for(String moduleName : moduleNames) {
 				if (moduleName.equals("DistanceCalculator")){
@@ -203,17 +203,17 @@ public class ExternalCalculator {
 			}
 			String mwoPath = mwo.getCanonicalPath().replace('\\','/');
 			sql = "select "
-					+ " MOVESRunID,iterationID,"
-					+ " yearID,monthID,dayID,hourID,"
-					+ " stateID,countyID,zoneID,linkID,"
-					+ " pollutantID,processID,"
-					+ " sourceTypeID,regClassID,"
-					+ " fuelTypeID,modelYearID,"
-					+ " roadTypeID,SCC,"
-					+ " engTechID,sectorID,hpID,"
-					+ " emissionQuant,emissionRate"
+					+ " movesrunid,iterationid,"
+					+ " yearid,monthid,dayid,hourid,"
+					+ " stateid,countyid,zoneid,linkid,"
+					+ " pollutantid,processid,"
+					+ " sourcetypeid,regclassid,"
+					+ " fueltypeid,modelyearid,"
+					+ " roadtypeid,scc,"
+					+ " engtechid,sectorid,hpid,"
+					+ " emissionquant,emissionrate"
 					+ " into outfile " + DatabaseUtilities.escapeSQL(mwoPath)
-					+ " from MOVESWorkerOutput";
+					+ " from movesworkeroutput";
 			try {
 				SQLRunner.executeSQL(database,sql);
 			} catch(Exception e) {
@@ -229,16 +229,16 @@ public class ExternalCalculator {
 				}
 				String mwoActivityPath = mwoActivity.getCanonicalPath().replace('\\','/');
 				sql = "select "
-						+ " MOVESRunID,iterationID,"
-						+ " yearID,monthID,dayID,hourID,"
-						+ " stateID,countyID,zoneID,linkID,"
-						+ " sourceTypeID,regClassID,"
-						+ " fuelTypeID,modelYearID,"
-						+ " roadTypeID,SCC,"
-						+ " engTechID,sectorID,hpID,"
-						+ " activityTypeID,activity"
+						+ " movesrunid,iterationid,"
+						+ " yearid,monthid,dayid,hourid,"
+						+ " stateid,countyid,zoneid,linkid,"
+						+ " sourcetypeid,regclassid,"
+						+ " fueltypeid,modelyearid,"
+						+ " roadtypeid,scc,"
+						+ " engtechid,sectorid,hpid,"
+						+ " activitytypeid,activity"
 						+ " into outfile " + DatabaseUtilities.escapeSQL(mwoActivityPath)
-						+ " from MOVESWorkerActivityOutput";
+						+ " from movesworkeractivityoutput";
 				try {
 					SQLRunner.executeSQL(database,sql);
 				} catch(Exception e) {
@@ -281,7 +281,7 @@ public class ExternalCalculator {
 			File processOutputPath = new File(targetFolderPath, "ExternalCalculatorProcessOutput.txt");
 			String inputText = null;
 			try {
-				owner.startTimer("ExternalCalcRun");
+				owner.startTimer("externalcalcrun");
 				ApplicationRunner.runApplication(targetApplicationPath, arguments,
 						targetFolderPath, new FileOutputStream(processOutputPath),
 						inputText, runInCmd, environment);
@@ -304,27 +304,27 @@ public class ExternalCalculator {
 				return;
 			}
 			// Process the calculator response
-			owner.startTimer("ExternalCalcReadResults");
+			owner.startTimer("externalcalcreadresults");
 			String[] statements = {
-				"drop table if exists ExtMOVESWorkerOutput",
+				"drop table if exists extmovesworkeroutput",
 
-				"create table ExtMOVESWorkerOutput like movesworkeroutput",
+				"create table extmovesworkeroutput like movesworkeroutput",
 
 				"load data infile " + DatabaseUtilities.escapeSQL(newMWOPath)
-					+ " into table ExtMOVESWorkerOutput ("
-					+ " 	MOVESRunID,iterationID,"
-					+ " 	yearID,monthID,dayID,hourID,"
-					+ " 	stateID,countyID,zoneID,linkID,"
-					+ " 	pollutantID,processID,"
-					+ " 	sourceTypeID,regClassID,"
-					+ " 	fuelTypeID,modelYearID,"
-					+ " 	roadTypeID,SCC,"
-					+ " 	engTechID,sectorID,hpID,"
-					+ " 	emissionQuant,emissionRate"
-					+ (splitByFuelSubTypeID? ",fuelSubTypeID" : "")
+					+ " into table extmovesworkeroutput ("
+					+ " 	movesrunid,iterationid,"
+					+ " 	yearid,monthid,dayid,hourid,"
+					+ " 	stateid,countyid,zoneid,linkid,"
+					+ " 	pollutantid,processid,"
+					+ " 	sourcetypeid,regclassid,"
+					+ " 	fueltypeid,modelyearid,"
+					+ " 	roadtypeid,scc,"
+					+ " 	engtechid,sectorid,hpid,"
+					+ " 	emissionquant,emissionrate"
+					+ (splitByFuelSubTypeID? ",fuelsubtypeid" : "")
 					+ ")",
 
-				(splitByFuelSubTypeID? "truncate MOVESWorkerOutput" : ""),
+				(splitByFuelSubTypeID? "truncate movesworkeroutput" : ""),
 /*
 				"insert into MOVESWorkerOutput ("
 						+ " 	MOVESRunID,iterationID,"
@@ -359,32 +359,32 @@ public class ExternalCalculator {
 						+ (splitByFuelSubTypeID? ",fuelSubTypeID" : "")
 						,
 */
-				"insert into MOVESWorkerOutput ("
-						+ " 	MOVESRunID,iterationID,"
-						+ " 	yearID,monthID,dayID,hourID,"
-						+ " 	stateID,countyID,zoneID,linkID,"
-						+ " 	pollutantID,processID,"
-						+ " 	sourceTypeID,regClassID,"
-						+ " 	fuelTypeID,modelYearID,"
-						+ " 	roadTypeID,SCC,"
-						+ " 	engTechID,sectorID,hpID,"
-						+ " 	emissionQuant,emissionRate"
-						+ (splitByFuelSubTypeID? ",fuelSubTypeID" : "")
+				"insert into movesworkeroutput ("
+						+ " 	movesrunid,iterationid,"
+						+ " 	yearid,monthid,dayid,hourid,"
+						+ " 	stateid,countyid,zoneid,linkid,"
+						+ " 	pollutantid,processid,"
+						+ " 	sourcetypeid,regclassid,"
+						+ " 	fueltypeid,modelyearid,"
+						+ " 	roadtypeid,scc,"
+						+ " 	engtechid,sectorid,hpid,"
+						+ " 	emissionquant,emissionrate"
+						+ (splitByFuelSubTypeID? ",fuelsubtypeid" : "")
 						+ ")"
-						+ " select MOVESRunID,iterationID,"
-						+ " 	yearID,monthID,dayID,hourID,"
-						+ " 	stateID,countyID,zoneID,linkID,"
-						+ " 	pollutantID,processID,"
-						+ " 	sourceTypeID,regClassID,"
-						+ " 	fuelTypeID,modelYearID,"
-						+ " 	roadTypeID,SCC,"
-						+ " 	engTechID,sectorID,hpID,"
-						+ " 	emissionQuant, emissionRate"
-						+ (splitByFuelSubTypeID? ",fuelSubTypeID" : "")
-						+ " from ExtMOVESWorkerOutput"
+						+ " select movesrunid,iterationid,"
+						+ " 	yearid,monthid,dayid,hourid,"
+						+ " 	stateid,countyid,zoneid,linkid,"
+						+ " 	pollutantid,processid,"
+						+ " 	sourcetypeid,regclassid,"
+						+ " 	fueltypeid,modelyearid,"
+						+ " 	roadtypeid,scc,"
+						+ " 	engtechid,sectorid,hpid,"
+						+ " 	emissionquant, emissionrate"
+						+ (splitByFuelSubTypeID? ",fuelsubtypeid" : "")
+						+ " from extmovesworkeroutput"
 						,
 
-				"drop table if exists ExtMOVESWorkerOutput"
+				"drop table if exists extmovesworkeroutput"
 			};
 			start = System.currentTimeMillis();
 			for(int i=0;i<statements.length;i++) {
@@ -398,24 +398,24 @@ public class ExternalCalculator {
 			// Load activity data, when split by fuelsubtype
 			if(hasActivityOutput || splitByFuelSubTypeID) {	
 				String[] activityStatements = {
-					"drop table if exists ExtMOVESWorkerActivityOutput",
+					"drop table if exists extmovesworkeractivityoutput",
 	
-					"create table ExtMOVESWorkerActivityOutput like movesworkeractivityoutput",
+					"create table extmovesworkeractivityoutput like movesworkeractivityoutput",
 	
 					"load data infile " + DatabaseUtilities.escapeSQL(newMWOActivityPath)
-						+ " into table ExtMOVESWorkerActivityOutput ("
-						+ " 	MOVESRunID,iterationID,"
-						+ " 	yearID,monthID,dayID,hourID,"
-						+ " 	stateID,countyID,zoneID,linkID,"
-						+ " 	sourceTypeID,regClassID,"
-						+ " 	fuelTypeID,modelYearID,"
-						+ " 	roadTypeID,SCC,"
-						+ " 	engTechID,sectorID,hpID,"
-						+ " 	activityTypeID,activity"
-						+ ((splitByFuelSubTypeID)? ",fuelSubTypeID" : "")
+						+ " into table extmovesworkeractivityoutput ("
+						+ " 	movesrunid,iterationid,"
+						+ " 	yearid,monthid,dayid,hourid,"
+						+ " 	stateid,countyid,zoneid,linkid,"
+						+ " 	sourcetypeid,regclassid,"
+						+ " 	fueltypeid,modelyearid,"
+						+ " 	roadtypeid,scc,"
+						+ " 	engtechid,sectorid,hpid,"
+						+ " 	activitytypeid,activity"
+						+ ((splitByFuelSubTypeID)? ",fuelsubtypeid" : "")
 						+ ")",
 	
-					((splitByFuelSubTypeID)? "truncate MOVESWorkerActivityOutput" : ""),
+					((splitByFuelSubTypeID)? "truncate movesworkeractivityoutput" : ""),
 /*	
 					"insert into MOVESWorkerActivityOutput ("
 							+ " 	MOVESRunID,iterationID,"
@@ -449,29 +449,29 @@ public class ExternalCalculator {
 							,
 */
 
-					"insert into MOVESWorkerActivityOutput ("
-							+ " 	MOVESRunID,iterationID,"
-							+ " 	yearID,monthID,dayID,hourID,"
-							+ " 	stateID,countyID,zoneID,linkID,"
-							+ " 	sourceTypeID,regClassID,"
-							+ " 	fuelTypeID,modelYearID,"
-							+ " 	roadTypeID,SCC,"
-							+ " 	engTechID,sectorID,hpID,"
-							+ " 	activityTypeID,activity"
-							+ ((splitByFuelSubTypeID)? ",fuelSubTypeID" : "")
+					"insert into movesworkeractivityoutput ("
+							+ " 	movesrunid,iterationid,"
+							+ " 	yearid,monthid,dayid,hourid,"
+							+ " 	stateid,countyid,zoneid,linkid,"
+							+ " 	sourcetypeid,regclassid,"
+							+ " 	fueltypeid,modelyearid,"
+							+ " 	roadtypeid,scc,"
+							+ " 	engtechid,sectorid,hpid,"
+							+ " 	activitytypeid,activity"
+							+ ((splitByFuelSubTypeID)? ",fuelsubtypeid" : "")
 							+ ")"
-							+ " select MOVESRunID,iterationID,"
-							+ " 	yearID,monthID,dayID,hourID,"
-							+ " 	stateID,countyID,zoneID,linkID,"
-							+ " 	sourceTypeID,regClassID,"
-							+ " 	fuelTypeID,modelYearID,"
-							+ " 	roadTypeID,SCC,"
-							+ " 	engTechID,sectorID,hpID,"
-							+ " 	activityTypeID, activity"
-							+ ((splitByFuelSubTypeID)? ",fuelSubTypeID" : "")
-							+ " from ExtMOVESWorkerActivityOutput"
+							+ " select movesrunid,iterationid,"
+							+ " 	yearid,monthid,dayid,hourid,"
+							+ " 	stateid,countyid,zoneid,linkid,"
+							+ " 	sourcetypeid,regclassid,"
+							+ " 	fueltypeid,modelyearid,"
+							+ " 	roadtypeid,scc,"
+							+ " 	engtechid,sectorid,hpid,"
+							+ " 	activitytypeid, activity"
+							+ ((splitByFuelSubTypeID)? ",fuelsubtypeid" : "")
+							+ " from extmovesworkeractivityoutput"
 							,
-					"drop table if exists ExtMOVESWorkerActivityOutput"
+					"drop table if exists extmovesworkeractivityoutput"
 				};
 				start = System.currentTimeMillis();
 				for(int i=0;i<activityStatements.length;i++) {
@@ -487,35 +487,35 @@ public class ExternalCalculator {
 			// This works for everything except avgHP (activityTypeID 9) and LF (activityTypeID 12), which should not be split.
 			// This chunk fixes avgHP and LF by summing the split components and resaving.
 			if (splitByFuelSubTypeID) {				
-				sql = "UPDATE MOVESWorkerActivityOutput mwoActivity, ( " + 
-					  "SELECT MOVESRunID, iterationID, yearID , monthID,dayID,hourID,stateID,countyID,zoneID ,linkID,sourceTypeID,regClassID,fuelTypeID, " +
-					  "modelYearID,roadTypeID,SCC,engTechID,sectorID,hpID,activityTypeID,sum(activity) as totalActivity " +
-					  "FROM MOVESWorkerActivityOutput " +
-					  "WHERE fuelTypeID = 1 and activityTypeID in (9, 12) " +
-					  "group by MOVESRunID,iterationID,yearID ,monthID,dayID,hourID,stateID,countyID,zoneID ,linkID,sourceTypeID,regClassID,fuelTypeID, " +
-					  "         modelYearID,roadTypeID,SCC,engTechID,sectorID,hpID,activityTypeID " +
-					  ") as tActivity " +
-					  "SET activity = totalActivity " +
-					  "WHERE mwoActivity.MOVESRunID = tActivity.MOVESRunID and" +
-					  "      mwoActivity.iterationID = tActivity.iterationID and" +
-					  "      mwoActivity.yearID = tActivity.yearID and" +
-					  "      mwoActivity.monthID = tActivity.monthID and" +
-					  "      mwoActivity.dayID = tActivity.dayID and" +
-					  "      mwoActivity.hourID = tActivity.hourID and" +
-					  "      mwoActivity.stateID = tActivity.stateID and" +
-					  "      mwoActivity.countyID = tActivity.countyID and" +
-					  "      mwoActivity.zoneID = tActivity.zoneID and" +
-					  "      mwoActivity.linkID = tActivity.linkID and" +
-					  "      mwoActivity.sourceTypeID = tActivity.sourceTypeID and" +
-					  "      mwoActivity.regClassID = tActivity.regClassID and" +
-					  "      mwoActivity.fuelTypeID = tActivity.fuelTypeID and" +
-					  "      mwoActivity.modelYearID = tActivity.modelYearID and" +
-					  "      mwoActivity.roadTypeID = tActivity.roadTypeID and" +
-					  "      mwoActivity.SCC = tActivity.SCC and" +
-					  "      mwoActivity.engTechID = tActivity.engTechID and" +
-					  "      mwoActivity.sectorID = tActivity.sectorID and" +
-					  "      mwoActivity.hpID = tActivity.hpID and" +
-					  "      mwoActivity.activityTypeID = tActivity.activityTypeID";
+				sql = "UPDATE movesworkeractivityoutput mwoactivity, ( " + 
+					  "SELECT movesrunid, iterationid, yearid , monthid,dayid,hourid,stateid,countyid,zoneid ,linkid,sourcetypeid,regclassid,fueltypeid, " +
+					  "modelyearid,roadtypeid,scc,engtechid,sectorid,hpid,activitytypeid,sum(activity) as totalactivity " +
+					  "from movesworkeractivityoutput " +
+					  "where fueltypeid = 1 and activitytypeid in (9, 12) " +
+					  "group by movesrunid,iterationid,yearid ,monthid,dayid,hourid,stateid,countyid,zoneid ,linkid,sourcetypeid,regclassid,fueltypeid, " +
+					  "         modelyearid,roadtypeid,scc,engtechid,sectorid,hpid,activitytypeid " +
+					  ") as tactivity " +
+					  "set activity = totalactivity " +
+					  "where mwoactivity.movesrunid = tactivity.movesrunid and" +
+					  "      mwoactivity.iterationid = tactivity.iterationid and" +
+					  "      mwoactivity.yearid = tactivity.yearid and" +
+					  "      mwoactivity.monthid = tactivity.monthid and" +
+					  "      mwoactivity.dayid = tactivity.dayid and" +
+					  "      mwoactivity.hourid = tactivity.hourid and" +
+					  "      mwoactivity.stateid = tactivity.stateid and" +
+					  "      mwoactivity.countyid = tactivity.countyid and" +
+					  "      mwoactivity.zoneid = tactivity.zoneid and" +
+					  "      mwoactivity.linkid = tactivity.linkid and" +
+					  "      mwoactivity.sourcetypeid = tactivity.sourcetypeid and" +
+					  "      mwoactivity.regclassid = tactivity.regclassid and" +
+					  "      mwoactivity.fueltypeid = tactivity.fueltypeid and" +
+					  "      mwoactivity.modelyearid = tactivity.modelyearid and" +
+					  "      mwoactivity.roadtypeid = tactivity.roadtypeid and" +
+					  "      mwoactivity.scc = tactivity.scc and" +
+					  "      mwoactivity.engtechid = tactivity.engtechid and" +
+					  "      mwoactivity.sectorid = tactivity.sectorid and" +
+					  "      mwoactivity.hpid = tactivity.hpid and" +
+					  "      mwoactivity.activitytypeid = tactivity.activitytypeid";
 				SQLRunner.executeSQL(database,sql);
 			}
 	  
@@ -523,47 +523,47 @@ public class ExternalCalculator {
 			//EM - entire if block added to fix rates bug EMT-809 12/20/2018
 			if(newBRO.exists()) {
 				String[] broStatements = {
-					"drop table if exists ExtBaseRateOutput",
+					"drop table if exists extbaserateoutput",
 
-					"create table ExtBaseRateOutput like baserateoutput",
+					"create table extbaserateoutput like baserateoutput",
 
 					"load data infile " + DatabaseUtilities.escapeSQL(newBROPath)
-						+ " into table ExtBaseRateOutput ("
-						+ " 	MOVESRunID,iterationID,"
-						+ " 	yearID,monthID,hourDayID,"
-						+ " 	zoneID,linkID,"
-						+ " 	pollutantID,processID,"
-						+ " 	sourceTypeID,regClassID,"
-						+ " 	fuelTypeID,modelYearID,"
-						+ " 	roadTypeID,SCC,"
-						+ " 	avgSpeedBinID,"
-						+ " 	meanBaseRate,emissionRate"
+						+ " into table extbaserateoutput ("
+						+ " 	movesrunid,iterationid,"
+						+ " 	yearid,monthid,hourdayid,"
+						+ " 	zoneid,linkid,"
+						+ " 	pollutantid,processid,"
+						+ " 	sourcetypeid,regclassid,"
+						+ " 	fueltypeid,modelyearid,"
+						+ " 	roadtypeid,scc,"
+						+ " 	avgspeedbinid,"
+						+ " 	meanbaserate,emissionrate"
 						+ ")",
 
 					"insert into baserateoutput ("
-							+ " 	MOVESRunID,iterationID,"
-							+ " 	yearID,monthID,hourDayID,"
-							+ " 	zoneID,linkID,"
-							+ " 	pollutantID,processID,"
-							+ " 	sourceTypeID,regClassID,"
-							+ " 	fuelTypeID,modelYearID,"
-							+ " 	roadTypeID,SCC,"
-							+ " 	avgSpeedBinID,"
-							+ " 	meanBaseRate,emissionRate"
+							+ " 	movesrunid,iterationid,"
+							+ " 	yearid,monthid,hourdayid,"
+							+ " 	zoneid,linkid,"
+							+ " 	pollutantid,processid,"
+							+ " 	sourcetypeid,regclassid,"
+							+ " 	fueltypeid,modelyearid,"
+							+ " 	roadtypeid,scc,"
+							+ " 	avgspeedbinid,"
+							+ " 	meanbaserate,emissionrate"
 							+ ")"
-							+ " select MOVESRunID,iterationID,"
-							+ " 	yearID,monthID,hourDayID,"
-							+ " 	zoneID,linkID,"
-							+ " 	pollutantID,processID,"
-							+ " 	sourceTypeID,regClassID,"
-							+ " 	fuelTypeID,modelYearID,"
-							+ " 	roadTypeID,SCC,"
-							+ " 	avgSpeedBinID,"
-							+ " 	meanBaseRate,emissionRate"
-							+ " from ExtBaseRateOutput"
+							+ " select movesrunid,iterationid,"
+							+ " 	yearid,monthid,hourdayid,"
+							+ " 	zoneid,linkid,"
+							+ " 	pollutantid,processid,"
+							+ " 	sourcetypeid,regclassid,"
+							+ " 	fueltypeid,modelyearid,"
+							+ " 	roadtypeid,scc,"
+							+ " 	avgspeedbinid,"
+							+ " 	meanbaserate,emissionrate"
+							+ " from extbaserateoutput"
 							,
 
-					"drop table if exists ExtBaseRateOutput"
+					"drop table if exists extbaserateoutput"
 				};
 				start = System.currentTimeMillis();
 				for(int i=0;i<broStatements.length;i++) {

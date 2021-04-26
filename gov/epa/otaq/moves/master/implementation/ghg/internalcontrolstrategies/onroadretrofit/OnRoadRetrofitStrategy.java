@@ -36,16 +36,16 @@ public class OnRoadRetrofitStrategy extends InternalControlStrategy
 	};
 	private static TreeMap<String,String> abbreviationCache = new TreeMap<String,String>();
 	private static String[] columnTitles = {
-		"Pollutant", "Process", "Fuel", "Source",
-		"Initial Calendar Year", "Final Calendar Year",
-		"Initial Model Year", "Final Model Year",
-		"Fraction/Year", "Fraction Effective"
+		"pollutant", "process", "fuel", "source",
+		"initial calendar year", "final calendar year",
+		"initial model year", "final model year",
+		"fraction/year", "fraction effective"
 	};
 	private static String[] dbColumnTitles = {
-		"pollutantID", "processID", "fuelTypeID", "sourceTypeID",
-		"retrofitYearID",
-		"beginModelYearID", "endModelYearID",
-		"cumFractionRetrofit", "retrofitEffectiveFraction"
+		"pollutantid", "processid", "fueltypeid", "sourcetypeid",
+		"retrofityearid",
+		"beginmodelyearid", "endmodelyearid",
+		"cumfractionretrofit", "retrofiteffectivefraction"
 	};
 
 	public static String findAbbreviationCore(String listName, String abbreviation) {
@@ -59,7 +59,7 @@ public class OnRoadRetrofitStrategy extends InternalControlStrategy
 		String sql = "";
 		try {
 			// Try the abbreviation list first
-			sql = "select idealName from RetrofitInputAssociations where listName="
+			sql = "select idealname from retrofitinputassociations where listname="
 					+ DatabaseUtilities.escapeSQL(listName,true)
 					+ " and lower(commonName)="
 					+ DatabaseUtilities.escapeSQL(abbreviation,true);
@@ -69,17 +69,17 @@ public class OnRoadRetrofitStrategy extends InternalControlStrategy
 				return result;
 			}
 			// Try the standard table, if known from the listName
-			if(listName.equalsIgnoreCase("Pollutant")) {
-				sql = "select pollutantID from Pollutant where lower(pollutantName)="
+			if(listName.equalsIgnoreCase("pollutant")) {
+				sql = "select pollutantid from pollutant where lower(pollutantname)="
 						+ DatabaseUtilities.escapeSQL(abbreviation,true);
-			} else if(listName.equalsIgnoreCase("Process")) {
-				sql = "select processID from EmissionProcess where lower(processName)="
+			} else if(listName.equalsIgnoreCase("process")) {
+				sql = "select processid from emissionprocess where lower(processname)="
 						+ DatabaseUtilities.escapeSQL(abbreviation,true);
-			} else if(listName.equalsIgnoreCase("Fuel")) {
-				sql = "select fuelTypeID from FuelType where lower(fuelTypeDesc)="
+			} else if(listName.equalsIgnoreCase("fuel")) {
+				sql = "select fueltypeid from fueltype where lower(fueltypedesc)="
 						+ DatabaseUtilities.escapeSQL(abbreviation,true);
-			} else if(listName.equalsIgnoreCase("Source")) {
-				sql = "select sourceTypeID from SourceUseType where lower(sourceTypeName)="
+			} else if(listName.equalsIgnoreCase("source")) {
+				sql = "select sourcetypeid from sourceusetype where lower(sourcetypename)="
 						+ DatabaseUtilities.escapeSQL(abbreviation,true);
 			} else {
 				return null;
@@ -337,15 +337,15 @@ public class OnRoadRetrofitStrategy extends InternalControlStrategy
 		}
 
 		public boolean load(ResultSet rs, ArrayList<String> messages) throws SQLException {
-			pollutantID = rs.getInt("pollutantID");
-			processID = rs.getInt("processID");
-			fuelTypeID = rs.getInt("fuelTypeID");
-			sourceTypeID = rs.getInt("sourceTypeID");
-			retrofitYearID = rs.getInt("retrofitYearID");
-			beginModelYearID = rs.getInt("beginModelYearID");
-			endModelYearID = rs.getInt("endModelYearID");
-			cumFractionRetrofit = rs.getDouble("cumFractionRetrofit");
-			retrofitEffectiveFraction = rs.getDouble("retrofitEffectiveFraction");
+			pollutantID = rs.getInt("pollutantid");
+			processID = rs.getInt("processid");
+			fuelTypeID = rs.getInt("fueltypeid");
+			sourceTypeID = rs.getInt("sourcetypeid");
+			retrofitYearID = rs.getInt("retrofityearid");
+			beginModelYearID = rs.getInt("beginmodelyearid");
+			endModelYearID = rs.getInt("endmodelyearid");
+			cumFractionRetrofit = rs.getDouble("cumfractionretrofit");
+			retrofitEffectiveFraction = rs.getDouble("retrofiteffectivefraction");
 
 			boolean calendarYearsOK = true;
 			if(retrofitYearID < 1990 || retrofitYearID > 2060) {
@@ -668,7 +668,7 @@ public class OnRoadRetrofitStrategy extends InternalControlStrategy
 		dbLines.clear();
 		compiledLines.clear();
 		SQLRunner.Query query = new SQLRunner.Query();
-		String sql = "select * from onRoadRetrofit";
+		String sql = "select * from onroadretrofit";
 		Connection db = null;
 		ArrayList<String> messages = new ArrayList<String>();
 		try {
@@ -1184,29 +1184,29 @@ public class OnRoadRetrofitStrategy extends InternalControlStrategy
 			// Build SQL statements and add them to the current ExecutionRunSpec
 
 			// Build the WHERE conditions
-			String clauses = " where pollutantID=" + pollutantID
-					+ " and processID=" + processID
-					+ " and fuelTypeID=" + fuelTypeID
-					+ " and sourceTypeID=" + sourceTypeID;
+			String clauses = " where pollutantid=" + pollutantID
+					+ " and processid=" + processID
+					+ " and fueltypeid=" + fuelTypeID
+					+ " and sourcetypeid=" + sourceTypeID;
 			if(calendarYear == maxCalendarYear) {
-				clauses += " and yearID=" + calendarYear;
+				clauses += " and yearid=" + calendarYear;
 			} else if(maxCalendarYear >= 9999) {
-				clauses += " and yearID >= " + calendarYear;
+				clauses += " and yearid >= " + calendarYear;
 			} else {
-				clauses += " and yearID >= " + calendarYear + " and yearID <= " + maxCalendarYear;
+				clauses += " and yearid >= " + calendarYear + " and yearID <= " + maxCalendarYear;
 			}
 			if(modelYear >= modelYearMax) {
-				clauses += " and modelYearID=" + modelYear;
+				clauses += " and modelyearid=" + modelYear;
 			} else {
-				clauses += " and modelYearID>=" + modelYear
-						+ " and modelYearID<=" + modelYearMax;
+				clauses += " and modelyearid>=" + modelYear
+						+ " and modelyearid<=" + modelYearMax;
 			}
 
 			// Update MOVESWorkerOutput
 			boolean needSQL = false;
-			String sql = "update MOVESWorkerOutput"
-					+ " set emissionQuant=emissionQuant*" + (retrofitFactor+nonRetrofitFactor)
-					+ (CompilationFlags.DO_RATES_FIRST? ",emissionRate=emissionRate*"+ (retrofitFactor+nonRetrofitFactor) : "")
+			String sql = "update movesworkeroutput"
+					+ " set emissionquant=emissionquant*" + (retrofitFactor+nonRetrofitFactor)
+					+ (CompilationFlags.DO_RATES_FIRST? ",emissionrate=emissionrate*"+ (retrofitFactor+nonRetrofitFactor) : "")
 					+ clauses
 					+ ";";
 			if(addToExecutionRunSpec) {
@@ -1220,9 +1220,9 @@ public class OnRoadRetrofitStrategy extends InternalControlStrategy
 			}
 			// Update BaseRateOutput
 			if(CompilationFlags.DO_RATES_FIRST) {
-				sql = "update BaseRateOutput"
-						+ " set emissionRate=emissionRate*" + (retrofitFactor+nonRetrofitFactor)
-						+ " , meanBaseRate=meanBaseRate*" + (retrofitFactor+nonRetrofitFactor)
+				sql = "update baserateoutput"
+						+ " set emissionrate=emissionrate*" + (retrofitFactor+nonRetrofitFactor)
+						+ " , meanbaserate=meanbaserate*" + (retrofitFactor+nonRetrofitFactor)
 						+ clauses
 						+ ";";
 				if(addToExecutionRunSpec) {

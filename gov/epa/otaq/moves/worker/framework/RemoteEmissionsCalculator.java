@@ -415,14 +415,14 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 			while(query.rs.next()) {
 				String name = query.rs.getString(1);
 				if(CompilationFlags.DO_RATES_FIRST) {
-					if(!name.equalsIgnoreCase("MOVESWorkerOutput")
-							&& !name.equalsIgnoreCase("MOVESWorkerActivityOutput")
-							&& !name.equalsIgnoreCase("BaseRateOutput")) {
+					if(!name.equalsIgnoreCase("movesworkeroutput")
+							&& !name.equalsIgnoreCase("movesworkeractivityoutput")
+							&& !name.equalsIgnoreCase("baserateoutput")) {
 						tablesToDrop.add(name);
 					}
 				} else {
-					if(!name.equalsIgnoreCase("MOVESWorkerOutput")
-							&& !name.equalsIgnoreCase("MOVESWorkerActivityOutput")) {
+					if(!name.equalsIgnoreCase("movesworkeroutput")
+							&& !name.equalsIgnoreCase("movesworkeractivityoutput")) {
 						tablesToDrop.add(name);
 					}
 				}
@@ -590,10 +590,10 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 		shouldDebug = SHOULD_DEBUG_WORKER_DATABASE;
 
 		if(manifestFile == null) {
-			manifest.tablesToRetrieve.add("MOVESWorkerOutput");
-			manifest.tablesToRetrieve.add("MOVESWorkerActivityOutput");
+			manifest.tablesToRetrieve.add("movesworkeroutput");
+			manifest.tablesToRetrieve.add("movesworkeractivityoutput");
 			if(CompilationFlags.DO_RATES_FIRST) {
-				manifest.tablesToRetrieve.add("BaseRateOutput");
+				manifest.tablesToRetrieve.add("baserateoutput");
 			}
 		}
 
@@ -661,14 +661,14 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 			File workerSQLPath = new File(workingFolderPath, WORKER_SQL_FILE_NAME);
 			sqlReader = new BufferedReader(new FileReader(workerSQLPath));
 
-			sql = "TRUNCATE MOVESWorkerOutput";
+			sql = "TRUNCATE movesworkeroutput";
 			try {
 				SQLRunner.executeSQL(database, sql);
 			} catch (SQLException exception) {
 				appendSQLError(errorFile, sql, exception);
 			}
 
-			sql = "TRUNCATE MOVESWorkerActivityOutput";
+			sql = "TRUNCATE movesworkeractivityoutput";
 			try {
 				SQLRunner.executeSQL(database, sql);
 			} catch (SQLException exception) {
@@ -677,7 +677,7 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 
 			if(CompilationFlags.DO_RATES_FIRST) {
 				String[] ratesTables = {
-					"BaseRateOutput"
+					"baserateoutput"
 				};
 				for(int i=0;i<ratesTables.length;i++) {
 					sql = "TRUNCATE " + ratesTables[i];
@@ -736,54 +736,54 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 				sqlRunner.stats.print();
 			}
 
-			startTimer("BundleResults");
-			if(manifest.tablesToRetrieve.contains("MOVESWorkerOutput")) {
+			startTimer("bundleresults");
+			if(manifest.tablesToRetrieve.contains("movesworkeroutput")) {
 				// SELECT * can't be used since it would export MOVESOutputRowID. This
 				// AUTO_INCREMENT field can't be exported across databases.
-				String outputTableFields = "MOVESRunID,"
-						+"yearID,"
-						+"monthID,"
-						+"dayID,"
-						+"hourID,"
-						+"stateID,"
-						+"countyID,"
-						+"zoneID,"
-						+"linkID,"
-						+"pollutantID,"
-						+"processID,"
-						+"sourceTypeID,"
-						+"regClassID,"
-						+"fuelTypeID,"
-						+"fuelSubTypeID,"
-						+"modelYearID,"
-						+"roadTypeID,"
-						+"SCC,"
-						+"engTechID,"
-						+"sectorID,"
-						+"hpID,"
-						+"emissionQuant";
+				String outputTableFields = "movesrunid,"
+						+"yearid,"
+						+"monthid,"
+						+"dayid,"
+						+"hourid,"
+						+"stateid,"
+						+"countyid,"
+						+"zoneid,"
+						+"linkid,"
+						+"pollutantid,"
+						+"processid,"
+						+"sourcetypeid,"
+						+"regclassid,"
+						+"fueltypeid,"
+						+"fuelsubtypeid,"
+						+"modelyearid,"
+						+"roadtypeid,"
+						+"scc,"
+						+"engtechid,"
+						+"sectorid,"
+						+"hpid,"
+						+"emissionquant";
 				File outputDataFile = new File(workingFolderPath, OUTPUT_DATA_FILE_NAME);
 				deleteFile(outputDataFile);
 				sql = "SELECT " + outputTableFields
 					+ " INTO OUTFILE "
 					+ DatabaseUtilities.escapeSQL(outputDataFile.getCanonicalPath())
-					+ " FROM MOVESWorkerOutput";
+					+ " FROM movesworkeroutput";
 				try {
 					SQLRunner.executeSQL(database, sql);
 				} catch (SQLException exception) {
 					appendSQLError(errorFile, sql, exception);
 				}
-				sql = "SELECT COUNT(*) FROM MOVESWorkerOutput";
+				sql = "SELECT COUNT(*) FROM movesworkeroutput";
 				PreparedStatement statement = database.prepareStatement(sql);
 				ResultSet results = SQLRunner.executeQuery(statement,sql);
 				results.next();
 				Logger.log(LogMessageCategory.INFO,"Extracted " + results.getInt(1) +
-						" rows from MOVESWorkerOutput");
+						" rows from movesworkeroutput");
 				results.close();
 				statement.close();
 
 				if(!shouldDebug) {
-					sql = "TRUNCATE MOVESWorkerOutput";
+					sql = "TRUNCATE movesworkeroutput";
 					try {
 						SQLRunner.executeSQL(database, sql);
 					} catch (SQLException exception) {
@@ -795,47 +795,47 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 				}
 			}
 
-			if(manifest.tablesToRetrieve.contains("MOVESWorkerActivityOutput")) {
+			if(manifest.tablesToRetrieve.contains("movesworkeractivityoutput")) {
 				// SELECT * can't be used since it would export MOVESOutputActivityRowID. This
 				// AUTO_INCREMENT field can't be exported across databases.
-				String outputActivityTableFields = "MOVESRunID,"
-						+"yearID,"
-						+"monthID,"
-						+"dayID,"
-						+"hourID,"
-						+"stateID,"
-						+"countyID,"
-						+"zoneID,"
-						+"linkID,"
-						+"sourceTypeID,"
-						+"regClassID,"
-						+"fuelTypeID,"
-						+"fuelSubTypeID,"
-						+"modelYearID,"
-						+"roadTypeID,"
-						+"SCC,"
-						+"engTechID,"
-						+"sectorID,"
-						+"hpID,"
-						+"activityTypeID,"
+				String outputActivityTableFields = "movesrunid,"
+						+"yearid,"
+						+"monthid,"
+						+"dayid,"
+						+"hourid,"
+						+"stateid,"
+						+"countyid,"
+						+"zoneid,"
+						+"linkid,"
+						+"sourcetypeid,"
+						+"regclassid,"
+						+"fueltypeid,"
+						+"fuelsubtypeid,"
+						+"modelyearid,"
+						+"roadtypeid,"
+						+"scc,"
+						+"engtechid,"
+						+"sectorid,"
+						+"hpid,"
+						+"activitytypeid,"
 						+"activity";
 				File outputActivityDataFile = new File(workingFolderPath, OUTPUT_ACTIVITY_DATA_FILE_NAME);
 				deleteFile(outputActivityDataFile);
 				sql = "SELECT " + outputActivityTableFields
 					+ " INTO OUTFILE "
 					+ DatabaseUtilities.escapeSQL(outputActivityDataFile.getCanonicalPath())
-					+ " FROM MOVESWorkerActivityOutput";
+					+ " FROM movesworkeractivityoutput";
 				try {
 					SQLRunner.executeSQL(database, sql);
 				} catch (SQLException exception) {
 					appendSQLError(errorFile, sql, exception);
 				}
-				sql = "SELECT COUNT(*) FROM MOVESWorkerActivityOutput";
+				sql = "SELECT COUNT(*) FROM movesworkeractivityoutput";
 				PreparedStatement statement = database.prepareStatement(sql);
 				ResultSet results = SQLRunner.executeQuery(statement,sql);
 				results.next();
 				Logger.log(LogMessageCategory.INFO,"Extracted " + results.getInt(1) +
-						" rows from MOVESWorkerActivityOutput");
+						" rows from movesworkeractivityoutput");
 				results.close();
 				statement.close();
 				if(outputActivityDataFile.isFile() && !returnFileList.contains(outputActivityDataFile)) {
@@ -843,7 +843,7 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 				}
 
 				if(!shouldDebug) {
-					sql = "TRUNCATE MOVESWorkerActivityOutput";
+					sql = "TRUNCATE movesworkeractivityoutput";
 					try {
 						SQLRunner.executeSQL(database, sql);
 					} catch (SQLException exception) {
@@ -854,8 +854,8 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 
 			for(Iterator ti=manifest.tablesToRetrieve.iterator();ti.hasNext();) {
 				String tableName = (String)ti.next();
-				if(tableName.equalsIgnoreCase("MOVESWorkerOutput")
-						|| tableName.equalsIgnoreCase("MOVESWorkerActivityOutput")) {
+				if(tableName.equalsIgnoreCase("movesworkeroutput")
+						|| tableName.equalsIgnoreCase("movesworkeractivityoutput")) {
 					continue;
 				}
 				// Extract the named table
@@ -1634,17 +1634,17 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 	void saveMOVESWorkerOutput(String suffix) {
 		suffix = StringUtilities.safeGetString(suffix);
 		String sql = "select "
-				+ " MOVESRunID,iterationID,"
-				+ " yearID,monthID,dayID,hourID,"
-				+ " stateID,countyID,zoneID,linkID,"
-				+ " pollutantID,processID,"
-				+ " sourceTypeID,regClassID,"
-				+ " fuelTypeID,fuelSubTypeID,modelYearID,"
-				+ " roadTypeID,SCC,"
-				+ " engTechID,sectorID,hpID,"
-				+ " emissionQuant,emissionRate"
+				+ " movesrunid,iterationid,"
+				+ " yearid,monthid,dayid,hourid,"
+				+ " stateid,countyid,zoneid,linkid,"
+				+ " pollutantid,processid,"
+				+ " sourcetypeid,regclassid,"
+				+ " fueltypeid,fuelsubtypeid,modelyearid,"
+				+ " roadtypeid,scc,"
+				+ " engtechid,sectorid,hpid,"
+				+ " emissionquant,emissionrate"
 				+ " into outfile 'c:/epa/moves/movesghgsource/movesworkeroutput" + suffix + "'"
-				+ " from MOVESWorkerOutput";
+				+ " from movesworkeroutput";
 		try {
 			SQLRunner.executeSQL(database,sql);
 		} catch(Exception e) {

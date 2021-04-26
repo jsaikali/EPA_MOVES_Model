@@ -257,16 +257,16 @@ public class NonroadOutputDataLoader {
 		String[] pollutionFields = new String[21];
 		String[] activityFields = new String[20];
 
-		String sql = "insert ignore into MOVESWorkerOutput ( MOVESRunID, iterationID, yearID, monthID, dayID, " // 1-5
-				+ "hourID, stateID, countyID, zoneID, linkID, " // 6-10
-				+ "pollutantID, processID, sourceTypeID, fuelTypeID, modelYearID, " // 11-15
-				+ "roadTypeID, SCC, engTechID, sectorID, emissionQuant, hpID) " // 16-21
+		String sql = "insert ignore into movesworkeroutput ( movesrunid, iterationid, yearid, monthid, dayid, " // 1-5
+				+ "hourid, stateid, countyid, zoneid, linkid, " // 6-10
+				+ "pollutantid, processid, sourcetypeid, fueltypeid, modelyearid, " // 11-15
+				+ "roadtypeid, scc, engtechid, sectorid, emissionquant, hpid) " // 16-21
 				+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
-		String sqlActivity = "insert ignore into MOVESWorkerActivityOutput ( MOVESRunID, iterationID, yearID, monthID, dayID, " // 1-5
-				+ "hourID, stateID, countyID, zoneID, linkID, " // 6-10
-				+ "sourceTypeID, fuelTypeID, modelYearID, roadTypeID, SCC, " // 11-15
-				+ "engTechID, sectorID, activityTypeID, activity, hpID) " // 16-20
+		String sqlActivity = "insert ignore into movesworkeractivityoutput ( movesrunid, iterationid, yearid, monthid, dayid, " // 1-5
+				+ "hourid, stateid, countyid, zoneid, linkid, " // 6-10
+				+ "sourcetypeid, fueltypeid, modelyearid, roadtypeid, scc, " // 11-15
+				+ "engtechid, sectorid, activitytypeid, activity, hpid) " // 16-20
 				+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
 		String line;
@@ -540,20 +540,20 @@ public class NonroadOutputDataLoader {
 				pollutionWriter.close();
 				pollutionWriter = null;
 				String cmd = "LOAD DATA INFILE '" + pollutionFile.getCanonicalPath().replace('\\', '/')
-						+ "' IGNORE INTO TABLE MOVESWorkerOutput ( MOVESRunID, iterationID, yearID, monthID, dayID, " // 1-5
-						+ "hourID, stateID, countyID, zoneID, linkID, " // 6-10
-						+ "pollutantID, processID, sourceTypeID, fuelTypeID, modelYearID, " // 11-15
-						+ "roadTypeID, SCC, engTechID, sectorID, emissionQuant, hpID)"; // 16-21
+						+ "' IGNORE INTO TABLE movesworkeroutput ( movesrunid, iterationid, yearid, monthid, dayid, " // 1-5
+						+ "hourid, stateid, countyid, zoneid, linkid, " // 6-10
+						+ "pollutantid, processid, sourcetypeid, fueltypeid, modelyearid, " // 11-15
+						+ "roadtypeid, scc, engtechid, sectorid, emissionquant, hpid)"; // 16-21
 				SQLRunner.executeSQL(database,cmd);
 			}
 			if(activityFileHasData) {
 				activityWriter.close();
 				activityWriter = null;
 				String cmd = "LOAD DATA INFILE '" + activityFile.getCanonicalPath().replace('\\', '/')
-						+ "' IGNORE INTO TABLE MOVESWorkerActivityOutput ( MOVESRunID, iterationID, yearID, monthID, dayID, " // 1-5
-						+ "hourID, stateID, countyID, zoneID, linkID, " // 6-10
-						+ "sourceTypeID, fuelTypeID, modelYearID, roadTypeID, SCC, " // 11-15
-						+ "engTechID, sectorID, activityTypeID, activity, hpID)"; // 16-20
+						+ "' IGNORE INTO TABLE movesworkeractivityoutput ( movesrunid, iterationid, yearid, monthid, dayid, " // 1-5
+						+ "hourid, stateid, countyid, zoneid, linkid, " // 6-10
+						+ "sourcetypeid, fueltypeid, modelyearid, roadtypeid, scc, " // 11-15
+						+ "engtechid, sectorid, activitytypeid, activity, hpid)"; // 16-20
 				SQLRunner.executeSQL(database,cmd);
 			}
 		} catch (SQLException e) {
@@ -615,10 +615,10 @@ public class NonroadOutputDataLoader {
 
 		PreparedStatement statement = null;
 
-		String sql = "insert ignore into MOVESWorkerOutput ( MOVESRunID, iterationID, yearID, monthID, dayID, " // 1-5
-				+ "hourID, stateID, countyID, zoneID, linkID, " // 6-10
-				+ "pollutantID, processID, sourceTypeID, fuelTypeID, modelYearID, " // 11-15
-				+ "roadTypeID, SCC, engTechID, sectorID, emissionQuant, hpID) " // 16-21
+		String sql = "insert ignore into movesworkeroutput ( movesrunid, iterationid, yearid, monthid, dayid, " // 1-5
+				+ "hourid, stateid, countyid, zoneid, linkid, " // 6-10
+				+ "pollutantid, processid, sourcetypeid, fueltypeid, modelyearid, " // 11-15
+				+ "roadtypeid, scc, engtechid, sectorid, emissionquant, hpid) " // 16-21
 				+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
 		String line;
@@ -771,10 +771,10 @@ public class NonroadOutputDataLoader {
 				pollutionWriter.close();
 				pollutionWriter = null;
 				String cmd = "LOAD DATA INFILE '" + pollutionFile.getCanonicalPath().replace('\\', '/')
-						+ "' IGNORE INTO TABLE MOVESWorkerOutput ( MOVESRunID, iterationID, yearID, monthID, dayID, " // 1-5
-						+ "hourID, stateID, countyID, zoneID, linkID, " // 6-10
-						+ "pollutantID, processID, sourceTypeID, fuelTypeID, modelYearID, " // 11-15
-						+ "roadTypeID, SCC, engTechID, sectorID, emissionQuant, hpID)"; // 16-21
+						+ "' IGNORE INTO TABLE movesworkeroutput ( movesrunid, iterationid, yearid, monthid, dayid, " // 1-5
+						+ "hourid, stateid, countyid, zoneid, linkid, " // 6-10
+						+ "pollutantid, processid, sourcetypeid, fueltypeid, modelyearid, " // 11-15
+						+ "roadtypeid, scc, engtechid, sectorid, emissionquant, hpid)"; // 16-21
 				SQLRunner.executeSQL(database,cmd);
 			}
 		} catch (SQLException e) {
@@ -820,7 +820,7 @@ public class NonroadOutputDataLoader {
 		int id = -1;
 		boolean isOK = true;
 
-		String sql = "select sourceTypeID from nrsourceusetype where SCC = ? and NRHPRangeBinID = ?";
+		String sql = "select sourcetypeid from nrsourceusetype where scc = ? and nrhprangebinid = ?";
 		PreparedStatement statement = null;
 		ResultSet results = null;
 		try {
@@ -881,7 +881,7 @@ public class NonroadOutputDataLoader {
 		int id = -1;
 		boolean isOK = true;
 
-		String sql = "select fuelTypeID from nrscc where scc = ?";
+		String sql = "select fueltypeid from nrscc where scc = ?";
 		PreparedStatement statement = null;
 		ResultSet results = null;
 		try {
@@ -939,7 +939,7 @@ public class NonroadOutputDataLoader {
 		int id = -1;
 		boolean isOK = true;
 
-		String sql = "select engTechID from enginetech where engtechName = ?";
+		String sql = "select engtechid from enginetech where engtechname = ?";
 		PreparedStatement statement = null;
 		ResultSet results = null;
 		try {
