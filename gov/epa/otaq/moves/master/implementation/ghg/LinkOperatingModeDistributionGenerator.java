@@ -413,7 +413,7 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 				 * @output ratesOpModeDistribution
 				 * @condition A previous road type has been used in the run.
 				**/
-				sql = "delete from ratesOpModeDistribution where roadTypeID=" + previousRoadTypeID;
+				sql = "delete from ratesopmodedistribution where roadtypeid=" + previousRoadTypeID;
 				SQLRunner.executeSQL(db,sql);
 			}
 
@@ -424,7 +424,7 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			 * @algorithm Delete the current road type's data from ratesOpModeDistribution.
 			 * @output ratesOpModeDistribution
 			**/
-			sql = "delete from ratesOpModeDistribution where roadTypeID=" + roadTypeID;
+			sql = "delete from ratesopmodedistribution where roadtypeid=" + roadTypeID;
 			SQLRunner.executeSQL(db,sql);
 
 			// Copy opmode data to RatesOpModeDistribution
@@ -434,7 +434,7 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			 * @algorithm Lookup the current link's linkAvgSpeed.
 			 * @input linkAvgSpeed
 			**/
-			sql = "select linkAvgSpeed from link where linkID=" + linkID;
+			sql = "select linkavgspeed from link where linkid=" + linkID;
 			double averageSpeed = SQLRunner.executeScalar(db,sql);
 
 			/**
@@ -446,17 +446,17 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			 * @input opModeDistribution
 			 * @output ratesOpModeDistribution
 			**/
-			sql = "insert into ratesOpModeDistribution (sourceTypeID, hourDayID, polProcessID, opModeID, opModeFraction,"
-					+ " 	roadTypeID, avgSpeedBinID, avgBinSpeed)"
-					+ " select sourceTypeID, hourDayID, polProcessID, opModeID, opModeFraction,"
-					+ " 	" + roadTypeID + " as roadTypeID, "
-					+ " 	0 as avgSpeedBinID, "
-					+ " 	" + averageSpeed + " as avgBinSpeed"
-					+ " from opModeDistribution omd"
-					+ " inner join linkSourceTypeHour lsth"
-					+ "		using (sourceTypeID,linkID)"
-					+ " where polProcessID > 0" // don't copy the generic polprocess entries, these are just to speed up OMD population itself
-					+ " and linkID = " + linkID;
+			sql = "insert into ratesopmodedistribution (sourcetypeid, hourdayid, polprocessid, opmodeid, opmodefraction,"
+					+ " 	roadtypeid, avgspeedbinid, avgbinspeed)"
+					+ " select sourcetypeid, hourdayid, polprocessid, opmodeid, opmodefraction,"
+					+ " 	" + roadTypeID + " as roadtypeid, "
+					+ " 	0 as avgspeedbinid, "
+					+ " 	" + averageSpeed + " as avgbinspeed"
+					+ " from opmodedistribution omd"
+					+ " inner join linksourcetypehour lsth"
+					+ "		using (sourcetypeid,linkid)"
+					+ " where polprocessid > 0" // don't copy the generic polprocess entries, these are just to speed up OMD population itself
+					+ " and linkid = " + linkID;
 			SQLRunner.executeSQL(db,sql);
 			previousRoadTypeID = roadTypeID;
 		} catch(SQLException e) {
@@ -480,24 +480,24 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			 * @input link
 			 * @condition The current link has no drive schedule
 			**/
-			sql = "select roadTypeID from link where linkID=" + linkID;
+			sql = "select roadtypeid from link where linkid=" + linkID;
 			roadTypeID = (int)SQLRunner.executeScalar(db,sql);
 
-			sql = "select ifnull(linkAvgGrade,0.0) from link where linkID=" + linkID;
+			sql = "select ifnull(linkavggrade,0.0) from link where linkid=" + linkID;
 			averageGrade = SQLRunner.executeScalar(db,sql);
 
 			// Find brackets for each source type given the road type and average speed
 			String[] statements = {
-				"create table if not exists tempLinkBracket ("
-						+ " 	linkID int not null,"
-						+ " 	sourceTypeID smallint(6) not null,"
-						+ " 	roadTypeID smallint(6) not null,"
-						+ " 	driveScheduleIDLow int null,"
-						+ " 	driveScheduleIDHigh int null,"
-						+ "     isOutOfBoundsLow int not null default 0,"
-						+ "     isOutOfBoundsHigh int not null default 0,"
-						+ " 	unique key (linkID, sourceTypeID, roadTypeID),"
-						+ " 	key (linkID, roadTypeID, sourceTypeID)"
+				"create table if not exists templinkbracket ("
+						+ " 	linkid int not null,"
+						+ " 	sourcetypeid smallint(6) not null,"
+						+ " 	roadtypeid smallint(6) not null,"
+						+ " 	drivescheduleidlow int null,"
+						+ " 	drivescheduleidhigh int null,"
+						+ "     isoutofboundslow int not null default 0,"
+						+ "     isoutofboundshigh int not null default 0,"
+						+ " 	unique key (linkid, sourcetypeid, roadtypeid),"
+						+ " 	key (linkid, roadtypeid, sourcetypeid)"
 						+ " )",
 
 				/**
@@ -510,21 +510,21 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 				 * @input driveSchedule
 				 * @condition The current link has no drive schedule
 				**/
-				"insert into tempLinkBracket (linkID, sourceTypeID, roadTypeID, driveScheduleIDLow)"
-						+ " select " + linkID + " as linkID,"
-						+ " 	dsal2.sourceTypeID, dsal2.roadTypeID, max(dsal2.driveScheduleID) as driveScheduleIDLow"
-						+ " from driveScheduleAssoc dsal2"
-						+ " inner join driveSchedule dsl2 using (driveScheduleID)"
-						+ " where dsl2.averageSpeed=("
-						+ " 	select max(averageSpeed)"
-						+ " 	from driveScheduleAssoc dsal"
-						+ " 	inner join driveSchedule dsl using (driveScheduleID)"
-						+ " 	where dsl.averageSpeed <= " + averageSpeed
-						+ " 	and dsal.roadTypeID=" + roadTypeID
-						+ " 	and dsal.sourceTypeID=dsal2.sourceTypeID"
-						+ " 	and dsal.roadTypeID=dsal2.roadTypeID"
+				"insert into templinkbracket (linkid, sourcetypeid, roadtypeid, drivescheduleidlow)"
+						+ " select " + linkID + " as linkid,"
+						+ " 	dsal2.sourcetypeid, dsal2.roadtypeid, max(dsal2.drivescheduleid) as drivescheduleidlow"
+						+ " from drivescheduleassoc dsal2"
+						+ " inner join driveschedule dsl2 using (drivescheduleid)"
+						+ " where dsl2.averagespeed=("
+						+ " 	select max(averagespeed)"
+						+ " 	from drivescheduleassoc dsal"
+						+ " 	inner join driveschedule dsl using (drivescheduleid)"
+						+ " 	where dsl.averagespeed <= " + averageSpeed
+						+ " 	and dsal.roadtypeid=" + roadTypeID
+						+ " 	and dsal.sourcetypeid=dsal2.sourcetypeid"
+						+ " 	and dsal.roadtypeid=dsal2.roadtypeid"
 						+ " )"
-						+ " group by dsal2.sourceTypeID, dsal2.roadTypeID"
+						+ " group by dsal2.sourcetypeid, dsal2.roadtypeid"
 						+ " order by null",
 
 				// Do an insert ignore set to isOutOfBoundsLow=1
@@ -540,34 +540,34 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 				 * @input driveSchedule
 				 * @condition The current link has no drive schedule
 				**/
-				"insert ignore into tempLinkBracket (linkID, sourceTypeID, roadTypeID, driveScheduleIDLow, isOutOfBoundsLow)"
-						+ " select " + linkID + " as linkID,"
-						+ " 	dsal2.sourceTypeID, dsal2.roadTypeID, max(dsal2.driveScheduleID) as driveScheduleIDLow,"
-						+ "     1 as isOutOfBoundsLow"
-						+ " from driveScheduleAssoc dsal2"
-						+ " inner join driveSchedule dsl2 using (driveScheduleID)"
-						+ " where dsl2.averageSpeed=("
-						+ " 	select min(averageSpeed)"
-						+ " 	from driveScheduleAssoc dsal"
-						+ " 	inner join driveSchedule dsl using (driveScheduleID)"
-						+ " 	where dsl.averageSpeed > " + averageSpeed
-						+ " 	and dsal.roadTypeID=" + roadTypeID
-						+ " 	and dsal.sourceTypeID=dsal2.sourceTypeID"
-						+ " 	and dsal.roadTypeID=dsal2.roadTypeID"
+				"insert ignore into templinkbracket (linkid, sourcetypeid, roadtypeid, drivescheduleidlow, isoutofboundslow)"
+						+ " select " + linkID + " as linkid,"
+						+ " 	dsal2.sourcetypeid, dsal2.roadtypeid, max(dsal2.drivescheduleid) as drivescheduleidlow,"
+						+ "     1 as isoutofboundslow"
+						+ " from drivescheduleassoc dsal2"
+						+ " inner join driveschedule dsl2 using (drivescheduleid)"
+						+ " where dsl2.averagespeed=("
+						+ " 	select min(averagespeed)"
+						+ " 	from drivescheduleassoc dsal"
+						+ " 	inner join driveschedule dsl using (drivescheduleid)"
+						+ " 	where dsl.averagespeed > " + averageSpeed
+						+ " 	and dsal.roadtypeid=" + roadTypeID
+						+ " 	and dsal.sourcetypeid=dsal2.sourcetypeid"
+						+ " 	and dsal.roadtypeid=dsal2.roadtypeid"
 						+ " )"
-						+ " group by dsal2.sourceTypeID, dsal2.roadTypeID"
+						+ " group by dsal2.sourcetypeid, dsal2.roadtypeid"
 						+ " order by null",
 
-				"drop table if exists tempLinkBracketHigh",
+				"drop table if exists templinkbrackethigh",
 
-				"create table if not exists tempLinkBracketHigh ("
-						+ " 	linkID int not null,"
-						+ " 	sourceTypeID smallint(6) not null,"
-						+ " 	roadTypeID smallint(6) not null,"
-						+ " 	driveScheduleIDHigh int null,"
-						+ "     isOutOfBoundsHigh int not null default 0,"
-						+ " 	unique key (linkID, sourceTypeID, roadTypeID),"
-						+ " 	key (linkID, roadTypeID, sourceTypeID)"
+				"create table if not exists templinkbrackethigh ("
+						+ " 	linkid int not null,"
+						+ " 	sourcetypeid smallint(6) not null,"
+						+ " 	roadtypeid smallint(6) not null,"
+						+ " 	drivescheduleidhigh int null,"
+						+ "     isoutofboundshigh int not null default 0,"
+						+ " 	unique key (linkid, sourcetypeid, roadtypeid),"
+						+ " 	key (linkid, roadtypeid, sourcetypeid)"
 						+ " )",
 
 				/**
@@ -580,21 +580,21 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 				 * @input driveSchedule
 				 * @condition The current link has no drive schedule
 				**/
-				"insert into tempLinkBracketHigh (linkID, sourceTypeID, roadTypeID, driveScheduleIDHigh)"
-						+ " select " + linkID + " as linkID,"
-						+ " 	dsal2.sourceTypeID, dsal2.roadTypeID, max(dsal2.driveScheduleID) as driveScheduleIDHigh"
-						+ " from driveScheduleAssoc dsal2"
-						+ " inner join driveSchedule dsl2 using (driveScheduleID)"
-						+ " where dsl2.averageSpeed=("
-						+ " 	select min(averageSpeed)"
-						+ " 	from driveScheduleAssoc dsal"
-						+ " 	inner join driveSchedule dsl using (driveScheduleID)"
-						+ " 	where dsl.averageSpeed >= " + averageSpeed
-						+ " 	and dsal.roadTypeID=" + roadTypeID
-						+ " 	and dsal.sourceTypeID=dsal2.sourceTypeID"
-						+ " 	and dsal.roadTypeID=dsal2.roadTypeID"
+				"insert into templinkbrackethigh (linkid, sourcetypeid, roadtypeid, drivescheduleidhigh)"
+						+ " select " + linkID + " as linkid,"
+						+ " 	dsal2.sourcetypeid, dsal2.roadtypeid, max(dsal2.drivescheduleid) as drivescheduleidhigh"
+						+ " from drivescheduleassoc dsal2"
+						+ " inner join driveschedule dsl2 using (drivescheduleid)"
+						+ " where dsl2.averagespeed=("
+						+ " 	select min(averagespeed)"
+						+ " 	from drivescheduleassoc dsal"
+						+ " 	inner join driveschedule dsl using (drivescheduleid)"
+						+ " 	where dsl.averagespeed >= " + averageSpeed
+						+ " 	and dsal.roadtypeid=" + roadTypeID
+						+ " 	and dsal.sourcetypeid=dsal2.sourcetypeid"
+						+ " 	and dsal.roadtypeid=dsal2.roadtypeid"
 						+ " )"
-						+ " group by dsal2.sourceTypeID, dsal2.roadTypeID"
+						+ " group by dsal2.sourcetypeid, dsal2.roadtypeid"
 						+ " order by null",
 
 				// Do an insert ignore set to isOutOfBoundsHigh=1
@@ -610,22 +610,22 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 				 * @input driveSchedule
 				 * @condition The current link has no drive schedule
 				**/
-				"insert ignore into tempLinkBracketHigh (linkID, sourceTypeID, roadTypeID, driveScheduleIDHigh, isOutOfBoundsHigh)"
-						+ " select " + linkID + " as linkID,"
-						+ " 	dsal2.sourceTypeID, dsal2.roadTypeID, max(dsal2.driveScheduleID) as driveScheduleIDHigh,"
-						+ "     1 as isOutOfBoundsHigh"
-						+ " from driveScheduleAssoc dsal2"
-						+ " inner join driveSchedule dsl2 using (driveScheduleID)"
-						+ " where dsl2.averageSpeed=("
-						+ " 	select max(averageSpeed)"
-						+ " 	from driveScheduleAssoc dsal"
-						+ " 	inner join driveSchedule dsl using (driveScheduleID)"
-						+ " 	where dsl.averageSpeed < " + averageSpeed
-						+ " 	and dsal.roadTypeID=" + roadTypeID
-						+ " 	and dsal.sourceTypeID=dsal2.sourceTypeID"
-						+ " 	and dsal.roadTypeID=dsal2.roadTypeID"
+				"insert ignore into templinkbrackethigh (linkid, sourcetypeid, roadtypeid, drivescheduleidhigh, isoutofboundshigh)"
+						+ " select " + linkID + " as linkid,"
+						+ " 	dsal2.sourcetypeid, dsal2.roadtypeid, max(dsal2.drivescheduleid) as drivescheduleidhigh,"
+						+ "     1 as isoutofboundshigh"
+						+ " from drivescheduleassoc dsal2"
+						+ " inner join driveschedule dsl2 using (drivescheduleid)"
+						+ " where dsl2.averagespeed=("
+						+ " 	select max(averagespeed)"
+						+ " 	from drivescheduleassoc dsal"
+						+ " 	inner join driveschedule dsl using (drivescheduleid)"
+						+ " 	where dsl.averagespeed < " + averageSpeed
+						+ " 	and dsal.roadtypeid=" + roadTypeID
+						+ " 	and dsal.sourcetypeid=dsal2.sourcetypeid"
+						+ " 	and dsal.roadtypeid=dsal2.roadtypeid"
 						+ " )"
-						+ " group by dsal2.sourceTypeID, dsal2.roadTypeID"
+						+ " group by dsal2.sourcetypeid, dsal2.roadtypeid"
 						+ " order by null",
 
 				/**
@@ -635,14 +635,14 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 				 * @input tempLinkBracketHigh
 				 * @condition The current link has no drive schedule
 				**/
-				"update tempLinkBracket, tempLinkBracketHigh set tempLinkBracket.driveScheduleIDHigh=tempLinkBracketHigh.driveScheduleIDHigh,"
-						+ " tempLinkBracket.isOutOfBoundsHigh=tempLinkBracketHigh.isOutOfBoundsHigh"
-						+ " where tempLinkBracket.sourceTypeID=tempLinkBracketHigh.sourceTypeID"
-						+ " and tempLinkBracket.roadTypeID=tempLinkBracketHigh.roadTypeID"
-						+ " and tempLinkBracket.linkID=tempLinkBracketHigh.linkID"
-						+ " and tempLinkBracket.linkID=" + linkID,
+				"update templinkbracket, templinkbrackethigh set templinkbracket.drivescheduleidhigh=templinkbrackethigh.drivescheduleidhigh,"
+						+ " templinkbracket.isoutofboundshigh=templinkbrackethigh.isoutofboundshigh"
+						+ " where templinkbracket.sourcetypeid=templinkbrackethigh.sourcetypeid"
+						+ " and templinkbracket.roadtypeid=templinkbrackethigh.roadtypeid"
+						+ " and templinkbracket.linkid=templinkbrackethigh.linkid"
+						+ " and templinkbracket.linkid=" + linkID,
 
-				"drop table if exists tempLinkBracketHigh"
+				"drop table if exists templinkbrackethigh"
 			};
 			for(int i=0;i<statements.length;i++) {
 				sql = statements[i];
@@ -659,16 +659,16 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			 * @output list of bracketing drive schedules that need operating mode distributions
 			 * @condition The current link has no drive schedule
 			**/
-			sql = "select distinct driveScheduleIDLow as driveScheduleID, sourceTypeID"
-					+ " from tempLinkBracket"
-					+ " where driveScheduleIDLow is not null and driveScheduleIDHigh is not null"
-					+ " and linkID=" + linkID
+			sql = "select distinct drivescheduleidlow as drivescheduleid, sourcetypeid"
+					+ " from templinkbracket"
+					+ " where drivescheduleidlow is not null and drivescheduleidhigh is not null"
+					+ " and linkid=" + linkID
 					+ " union"
-					+ " select distinct driveScheduleIDHigh as driveScheduleID, sourceTypeID"
-					+ " from tempLinkBracket"
-					+ " where driveScheduleIDLow is not null and driveScheduleIDHigh is not null"
-					+ " and linkID=" + linkID
-					+ " order by driveScheduleID, sourceTypeID";
+					+ " select distinct drivescheduleidhigh as drivescheduleid, sourcetypeid"
+					+ " from templinkbracket"
+					+ " where drivescheduleidlow is not null and drivescheduleidhigh is not null"
+					+ " and linkid=" + linkID
+					+ " order by drivescheduleid, sourcetypeid";
 			query.open(db,sql);
 			while(query.rs.next()) {
 				int driveScheduleID = query.rs.getInt(1);
@@ -676,7 +676,7 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 				if(driveScheduleID != priorDriveScheduleID) {
 					if(priorDriveScheduleID != 0) {
 						// Copy drive schedule into driveScheduleSecondLink using averageGrade
-						sql = "delete from driveScheduleSecondLink where linkID=" + -priorDriveScheduleID;
+						sql = "delete from driveschedulesecondlink where linkid=" + -priorDriveScheduleID;
 						SQLRunner.executeSQL(db,sql);
 
 						/**
@@ -689,10 +689,10 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 						 * @output driveScheduleSecondLink
 						 * @condition The current link has no drive schedule
 						**/
-						sql = "insert into driveScheduleSecondLink (linkID, secondID, speed, grade)"
+						sql = "insert into driveschedulesecondlink (linkid, secondid, speed, grade)"
 								+ " select " + -priorDriveScheduleID + ", second, speed, " + averageGrade
-								+ " from driveScheduleSecond"
-								+ " where driveScheduleID=" + priorDriveScheduleID;
+								+ " from driveschedulesecond"
+								+ " where drivescheduleid=" + priorDriveScheduleID;
 						SQLRunner.executeSQL(db,sql);
 						/**
 						 * @step 105
@@ -714,12 +714,12 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			query.close();
 			if(priorDriveScheduleID != 0 && sourceTypes.length() > 0) {
 				// Copy drive schedule into driveScheduleSecondLink using averageGrade
-				sql = "delete from driveScheduleSecondLink where linkID=" + -priorDriveScheduleID;
+				sql = "delete from driveschedulesecondlink where linkid=" + -priorDriveScheduleID;
 				SQLRunner.executeSQL(db,sql);
-				sql = "insert into driveScheduleSecondLink (linkID, secondID, speed, grade)"
+				sql = "insert into driveschedulesecondlink (linkid, secondid, speed, grade)"
 						+ " select " + -priorDriveScheduleID + ", second, speed, " + averageGrade
-						+ " from driveScheduleSecond"
-						+ " where driveScheduleID=" + priorDriveScheduleID;
+						+ " from driveschedulesecond"
+						+ " where drivescheduleid=" + priorDriveScheduleID;
 				SQLRunner.executeSQL(db,sql);
 				// Build the operating mode distribution
 				calculateOpModeFractionsCore(-priorDriveScheduleID,sourceTypes);
@@ -727,13 +727,13 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			}
 			// Build the interpolated opModeDistribution for each source type given its bounding drive schedules
 			ArrayList<Double> tempValues = new ArrayList<Double>();
-			sql = "select sourceTypeID, driveScheduleIDLow, dsl.averageSpeed, driveScheduleIDHigh, dsh.averageSpeed,"
-					+ " 	isOutOfBoundsLow, isOutOfBoundsHigh"
-					+ " from tempLinkBracket"
-					+ " inner join driveSchedule dsl on (dsl.driveScheduleID=driveScheduleIDLow)"
-					+ " inner join driveSchedule dsh on (dsh.driveScheduleID=driveScheduleIDHigh)"
-					+ " where linkID=" + linkID
-					+ " order by sourceTypeID";
+			sql = "select sourcetypeid, drivescheduleidlow, dsl.averagespeed, drivescheduleidhigh, dsh.averagespeed,"
+					+ " 	isoutofboundslow, isoutofboundshigh"
+					+ " from templinkbracket"
+					+ " inner join driveschedule dsl on (dsl.drivescheduleid=drivescheduleidlow)"
+					+ " inner join driveschedule dsh on (dsh.drivescheduleid=drivescheduleidhigh)"
+					+ " where linkid=" + linkID
+					+ " order by sourcetypeid";
 			query.open(db,sql);
 			while(query.rs.next()) {
 				int sourceTypeID = query.rs.getInt(1);
@@ -788,40 +788,40 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 				}
 
 				String[] interpolateStatements = {
-					"create table if not exists tempOpModeDistribution like opModeDistribution",
-					"create table if not exists tempOpModeDistribution2 like opModeDistribution",
+					"create table if not exists tempopmodedistribution like opmodedistribution",
+					"create table if not exists tempopmodedistribution2 like opmodedistribution",
 					
-					"truncate tempOpModeDistribution",
-					"truncate tempOpModeDistribution2",
+					"truncate tempopmodedistribution",
+					"truncate tempopmodedistribution2",
 					
-					"insert into tempopmodedistribution2 (sourceTypeID, hourDayID, linkID, polProcessID, opModeID, opModeFraction, isUserInput)"
-						+ " select sourceTypeID, hourDayID, linkID, polProcessID, opModeID, coalesce(opModeFraction, 0) as opModeFraction, 'N' as isUserInput"
+					"insert into tempopmodedistribution2 (sourcetypeid, hourdayid, linkid, polprocessid, opmodeid, opmodefraction, isuserinput)"
+						+ " select sourcetypeid, hourdayid, linkid, polprocessid, opmodeid, coalesce(opmodefraction, 0) as opmodefraction, 'N' as isuserinput"
 						+ " from physicsoperatingmode pom"
 						+ " join sourceusetypephysicsmapping sutpm"
-						+ " on (realSourceTypeID = " + sourceTypeID + " and pom.opModeID DIV 100 = sutpm.opModeIDOffset DIV 100)"
-						+ " join (select distinct sourceTypeID,hourDayID,linkID,polProcessID from opmodedistribution" 
-							+ " where linkID in (" + -lowScheduleID + "," + -highScheduleID + ") and sourceTypeID = " + sourceTypeID + ") lp"
+						+ " on (realsourcetypeid = " + sourceTypeID + " and pom.opmodeid div 100 = sutpm.opmodeidoffset div 100)"
+						+ " join (select distinct sourcetypeid,hourdayid,linkid,polprocessid from opmodedistribution" 
+							+ " where linkid in (" + -lowScheduleID + "," + -highScheduleID + ") and sourcetypeid = " + sourceTypeID + ") lp"
 						+ " left join opmodedistribution omd"
-						+ " using (opModeID,linkID,polProcessID,sourceTypeID,hourDayID)",
+						+ " using (opmodeid,linkid,polprocessid,sourcetypeid,hourdayid)",
 						
 	
-					"insert into tempOpModeDistribution (sourceTypeID, hourDayID, linkID, polProcessID, opModeID, opModeFraction, isUserInput)"
-							+ " select omdLow.sourceTypeID, omdLow.hourDayID, " + linkID + " as linkID,"
-							+ " 	omdLow.polProcessID, omdLow.opModeID,"
-							+ " 	(omdLow.opModeFraction+(omdHigh.opModeFraction-omdLow.opModeFraction)*" + factor + ") as opModeFraction,"
-							+ " 	'N' as isUserInput"
-							+ " from tempOpModeDistribution2 omdLow"
-							+ " inner join tempOpModeDistribution2 omdHigh on ("
-							+ " 	omdHigh.linkID= " + -highScheduleID
-							+ " 	and omdHigh.sourceTypeID = omdLow.sourceTypeID"
-							+ " 	and omdHigh.hourDayID = omdLow.hourDayID"
-							+ " 	and omdHigh.polProcessID = omdLow.polProcessID"
-							+ " 	and omdHigh.opModeID = omdLow.opModeID"
+					"insert into tempopmodedistribution (sourcetypeid, hourdayid, linkid, polprocessid, opmodeid, opmodefraction, isuserinput)"
+							+ " select omdlow.sourcetypeid, omdlow.hourdayid, " + linkID + " as linkid,"
+							+ " 	omdlow.polprocessid, omdlow.opmodeid,"
+							+ " 	(omdlow.opmodefraction+(omdhigh.opmodefraction-omdlow.opmodefraction)*" + factor + ") as opmodefraction,"
+							+ " 	'N' as isuserinput"
+							+ " from tempopmodedistribution2 omdlow"
+							+ " inner join tempopmodedistribution2 omdhigh on ("
+							+ " 	omdhigh.linkid= " + -highScheduleID
+							+ " 	and omdhigh.sourcetypeid = omdlow.sourcetypeid"
+							+ " 	and omdhigh.hourdayid = omdlow.hourdayid"
+							+ " 	and omdhigh.polprocessid = omdlow.polprocessid"
+							+ " 	and omdhigh.opmodeid = omdlow.opmodeid"
 							+ " )"
-							+ " where omdLow.sourceTypeID=" + sourceTypeID
-							+ " and omdLow.linkID=" + -lowScheduleID,
+							+ " where omdlow.sourcetypeid=" + sourceTypeID
+							+ " and omdlow.linkid=" + -lowScheduleID,
 
-					"delete from tempOpModeDistribution where opModeFraction <= 0",
+					"delete from tempopmodedistribution where opmodefraction <= 0",
 
 					/**
 					 * @step 105
@@ -830,16 +830,16 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 					 * @output opModeDistribution
 					 * @condition The current link has a drive schedule not just an average speed.
 					**/
-					"insert ignore into opModeDistribution (sourceTypeID, hourDayID, linkID, polProcessID, opModeID, opModeFraction, isUserInput)"
-							+ " select tomd.sourceTypeID, tomd.hourDayID, tomd.linkID, tomd.polProcessID, tomd.opModeID, tomd.opModeFraction, tomd.isUserInput"
-							+ " from tempOpModeDistribution tomd"
-							+ " left join tempExistingOpMode eom on ("
-							+ " 	eom.sourceTypeID=tomd.sourceTypeID"
-							+ " 	and eom.linkID=tomd.linkID"
-							+ " 	and eom.polProcessID=tomd.polProcessID)"
-							+ " where eom.sourceTypeID is null"
-							+ " and eom.polProcessID is null"
-							+ " and eom.linkID is null"
+					"insert ignore into opmodedistribution (sourcetypeid, hourdayid, linkid, polprocessid, opmodeid, opmodefraction, isuserinput)"
+							+ " select tomd.sourcetypeid, tomd.hourdayid, tomd.linkid, tomd.polprocessid, tomd.opmodeid, tomd.opmodefraction, tomd.isuserinput"
+							+ " from tempopmodedistribution tomd"
+							+ " left join tempexistingopmode eom on ("
+							+ " 	eom.sourcetypeid=tomd.sourcetypeid"
+							+ " 	and eom.linkid=tomd.linkid"
+							+ " 	and eom.polprocessid=tomd.polprocessid)"
+							+ " where eom.sourcetypeid is null"
+							+ " and eom.polprocessid is null"
+							+ " and eom.linkid is null"
 
 				};
 				for(int i=0;i<interpolateStatements.length;i++) {
@@ -871,20 +871,20 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			 * @output driveScheduleSecondLink
 			 * @condition The current link has a drive schedule not just an average speed.
 			**/
-			sql = "select distinct driveScheduleIDLow as driveScheduleID"
-					+ " from tempLinkBracket"
-					+ " where driveScheduleIDLow is not null and driveScheduleIDHigh is not null"
-					+ " and linkID=" + linkID
+			sql = "select distinct drivescheduleidlow as drivescheduleid"
+					+ " from templinkbracket"
+					+ " where drivescheduleidlow is not null and drivescheduleidhigh is not null"
+					+ " and linkid=" + linkID
 					+ " union"
-					+ " select distinct driveScheduleIDHigh as driveScheduleID"
-					+ " from tempLinkBracket"
-					+ " where driveScheduleIDLow is not null and driveScheduleIDHigh is not null"
-					+ " and linkID=" + linkID
-					+ " order by driveScheduleID";
+					+ " select distinct drivescheduleidhigh as drivescheduleid"
+					+ " from templinkbracket"
+					+ " where drivescheduleidlow is not null and drivescheduleidhigh is not null"
+					+ " and linkid=" + linkID
+					+ " order by drivescheduleid";
 			query.open(db,sql);
 			while(query.rs.next()) {
 				int driveScheduleID = query.rs.getInt(1);
-				sql = "delete from driveScheduleSecondLink where linkID=" + -driveScheduleID;
+				sql = "delete from driveschedulesecondlink where linkid=" + -driveScheduleID;
 				SQLRunner.executeSQL(db,sql);
 			}
 			query.close();
@@ -894,7 +894,7 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 		} finally {
 			query.onFinally();
 			String[] statements = {
-				"drop table if exists tempLinkBracketHigh"
+				"drop table if exists templinkbrackethigh"
 				//,"drop table if exists tempLinkBracket" Leave tempLinkBracket in MOVESExecution for debugging
 			};
 			for(int i=0;i<statements.length;i++) {
@@ -934,17 +934,17 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 				 * @condition Calculate a link's operating mode distribution from its drive schedule.
 				 * @condition A real linkID is provided (linkID > 0)
 				**/
-				sql = "select avg(speed) from driveScheduleSecondLink where linkID=" + linkID;
+				sql = "select avg(speed) from driveschedulesecondlink where linkid=" + linkID;
 				double averageSpeed = SQLRunner.executeScalar(db,sql);
-				sql = "update link set linkAvgSpeed=" + averageSpeed
-						+ " where linkID=" + linkID;
+				sql = "update link set linkavgspeed=" + averageSpeed
+						+ " where linkid=" + linkID;
 						//+ " and (linkAvgSpeed is null or linkAvgSpeed <= 0)";
 				SQLRunner.executeSQL(db,sql);
 
-				sql = "select avg(grade) from driveScheduleSecondLink where linkID=" + linkID;
+				sql = "select avg(grade) from driveschedulesecondlink where linkid=" + linkID;
 				double averageGrade = SQLRunner.executeScalar(db,sql);
-				sql = "update link set linkAvgGrade=" + averageGrade
-						+ " where linkID=" + linkID;
+				sql = "update link set linkavggrade=" + averageGrade
+						+ " where linkid=" + linkID;
 						//+ " and linkAvgGrade is null";
 				SQLRunner.executeSQL(db,sql);
 			}
@@ -957,10 +957,10 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 		}
 		String sourceTypeIDClause = "";
 		if(sourceTypes != null && sourceTypes.trim().length() > 0) {
-			sourceTypeIDClause = " and rst.sourceTypeID in (" + sourceTypes + ")";
+			sourceTypeIDClause = " and rst.sourcetypeid in (" + sourceTypes + ")";
 		}
 		String[] statements = {
-			"drop table if exists tempDriveScheduleSecondLink",
+			"drop table if exists tempdriveschedulesecondlink",
 
 			// Accelerations are in units of miles/(hour*sec)
 			// Speeds is miles/hour
@@ -992,27 +992,27 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			 * @output tempDriveScheduleSecondLink
 			 * @condition Calculate a link's operating mode distribution from its drive schedule.
 			**/
-			"create table tempDriveScheduleSecondLink"
+			"create table tempdriveschedulesecondlink"
 					+ " select "
-					+ " sut.tempSourceTypeID as sourceTypeID, "
-					+ "     a.linkID, a.secondID, a.speed,"
+					+ " sut.tempsourcetypeid as sourcetypeid, "
+					+ "     a.linkid, a.secondid, a.speed,"
 					+ " 	coalesce("
 					+ "			(a.speed-b.speed)+(9.81/0.44704*sin(atan(a.grade/100.0))),"
-					+ "			0.0) as At0,"
-					+ "		coalesce((b.speed-c.speed)+(9.81/0.44704*sin(atan(b.grade/100.0))),0.0) as At1,"
-					+ "		coalesce((c.speed-d.speed)+(9.81/0.44704*sin(atan(c.grade/100.0))),0.0) as At2,"
-				 	+ " 	(((a.speed*0.44704)*(rollingTermA+(a.speed*0.44704)*(rotatingTermB+dragTermC*(a.speed*0.44704)))"
-				 	+ "		+sourceMass*(a.speed*0.44704)*coalesce(a.speed-b.speed,0.0)*0.44704"
-			 		+ " 	+sourceMass*9.81*sin(atan(a.grade/100.0))*(a.speed*0.44704)))/fixedMassFactor as VSP,"
-					+ " 	-1 as opModeID"
-					+ " from driveScheduleSecondLink a"
-					+ " left join driveScheduleSecondLink b on (b.linkID=a.linkID and b.secondID=a.secondID-1)"
-					+ " left join driveScheduleSecondLink c on (c.linkID=b.linkID and c.secondID=b.secondID-1)"
-					+ " left join driveScheduleSecondLink d on (d.linkID=c.linkID and d.secondID=c.secondID-1)"
+					+ "			0.0) as at0,"
+					+ "		coalesce((b.speed-c.speed)+(9.81/0.44704*sin(atan(b.grade/100.0))),0.0) as at1,"
+					+ "		coalesce((c.speed-d.speed)+(9.81/0.44704*sin(atan(c.grade/100.0))),0.0) as at2,"
+				 	+ " 	(((a.speed*0.44704)*(rollingterma+(a.speed*0.44704)*(rotatingtermb+dragtermc*(a.speed*0.44704)))"
+				 	+ "		+sourcemass*(a.speed*0.44704)*coalesce(a.speed-b.speed,0.0)*0.44704"
+			 		+ " 	+sourcemass*9.81*sin(atan(a.grade/100.0))*(a.speed*0.44704)))/fixedmassfactor as vsp,"
+					+ " 	-1 as opmodeid"
+					+ " from driveschedulesecondlink a"
+					+ " left join driveschedulesecondlink b on (b.linkid=a.linkid and b.secondid=a.secondid-1)"
+					+ " left join driveschedulesecondlink c on (c.linkid=b.linkid and c.secondid=b.secondid-1)"
+					+ " left join driveschedulesecondlink d on (d.linkid=c.linkid and d.secondid=c.secondid-1)"
 					+ ","
-					+ " sourceUseTypePhysicsMapping sut"
-					+ " inner join RunSpecSourceType rst on (rst.sourceTypeID = sut.realSourceTypeID)"
-					+ " where a.linkID=" + linkID
+					+ " sourceusetypephysicsmapping sut"
+					+ " inner join runspecsourcetype rst on (rst.sourcetypeid = sut.realsourcetypeid)"
+					+ " where a.linkid=" + linkID
 					+ sourceTypeIDClause,
 
 			/**
@@ -1025,15 +1025,15 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			 * @output tempDriveScheduleSecondLink
 			 * @condition Calculate a link's operating mode distribution from its drive schedule.
 			**/
-			"update tempDriveScheduleSecondLink set opModeID= case"
-					+ " when (speed = 0) then 501" // force special bin for stopped, will be converted to bin 1 based on polProcessID later
-					+ " when (speed < 1) then 1" // force idle if speed < 1, just like OMDG and MesoscaleOMDG
-					+ "	when (At0 <= -2 or (At0 < -1 and At1 < -1 and At2 < -1)) then 0" // braking
+			"update tempdriveschedulesecondlink set opmodeid= case"
+					+ " when (speed = 0) then 501" // force special bin for stopped, will be converted to bin 1 based on polprocessid later
+					+ " when (speed < 1) then 1" // force idle if speed < 1, just like omdg and mesoscaleomdg
+					+ "	when (at0 <= -2 or (at0 < -1 and at1 < -1 and at2 < -1)) then 0" // braking
 					+ " " + opModeAssignmentSQL
 					+ "	else -1"
 					+ " end",
 
-			"drop table if exists tempDriveScheduleSecondLinkTotal",
+			"drop table if exists tempdriveschedulesecondlinktotal",
 
 			/**
 			 * @step 110
@@ -1043,13 +1043,13 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			 * @input tempDriveScheduleSecondLink
 			 * @condition Calculate a link's operating mode distribution from its drive schedule.
 			**/
-			"create table tempDriveScheduleSecondLinkTotal"
-					+ " select sourceTypeID, linkID, count(*) as secondTotal"
-					+ " from tempDriveScheduleSecondLink"
-					+ " group by sourceTypeID, linkID"
+			"create table tempdriveschedulesecondlinktotal"
+					+ " select sourcetypeid, linkid, count(*) as secondtotal"
+					+ " from tempdriveschedulesecondlink"
+					+ " group by sourcetypeid, linkid"
 					+ " order by null",
 
-			"drop table if exists tempDriveScheduleSecondLinkCount",
+			"drop table if exists tempdriveschedulesecondlinkcount",
 
 			/**
 			 * @step 110
@@ -1058,13 +1058,13 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			 * @input tempDriveScheduleSecondLink
 			 * @condition Calculate a link's operating mode distribution from its drive schedule.
 			**/
-			"create table tempDriveScheduleSecondLinkCount"
-					+ " select sourceTypeID, linkID, opModeID, count(*) as secondCount"
-					+ " from tempDriveScheduleSecondLink"
-					+ " group by sourceTypeID, linkID, opModeID"
+			"create table tempdriveschedulesecondlinkcount"
+					+ " select sourcetypeid, linkid, opmodeid, count(*) as secondcount"
+					+ " from tempdriveschedulesecondlink"
+					+ " group by sourcetypeid, linkid, opmodeid"
 					+ " order by null",
 
-			"drop table if exists tempDriveScheduleSecondLinkFraction",
+			"drop table if exists tempdriveschedulesecondlinkfraction",
 
 			/**
 			 * @step 110
@@ -1074,28 +1074,28 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			 * @input tempDriveScheduleSecondLinkTotal
 			 * @condition Calculate a link's operating mode distribution from its drive schedule.
 			**/
-			"create table tempDriveScheduleSecondLinkFraction"
-					+ " select sourceTypeID, linkID, opModeID, (secondCount*1.0/secondTotal) as opModeFraction"
-					+ " from tempDriveScheduleSecondLinkCount sc"
-					+ " inner join tempDriveScheduleSecondLinkTotal st using (sourceTypeID, linkID)",
+			"create table tempdriveschedulesecondlinkfraction"
+					+ " select sourcetypeid, linkid, opmodeid, (secondcount*1.0/secondtotal) as opmodefraction"
+					+ " from tempdriveschedulesecondlinkcount sc"
+					+ " inner join tempdriveschedulesecondlinktotal st using (sourcetypeid, linkid)",
 
-			"drop table if exists opModeDistributionTemp",
+			"drop table if exists opmodedistributiontemp",
 
-			"CREATE TABLE opModeDistributionTemp ("
-					+ "   sourceTypeID smallint(6) NOT NULL DEFAULT '0',"
-					+ "   hourDayID smallint(6) NOT NULL DEFAULT '0',"
-					+ "   linkID int(11) NOT NULL DEFAULT '0',"
-					+ "   polProcessID int NOT NULL DEFAULT '0',"
-					+ "   opModeID smallint(6) NOT NULL DEFAULT '0',"
-					+ "   opModeFraction float DEFAULT NULL,"
-					+ "   opModeFractionCV float DEFAULT NULL,"
-					+ "   isUserInput char(1) NOT NULL DEFAULT 'N',"
-					+ "   KEY allColumns (hourDayID,linkID,opModeID,polProcessID,sourceTypeID),"
-					+ "   KEY sourceTypeID (sourceTypeID),"
-					+ "   KEY hourDayID (hourDayID),"
-					+ "   KEY linkID (linkID),"
-					+ "   KEY polProcessID (polProcessID),"
-					+ "   KEY opModeID (opModeID)"
+			"CREATE TABLE opmodedistributiontemp ("
+					+ "   sourcetypeid smallint(6) not null default '0',"
+					+ "   hourdayid smallint(6) not null default '0',"
+					+ "   linkid int(11) not null default '0',"
+					+ "   polprocessid int not null default '0',"
+					+ "   opmodeid smallint(6) not null default '0',"
+					+ "   opmodefraction float default null,"
+					+ "   opmodefractioncv float default null,"
+					+ "   isuserinput char(1) not null default 'N',"
+					+ "   key allcolumns (hourdayid,linkid,opmodeid,polprocessid,sourcetypeid),"
+					+ "   key sourcetypeid (sourcetypeid),"
+					+ "   key hourdayid (hourdayid),"
+					+ "   key linkid (linkid),"
+					+ "   key polprocessid (polprocessid),"
+					+ "   key opmodeid (opmodeid)"
 					+ " )",
 
 			/**
@@ -1108,20 +1108,20 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			 * @input opModePolProcAssoc
 			 * @condition Calculate a link's operating mode distribution from its drive schedule.
 			**/
-			"insert into opModeDistributionTemp (sourceTypeID, hourDayID, linkID, polProcessID, opModeID, opModeFraction)"
-					+ " select lf.sourceTypeID, hourDayID, lf.linkID, omppa.polProcessID, "
-					+ " if(lf.opModeID=501,if(omppa.polProcessID=11609,501,1),lf.opModeID) as opModeID,"
-					+ " opModeFraction"
-					+ " from tempDriveScheduleSecondLinkFraction lf"
-					+ " inner join opModePolProcAssoc omppa using (opModeID)"
-					+ " left join tempExistingOpMode eom on ("
-					+ "		eom.sourceTypeID=lf.sourceTypeID"
-					+ "		and eom.linkID=lf.linkID"
-					+ "		and eom.polProcessID=omppa.polProcessID),"
-					+ " RunSpecHourDay rshd"
-					+ " where eom.sourceTypeID is null"
-					+ " and eom.polProcessID is null"
-					+ " and eom.linkID is null",
+			"insert into opmodedistributiontemp (sourcetypeid, hourdayid, linkid, polprocessid, opmodeid, opmodefraction)"
+					+ " select lf.sourcetypeid, hourdayid, lf.linkid, omppa.polprocessid, "
+					+ " if(lf.opmodeid=501,if(omppa.polprocessid=11609,501,1),lf.opmodeid) as opmodeid,"
+					+ " opmodefraction"
+					+ " from tempdriveschedulesecondlinkfraction lf"
+					+ " inner join opmodepolprocassoc omppa using (opmodeid)"
+					+ " left join tempexistingopmode eom on ("
+					+ "		eom.sourcetypeid=lf.sourcetypeid"
+					+ "		and eom.linkid=lf.linkid"
+					+ "		and eom.polprocessid=omppa.polprocessid),"
+					+ " runspechourday rshd"
+					+ " where eom.sourcetypeid is null"
+					+ " and eom.polprocessid is null"
+					+ " and eom.linkid is null",
 
 			/**
 			 * @step 110
@@ -1131,10 +1131,10 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			 * @output opModeDistributionTemp
 			 * @condition Calculate a link's operating mode distribution from its drive schedule.
 			**/
-			"insert ignore into opModeDistribution (sourceTypeID, hourDayID, linkID, polProcessID, opModeID, opModeFraction)"
-					+ " select sourceTypeID, hourDayID, linkID, polProcessID, opModeID, sum(opModeFraction)"
-					+ " from opModeDistributionTemp"
-					+ " group by hourDayID, linkID, opModeID, polProcessID, sourceTypeID"
+			"insert ignore into opmodedistribution (sourcetypeid, hourdayid, linkid, polprocessid, opmodeid, opmodefraction)"
+					+ " select sourcetypeid, hourdayid, linkid, polprocessid, opmodeid, sum(opmodefraction)"
+					+ " from opmodedistributiontemp"
+					+ " group by hourdayid, linkid, opmodeid, polprocessid, sourcetypeid"
 			/*
 			"insert ignore into opModeDistribution (sourceTypeID, hourDayID, linkID, polProcessID, opModeID, opModeFraction)"
 					+ " select lf.sourceTypeID, hourDayID, lf.linkID, omppa.polProcessID, lf.opModeID, opModeFraction"
@@ -1159,7 +1159,7 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 				 * @condition Calculate a link's operating mode distribution from its drive schedule.
 				 * @condition A bracketing link is provided (linkID < 0)
 				**/
-				sql = "delete from opModeDistribution where linkID=" + linkID;
+				sql = "delete from opmodedistribution where linkid=" + linkID;
 				SQLRunner.executeSQL(db,sql);
 			}
 			for(int i=0;i<statements.length;i++) {
@@ -1175,7 +1175,7 @@ public class LinkOperatingModeDistributionGenerator extends Generator {
 			 * @output opModeDistribution
 			 * @condition Calculate a link's operating mode distribution from its drive schedule.
 			**/
-			modelYearPhysics.updateOperatingModeDistribution(db,"OpModeDistribution", "linkID=" + linkID);
+			modelYearPhysics.updateOperatingModeDistribution(db,"opmodedistribution", "linkid=" + linkID);
 		} catch(SQLException e) {
 			Logger.logSqlError(e,"Could not calculate operating mode distributions", sql);
 			throw e;

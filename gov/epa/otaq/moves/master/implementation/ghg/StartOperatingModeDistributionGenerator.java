@@ -152,7 +152,7 @@ public class StartOperatingModeDistributionGenerator extends Generator {
 		try {
 			if(context.iterLocation.roadTypeRecordID == 1) {
 				db = DatabaseConnectionManager.checkOutConnection(MOVESDatabaseType.EXECUTION);
-				sql = "DELETE FROM OpModeDistribution WHERE isUserInput='N' AND linkID IN ("
+				sql = "DELETE FROM opmodedistribution WHERE isuserinput='N' AND linkid IN ("
 						+ context.iterLocation.linkRecordID + ")";
 				SQLRunner.executeSQL(db, sql);
 			}
@@ -201,7 +201,7 @@ public class StartOperatingModeDistributionGenerator extends Generator {
 		String sql = "";
 
 		try {
-			sql = "DROP TABLE IF EXISTS SoakTime";
+			sql = "DROP TABLE IF EXISTS soaktime";
 			SQLRunner.executeSQL(db, sql);
 
 			/**
@@ -212,11 +212,11 @@ public class StartOperatingModeDistributionGenerator extends Generator {
 			 * @output SoakTime
 			 * @input SampleVehicleTrip
 			**/
-			sql = "CREATE TABLE SoakTime "
-					+ "SELECT svt2.vehID, svt2.tripID, svt2.keyOnTime - svt1.keyOffTime AS soakTime "
-					+ "FROM SampleVehicleTrip svt1 "
-					+ "INNER JOIN SampleVehicleTrip svt2 ON (svt2.vehID = svt1.vehID "
-					+ "AND svt2.priorTripID = svt1.tripID)";
+			sql = "CREATE TABLE soaktime "
+					+ "select svt2.vehid, svt2.tripid, svt2.keyontime - svt1.keyofftime as soaktime "
+					+ "from samplevehicletrip svt1 "
+					+ "inner join samplevehicletrip svt2 on (svt2.vehid = svt1.vehid "
+					+ "and svt2.priortripid = svt1.tripid)";
 			SQLRunner.executeSQL(db, sql);
 		} catch (SQLException e) {
 			Logger.logSqlError(e,"Could not determine soak times for sample vehicle trips.", sql);
@@ -230,7 +230,7 @@ public class StartOperatingModeDistributionGenerator extends Generator {
 		String sql = "";
 
 		try {
-			sql = "DROP TABLE IF EXISTS StartOpMode";
+			sql = "DROP TABLE IF EXISTS startopmode";
 			SQLRunner.executeSQL(db, sql);
 
 			/**
@@ -243,12 +243,12 @@ public class StartOperatingModeDistributionGenerator extends Generator {
 			 * @input OperatingMode
 			 * @input SoakTime
 			**/
-			sql = "CREATE TABLE IF NOT EXISTS StartOpMode "
-					+ "SELECT vehID, tripID, opModeID FROM SoakTime "
-					+ "INNER JOIN OperatingMode "
-					+ "WHERE (minSoakTime <= soakTime OR (minSoakTime IS NULL AND maxSoakTime "
-					+ "IS NOT NULL)) AND (maxSoakTime > soakTime OR (maxSoakTime IS NULL AND "
-					+ "minSoakTime IS NOT NULL)) ORDER BY vehID, tripID";
+			sql = "CREATE TABLE IF NOT EXISTS startopmode "
+					+ "select vehid, tripid, opmodeid from soaktime "
+					+ "inner join operatingmode "
+					+ "where (minsoaktime <= soaktime or (minsoaktime is null and maxsoaktime "
+					+ "is not null)) and (maxsoaktime > soaktime or (maxsoaktime is null and "
+					+ "minsoaktime is not null)) order by vehid, tripid";
 			SQLRunner.executeSQL(db, sql);
 		} catch (SQLException e) {
 			Logger.logSqlError(e,"Could not determine operating mode for sample vehicle trips.", sql);
@@ -262,7 +262,7 @@ public class StartOperatingModeDistributionGenerator extends Generator {
 		String sql = "";
 
 		try {
-			sql = "DROP TABLE IF EXISTS StartsPerVehicleDay";
+			sql = "DROP TABLE IF EXISTS startspervehicleday";
 			SQLRunner.executeSQL(db, sql);
 
 			// Number of vehicle starts on day
@@ -278,20 +278,20 @@ public class StartOperatingModeDistributionGenerator extends Generator {
 			 * @input HourDay
 			 * @input RunSpecHourDay
 			**/
-			sql = "CREATE TABLE IF NOT EXISTS StartsPerVehicleDay "
-					+ "SELECT sourceTypeID, hd.hourDayID, COUNT(keyOnTime) AS starts, "
-					+ "hd.dayID, hd.hourID "
-					+ "FROM SampleVehicleDay sv "
-					+ "INNER JOIN SampleVehicleTrip svt ON (svt.vehID=sv.vehID) "
-					+ "INNER JOIN StartOpMode som ON (som.vehID=svt.vehID "
-					+ "AND som.tripID = svt.tripID) "
-					+ "INNER JOIN HourDay hd ON (hd.dayID=svt.dayID AND hd.hourID=svt.hourID) "
-					+ "INNER JOIN RunSpecHourDay rshd ON (rshd.hourDayID=hd.hourDayID)"
-					+ "GROUP BY sourceTypeID, hourDayID "
-					+ "ORDER BY sourceTypeID, hourDayID";
+			sql = "CREATE TABLE IF NOT EXISTS startspervehicleday "
+					+ "select sourcetypeid, hd.hourdayid, count(keyontime) as starts, "
+					+ "hd.dayid, hd.hourid "
+					+ "from samplevehicleday sv "
+					+ "inner join samplevehicletrip svt on (svt.vehid=sv.vehid) "
+					+ "inner join startopmode som on (som.vehid=svt.vehid "
+					+ "and som.tripid = svt.tripid) "
+					+ "inner join hourday hd on (hd.dayid=svt.dayid and hd.hourid=svt.hourid) "
+					+ "inner join runspechourday rshd on (rshd.hourdayid=hd.hourdayid)"
+					+ "group by sourcetypeid, hourdayid "
+					+ "order by sourcetypeid, hourdayid";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "DROP TABLE IF EXISTS StartOpModeDistribution";
+			sql = "DROP TABLE IF EXISTS startopmodedistribution";
 			SQLRunner.executeSQL(db, sql);
 
 			// Number of times in opmode on day
@@ -306,21 +306,21 @@ public class StartOperatingModeDistributionGenerator extends Generator {
 			 * @input StartOpMode
 			 * @input StartsPerVehicleDay
 			**/
-			sql = "CREATE TABLE IF NOT EXISTS StartOpModeDistribution "
-					+ "SELECT sv.sourceTypeID, svd.hourDayID, opModeID, "
-					+ "COUNT(opModeID)/starts AS opModeFraction "
-					+ "FROM SampleVehicleDay sv "
-					+ "INNER JOIN SampleVehicleTrip svt ON (svt.vehID=sv.vehID) "
-					+ "INNER JOIN StartOpMode som ON (som.vehID=svt.vehID "
-					+ "AND som.tripID=svt.tripID) "
-					+ "INNER JOIN StartsPerVehicleDay svd ON (svd.sourceTypeID= "
-					+ "sv.sourceTypeID AND svd.dayID=svt.dayID "
-					+ "AND svd.hourID=svt.hourID) "
-					+ "GROUP BY sv.sourceTypeID, svd.hourDayID, opModeID "
-					+ "ORDER BY sv.sourceTypeID, svd.hourDayID, opModeID";
+			sql = "CREATE TABLE IF NOT EXISTS startopmodedistribution "
+					+ "select sv.sourcetypeid, svd.hourdayid, opmodeid, "
+					+ "count(opmodeid)/starts as opmodefraction "
+					+ "from samplevehicleday sv "
+					+ "inner join samplevehicletrip svt on (svt.vehid=sv.vehid) "
+					+ "inner join startopmode som on (som.vehid=svt.vehid "
+					+ "and som.tripid=svt.tripid) "
+					+ "inner join startspervehicleday svd on (svd.sourcetypeid= "
+					+ "sv.sourcetypeid and svd.dayid=svt.dayid "
+					+ "and svd.hourid=svt.hourid) "
+					+ "group by sv.sourcetypeid, svd.hourdayid, opmodeid "
+					+ "order by sv.sourcetypeid, svd.hourdayid, opmodeid";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "drop table if exists SOMDGOpModes";
+			sql = "drop table if exists somdgopmodes";
 			SQLRunner.executeSQL(db, sql);
 
 			/**
@@ -329,25 +329,25 @@ public class StartOperatingModeDistributionGenerator extends Generator {
 			 * @output SOMDGOpModes
 			 * @input StartOpModeDistribution
 			**/
-			sql = "create table SOMDGOpModes select distinct opModeID from StartOpModeDistribution";
+			sql = "create table somdgopmodes select distinct opmodeid from startopmodedistribution";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "alter table SOMDGOpModes add primary key (opModeID)";
+			sql = "alter table somdgopmodes add primary key (opmodeid)";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "drop table if exists existingStartOMD";
+			sql = "drop table if exists existingstartomd";
 			SQLRunner.executeSQL(db, sql);
 			
-			sql = "create table existingStartOMD like opModeDistribution";
+			sql = "create table existingstartomd like opmodedistribution";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "alter table opModeDistribution add key SOMDG_Key (sourceTypeID, linkID, polProcessID, opModeID)";
+			sql = "alter table opmodedistribution add key somdg_key (sourcetypeid, linkid, polprocessid, opmodeid)";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "analyze table opModeDistribution";
+			sql = "analyze table opmodedistribution";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "alter table existingStartOMD add key SOMDG_Key (sourceTypeID, linkID, polProcessID, opModeID)";
+			sql = "alter table existingstartomd add key somdg_key (sourcetypeid, linkid, polprocessid, opmodeid)";
 			SQLRunner.executeSQL(db, sql);
 
 			/**
@@ -357,11 +357,11 @@ public class StartOperatingModeDistributionGenerator extends Generator {
 			 * @input SOMDGOpModes
 			 * @input opModeDistribution
 			**/
-			sql = "insert into existingStartOMD (sourceTypeID, hourDayID, linkID, polProcessID, opModeID, opModeFraction)"
-					+ " select sourceTypeID, hourDayID, linkID, polProcessID, omd.opModeID, opModeFraction"
-					+ " from SOMDGOpModes soms"
-					+ " inner join opModeDistribution omd using (opModeID)"
-					+ " group by sourceTypeID, linkID, polProcessID";
+			sql = "insert into existingstartomd (sourcetypeid, hourdayid, linkid, polprocessid, opmodeid, opmodefraction)"
+					+ " select sourcetypeid, hourdayid, linkid, polprocessid, omd.opmodeid, opmodefraction"
+					+ " from somdgopmodes soms"
+					+ " inner join opmodedistribution omd using (opmodeid)"
+					+ " group by sourcetypeid, linkid, polprocessid";
 			SQLRunner.executeSQL(db, sql);
 		} catch (SQLException e) {
 			Logger.logSqlError(e,"Could not determine operating mode fraction.", sql);
@@ -386,30 +386,30 @@ public class StartOperatingModeDistributionGenerator extends Generator {
 					 * @input opModePolProcAssoc
 					 * @condition Project domain
 					**/
-					sql = "INSERT IGNORE INTO RatesOpModeDistribution ("+
-								"sourceTypeID,"+
-								"roadTypeID,"+
-								"avgSpeedBinID,"+
-								"hourDayID,"+
-								"polProcessID,"+
-								"opModeID,"+
-								"opModeFraction) "+
+					sql = "INSERT IGNORE INTO ratesopmodedistribution ("+
+								"sourcetypeid,"+
+								"roadtypeid,"+
+								"avgspeedbinid,"+
+								"hourdayid,"+
+								"polprocessid,"+
+								"opmodeid,"+
+								"opmodefraction) "+
 							"select "+
-								"somd.sourceTypeID,"+
-								"1 as roadTypeID,"+
-								"0 as avgSpeedBinID,"+
-								"somd.hourDayID,"+
-								"omppa.polProcessID,"+
-								"somd.opModeID,"+
-								"somd.opModeFraction "+
+								"somd.sourcetypeid,"+
+								"1 as roadtypeid,"+
+								"0 as avgspeedbinid,"+
+								"somd.hourdayid,"+
+								"omppa.polprocessid,"+
+								"somd.opmodeid,"+
+								"somd.opmodefraction "+
 							"from "+
-								"OpModeDistribution somd "+
-								"inner join sourceTypePolProcess stpp on (stpp.sourceTypeID = somd.sourceTypeID) "+
-								"inner join opModePolProcAssoc omppa on ("+
-									"omppa.polProcessID = stpp.polProcessID "+
-									"and omppa.opModeID = somd.opModeID) "+
+								"opmodedistribution somd "+
+								"inner join sourcetypepolprocess stpp on (stpp.sourcetypeid = somd.sourcetypeid) "+
+								"inner join opmodepolprocassoc omppa on ("+
+									"omppa.polprocessid = stpp.polprocessid "+
+									"and omppa.opmodeid = somd.opmodeid) "+
 							"where "+
-								"stpp.polProcessID IN (" + polProcessIDs.substring(1) + ")";
+								"stpp.polprocessid in (" + polProcessIDs.substring(1) + ")";
 					SQLRunner.executeSQL(db, sql);
 				} else {
 					/**
@@ -421,13 +421,13 @@ public class StartOperatingModeDistributionGenerator extends Generator {
 					 * @input opModePolProcAssoc
 					 * @condition Non-Project domain
 					**/
-					sql = "insert ignore into ratesOpModeDistribution (avgSpeedBinID, roadTypeID, "
-					+ " sourceTypeID, hourDayID, polProcessID, opModeID, opModeFraction, opModeFractionCV)"
-					+ " select distinct 0 as avgSpeedBinID, 1 as roadTypeID, "
-					+ " somd.sourceTypeID, (somd.hourID*10+somd.dayID) as hourDayID, ppa.polProcessID, somd.opModeID, somd.opModeFraction, null as opModeFractionCV"
-					+ " from startsOpModeDistribution somd "
+					sql = "insert ignore into ratesopmodedistribution (avgspeedbinid, roadtypeid, "
+					+ " sourcetypeid, hourdayid, polprocessid, opmodeid, opmodefraction, opmodefractioncv)"
+					+ " select distinct 0 as avgspeedbinid, 1 as roadtypeid, "
+					+ " somd.sourcetypeid, (somd.hourid*10+somd.dayid) as hourdayid, ppa.polprocessid, somd.opmodeid, somd.opmodefraction, null as opmodefractioncv"
+					+ " from startsopmodedistribution somd "
 					+ " cross join pollutantprocessassoc ppa"
-					+ " where ppa.processID in (2,16)";
+					+ " where ppa.processid in (2,16)";
 					SQLRunner.executeSQL(db, sql);
 				}
 
@@ -439,37 +439,37 @@ public class StartOperatingModeDistributionGenerator extends Generator {
 				 * @input runSpecHourDay
 				 * @input runSpecSourceType
 				**/
-				sql = "INSERT IGNORE INTO RatesOpModeDistribution ("+
-							"sourceTypeID,"+
-							"roadTypeID,"+
-							"avgSpeedBinID,"+
-							"hourDayID,"+
-							"polProcessID,"+
-							"opModeID,"+
-							"opModeFraction) "+
+				sql = "INSERT IGNORE INTO ratesopmodedistribution ("+
+							"sourcetypeid,"+
+							"roadtypeid,"+
+							"avgspeedbinid,"+
+							"hourdayid,"+
+							"polprocessid,"+
+							"opmodeid,"+
+							"opmodefraction) "+
 						"select distinct "+
-							"sourceTypeID,"+
-							"1 as roadTypeID,"+
-							"0 as avgSpeedBinID,"+
-							"hourDayID,"+
-							"602 as polProcessID,"+
-							"100 as opModeID,"+
-							"1 as opModeFraction "+
+							"sourcetypeid,"+
+							"1 as roadtypeid,"+
+							"0 as avgspeedbinid,"+
+							"hourdayid,"+
+							"602 as polprocessid,"+
+							"100 as opmodeid,"+
+							"1 as opmodefraction "+
 						"from "+
-							"runSpecHourDay, "+
-							"runSpecSourceType";
+							"runspechourday, "+
+							"runspecsourcetype";
 				SQLRunner.executeSQL(db, sql);
 			} else {
 				// For zone emissions, only work with the off-network road type.
 				if(inContext.iterLocation.roadTypeRecordID != 1) {
 					return;
 				}
-				sql = "insert ignore into opModeDistribution (sourceTypeID, hourDayID, linkID, polProcessID, opModeID, opModeFraction, opModeFractionCV)"
-					+ " select distinct somd.sourceTypeID, (somd.hourID*10+somd.dayID) as hourDayID, l.linkID, ppa.polProcessID, somd.opModeID, somd.opModeFraction, null as opModeFractionCV"
-					+ " from startsOpModeDistribution somd "
+				sql = "insert ignore into opmodedistribution (sourcetypeid, hourdayid, linkid, polprocessid, opmodeid, opmodefraction, opmodefractioncv)"
+					+ " select distinct somd.sourcetypeid, (somd.hourid*10+somd.dayid) as hourdayid, l.linkid, ppa.polprocessid, somd.opmodeid, somd.opmodefraction, null as opmodefractioncv"
+					+ " from startsopmodedistribution somd "
 					+ " cross join pollutantprocessassoc ppa "
 					+ " cross join link l"
-					+ " where ppa.processID in (2,16)";
+					+ " where ppa.processid in (2,16)";
 				SQLRunner.executeSQL(db, sql);
 			}
 		} catch (SQLException e) {
