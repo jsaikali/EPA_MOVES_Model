@@ -1757,7 +1757,7 @@ public class MOVESInstantiator {
 					}
 				}
 				if(!hasRetrofitData) {
-					sql = "select count(*) from onRoadRetrofit";
+					sql = "select count(*) from onroadretrofit";
 					if(SQLRunner.executeScalar(executionDB,sql) >= 1) {
 						hasRetrofitData = true;
 						hasAnyData = true;
