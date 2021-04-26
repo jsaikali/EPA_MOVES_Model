@@ -1,41 +1,41 @@
 /*
-   Version 2013-10-23
-   Author Wesley Faler
+   version 2013-10-23
+   author wesley faler
 */
-DROP TABLE IF EXISTS BaseRateOutput;
-DROP TABLE IF EXISTS BaseRateUnits;
+drop table if exists baserateoutput;
+drop table if exists baserateunits;
 
-CREATE TABLE IF NOT EXISTS BaseRateUnits (
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
+create table if not exists baserateunits (
+	movesrunid           smallint unsigned not null,
 
-	pollutantID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	processID            SMALLINT UNSIGNED NULL DEFAULT NULL,
+	pollutantid          smallint unsigned null default null,
+	processid            smallint unsigned null default null,
 
-	meanBaseRateUnitsNumerator varchar(50) null default '',
-	meanBaseRateUnitsDenominator varchar(50) null default '',
-	emissionBaseRateUnitsNumerator varchar(50) null default '',
-	emissionBaseRateUnitsDenominator varchar(50) null default ''
+	meanbaserateunitsnumerator varchar(50) null default '',
+	meanbaserateunitsdenominator varchar(50) null default '',
+	emissionbaserateunitsnumerator varchar(50) null default '',
+	emissionbaserateunitsdenominator varchar(50) null default ''
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
 
-CREATE TABLE IF NOT EXISTS BaseRateOutput (
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
-	iterationID          SMALLINT UNSIGNED NULL DEFAULT 1,
+CREATE TABLE if not exists baserateoutput (
+	movesrunid           smallint unsigned not null,
+	iterationid          smallint unsigned null default 1,
 
-	zoneID				 INTEGER NOT NULL DEFAULT '0',
-	linkID				 INTEGER NOT NULL DEFAULT '0',
-	sourceTypeID         SMALLINT NOT NULL DEFAULT '0',
-    SCC                  CHAR(10) NOT NULL DEFAULT '',
-	roadTypeID           SMALLINT NOT NULL DEFAULT '0',
-	avgSpeedBinID        SMALLINT NOT NULL DEFAULT '0',
-	monthID              SMALLINT NOT NULL DEFAULT '0',
-	hourDayID            SMALLINT NOT NULL DEFAULT '0',
-	pollutantID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	processID            SMALLINT UNSIGNED NULL DEFAULT NULL,
-	modelYearID			 SMALLINT NOT NULL DEFAULT '0',
-	yearID               SMALLINT NOT NULL,
-	fuelTypeID			 SMALLINT NOT NULL DEFAULT '0',
-	regClassID			 SMALLINT NOT NULL DEFAULT '0',
+	zoneid				 integer not null default '0',
+	linkid				 integer not null default '0',
+	sourcetypeid         smallint not null default '0',
+    scc                  char(10) not null default '',
+	roadtypeid           smallint not null default '0',
+	avgspeedbinid        smallint not null default '0',
+	monthid              smallint not null default '0',
+	hourdayid            smallint not null default '0',
+	pollutantid          smallint unsigned null default null,
+	processid            smallint unsigned null default null,
+	modelyearid			 smallint not null default '0',
+	yearid               smallint not null,
+	fueltypeid			 smallint not null default '0',
+	regclassid			 smallint not null default '0',
 
-	meanBaseRate		 FLOAT NULL,
-	emissionRate		 FLOAT NULL
+	meanbaserate		 float null,
+	emissionrate		 float null
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
