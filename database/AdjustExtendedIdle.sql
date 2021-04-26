@@ -1,237 +1,237 @@
--- Adjust the distribution within the ExtendedIdleHours table using
+-- adjust the distribution within the extendedidlehours table using
 -- user-supplied adjustments.
--- Author Wesley Faler
--- Version 2017-09-19
+-- author wesley faler
+-- version 2017-09-19
 
-drop procedure if exists spAdjustExtendedIdle;
+drop procedure if exists spadjustextendedidle;
 
-BeginBlock
-create procedure spAdjustExtendedIdle()
+beginblock
+create procedure spadjustextendedidle()
 begin
-	declare targetZoneID int default ##zoneID##;
-	declare targetYearID int default ##yearID##;
-	declare activityZoneID int default ##activityZoneID##;
-	declare howMany int default 0;
+	declare targetzoneid int default ##zoneid##;
+	declare targetyearid int default ##yearid##;
+	declare activityzoneid int default ##activityzoneid##;
+	declare howmany int default 0;
 
-	-- hotellingHoursPerDay
-	set howMany=0;
-	select count(*) into howMany from hotellinghoursperday where zoneID=targetZoneID;
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then
-		alter table ExtendedIdleHours add column dayID smallint not null default 0;
-		alter table ExtendedIdleHours add column hourID smallint not null default 0;
+	-- hotellinghoursperday
+	set howmany=0;
+	select count(*) into howmany from hotellinghoursperday where zoneid=targetzoneid;
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then
+		alter table extendedidlehours add column dayid smallint not null default 0;
+		alter table extendedidlehours add column hourid smallint not null default 0;
 
-		drop table if exists newExtendedIdleHours_hhpd;
-		drop table if exists defaultExtendedIdleHoursPerDay;
+		drop table if exists newextendedidlehours_hhpd;
+		drop table if exists defaultextendedidlehoursperday;
 
-		create table newExtendedIdleHours_hhpd like ExtendedIdleHours;
-		create table defaultExtendedIdleHoursPerDay (
-			yearID int,
-			zoneID int,
-			dayID smallint,
-			defaultExtendedIdleHours double -- this is units of hotelling hours in a typical day
+		create table newextendedidlehours_hhpd like extendedidlehours;
+		create table defaultextendedidlehoursperday (
+			yearid int,
+			zoneid int,
+			dayid smallint,
+			defaultextendedidlehours double -- this is units of hotelling hours in a typical day
 		);
 
-		update ExtendedIdleHours set dayID=mod(hourDayID,10), hourID=floor(hourDayID/10)
-		where zoneID = targetZoneID and yearID = targetYearID;
+		update extendedidlehours set dayid=mod(hourdayid,10), hourid=floor(hourdayid/10)
+		where zoneid = targetzoneid and yearid = targetyearid;
 		
 		-- calculate the defaults
-		insert into defaultExtendedIdleHoursPerDay 
-		select yearID,zoneID,dayID,sum(ExtendedIdleHours / noOfRealDays) 
-		from ExtendedIdleHours
-		join dayOfAnyWeek using (dayID)
-		group by yearID,zoneID,dayID;
+		insert into defaultextendedidlehoursperday 
+		select yearid,zoneid,dayid,sum(extendedidlehours / noofrealdays) 
+		from extendedidlehours
+		join dayofanyweek using (dayid)
+		group by yearid,zoneid,dayid;
 		
 		
-		-- we use the ratio between the defaults and user input to calcualte the new ExtendedIdleHours
-		insert into newExtendedIdleHours_hhpd (sourceTypeID,yearID,monthID,dayID,hourID,hourDayID,zoneID,ageID,ExtendedIdleHours)
-		-- units of ExtendedIdleHours : hours per portion of week
-		-- units of (ExtendedIdleHoursperday / defaultExtendedIdleHours): hours per typical day / hours per typical day, month combination (implictly day*month)
+		-- we use the ratio between the defaults and user input to calcualte the new extendedidlehours
+		insert into newextendedidlehours_hhpd (sourcetypeid,yearid,monthid,dayid,hourid,hourdayid,zoneid,ageid,extendedidlehours)
+		-- units of extendedidlehours : hours per portion of week
+		-- units of (extendedidlehoursperday / defaultextendedidlehours): hours per typical day / hours per typical day, month combination (implictly day*month)
 		-- expression below becomes hours per potion of week * (1/ typical month) * months
-		select sourceTypeID,yearID,monthID,dayID,hourID,hourID*10+dayID as hourDayID,eih.zoneID,ageID,
-			(hotellingHoursPerDay / defaultExtendedIdleHours) * ExtendedIdleHours * 12 * opModeFraction as ExtendedIdleHours
-			-- sum(case when opModeFraction>0 then (hotellingHoursPerDay / defaultExtendedIdleHours) * ExtendedIdleHours * 12 * opModeFraction else 0 end)
-		from ExtendedIdleHours as eih
-		join defaultExtendedIdleHoursPerDay using (yearID,zoneID,dayID)
-		join hotellingHoursPerDay using (yearID,zoneID,dayID)
-		join dayofanyweek using (dayID)
-		join monthofanyyear using (monthID)
-		join HotellingActivityDistribution had on (
-			beginModelYearID <= yearID - ageID
-			and endModelYearID >= yearID - ageID
-			and opModeID = 200
-			and had.zoneID = activityZoneID
+		select sourcetypeid,yearid,monthid,dayid,hourid,hourid*10+dayid as hourdayid,eih.zoneid,ageid,
+			(hotellinghoursperday / defaultextendedidlehours) * extendedidlehours * 12 * opmodefraction as extendedidlehours
+			-- sum(case when opmodefraction>0 then (hotellinghoursperday / defaultextendedidlehours) * extendedidlehours * 12 * opmodefraction else 0 end)
+		from extendedidlehours as eih
+		join defaultextendedidlehoursperday using (yearid,zoneid,dayid)
+		join hotellinghoursperday using (yearid,zoneid,dayid)
+		join dayofanyweek using (dayid)
+		join monthofanyyear using (monthid)
+		join hotellingactivitydistribution had on (
+			beginmodelyearid <= yearid - ageid
+			and endmodelyearid >= yearid - ageid
+			and opmodeid = 200
+			and had.zoneid = activityzoneid
 		);
 		
 		-- replace into with the new data
-		replace into ExtendedIdleHours select * from newExtendedIdleHours_hhpd;
+		replace into extendedidlehours select * from newextendedidlehours_hhpd;
 
 
-		drop table newExtendedIdleHours_hhpd;
-		drop table defaultExtendedIdleHoursPerDay;
+		drop table newextendedidlehours_hhpd;
+		drop table defaultextendedidlehoursperday;
 		
-		alter table ExtendedIdleHours drop column dayID;
-		alter table ExtendedIdleHours drop column hourID;
+		alter table extendedidlehours drop column dayid;
+		alter table extendedidlehours drop column hourid;
 	end if;
 
 
-	-- hotellingHourFraction
-	set howMany=0;
-	select count(*) into howMany from hotellingHourFraction where zoneID=targetZoneID;
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then
-		alter table ExtendedIdleHours add column dayID smallint not null default 0;
-		alter table ExtendedIdleHours add column hourID smallint not null default 0;
+	-- hotellinghourfraction
+	set howmany=0;
+	select count(*) into howmany from hotellinghourfraction where zoneid=targetzoneid;
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then
+		alter table extendedidlehours add column dayid smallint not null default 0;
+		alter table extendedidlehours add column hourid smallint not null default 0;
 
-		drop table if exists newExtendedIdleHours_hhf;
-		drop table if exists defaultHotellingHourFraction;
+		drop table if exists newextendedidlehours_hhf;
+		drop table if exists defaulthotellinghourfraction;
 
-		create table newExtendedIdleHours_hhf like ExtendedIdleHours;
-		-- alter table hotellingTemp drop primary key;
+		create table newextendedidlehours_hhf like extendedidlehours;
+		-- alter table hotellingtemp drop primary key;
 
-		update ExtendedIdleHours set dayID=mod(hourDayID,10), hourID=floor(hourDayID/10);
+		update extendedidlehours set dayid=mod(hourdayid,10), hourid=floor(hourdayid/10);
 		
 		-- calculate the default hour fractions
-		create table defaultHotellingHourFraction (
-			zoneID int,
-			dayID smallint,
-			hourID smallint,
-			defaultHourFraction double
+		create table defaulthotellinghourfraction (
+			zoneid int,
+			dayid smallint,
+			hourid smallint,
+			defaulthourfraction double
 		);
-		insert into defaultHotellingHourFraction
-		select zoneID,dayID,hourID,sum(ExtendedIdleHours) / total.total as defaultHourFraction
-		from ExtendedIdleHours
+		insert into defaulthotellinghourfraction
+		select zoneid,dayid,hourid,sum(extendedidlehours) / total.total as defaulthourfraction
+		from extendedidlehours
 		join (
-			select zoneID,dayID,sum(ExtendedIdleHours) as total from ExtendedIdleHours
-			group by zoneID,dayID
-		) as total using (zoneID,dayID)
-		group by zoneID,dayID,hourID;
+			select zoneid,dayid,sum(extendedidlehours) as total from extendedidlehours
+			group by zoneid,dayid
+		) as total using (zoneid,dayid)
+		group by zoneid,dayid,hourid;
 		
-		-- we use the ratio between the defaults and user input to calcualte the new ExtendedIdleHours
-		insert into newExtendedIdleHours_hhf (sourceTypeID,yearID,monthID,dayID,hourID,hourDayID,zoneID,ageID,ExtendedIdleHours)
-		-- becuase we are just scaling by new fractions, the ExtendedIdleHours units are preserved
-		-- (hourFraction / defaultHourFraction) is unitless
-		select sourceTypeID,yearID,monthID,dayID,hourID,hourID*10+dayID as hourDayID,zoneID,ageID, 
-			ExtendedIdleHours * (hourFraction / defaultHourFraction) as ExtendedIdleHours
-		from ExtendedIdleHours
-		join defaultHotellingHourFraction using (zoneID,dayID,hourID)
-		join hotellingHourFraction using (zoneID,dayID,hourID);
+		-- we use the ratio between the defaults and user input to calcualte the new extendedidlehours
+		insert into newextendedidlehours_hhf (sourcetypeid,yearid,monthid,dayid,hourid,hourdayid,zoneid,ageid,extendedidlehours)
+		-- becuase we are just scaling by new fractions, the extendedidlehours units are preserved
+		-- (hourfraction / defaulthourfraction) is unitless
+		select sourcetypeid,yearid,monthid,dayid,hourid,hourid*10+dayid as hourdayid,zoneid,ageid, 
+			extendedidlehours * (hourfraction / defaulthourfraction) as extendedidlehours
+		from extendedidlehours
+		join defaulthotellinghourfraction using (zoneid,dayid,hourid)
+		join hotellinghourfraction using (zoneid,dayid,hourid);
 
 		-- replace into with the new values
-		replace into ExtendedIdleHours select * from newExtendedIdleHours_hhf;
+		replace into extendedidlehours select * from newextendedidlehours_hhf;
 		
-		drop table newExtendedIdleHours_hhf;
-		drop table defaultHotellingHourFraction;
+		drop table newextendedidlehours_hhf;
+		drop table defaulthotellinghourfraction;
 
-		alter table ExtendedIdleHours drop column dayID;
-		alter table ExtendedIdleHours drop column hourID;
+		alter table extendedidlehours drop column dayid;
+		alter table extendedidlehours drop column hourid;
 	end if;
 
-	-- hotellingAgeFraction
-	set howMany=0;
-	select count(*) into howMany from hotellingAgeFraction where zoneID=targetZoneID;
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then
-		drop table if exists newExtendedIdleHours_had;
-		drop table if exists defaultHotellingAgeFraction;
+	-- hotellingagefraction
+	set howmany=0;
+	select count(*) into howmany from hotellingagefraction where zoneid=targetzoneid;
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then
+		drop table if exists newextendedidlehours_had;
+		drop table if exists defaulthotellingagefraction;
 		
-		alter table ExtendedIdleHours add column dayID smallint not null default 0;
-		alter table ExtendedIdleHours add column hourID smallint not null default 0;
-		update ExtendedIdleHours set dayID=mod(hourDayID,10), hourID=floor(hourDayID/10);
+		alter table extendedidlehours add column dayid smallint not null default 0;
+		alter table extendedidlehours add column hourid smallint not null default 0;
+		update extendedidlehours set dayid=mod(hourdayid,10), hourid=floor(hourdayid/10);
 
-		create table newExtendedIdleHours_had like ExtendedIdleHours;
-		create table defaultHotellingAgeFraction (
-			zoneID int,
-			ageID smallint,
-			defaultAgeFraction double
+		create table newextendedidlehours_had like extendedidlehours;
+		create table defaulthotellingagefraction (
+			zoneid int,
+			ageid smallint,
+			defaultagefraction double
 		);
 		
 		
 		-- calculate the default age fraction
-		insert into defaultHotellingAgeFraction
-		select zoneID,ageID,sum(ExtendedIdleHours) / total.total as defaultAgeFraction
-		from ExtendedIdleHours
+		insert into defaulthotellingagefraction
+		select zoneid,ageid,sum(extendedidlehours) / total.total as defaultagefraction
+		from extendedidlehours
 		join (
-			select zoneID,sum(ExtendedIdleHours) as total from ExtendedIdleHours
-			group by zoneID
-		) as total using (zoneID)
-		group by zoneID,ageID;
+			select zoneid,sum(extendedidlehours) as total from extendedidlehours
+			group by zoneid
+		) as total using (zoneid)
+		group by zoneid,ageid;
 		
 		-- use the ratio of the new age fractions to the defaults to scale the hotelling horus
-		insert into newExtendedIdleHours_had (sourceTypeID,yearID,monthID,dayID,hourID,hourDayID,zoneID,ageID,ExtendedIdleHours)
-		-- becuase we are just scaling by new fractions, the ExtendedIdleHours units are preserved
-		-- (ageFraction / defaultAgeFraction) is unitless
-		select sourceTypeID,yearID,monthID,dayID,hourID,hourID*10+dayID as hourDayID,zoneID,ageID, 
-			ExtendedIdleHours * (ageFraction / defaultAgeFraction) as ExtendedIdleHours
-		from ExtendedIdleHours
-		join defaultHotellingAgeFraction using (zoneID,ageID)
-		join hotellingAgeFraction using (zoneID,ageID);
+		insert into newextendedidlehours_had (sourcetypeid,yearid,monthid,dayid,hourid,hourdayid,zoneid,ageid,extendedidlehours)
+		-- becuase we are just scaling by new fractions, the extendedidlehours units are preserved
+		-- (agefraction / defaultagefraction) is unitless
+		select sourcetypeid,yearid,monthid,dayid,hourid,hourid*10+dayid as hourdayid,zoneid,ageid, 
+			extendedidlehours * (agefraction / defaultagefraction) as extendedidlehours
+		from extendedidlehours
+		join defaulthotellingagefraction using (zoneid,ageid)
+		join hotellingagefraction using (zoneid,ageid);
 			
 			
 		-- replace into with the new data
-		replace into ExtendedIdleHours select * from newExtendedIdleHours_had;
+		replace into extendedidlehours select * from newextendedidlehours_had;
 				
-		drop table newExtendedIdleHours_had;
-		drop table defaultHotellingAgeFraction;
+		drop table newextendedidlehours_had;
+		drop table defaulthotellingagefraction;
 		
-		alter table ExtendedIdleHours drop column dayID;
-		alter table ExtendedIdleHours drop column hourID;
+		alter table extendedidlehours drop column dayid;
+		alter table extendedidlehours drop column hourid;
 	end if;
 
 	
-	-- hotellingMonthAdjust
-	set howMany=0;
-	select count(*) into howMany from hotellingMonthAdjust where zoneID=targetZoneID;
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then
-		alter table ExtendedIdleHours add column dayID smallint not null default 0;
-		alter table ExtendedIdleHours add column hourID smallint not null default 0;
-		update ExtendedIdleHours set dayID=mod(hourDayID,10), hourID=floor(hourDayID/10);
+	-- hotellingmonthadjust
+	set howmany=0;
+	select count(*) into howmany from hotellingmonthadjust where zoneid=targetzoneid;
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then
+		alter table extendedidlehours add column dayid smallint not null default 0;
+		alter table extendedidlehours add column hourid smallint not null default 0;
+		update extendedidlehours set dayid=mod(hourdayid,10), hourid=floor(hourdayid/10);
 		
-		drop table if exists newExtendedIdleHours_hma;
-		drop table if exists defaultHotellingMonthAdjust;
+		drop table if exists newextendedidlehours_hma;
+		drop table if exists defaulthotellingmonthadjust;
 
-		create table newExtendedIdleHours_hma like ExtendedIdleHours;
-		create table defaultHotellingMonthAdjust (
-			zoneID int,
-			monthID smallint,
-			defaultMonthAdjustment double
+		create table newextendedidlehours_hma like extendedidlehours;
+		create table defaulthotellingmonthadjust (
+			zoneid int,
+			monthid smallint,
+			defaultmonthadjustment double
 		);
 		
 		-- calculate the default month adjustments
-		insert into defaultHotellingMonthAdjust
+		insert into defaulthotellingmonthadjust
 		-- the month adjustment is the ratio between the month's average hours and the average across all months (aka the full year)
-		select zoneID,monthID,avg(ExtendedIdleHours)/average.yearAverage as defaultMonthAdjustment
-		from ExtendedIdleHours
+		select zoneid,monthid,avg(extendedidlehours)/average.yearaverage as defaultmonthadjustment
+		from extendedidlehours
 		join (
-			select zoneID,avg(ExtendedIdleHours) as yearAverage 
-			from ExtendedIdleHours
-			group by zoneID
+			select zoneid,avg(extendedidlehours) as yearaverage 
+			from extendedidlehours
+			group by zoneid
 		) as average
-		using (zoneID)
-		group by zoneID,monthID;
+		using (zoneid)
+		group by zoneid,monthid;
 		
 		-- use the ratio of the new month adjustments to the old ones to calcualte the new hotelling hours
-		insert into newExtendedIdleHours_hma (sourceTypeID,yearID,monthID,dayID,hourID,hourDayID,zoneID,ageID,ExtendedIdleHours)
-		-- becuase we are just scaling by new fractions, the ExtendedIdleHours units are preserved
-		-- (monthAdjustment / defaultMonthAdjustment) is unitless
-		select sourceTypeID,yearID,monthID,dayID,hourID,hourID*10+dayID as hourDayID,zoneID,ageID, 
-			ExtendedIdleHours * (monthAdjustment / defaultMonthAdjustment) as ExtendedIdleHours
-		from ExtendedIdleHours
-		join defaultHotellingMonthAdjust using (zoneID,monthid)
-		join hotellingmonthadjust using (zoneID,monthid);
+		insert into newextendedidlehours_hma (sourcetypeid,yearid,monthid,dayid,hourid,hourdayid,zoneid,ageid,extendedidlehours)
+		-- becuase we are just scaling by new fractions, the extendedidlehours units are preserved
+		-- (monthadjustment / defaultmonthadjustment) is unitless
+		select sourcetypeid,yearid,monthid,dayid,hourid,hourid*10+dayid as hourdayid,zoneid,ageid, 
+			extendedidlehours * (monthadjustment / defaultmonthadjustment) as extendedidlehours
+		from extendedidlehours
+		join defaulthotellingmonthadjust using (zoneid,monthid)
+		join hotellingmonthadjust using (zoneid,monthid);
 		
 		-- replace into with the new data
-		replace into ExtendedIdleHours select * from newExtendedIdleHours_hma;
+		replace into extendedidlehours select * from newextendedidlehours_hma;
 		
-		drop table newExtendedIdleHours_hma;
-		drop table defaultHotellingMonthAdjust;
+		drop table newextendedidlehours_hma;
+		drop table defaulthotellingmonthadjust;
 		
-		alter table ExtendedIdleHours drop column dayID;
-		alter table ExtendedIdleHours drop column hourID;
+		alter table extendedidlehours drop column dayid;
+		alter table extendedidlehours drop column hourid;
 	end if;
 end
-EndBlock
+endblock
 
-call spAdjustExtendedIdle();
-drop procedure if exists spAdjustExtendedIdle;
+call spadjustextendedidle();
+drop procedure if exists spadjustextendedidle;

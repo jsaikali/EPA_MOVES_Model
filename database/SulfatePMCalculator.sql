@@ -1,444 +1,444 @@
--- PM2.5 speciation calculator
--- Author Wesley Faler
--- Version 2014-07-15
+-- pm2.5 speciation calculator
+-- author wesley faler
+-- version 2014-07-15
 
 -- @algorithm
--- @owner Sulfate PM Calculator
+-- @owner sulfate pm calculator
 -- @calculator
 
--- Section Create Remote Tables for Extracted Data
+-- section create remote tables for extracted data
 
-drop table if exists crankcaseSplit;
-create table if not exists crankcaseSplit (
-	processID smallint not null,
-	pollutantID smallint not null,
-	sourceTypeID smallint not null,
-	fuelTypeID smallint not null,
-	minModelYearID smallint not null,
-	maxModelYearID smallint not null,
-	crankcaseRatio double not null,
-	primary key (pollutantID, sourceTypeID, fuelTypeID, minModelYearID, maxModelYearID, processID)
+drop table if exists crankcasesplit;
+create table if not exists crankcasesplit (
+	processid smallint not null,
+	pollutantid smallint not null,
+	sourcetypeid smallint not null,
+	fueltypeid smallint not null,
+	minmodelyearid smallint not null,
+	maxmodelyearid smallint not null,
+	crankcaseratio double not null,
+	primary key (pollutantid, sourcetypeid, fueltypeid, minmodelyearid, maxmodelyearid, processid)
 );
-truncate table crankcaseSplit;
+truncate table crankcasesplit;
 
-drop table if exists sPMOneCountyYearGeneralFuelRatio;
-create table if not exists sPMOneCountyYearGeneralFuelRatio (
-	fuelTypeID int not null,
-	sourceTypeID int not null,
-	monthID int not null,
-	pollutantID int not null,
-	processID int not null,
-	modelYearID int not null,
-	yearID int not null,
-	fuelEffectRatio double not null default '0',
-	primary key (fuelTypeID, sourceTypeID, monthID, pollutantID, modelYearID, yearID)
+drop table if exists spmonecountyyeargeneralfuelratio;
+create table if not exists spmonecountyyeargeneralfuelratio (
+	fueltypeid int not null,
+	sourcetypeid int not null,
+	monthid int not null,
+	pollutantid int not null,
+	processid int not null,
+	modelyearid int not null,
+	yearid int not null,
+	fueleffectratio double not null default '0',
+	primary key (fueltypeid, sourcetypeid, monthid, pollutantid, modelyearid, yearid)
 );
-truncate table sPMOneCountyYearGeneralFuelRatio;
+truncate table spmonecountyyeargeneralfuelratio;
 
-drop table if exists oneCountyYearSulfateFractions;
-create table if not exists oneCountyYearSulfateFractions (
-	processID smallint not null,
-	fuelTypeID smallint not null,
-	sourceTypeID smallint not null,
-	monthID smallint not null,
-	modelYearID smallint not null,
-	SulfateNonECPMFraction double not null default '0',
-	H2ONonECPMFraction double not null default '0',
-	UnadjustedSulfatenonECPMFraction double not null default '0',
-	UnadjustedH2ONonECPMFraction double not null default '0',
-	primary key (processID, fuelTypeID, sourceTypeID, monthID, modelYearID)
+drop table if exists onecountyyearsulfatefractions;
+create table if not exists onecountyyearsulfatefractions (
+	processid smallint not null,
+	fueltypeid smallint not null,
+	sourcetypeid smallint not null,
+	monthid smallint not null,
+	modelyearid smallint not null,
+	sulfatenonecpmfraction double not null default '0',
+	h2ononecpmfraction double not null default '0',
+	unadjustedsulfatenonecpmfraction double not null default '0',
+	unadjustedh2ononecpmfraction double not null default '0',
+	primary key (processid, fueltypeid, sourcetypeid, monthid, modelyearid)
 );
-truncate table oneCountyYearSulfateFractions;
+truncate table onecountyyearsulfatefractions;
 
-drop table if exists oneZoneYearTemperatureFactor;
-create table if not exists oneZoneYearTemperatureFactor (
-	zoneID int not null,
-	monthID smallint not null,
-	hourID smallint not null,
-	processID smallint not null,
-	pollutantID smallint not null,
-	fuelTypeID smallint not null,
-	sourceTypeID smallint not null,
-	minModelYearID smallint not null,
-	maxModelYearID smallint not null,
-	correctionFactor double not null,
-	primary key (zoneID, monthID, hourID, processID, pollutantID, fuelTypeID, sourceTypeID, minModelYearID, maxModelYearID)
+drop table if exists onezoneyeartemperaturefactor;
+create table if not exists onezoneyeartemperaturefactor (
+	zoneid int not null,
+	monthid smallint not null,
+	hourid smallint not null,
+	processid smallint not null,
+	pollutantid smallint not null,
+	fueltypeid smallint not null,
+	sourcetypeid smallint not null,
+	minmodelyearid smallint not null,
+	maxmodelyearid smallint not null,
+	correctionfactor double not null,
+	primary key (zoneid, monthid, hourid, processid, pollutantid, fueltypeid, sourcetypeid, minmodelyearid, maxmodelyearid)
 );
-truncate table oneZoneYearTemperatureFactor;
+truncate table onezoneyeartemperaturefactor;
 
-##create.PMSpeciation##;
-TRUNCATE TABLE PMSpeciation;
+##create.pmspeciation##;
+truncate table pmspeciation;
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
+-- section extract data
 
--- @algorithm Get fuel effects for NonECNonSO4PM (120).
-cache select gfr.fuelTypeID, gfr.sourceTypeID, may.monthID, gfr.pollutantID, gfr.processID, mya.modelYearID, mya.yearID,
-	sum((ifnull(fuelEffectRatio,1)+GPAFract*(ifnull(fuelEffectRatioGPA,1)-ifnull(fuelEffectRatio,1)))*marketShare) as fuelEffectRatio
-	INTO OUTFILE '##sPMOneCountyYearGeneralFuelRatio##'
-from RunSpecMonthGroup rsmg
-inner join RunSpecModelYearAge mya on (mya.yearID = ##context.year##)
-inner join County c on (c.countyID = ##context.iterLocation.countyRecordID##)
-inner join Year y on (y.yearID = mya.yearID)
-inner join FuelSupply fs on (fs.fuelRegionID = ##context.fuelRegionID##
-	and fs.fuelYearID = y.fuelYearID
-	and fs.monthGroupID = rsmg.monthGroupID)
-inner join MonthOfAnyYear may on (may.monthGroupID = fs.monthGroupID)
-inner join RunSpecSourceFuelType rssf
-inner join generalFuelRatio gfr on (gfr.fuelFormulationID = fs.fuelFormulationID
-	and gfr.pollutantID in (120)
-	and gfr.processID = ##context.iterProcess.databaseKey##
-	and gfr.minModelYearID <= mya.modelYearID
-	and gfr.maxModelYearID >= mya.modelYearID
-	and gfr.minAgeID <= mya.ageID
-	and gfr.maxAgeID >= mya.ageID
-	and gfr.fuelTypeID = rssf.fuelTypeID
-	and gfr.sourceTypeID = rssf.sourceTypeID)
-group by gfr.fuelTypeID, gfr.sourceTypeID, may.monthID, gfr.pollutantID, gfr.processID, mya.modelYearID, mya.yearID
+-- @algorithm get fuel effects for nonecnonso4pm (120).
+cache select gfr.fueltypeid, gfr.sourcetypeid, may.monthid, gfr.pollutantid, gfr.processid, mya.modelyearid, mya.yearid,
+	sum((ifnull(fueleffectratio,1)+gpafract*(ifnull(fueleffectratiogpa,1)-ifnull(fueleffectratio,1)))*marketshare) as fueleffectratio
+	into outfile '##spmonecountyyeargeneralfuelratio##'
+from runspecmonthgroup rsmg
+inner join runspecmodelyearage mya on (mya.yearid = ##context.year##)
+inner join county c on (c.countyid = ##context.iterlocation.countyrecordid##)
+inner join year y on (y.yearid = mya.yearid)
+inner join fuelsupply fs on (fs.fuelregionid = ##context.fuelregionid##
+	and fs.fuelyearid = y.fuelyearid
+	and fs.monthgroupid = rsmg.monthgroupid)
+inner join monthofanyyear may on (may.monthgroupid = fs.monthgroupid)
+inner join runspecsourcefueltype rssf
+inner join generalfuelratio gfr on (gfr.fuelformulationid = fs.fuelformulationid
+	and gfr.pollutantid in (120)
+	and gfr.processid = ##context.iterprocess.databasekey##
+	and gfr.minmodelyearid <= mya.modelyearid
+	and gfr.maxmodelyearid >= mya.modelyearid
+	and gfr.minageid <= mya.ageid
+	and gfr.maxageid >= mya.ageid
+	and gfr.fueltypeid = rssf.fueltypeid
+	and gfr.sourcetypeid = rssf.sourcetypeid)
+group by gfr.fueltypeid, gfr.sourcetypeid, may.monthid, gfr.pollutantid, gfr.processid, mya.modelyearid, mya.yearid
 ;
 
--- @algorithm Calculate adjusted SulfateNonECPMFraction and H2ONonECPMFraction 
--- using the sulfurLevel of available fuel formulations. Weight each adjusted fraction
+-- @algorithm calculate adjusted sulfatenonecpmfraction and h2ononecpmfraction 
+-- using the sulfurlevel of available fuel formulations. weight each adjusted fraction
 -- by formulation market share.
 cache select
-	sf.processID,
-	sf.fuelTypeID,
-	sf.sourceTypeID,
-	may.monthID,
-	mya.modelYearID,
-	sum(fs.marketShare * SulfatenonECPMFraction * (1 + BaseFuelSulfateFraction * ((coalesce(ff.sulfurLevel,0) / sf.BaseFuelSulfurLevel) - 1))) as SulfatenonECPMFraction,
-	sum(fs.marketShare * H2ONonECPMFraction * (1 + BaseFuelSulfateFraction * ((coalesce(ff.sulfurLevel,0) / sf.BaseFuelSulfurLevel) - 1))) as H2ONonECPMFraction,
-	SulfatenonECPMFraction as UnadjustedSulfatenonECPMFraction,
-	H2ONonECPMFraction as UnadjustedH2ONonECPMFraction
-	INTO OUTFILE '##oneCountyYearSulfateFractions##'
-from RunSpecMonthGroup rsmg
-inner join RunSpecModelYearAge mya on (mya.yearID = ##context.year##)
-inner join County c on (c.countyID = ##context.iterLocation.countyRecordID##)
-inner join Year y on (y.yearID = mya.yearID)
-inner join FuelSupply fs on (fs.fuelRegionID = ##context.fuelRegionID##
-	and fs.fuelYearID = y.fuelYearID
-	and fs.monthGroupID = rsmg.monthGroupID)
-inner join MonthOfAnyYear may on (may.monthGroupID = fs.monthGroupID)
-inner join RunSpecSourceFuelType rssf
-inner join FuelFormulation ff on (ff.fuelFormulationID = fs.fuelFormulationID)
-inner join FuelSubtype fst on (
-	fst.fuelSubtypeID = ff.fuelSubtypeID
-	and fst.fuelTypeID = rssf.fuelTypeID)
-inner join sulfateFractions sf on (
-	sf.minModelYearID <= mya.modelYearID
-	and sf.maxModelYearID >= mya.modelYearID
-	and sf.fuelTypeID = rssf.fuelTypeID
-	and sf.sourceTypeID = rssf.sourceTypeID)
+	sf.processid,
+	sf.fueltypeid,
+	sf.sourcetypeid,
+	may.monthid,
+	mya.modelyearid,
+	sum(fs.marketshare * sulfatenonecpmfraction * (1 + basefuelsulfatefraction * ((coalesce(ff.sulfurlevel,0) / sf.basefuelsulfurlevel) - 1))) as sulfatenonecpmfraction,
+	sum(fs.marketshare * h2ononecpmfraction * (1 + basefuelsulfatefraction * ((coalesce(ff.sulfurlevel,0) / sf.basefuelsulfurlevel) - 1))) as h2ononecpmfraction,
+	sulfatenonecpmfraction as unadjustedsulfatenonecpmfraction,
+	h2ononecpmfraction as unadjustedh2ononecpmfraction
+	into outfile '##onecountyyearsulfatefractions##'
+from runspecmonthgroup rsmg
+inner join runspecmodelyearage mya on (mya.yearid = ##context.year##)
+inner join county c on (c.countyid = ##context.iterlocation.countyrecordid##)
+inner join year y on (y.yearid = mya.yearid)
+inner join fuelsupply fs on (fs.fuelregionid = ##context.fuelregionid##
+	and fs.fuelyearid = y.fuelyearid
+	and fs.monthgroupid = rsmg.monthgroupid)
+inner join monthofanyyear may on (may.monthgroupid = fs.monthgroupid)
+inner join runspecsourcefueltype rssf
+inner join fuelformulation ff on (ff.fuelformulationid = fs.fuelformulationid)
+inner join fuelsubtype fst on (
+	fst.fuelsubtypeid = ff.fuelsubtypeid
+	and fst.fueltypeid = rssf.fueltypeid)
+inner join sulfatefractions sf on (
+	sf.minmodelyearid <= mya.modelyearid
+	and sf.maxmodelyearid >= mya.modelyearid
+	and sf.fueltypeid = rssf.fueltypeid
+	and sf.sourcetypeid = rssf.sourcetypeid)
 group by 
-	sf.processID,
-	sf.fuelTypeID,
-	sf.sourceTypeID,
-	may.monthID,
-	mya.modelYearID
+	sf.processid,
+	sf.fueltypeid,
+	sf.sourcetypeid,
+	may.monthid,
+	mya.modelyearid
 order by null;
 
--- @algorithm Collect speciation data.
+-- @algorithm collect speciation data.
 cache select *
-	into outfile '##PMSpeciation##'
-from PMSpeciation
-where processID in (##primaryAndCrankcaseProcessIDs##)
-and (outputPollutantID*100+processID) in (##polProcessIDs##);
+	into outfile '##pmspeciation##'
+from pmspeciation
+where processid in (##primaryandcrankcaseprocessids##)
+and (outputpollutantid*100+processid) in (##polprocessids##);
 
--- @algorithm Create temperature effects for Sulfate (115), H2O (aersol) (119), and NonECNonSO4PM (120).
-cache select zoneID, monthID, hourID, processID, pollutantID, fuelTypeID, sourceTypeID, minModelYearID, maxModelYearID,
-	##context.temperatureFactorExpression##
-	as correctionFactor
-	INTO OUTFILE '##oneZoneYearTemperatureFactor##'
-from zoneMonthHour zmh, temperatureFactorExpression tfe
-where zmh.zoneID = ##context.iterLocation.zoneRecordID##
-and tfe.minModelYearID <= ##context.year##
-and tfe.maxModelYearID >= ##context.year## - 30
-and tfe.processID = ##context.iterProcess.databaseKey##
-and tfe.pollutantID in (115, 119, 120);
+-- @algorithm create temperature effects for sulfate (115), h2o (aersol) (119), and nonecnonso4pm (120).
+cache select zoneid, monthid, hourid, processid, pollutantid, fueltypeid, sourcetypeid, minmodelyearid, maxmodelyearid,
+	##context.temperaturefactorexpression##
+	as correctionfactor
+	into outfile '##onezoneyeartemperaturefactor##'
+from zonemonthhour zmh, temperaturefactorexpression tfe
+where zmh.zoneid = ##context.iterlocation.zonerecordid##
+and tfe.minmodelyearid <= ##context.year##
+and tfe.maxmodelyearid >= ##context.year## - 30
+and tfe.processid = ##context.iterprocess.databasekey##
+and tfe.pollutantid in (115, 119, 120);
 
--- @algorithm Create crankcase split fractions for EC (112), Sulfate (115), H2O (aersol) (119), and NonECNonSO4PM (120).
--- The query must account for the lack of NonECNonSO4PM in the Pollutant table.
-cache select processID, floor(r.polProcessID/100) as pollutantID, sourceTypeID, fuelTypeID,
-	minModelYearID, maxModelYearID, crankcaseRatio
-	INTO OUTFILE '##crankcaseSplit##'
-from crankcaseEmissionRatio r, emissionProcess ep
-where ep.processID in (##primaryAndCrankcaseProcessIDs##)
-and r.polProcessID in (112*100 + ep.processID, 115*100 + ep.processID, 119*100 + ep.processID, 120*100 + ep.processID);
+-- @algorithm create crankcase split fractions for ec (112), sulfate (115), h2o (aersol) (119), and nonecnonso4pm (120).
+-- the query must account for the lack of nonecnonso4pm in the pollutant table.
+cache select processid, floor(r.polprocessid/100) as pollutantid, sourcetypeid, fueltypeid,
+	minmodelyearid, maxmodelyearid, crankcaseratio
+	into outfile '##crankcasesplit##'
+from crankcaseemissionratio r, emissionprocess ep
+where ep.processid in (##primaryandcrankcaseprocessids##)
+and r.polprocessid in (112*100 + ep.processid, 115*100 + ep.processid, 119*100 + ep.processid, 120*100 + ep.processid);
 
--- End Section Extract Data
+-- end section extract data
 
--- Section Local Data Removal
--- End Section Local Data Removal
+-- section local data removal
+-- end section local data removal
 
--- Section Processing
-
--- @algorithm
-drop table if exists spmOutput;
-create table spmOutput like MOVESWorkerOutput;
-
--- @algorithm Copy unadjusted EC (112) so it can be adjusted.
-insert into spmOutput(MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	emissionQuant,emissionRate)
-select MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	emissionQuant,emissionRate
-from MOVESWorkerOutput mwo
-where pollutantID=112;
-
--- @algorithm Remove unadjusted EC. The adjusted EC will be added later.
-delete from MOVESWorkerOutput where pollutantID=112;
+-- section processing
 
 -- @algorithm
-drop table if exists spmSplit1;
-create table spmSplit1 (
-	processID smallint not null,
-	fuelTypeID smallint not null,
-	sourceTypeID smallint not null,
-	monthID smallint not null,
-	modelYearID smallint not null,
-	outputPollutantID smallint,
-	conversionFraction double not null,
-	primary key (processID, fuelTypeID, sourceTypeID, monthID, modelYearID, outputPollutantID)
+drop table if exists spmoutput;
+create table spmoutput like movesworkeroutput;
+
+-- @algorithm copy unadjusted ec (112) so it can be adjusted.
+insert into spmoutput(movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	emissionquant,emissionrate)
+select movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	emissionquant,emissionrate
+from movesworkeroutput mwo
+where pollutantid=112;
+
+-- @algorithm remove unadjusted ec. the adjusted ec will be added later.
+delete from movesworkeroutput where pollutantid=112;
+
+-- @algorithm
+drop table if exists spmsplit1;
+create table spmsplit1 (
+	processid smallint not null,
+	fueltypeid smallint not null,
+	sourcetypeid smallint not null,
+	monthid smallint not null,
+	modelyearid smallint not null,
+	outputpollutantid smallint,
+	conversionfraction double not null,
+	primary key (processid, fueltypeid, sourcetypeid, monthid, modelyearid, outputpollutantid)
 );
 
--- @algorithm Specify the split to make sulfate (115) from NonECPM (118). Sulfate = NonECPM * SulfateNonECPMFraction.
-insert into spmSplit1 (processID, fuelTypeID, sourceTypeID, monthID, modelYearID, outputPollutantID, conversionFraction)
-select processID, fuelTypeID, sourceTypeID, monthID, modelYearID, 115 as outputPollutantID,
-	SulfateNonECPMFraction as conversionFraction
-from oneCountyYearSulfateFractions;
+-- @algorithm specify the split to make sulfate (115) from nonecpm (118). sulfate = nonecpm * sulfatenonecpmfraction.
+insert into spmsplit1 (processid, fueltypeid, sourcetypeid, monthid, modelyearid, outputpollutantid, conversionfraction)
+select processid, fueltypeid, sourcetypeid, monthid, modelyearid, 115 as outputpollutantid,
+	sulfatenonecpmfraction as conversionfraction
+from onecountyyearsulfatefractions;
 
--- @algorithm Specify the split to make H2O (aerosol) (119) from NonECPM (118). H2O = NonECPM * H2ONonECPMFraction.
-insert into spmSplit1 (processID, fuelTypeID, sourceTypeID, monthID, modelYearID, outputPollutantID, conversionFraction)
-select processID, fuelTypeID, sourceTypeID, monthID, modelYearID, 119 as outputPollutantID,
-	H2ONonECPMFraction as conversionFraction
-from oneCountyYearSulfateFractions;
+-- @algorithm specify the split to make h2o (aerosol) (119) from nonecpm (118). h2o = nonecpm * h2ononecpmfraction.
+insert into spmsplit1 (processid, fueltypeid, sourcetypeid, monthid, modelyearid, outputpollutantid, conversionfraction)
+select processid, fueltypeid, sourcetypeid, monthid, modelyearid, 119 as outputpollutantid,
+	h2ononecpmfraction as conversionfraction
+from onecountyyearsulfatefractions;
 
--- @algorithm Specify the split to make NonECNonSO4PM (120) from NonECPM (118). NonECNonSO4PM = NonECPM * (1 - UnadjustedH2ONonECPMFraction - UnadjustedSulfateNonECPMFraction).
-insert into spmSplit1 (processID, fuelTypeID, sourceTypeID, monthID, modelYearID, outputPollutantID, conversionFraction)
-select processID, fuelTypeID, sourceTypeID, monthID, modelYearID, 120 as outputPollutantID,
-	greatest(1-UnadjustedH2ONonECPMFraction-UnadjustedSulfateNonECPMFraction,0) as conversionFraction
-from oneCountyYearSulfateFractions;
+-- @algorithm specify the split to make nonecnonso4pm (120) from nonecpm (118). nonecnonso4pm = nonecpm * (1 - unadjustedh2ononecpmfraction - unadjustedsulfatenonecpmfraction).
+insert into spmsplit1 (processid, fueltypeid, sourcetypeid, monthid, modelyearid, outputpollutantid, conversionfraction)
+select processid, fueltypeid, sourcetypeid, monthid, modelyearid, 120 as outputpollutantid,
+	greatest(1-unadjustedh2ononecpmfraction-unadjustedsulfatenonecpmfraction,0) as conversionfraction
+from onecountyyearsulfatefractions;
 
--- @algorithm Apply the splits, making Sulfate (115), H2O (aerosol) (119), and NonECNonSO4PM (120) from NonECPM (118).
-insert into spmOutput(MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	emissionQuant,emissionRate)
-select mwo.MOVESRunID,mwo.iterationID,
-	mwo.yearID,mwo.monthID,mwo.dayID,mwo.hourID,
-	mwo.stateID,mwo.countyID,mwo.zoneID,mwo.linkID,
-	s.outputPollutantID as pollutantID,mwo.processID,
-	mwo.sourceTypeID,mwo.regClassID,mwo.fuelTypeID,mwo.modelYearID,
-	mwo.roadTypeID,mwo.SCC,
-	mwo.engTechID,mwo.sectorID,mwo.hpID,
-	mwo.emissionQuant*s.conversionFraction as emissionQuant,
-	mwo.emissionRate *s.conversionFraction as emissionRate
-from MOVESWorkerOutput mwo
-inner join spmSplit1 s on (
-	s.processID = mwo.processID
-	and s.fuelTypeID = mwo.fuelTypeID
-	and s.sourceTypeID = mwo.sourceTypeID
-	and s.monthID = mwo.monthID
-	and s.modelYearID = mwo.modelYearID)
-where pollutantID=118;
+-- @algorithm apply the splits, making sulfate (115), h2o (aerosol) (119), and nonecnonso4pm (120) from nonecpm (118).
+insert into spmoutput(movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	emissionquant,emissionrate)
+select mwo.movesrunid,mwo.iterationid,
+	mwo.yearid,mwo.monthid,mwo.dayid,mwo.hourid,
+	mwo.stateid,mwo.countyid,mwo.zoneid,mwo.linkid,
+	s.outputpollutantid as pollutantid,mwo.processid,
+	mwo.sourcetypeid,mwo.regclassid,mwo.fueltypeid,mwo.modelyearid,
+	mwo.roadtypeid,mwo.scc,
+	mwo.engtechid,mwo.sectorid,mwo.hpid,
+	mwo.emissionquant*s.conversionfraction as emissionquant,
+	mwo.emissionrate *s.conversionfraction as emissionrate
+from movesworkeroutput mwo
+inner join spmsplit1 s on (
+	s.processid = mwo.processid
+	and s.fueltypeid = mwo.fueltypeid
+	and s.sourcetypeid = mwo.sourcetypeid
+	and s.monthid = mwo.monthid
+	and s.modelyearid = mwo.modelyearid)
+where pollutantid=118;
 
--- @algorithm Apply fuel effects. Only NonECNonSO4PM (120) is affected.
-update spmOutput, sPMOneCountyYearGeneralFuelRatio set 
-	emissionQuant=emissionQuant*fuelEffectRatio,
-	emissionRate =emissionRate *fuelEffectRatio
-where sPMOneCountyYearGeneralFuelRatio.fuelTypeID = spmOutput.fuelTypeID
-and sPMOneCountyYearGeneralFuelRatio.sourceTypeID = spmOutput.sourceTypeID
-and sPMOneCountyYearGeneralFuelRatio.monthID = spmOutput.monthID
-and sPMOneCountyYearGeneralFuelRatio.pollutantID = spmOutput.pollutantID
-and sPMOneCountyYearGeneralFuelRatio.processID = spmOutput.processID
-and sPMOneCountyYearGeneralFuelRatio.modelYearID = spmOutput.modelYearID
-and sPMOneCountyYearGeneralFuelRatio.yearID = spmOutput.yearID;
+-- @algorithm apply fuel effects. only nonecnonso4pm (120) is affected.
+update spmoutput, spmonecountyyeargeneralfuelratio set 
+	emissionquant=emissionquant*fueleffectratio,
+	emissionrate =emissionrate *fueleffectratio
+where spmonecountyyeargeneralfuelratio.fueltypeid = spmoutput.fueltypeid
+and spmonecountyyeargeneralfuelratio.sourcetypeid = spmoutput.sourcetypeid
+and spmonecountyyeargeneralfuelratio.monthid = spmoutput.monthid
+and spmonecountyyeargeneralfuelratio.pollutantid = spmoutput.pollutantid
+and spmonecountyyeargeneralfuelratio.processid = spmoutput.processid
+and spmonecountyyeargeneralfuelratio.modelyearid = spmoutput.modelyearid
+and spmonecountyyeargeneralfuelratio.yearid = spmoutput.yearid;
 
--- @algorithm Apply temperature effects to Sulfate, H2O (aersol), and NonECNonSO4PM.
-update spmOutput, oneZoneYearTemperatureFactor set 
-	emissionQuant=emissionQuant*correctionFactor,
-	emissionRate =emissionRate *correctionFactor
-where spmOutput.zoneID = oneZoneYearTemperatureFactor.zoneID
-and spmOutput.monthID = oneZoneYearTemperatureFactor.monthID
-and spmOutput.hourID = oneZoneYearTemperatureFactor.hourID
-and spmOutput.processID = oneZoneYearTemperatureFactor.processID
-and spmOutput.pollutantID = oneZoneYearTemperatureFactor.pollutantID
-and spmOutput.fuelTypeID = oneZoneYearTemperatureFactor.fuelTypeID
-and spmOutput.sourceTypeID = oneZoneYearTemperatureFactor.sourceTypeID
-and spmOutput.modelYearID >= oneZoneYearTemperatureFactor.minModelYearID
-and spmOutput.modelYearID <= oneZoneYearTemperatureFactor.maxModelYearID;
+-- @algorithm apply temperature effects to sulfate, h2o (aersol), and nonecnonso4pm.
+update spmoutput, onezoneyeartemperaturefactor set 
+	emissionquant=emissionquant*correctionfactor,
+	emissionrate =emissionrate *correctionfactor
+where spmoutput.zoneid = onezoneyeartemperaturefactor.zoneid
+and spmoutput.monthid = onezoneyeartemperaturefactor.monthid
+and spmoutput.hourid = onezoneyeartemperaturefactor.hourid
+and spmoutput.processid = onezoneyeartemperaturefactor.processid
+and spmoutput.pollutantid = onezoneyeartemperaturefactor.pollutantid
+and spmoutput.fueltypeid = onezoneyeartemperaturefactor.fueltypeid
+and spmoutput.sourcetypeid = onezoneyeartemperaturefactor.sourcetypeid
+and spmoutput.modelyearid >= onezoneyeartemperaturefactor.minmodelyearid
+and spmoutput.modelyearid <= onezoneyeartemperaturefactor.maxmodelyearid;
 
 -- @algorithm
-drop table if exists spmOutput2;
-create table spmOutput2 like spmOutput;
-alter table spmOutput2 add key polproc (pollutantID, processID);
-alter table spmOutput2 add key procpol (processID, pollutantID);
+drop table if exists spmoutput2;
+create table spmoutput2 like spmoutput;
+alter table spmoutput2 add key polproc (pollutantid, processid);
+alter table spmoutput2 add key procpol (processid, pollutantid);
 
--- @algorithm Split EC, Sulfate, H2O (aersol), and NonECNonSO4PM by crankcase effects.
-insert into spmOutput2(MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	emissionQuant,emissionRate)
-select mwo.MOVESRunID,mwo.iterationID,
-	mwo.yearID,mwo.monthID,mwo.dayID,mwo.hourID,
-	mwo.stateID,mwo.countyID,mwo.zoneID,mwo.linkID,
-	s.pollutantID as pollutantID,s.processID,
-	mwo.sourceTypeID,mwo.regClassID,mwo.fuelTypeID,mwo.modelYearID,
-	mwo.roadTypeID,mwo.SCC,
-	mwo.engTechID,mwo.sectorID,mwo.hpID,
-	mwo.emissionQuant*s.crankcaseRatio as emissionQuant,
-	mwo.emissionRate *s.crankcaseRatio as emissionRate
-from spmOutput mwo
-inner join crankcaseSplit s on (
-	s.pollutantID = mwo.pollutantID
-	and s.fuelTypeID = mwo.fuelTypeID
-	and s.sourceTypeID = mwo.sourceTypeID
-	and s.minModelYearID <= mwo.modelYearID
-	and s.maxModelYearID >= mwo.modelYearID);
+-- @algorithm split ec, sulfate, h2o (aersol), and nonecnonso4pm by crankcase effects.
+insert into spmoutput2(movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	emissionquant,emissionrate)
+select mwo.movesrunid,mwo.iterationid,
+	mwo.yearid,mwo.monthid,mwo.dayid,mwo.hourid,
+	mwo.stateid,mwo.countyid,mwo.zoneid,mwo.linkid,
+	s.pollutantid as pollutantid,s.processid,
+	mwo.sourcetypeid,mwo.regclassid,mwo.fueltypeid,mwo.modelyearid,
+	mwo.roadtypeid,mwo.scc,
+	mwo.engtechid,mwo.sectorid,mwo.hpid,
+	mwo.emissionquant*s.crankcaseratio as emissionquant,
+	mwo.emissionrate *s.crankcaseratio as emissionrate
+from spmoutput mwo
+inner join crankcasesplit s on (
+	s.pollutantid = mwo.pollutantid
+	and s.fueltypeid = mwo.fueltypeid
+	and s.sourcetypeid = mwo.sourcetypeid
+	and s.minmodelyearid <= mwo.modelyearid
+	and s.maxmodelyearid >= mwo.modelyearid);
 
--- Section MakePM2.5Total
--- @algorithm Sum EC, NonECNonSO4PM, Sulfate, and H2O (aerosol) to make Total PM 2.5 (110)
-insert into MOVESWorkerOutput(MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	emissionQuant,emissionRate)
-select MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	110 as pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	sum(emissionQuant),
-	sum(emissionRate)
-from spmOutput2
-where pollutantID in (112,120,115,119)
-and processID in (##primaryAndCrankcaseProcessIDsForPM25Total##)
+-- section makepm2.5total
+-- @algorithm sum ec, nonecnonso4pm, sulfate, and h2o (aerosol) to make total pm 2.5 (110)
+insert into movesworkeroutput(movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	emissionquant,emissionrate)
+select movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	110 as pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	sum(emissionquant),
+	sum(emissionrate)
+from spmoutput2
+where pollutantid in (112,120,115,119)
+and processid in (##primaryandcrankcaseprocessidsforpm25total##)
 group by 
-	processID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID;
--- End Section MakePM2.5Total
+	processid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid;
+-- end section makepm2.5total
 
--- @algorithm Copy EC, Sulfate, H2O to the output.
-insert into MOVESWorkerOutput(MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	emissionQuant,emissionRate)
-select MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	emissionQuant,emissionRate
-from spmOutput2
-where pollutantID in (112,115,119);
+-- @algorithm copy ec, sulfate, h2o to the output.
+insert into movesworkeroutput(movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	emissionquant,emissionrate)
+select movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	emissionquant,emissionrate
+from spmoutput2
+where pollutantid in (112,115,119);
 
--- Note: To get NonECNonSO4PM in the output for debugging purposes, add 120 to the
--- list of pollutantIDs above.
+-- note: to get nonecnonso4pm in the output for debugging purposes, add 120 to the
+-- list of pollutantids above.
 
--- @algorithm Remove unadjusted NonECPM (118).
-delete from MOVESWorkerOutput where pollutantID=118 and processID in (##primaryAndCrankcaseProcessIDs##);
+-- @algorithm remove unadjusted nonecpm (118).
+delete from movesworkeroutput where pollutantid=118 and processid in (##primaryandcrankcaseprocessids##);
 
--- @algorithm Sum the adjusted NonECNonSO4PM, Sulfate, and H2O (aerosol) to make the adjusted NonECPM (118).
-insert into MOVESWorkerOutput(MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	emissionQuant,emissionRate)
-select MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	118 as pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	sum(emissionQuant),
-	sum(emissionRate)
-from spmOutput2
-where pollutantID in (120,115,119)
-and processID in (##primaryAndCrankcaseProcessIDs##)
+-- @algorithm sum the adjusted nonecnonso4pm, sulfate, and h2o (aerosol) to make the adjusted nonecpm (118).
+insert into movesworkeroutput(movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	emissionquant,emissionrate)
+select movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	118 as pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	sum(emissionquant),
+	sum(emissionrate)
+from spmoutput2
+where pollutantid in (120,115,119)
+and processid in (##primaryandcrankcaseprocessids##)
 group by 
-	processID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID;
+	processid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid;
 
--- @algorithm Speciate the remaining pollutants. species output = pmSpeciationFraction * species input
-insert into MOVESWorkerOutput(MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	emissionQuant,emissionRate)
-select spm.MOVESRunID,spm.iterationID,
-	spm.yearID,spm.monthID,spm.dayID,spm.hourID,
-	spm.stateID,spm.countyID,spm.zoneID,spm.linkID,
-	ps.outputPollutantID as pollutantID, spm.processID,
-	spm.sourceTypeID,spm.regClassID,spm.fuelTypeID,spm.modelYearID,
-	spm.roadTypeID,spm.SCC,
-	spm.engTechID,spm.sectorID,spm.hpID,
-	spm.emissionQuant * ps.pmSpeciationFraction as emissionQuant,
-	spm.emissionRate  * ps.pmSpeciationFraction as emissionRate
-from spmOutput2 spm
-inner join PMSpeciation ps on (
-	ps.processID = spm.processID
-	and ps.inputPollutantID = spm.pollutantID
-	and ps.sourceTypeID = spm.sourceTypeID
-	and ps.fuelTypeID = spm.fuelTypeID
-	and ps.minModelYearID <= spm.modelYearID
-	and ps.maxModelYearID >= spm.modelYearID
+-- @algorithm speciate the remaining pollutants. species output = pmspeciationfraction * species input
+insert into movesworkeroutput(movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	emissionquant,emissionrate)
+select spm.movesrunid,spm.iterationid,
+	spm.yearid,spm.monthid,spm.dayid,spm.hourid,
+	spm.stateid,spm.countyid,spm.zoneid,spm.linkid,
+	ps.outputpollutantid as pollutantid, spm.processid,
+	spm.sourcetypeid,spm.regclassid,spm.fueltypeid,spm.modelyearid,
+	spm.roadtypeid,spm.scc,
+	spm.engtechid,spm.sectorid,spm.hpid,
+	spm.emissionquant * ps.pmspeciationfraction as emissionquant,
+	spm.emissionrate  * ps.pmspeciationfraction as emissionrate
+from spmoutput2 spm
+inner join pmspeciation ps on (
+	ps.processid = spm.processid
+	and ps.inputpollutantid = spm.pollutantid
+	and ps.sourcetypeid = spm.sourcetypeid
+	and ps.fueltypeid = spm.fueltypeid
+	and ps.minmodelyearid <= spm.modelyearid
+	and ps.maxmodelyearid >= spm.modelyearid
 );
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
+-- section cleanup
 
-drop table if exists crankcaseSplit;
-drop table if exists sPMOneCountyYearGeneralFuelRatio;
-drop table if exists oneCountyYearSulfateFractions;
-drop table if exists spmOutput;
-drop table if exists spmOutput2;
-drop table if exists spmSplit1;
+drop table if exists crankcasesplit;
+drop table if exists spmonecountyyeargeneralfuelratio;
+drop table if exists onecountyyearsulfatefractions;
+drop table if exists spmoutput;
+drop table if exists spmoutput2;
+drop table if exists spmsplit1;
 
--- End Section Cleanup
+-- end section cleanup

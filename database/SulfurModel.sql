@@ -1,225 +1,225 @@
--- Sulfur Model
+-- sulfur model
 -- version 2016-10-04
--- authors Wesely Faler, Ed Campbell
+-- authors wesely faler, ed campbell
 
--- subst ##sulfurInputTable## tempSulfurIR;
--- subst ##sulfurOutputTable## tempSulfurOR;
+-- subst ##sulfurinputtable## tempsulfurir;
+-- subst ##sulfuroutputtable## tempsulfuror;
 
--- This is the form of the input table, named in ##sulfurInputTable##
--- drop table if exists ##sulfurInputTable##;
--- create table if not exists ##sulfurInputTable## (
---  	fuelTypeID int not null,
---  	fuelFormulationID int not null,
--- 		baseFuelFormulationID int not null,
--- 		polProcessID int not null,
---  	pollutantID int not null,
---  	processID int not null,
---  	modelYearGroupID int not null,
---  	minModelYearID int not null,
---  	maxModelYearID int not null,
---  	ageID int not null,
---  	ratioNoSulfur double
+-- this is the form of the input table, named in ##sulfurinputtable##
+-- drop table if exists ##sulfurinputtable##;
+-- create table if not exists ##sulfurinputtable## (
+--  	fueltypeid int not null,
+--  	fuelformulationid int not null,
+-- 		basefuelformulationid int not null,
+-- 		polprocessid int not null,
+--  	pollutantid int not null,
+--  	processid int not null,
+--  	modelyeargroupid int not null,
+--  	minmodelyearid int not null,
+--  	maxmodelyearid int not null,
+--  	ageid int not null,
+--  	rationosulfur double
 -- );
 
--- This is the form of the output table, named in ##sulfurOutputTable##
--- drop table if exists ##sulfurOutputTable##;
--- create table if not exists ##sulfurOutputTable## (
---  	fuelTypeID int not null,
---  	fuelFormulationID int not null,
---  	polProcessID int not null,
---  	pollutantID int not null,
---  	processID int not null,
---  	sourceTypeID int not null,
---  	modelYearID int not null,
---  	ageID int not null,
+-- this is the form of the output table, named in ##sulfuroutputtable##
+-- drop table if exists ##sulfuroutputtable##;
+-- create table if not exists ##sulfuroutputtable## (
+--  	fueltypeid int not null,
+--  	fuelformulationid int not null,
+--  	polprocessid int not null,
+--  	pollutantid int not null,
+--  	processid int not null,
+--  	sourcetypeid int not null,
+--  	modelyearid int not null,
+--  	ageid int not null,
 --  	ratio double null,
---  	ratioGPA double null,
---  	ratioNoSulfur double null
+--  	ratiogpa double null,
+--  	rationosulfur double null
 -- );
 
-drop table if exists tempSulfurCalcs1;
-create table if not exists tempSulfurCalcs1 (
-	fuelTypeID int, 
-	baseFuelFormulationID int,
-	fuelFormulationID int, 
-	polProcessID int, 
-	pollutantID int, 
-	processID int,
-	modelYearID int, 
-	ageID int, 
-	m6emitterID int, 
-	sourceTypeID int,
-	sulfurCoeff double, 
-	sulfurLevel double, 
-	sulfurBasis double, 
-	ratioNoSulfur double,
-	sulfurGPAMax float,
-	sulfShortTarget double, 
-	sulfShort30 double,
-	lowSulfurCoeff double
+drop table if exists tempsulfurcalcs1;
+create table if not exists tempsulfurcalcs1 (
+	fueltypeid int, 
+	basefuelformulationid int,
+	fuelformulationid int, 
+	polprocessid int, 
+	pollutantid int, 
+	processid int,
+	modelyearid int, 
+	ageid int, 
+	m6emitterid int, 
+	sourcetypeid int,
+	sulfurcoeff double, 
+	sulfurlevel double, 
+	sulfurbasis double, 
+	rationosulfur double,
+	sulfurgpamax float,
+	sulfshorttarget double, 
+	sulfshort30 double,
+	lowsulfurcoeff double
 );
 
-drop table if exists tempSulfurCalcs2;
-create table if not exists tempSulfurCalcs2 (
-	fuelTypeID int, 
-	baseFuelFormulationID int,
-	fuelFormulationID int, 
-	polProcessID int, 
-	pollutantID int, 
-	processID int,
-	modelYearID int, 
-	ageID int, 
-	m6emitterID int, 
-	sourceTypeID int,
-	sulfurCoeff double, 
-	sulfurLevel double, 
-	sulfurBasis double, 
-	ratioNoSulfur double,
-	sulfurGPAMax float,
-	sulfurIRFactor double,
-	sulfShortTarget double, 
-	sulfShort30 double,
-	SulfShortAdj double, 
-	sulfAdj2 double, 
-	SulfIRR double,
-	sulfurLongCoeff double,
-	minSulfAdjust double,
-	lowSulfurCoeff double
+drop table if exists tempsulfurcalcs2;
+create table if not exists tempsulfurcalcs2 (
+	fueltypeid int, 
+	basefuelformulationid int,
+	fuelformulationid int, 
+	polprocessid int, 
+	pollutantid int, 
+	processid int,
+	modelyearid int, 
+	ageid int, 
+	m6emitterid int, 
+	sourcetypeid int,
+	sulfurcoeff double, 
+	sulfurlevel double, 
+	sulfurbasis double, 
+	rationosulfur double,
+	sulfurgpamax float,
+	sulfurirfactor double,
+	sulfshorttarget double, 
+	sulfshort30 double,
+	sulfshortadj double, 
+	sulfadj2 double, 
+	sulfirr double,
+	sulfurlongcoeff double,
+	minsulfadjust double,
+	lowsulfurcoeff double
 );
 
-drop table if exists tempSulfurCalcs3;
-create table if not exists tempSulfurCalcs3 (
-	fuelTypeID int, 
-	baseFuelFormulationID int,
-	fuelFormulationID int, 
-	polProcessID int, 
-	pollutantID int, 
-	processID int,
-	modelYearID int, 
-	ageID int, 
-	m6emitterID int, 
-	sourceTypeID int,
-	sulfurCoeff double, 
-	sulfurLevel double, 
-	sulfurBasis double, 
-	ratioNoSulfur double,
-	sulfurGPAMax float,
-	sulfurIRFactor double,
-	sulfShortTarget double, 
-	sulfShort30 double,
-	SulfShortAdj double, 
-	sulfAdj2 double, 
-	SulfIRR double,
-	sulfurLongCoeff double,
-	sulfMax double,
-	sulfAdj3 double,
-	sulfGPA1 double,
-	ssulfGPA double,
-	sulfGPA double,
-	GPASulfadj double,
-	minSulfAdjust double,
-	lowSulfurCoeff double
+drop table if exists tempsulfurcalcs3;
+create table if not exists tempsulfurcalcs3 (
+	fueltypeid int, 
+	basefuelformulationid int,
+	fuelformulationid int, 
+	polprocessid int, 
+	pollutantid int, 
+	processid int,
+	modelyearid int, 
+	ageid int, 
+	m6emitterid int, 
+	sourcetypeid int,
+	sulfurcoeff double, 
+	sulfurlevel double, 
+	sulfurbasis double, 
+	rationosulfur double,
+	sulfurgpamax float,
+	sulfurirfactor double,
+	sulfshorttarget double, 
+	sulfshort30 double,
+	sulfshortadj double, 
+	sulfadj2 double, 
+	sulfirr double,
+	sulfurlongcoeff double,
+	sulfmax double,
+	sulfadj3 double,
+	sulfgpa1 double,
+	ssulfgpa double,
+	sulfgpa double,
+	gpasulfadj double,
+	minsulfadjust double,
+	lowsulfurcoeff double
 );
 
-drop table if exists tempSulfurCalcs3High;
-create table if not exists tempSulfurCalcs3High (
-	fuelTypeID int, 
-	baseFuelFormulationID int,
-	fuelFormulationID int, 
-	polProcessID int, 
-	pollutantID int, 
-	processID int,
-	modelYearID int, 
-	ageID int, 
-	sourceTypeID int,
-	sulfurCoeff double, 
-	sulfurLevel double, 
-	sulfurBasis double, 
-	ratioNoSulfur double,
-	sulfurGPAMax float,
-	sulfurIRFactor double,
-	sulfShortTarget double, 
-	sulfShort30 double,
-	SulfShortAdj double, 
-	sulfAdj2 double, 
-	SulfIRR double,
-	sulfurLongCoeff double,
-	sulfMax double,
-	sulfAdj3 double,
-	sulfGPA1 double,
-	ssulfGPA double,
-	sulfGPA double,
-	GPASulfadj double,
-	minSulfAdjust double,
-	lowSulfurCoeff double
+drop table if exists tempsulfurcalcs3high;
+create table if not exists tempsulfurcalcs3high (
+	fueltypeid int, 
+	basefuelformulationid int,
+	fuelformulationid int, 
+	polprocessid int, 
+	pollutantid int, 
+	processid int,
+	modelyearid int, 
+	ageid int, 
+	sourcetypeid int,
+	sulfurcoeff double, 
+	sulfurlevel double, 
+	sulfurbasis double, 
+	rationosulfur double,
+	sulfurgpamax float,
+	sulfurirfactor double,
+	sulfshorttarget double, 
+	sulfshort30 double,
+	sulfshortadj double, 
+	sulfadj2 double, 
+	sulfirr double,
+	sulfurlongcoeff double,
+	sulfmax double,
+	sulfadj3 double,
+	sulfgpa1 double,
+	ssulfgpa double,
+	sulfgpa double,
+	gpasulfadj double,
+	minsulfadjust double,
+	lowsulfurcoeff double
 );
 
-drop table if exists tempSulfurCalcs3Normal;
-create table if not exists tempSulfurCalcs3Normal (
-	fuelTypeID int, 
-	baseFuelFormulationID int,
-	fuelFormulationID int, 
-	polProcessID int, 
-	pollutantID int, 
-	processID int,
-	modelYearID int, 
-	ageID int, 
-	sourceTypeID int,
-	sulfurCoeff double, 
-	sulfurLevel double, 
-	sulfurBasis double, 
-	ratioNoSulfur double,
-	sulfurGPAMax float,
-	sulfurIRFactor double,
-	sulfShortTarget double, 
-	sulfShort30 double,
-	SulfShortAdj double, 
-	sulfAdj2 double, 
-	SulfIRR double,
-	sulfurLongCoeff double,
-	sulfMax double,
-	sulfAdj3 double,
-	sulfGPA1 double,
-	ssulfGPA double,
-	sulfGPA double,
-	GPASulfadj double,
-	minSulfAdjust double,
-	lowSulfurCoeff double
+drop table if exists tempsulfurcalcs3normal;
+create table if not exists tempsulfurcalcs3normal (
+	fueltypeid int, 
+	basefuelformulationid int,
+	fuelformulationid int, 
+	polprocessid int, 
+	pollutantid int, 
+	processid int,
+	modelyearid int, 
+	ageid int, 
+	sourcetypeid int,
+	sulfurcoeff double, 
+	sulfurlevel double, 
+	sulfurbasis double, 
+	rationosulfur double,
+	sulfurgpamax float,
+	sulfurirfactor double,
+	sulfshorttarget double, 
+	sulfshort30 double,
+	sulfshortadj double, 
+	sulfadj2 double, 
+	sulfirr double,
+	sulfurlongcoeff double,
+	sulfmax double,
+	sulfadj3 double,
+	sulfgpa1 double,
+	ssulfgpa double,
+	sulfgpa double,
+	gpasulfadj double,
+	minsulfadjust double,
+	lowsulfurcoeff double
 );
 
-drop table if exists tempSulfurCalcs4;
-create table if not exists tempSulfurCalcs4 (
-	fuelTypeID int,
-	fuelFormulationID int, 
-	modelYearID int, 
-	ratioNoSulfur double,
-	pollutantID int,
-	polProcessID int, 
-	processID int,
-	sourceTypeID int,
-	ageID int,  
-	baseFuelFormulationID int,
-	sulfAdj3 double,
-	GPAsulfAdj3	double,
-	sulfAdj3Normal	double,
-	sulfAdjHigh	double,
-	GPASulfadjNormal double,
-	GPASulfadjHigh	double,
-	minSulfAdjust double,
-	sulfurLevel double,
-	lowSulfurCoeff double,
-	sulfurBasis double
+drop table if exists tempsulfurcalcs4;
+create table if not exists tempsulfurcalcs4 (
+	fueltypeid int,
+	fuelformulationid int, 
+	modelyearid int, 
+	rationosulfur double,
+	pollutantid int,
+	polprocessid int, 
+	processid int,
+	sourcetypeid int,
+	ageid int,  
+	basefuelformulationid int,
+	sulfadj3 double,
+	gpasulfadj3	double,
+	sulfadj3normal	double,
+	sulfadjhigh	double,
+	gpasulfadjnormal double,
+	gpasulfadjhigh	double,
+	minsulfadjust double,
+	sulfurlevel double,
+	lowsulfurcoeff double,
+	sulfurbasis double
 );
 
--- LEFT JOINs should be used with M6SulfurCoeff, using a default value of 1.0 for sulfurLongCoeff
+-- left joins should be used with m6sulfurcoeff, using a default value of 1.0 for sulfurlongcoeff
 -- if a record is not found.
 
-drop table if exists tempYear;
-create table if not exists tempYear (
+drop table if exists tempyear;
+create table if not exists tempyear (
 	year int not null primary key
 );
 
-insert into tempYear(year) values(1960),(1961),(1962),(1963),(1964),(1965),(1966),(1967)
+insert into tempyear(year) values(1960),(1961),(1962),(1963),(1964),(1965),(1966),(1967)
 	,(1968),(1969),(1970),(1971),(1972),(1973),(1974),(1975),(1976),(1977)
 	,(1978),(1979),(1980),(1981),(1982),(1983),(1984),(1985),(1986),(1987)
 	,(1988),(1989),(1990),(1991),(1992),(1993),(1994),(1995),(1996),(1997)
@@ -232,356 +232,356 @@ insert into tempYear(year) values(1960),(1961),(1962),(1963),(1964),(1965),(1966
 	,(2058),(2059),(2060)
 ;
 
-drop table if exists tempSulfurBaseLookup;
-create table if not exists tempSulfurBaseLookup (
-	sulfurBasis int not null,
-	modelYearID int not null,
-	sulfurGPAMax float,
-	sulfurBase float
+drop table if exists tempsulfurbaselookup;
+create table if not exists tempsulfurbaselookup (
+	sulfurbasis int not null,
+	modelyearid int not null,
+	sulfurgpamax float,
+	sulfurbase float
 );
 
-drop table if exists tempSulfurCoeffLookup;
-create table if not exists tempSulfurCoeffLookup (
-	sulfurCoeff float,
-	processID smallint,
-	pollutantID smallint,
-	M6EmitterID smallint,
-	sourceTypeID smallint,
-	modelYearID int not null,
-	sulfurFunctionName char(10),
-	sulfurFunctionID smallint,
-	lowSulfurCoeff double
+drop table if exists tempsulfurcoefflookup;
+create table if not exists tempsulfurcoefflookup (
+	sulfurcoeff float,
+	processid smallint,
+	pollutantid smallint,
+	m6emitterid smallint,
+	sourcetypeid smallint,
+	modelyearid int not null,
+	sulfurfunctionname char(10),
+	sulfurfunctionid smallint,
+	lowsulfurcoeff double
 );
 
-insert into tempSulfurBaseLookup (sulfurBasis, modelYearID, sulfurGPAMax, sulfurBase)
-select distinct sulfurBasis, Year, sulfurGPAMax, sulfurBase
-from tempYear
-inner join sulfurBase on tempYear.year >= 
-	CASE round(sulfurBase.modelYearGroupID / 10000,0) WHEN 0 THEN 1960 ELSE round(sulfurBase.modelYearGroupID / 10000,0) END
-	and tempYear.year <= mod(sulfurBase.modelYearGroupID,10000)
-inner join RunSpecModelYear on RunSpecModelYear.modelYearID = tempYear.year
+insert into tempsulfurbaselookup (sulfurbasis, modelyearid, sulfurgpamax, sulfurbase)
+select distinct sulfurbasis, year, sulfurgpamax, sulfurbase
+from tempyear
+inner join sulfurbase on tempyear.year >= 
+	case round(sulfurbase.modelyeargroupid / 10000,0) when 0 then 1960 else round(sulfurbase.modelyeargroupid / 10000,0) end
+	and tempyear.year <= mod(sulfurbase.modelyeargroupid,10000)
+inner join runspecmodelyear on runspecmodelyear.modelyearid = tempyear.year
 ;
 
-alter table tempSulfurBaseLookup add key idxAll(sulfurBasis, modelYearID);
-alter table tempSulfurBaseLookup add key idxAll2(modelYearID, sulfurBasis);
+alter table tempsulfurbaselookup add key idxall(sulfurbasis, modelyearid);
+alter table tempsulfurbaselookup add key idxall2(modelyearid, sulfurbasis);
 
-insert into tempSulfurCoeffLookup (sulfurCoeff, processID, pollutantID, M6EmitterID,
-	sourceTypeID, modelYearID, sulfurFunctionName, sulfurFunctionID, lowSulfurCoeff
+insert into tempsulfurcoefflookup (sulfurcoeff, processid, pollutantid, m6emitterid,
+	sourcetypeid, modelyearid, sulfurfunctionname, sulfurfunctionid, lowsulfurcoeff
 )
-select sulfurCoeff, processID, pollutantID, sulfurModelCoeff.M6EmitterID,
-	sulfurModelCoeff.sourceTypeID, year, sulfurFunctionName, sulfurModelCoeff.sulfurFunctionID, sulfurModelCoeff.lowSulfurCoeff
-from tempYear
-inner join sulfurModelCoeff on tempYear.year >= 
-	CASE round(sulfurModelCoeff.fuelMyGroupID / 10000,0) WHEN 0 THEN 1960 ELSE round(sulfurModelCoeff.fuelMyGroupID / 10000,0) END 
-	and tempYear.year <= mod(sulfurModelCoeff.fuelMyGroupID,10000)
-inner join RunSpecModelYear on RunSpecModelYear.modelYearID = tempYear.year
-inner join sulfurModelname on sulfurModelCoeff.M6EmitterID = sulfurModelname.M6EmitterID
-	and sulfurModelCoeff.sulfurFunctionID = sulfurModelname.sulfurFunctionID
-inner join RunSpecSourceType rsst on rsst.sourceTypeID = sulfurModelCoeff.sourceTypeID
+select sulfurcoeff, processid, pollutantid, sulfurmodelcoeff.m6emitterid,
+	sulfurmodelcoeff.sourcetypeid, year, sulfurfunctionname, sulfurmodelcoeff.sulfurfunctionid, sulfurmodelcoeff.lowsulfurcoeff
+from tempyear
+inner join sulfurmodelcoeff on tempyear.year >= 
+	case round(sulfurmodelcoeff.fuelmygroupid / 10000,0) when 0 then 1960 else round(sulfurmodelcoeff.fuelmygroupid / 10000,0) end 
+	and tempyear.year <= mod(sulfurmodelcoeff.fuelmygroupid,10000)
+inner join runspecmodelyear on runspecmodelyear.modelyearid = tempyear.year
+inner join sulfurmodelname on sulfurmodelcoeff.m6emitterid = sulfurmodelname.m6emitterid
+	and sulfurmodelcoeff.sulfurfunctionid = sulfurmodelname.sulfurfunctionid
+inner join runspecsourcetype rsst on rsst.sourcetypeid = sulfurmodelcoeff.sourcetypeid
 ;
 
-alter table tempSulfurCoeffLookup add key(processID, pollutantID, modelYearID);
+alter table tempsulfurcoefflookup add key(processid, pollutantid, modelyearid);
 
-insert into tempSulfurCalcs1 (fuelTypeID, baseFuelFormulationID, fuelFormulationID, polProcessID, pollutantID, processID,
-	modelYearID, ageID, m6emitterID, sourceTypeID,
-	sulfurCoeff, sulfurLevel, sulfurBasis, ratioNoSulfur, sulfurGPAMax,
-	sulfShortTarget, sulfShort30, lowSulfurCoeff
-)
-select 
-	IR.fuelTypeID, IR.baseFuelFormulationID, IR.fuelFormulationID, IR.polProcessID, IR.pollutantID, IR.processID,
-	rsmya.modelYearID, IR.ageID, m6emitterID, sourceTypeID,
-	sulfurCoeff, sulfurLevel, sulfurBasis, ratioNoSulfur, sulfurGPAMax,
-	CASE sulfurFunctionName WHEN 'log-log' THEN
-			CASE WHEN sulfurLevel > 0 THEN exp(sulfurCoeff * LN(sulfurLevel)) ELSE 0 END
-	ELSE
-		exp(sulfurCoeff * sulfurLevel)
-	END as sulfShortTarget,
-	CASE sulfurFunctionName WHEN 'log-log' THEN
-		exp(sulfurCoeff * LN(sulfurBasis))
-	ELSE
-		exp(sulfurCoeff * sulfurBasis)
-	END as sulfShort30,
-	lowSulfurCoeff
-from ##sulfurInputTable## IR 
-inner join tempSulfurCoeffLookup on 
-	IR.processID = tempSulfurCoeffLookup.processID and IR.pollutantID = tempSulfurCoeffLookup.pollutantID
-inner join fuelFormulation on IR.fuelFormulationID = fuelFormulation.fuelFormulationID
-inner join tempSulfurBaseLookup on tempSulfurCoeffLookup.modelYearID = tempSulfurBaseLookup.modelYearID
-	and IR.minModelYearID <= tempSulfurBaseLookup.modelYearID
-	and IR.maxModelYearID >= tempSulfurBaseLookup.modelYearID
-inner join RunSpecModelYearAge rsmya on rsmya.modelYearID = MYMAP(tempSulfurBaseLookup.modelYearID)
-	and rsmya.ageID = IR.ageID
-;
-
-alter table tempSulfurCalcs1 add key(pollutantID, modelYearID, fuelTypeID);
-
-insert into tempSulfurCalcs2 (fuelTypeID, baseFuelFormulationID, fuelFormulationID, polProcessID, pollutantID, processID,
-	modelYearID, ageID, m6emitterID, sourceTypeID,
-	sulfurCoeff, sulfurLevel, sulfurBasis, ratioNoSulfur, sulfurGPAMax, sulfurIRFactor,
-	sulfShortTarget, sulfShort30, SulfShortAdj, sulfAdj2, SulfIRR, sulfurLongCoeff, lowSulfurCoeff
+insert into tempsulfurcalcs1 (fueltypeid, basefuelformulationid, fuelformulationid, polprocessid, pollutantid, processid,
+	modelyearid, ageid, m6emitterid, sourcetypeid,
+	sulfurcoeff, sulfurlevel, sulfurbasis, rationosulfur, sulfurgpamax,
+	sulfshorttarget, sulfshort30, lowsulfurcoeff
 )
 select 
-	SC1.fuelTypeID, baseFuelFormulationID, SC1.fuelFormulationID, SC1.polProcessID, SC1.pollutantID, SC1.processID,
-	SC1.modelYearID, ageID, SC1.m6emitterID, sourceTypeID,
-	sulfurCoeff, sulfurLevel, sulfurBasis, ratioNoSulfur, sulfurGPAMax, 
-	CASE WHEN sulfurIRFactor is null THEN
+	ir.fueltypeid, ir.basefuelformulationid, ir.fuelformulationid, ir.polprocessid, ir.pollutantid, ir.processid,
+	rsmya.modelyearid, ir.ageid, m6emitterid, sourcetypeid,
+	sulfurcoeff, sulfurlevel, sulfurbasis, rationosulfur, sulfurgpamax,
+	case sulfurfunctionname when 'log-log' then
+			case when sulfurlevel > 0 then exp(sulfurcoeff * ln(sulfurlevel)) else 0 end
+	else
+		exp(sulfurcoeff * sulfurlevel)
+	end as sulfshorttarget,
+	case sulfurfunctionname when 'log-log' then
+		exp(sulfurcoeff * ln(sulfurbasis))
+	else
+		exp(sulfurcoeff * sulfurbasis)
+	end as sulfshort30,
+	lowsulfurcoeff
+from ##sulfurinputtable## ir 
+inner join tempsulfurcoefflookup on 
+	ir.processid = tempsulfurcoefflookup.processid and ir.pollutantid = tempsulfurcoefflookup.pollutantid
+inner join fuelformulation on ir.fuelformulationid = fuelformulation.fuelformulationid
+inner join tempsulfurbaselookup on tempsulfurcoefflookup.modelyearid = tempsulfurbaselookup.modelyearid
+	and ir.minmodelyearid <= tempsulfurbaselookup.modelyearid
+	and ir.maxmodelyearid >= tempsulfurbaselookup.modelyearid
+inner join runspecmodelyearage rsmya on rsmya.modelyearid = mymap(tempsulfurbaselookup.modelyearid)
+	and rsmya.ageid = ir.ageid
+;
+
+alter table tempsulfurcalcs1 add key(pollutantid, modelyearid, fueltypeid);
+
+insert into tempsulfurcalcs2 (fueltypeid, basefuelformulationid, fuelformulationid, polprocessid, pollutantid, processid,
+	modelyearid, ageid, m6emitterid, sourcetypeid,
+	sulfurcoeff, sulfurlevel, sulfurbasis, rationosulfur, sulfurgpamax, sulfurirfactor,
+	sulfshorttarget, sulfshort30, sulfshortadj, sulfadj2, sulfirr, sulfurlongcoeff, lowsulfurcoeff
+)
+select 
+	sc1.fueltypeid, basefuelformulationid, sc1.fuelformulationid, sc1.polprocessid, sc1.pollutantid, sc1.processid,
+	sc1.modelyearid, ageid, sc1.m6emitterid, sourcetypeid,
+	sulfurcoeff, sulfurlevel, sulfurbasis, rationosulfur, sulfurgpamax, 
+	case when sulfurirfactor is null then
 		0
-	ELSE
-		CASE WHEN sulfurLevel <= maxIRFactorSulfur THEN
-			sulfurIRFactor
-		ELSE
+	else
+		case when sulfurlevel <= maxirfactorsulfur then
+			sulfurirfactor
+		else
 			0
-		END
-	END as	
-	sulfurIRFactor,
-	sulfShortTarget, sulfShort30, 
-	(sulfShortTarget - sulfShort30) / sulfShort30 as SulfShortAdj,
-	((sulfShortTarget - sulfShort30) / sulfShort30) * ifnull(sulfurLongCoeff,1.0) as sulfAdj2,
-	CASE WHEN (maxIRFactorSulfur is null or maxIRFactorSulfur <= 0) THEN -- or sulfurLevel < 30
+		end
+	end as	
+	sulfurirfactor,
+	sulfshorttarget, sulfshort30, 
+	(sulfshorttarget - sulfshort30) / sulfshort30 as sulfshortadj,
+	((sulfshorttarget - sulfshort30) / sulfshort30) * ifnull(sulfurlongcoeff,1.0) as sulfadj2,
+	case when (maxirfactorsulfur is null or maxirfactorsulfur <= 0) then -- or sulfurlevel < 30
 		0
-	WHEN sulfurLevel <= maxIRFactorSulfur THEN -- was <= maxIRFactorSulfur
-		exp(sulfurCoeff * ln(maxIRFactorSulfur))
-	ELSE
-		CASE WHEN sulfurLevel > 0 THEN exp(sulfurCoeff * ln(sulfurLevel)) ELSE 0 END
-	END as SulfIRR, 
+	when sulfurlevel <= maxirfactorsulfur then -- was <= maxirfactorsulfur
+		exp(sulfurcoeff * ln(maxirfactorsulfur))
+	else
+		case when sulfurlevel > 0 then exp(sulfurcoeff * ln(sulfurlevel)) else 0 end
+	end as sulfirr, 
 	
-	CASE WHEN sulfurLongCoeff is null THEN
+	case when sulfurlongcoeff is null then
 		1.0
-	ELSE
-		sulfurLongCoeff
-	END as
-	sulfurLongCoeff,
-	lowSulfurCoeff
-from tempSulfurCalcs1 SC1
-left join M6SulfurCoeff on 
-	SC1.pollutantID = M6SulfurCoeff.pollutantID and
-	SC1.modelYearID >= M6SulfurCoeff.minModelYearID and
-	SC1.modelYearID <= M6SulfurCoeff.maxModelYearID
-inner join sulfurCapAmount on SC1.fuelTypeID = sulfurCapAmount.fuelTypeID
+	else
+		sulfurlongcoeff
+	end as
+	sulfurlongcoeff,
+	lowsulfurcoeff
+from tempsulfurcalcs1 sc1
+left join m6sulfurcoeff on 
+	sc1.pollutantid = m6sulfurcoeff.pollutantid and
+	sc1.modelyearid >= m6sulfurcoeff.minmodelyearid and
+	sc1.modelyearid <= m6sulfurcoeff.maxmodelyearid
+inner join sulfurcapamount on sc1.fueltypeid = sulfurcapamount.fueltypeid
 ;
 
--- 2010A:
--- 	(case when (tempSulfurBaseLookup.sulfurBase <= 30) then 0.85 else 0.50 end)
+-- 2010a:
+-- 	(case when (tempsulfurbaselookup.sulfurbase <= 30) then 0.85 else 0.50 end)
 
--- Revised internal:
---  (case when (tempSulfurBaseLookup.sulfurBase <= 30) then 0.40 else 0.40 end)
+-- revised internal:
+--  (case when (tempsulfurbaselookup.sulfurbase <= 30) then 0.40 else 0.40 end)
 
-update tempSulfurCalcs2, tempSulfurBaseLookup set minSulfAdjust=
-    (case when (tempSulfurBaseLookup.sulfurBase <= 30) then 0.85 else 0.50 end)
-where tempSulfurBaseLookup.modelYearID=tempSulfurCalcs2.modelYearID;
+update tempsulfurcalcs2, tempsulfurbaselookup set minsulfadjust=
+    (case when (tempsulfurbaselookup.sulfurbase <= 30) then 0.85 else 0.50 end)
+where tempsulfurbaselookup.modelyearid=tempsulfurcalcs2.modelyearid;
 
-insert into tempSulfurCalcs3 (fuelTypeID, baseFuelFormulationID, fuelFormulationID, polProcessID, pollutantID, processID,
-	modelYearID, ageID, m6emitterID, sourceTypeID,
-	sulfurCoeff, sulfurLevel, sulfurBasis, ratioNoSulfur, sulfurGPAMax, sulfurIRFactor,
-	sulfShortTarget, sulfShort30, SulfShortAdj, sulfAdj2, SulfIRR, sulfurLongCoeff,
-	sulfMax, sulfAdj3, sulfGPA1, ssulfGPA, sulfGPA, GPASulfadj, minSulfAdjust, lowSulfurCoeff
+insert into tempsulfurcalcs3 (fueltypeid, basefuelformulationid, fuelformulationid, polprocessid, pollutantid, processid,
+	modelyearid, ageid, m6emitterid, sourcetypeid,
+	sulfurcoeff, sulfurlevel, sulfurbasis, rationosulfur, sulfurgpamax, sulfurirfactor,
+	sulfshorttarget, sulfshort30, sulfshortadj, sulfadj2, sulfirr, sulfurlongcoeff,
+	sulfmax, sulfadj3, sulfgpa1, ssulfgpa, sulfgpa, gpasulfadj, minsulfadjust, lowsulfurcoeff
 )
 select 
-	SC2.fuelTypeID, baseFuelFormulationID, SC2.fuelFormulationID, SC2.polProcessID, SC2.pollutantID, SC2.processID,
-	SC2.modelYearID, ageID, SC2.m6emitterID, sourceTypeID,
-	sulfurCoeff, sulfurLevel, sulfurBasis, ratioNoSulfur, sulfurGPAMax, sulfurIRFactor,
-	sulfShortTarget, sulfShort30, SulfShortAdj, sulfAdj2, SulfIRR, sulfurLongCoeff,
-	((sulfIRR - sulfShort30) / sulfShort30) as sulfMax,
-	CASE WHEN 1.0 + (sulfurIRFactor * ((sulfIRR - sulfShort30) / sulfShort30) 
-			+ (1.0 - sulfurIRFactor) * sulfAdj2) <= minSulfAdjust THEN
-		minSulfAdjust
-	ELSE
-		1.0 + (sulfurIRFactor * ((sulfIRR - sulfShort30) / sulfShort30) 
-		+ (1.0 - sulfurIRFactor) * sulfAdj2)
-	END as sulfAdj3,
-	CASE WHEN (ModelYearID >= ##cutoff.sulfurModelGPAPhaseInStart## and ModelYearID <= ##cutoff.sulfurModelGPAPhaseInEnd## and sulfurLevel >= 0) THEN
-		((case when (SC2.pollutantID=3 and SC2.m6emitterID=2) then 0.60 else 1.0 end)*exp(sulfurCoeff * ln(sulfurGPAMax)))
-	ELSE
+	sc2.fueltypeid, basefuelformulationid, sc2.fuelformulationid, sc2.polprocessid, sc2.pollutantid, sc2.processid,
+	sc2.modelyearid, ageid, sc2.m6emitterid, sourcetypeid,
+	sulfurcoeff, sulfurlevel, sulfurbasis, rationosulfur, sulfurgpamax, sulfurirfactor,
+	sulfshorttarget, sulfshort30, sulfshortadj, sulfadj2, sulfirr, sulfurlongcoeff,
+	((sulfirr - sulfshort30) / sulfshort30) as sulfmax,
+	case when 1.0 + (sulfurirfactor * ((sulfirr - sulfshort30) / sulfshort30) 
+			+ (1.0 - sulfurirfactor) * sulfadj2) <= minsulfadjust then
+		minsulfadjust
+	else
+		1.0 + (sulfurirfactor * ((sulfirr - sulfshort30) / sulfshort30) 
+		+ (1.0 - sulfurirfactor) * sulfadj2)
+	end as sulfadj3,
+	case when (modelyearid >= ##cutoff.sulfurmodelgpaphaseinstart## and modelyearid <= ##cutoff.sulfurmodelgpaphaseinend## and sulfurlevel >= 0) then
+		((case when (sc2.pollutantid=3 and sc2.m6emitterid=2) then 0.60 else 1.0 end)*exp(sulfurcoeff * ln(sulfurgpamax)))
+	else
 		0
-	END as sulfGPA1,
-	CASE WHEN (ModelYearID >= ##cutoff.sulfurModelGPAPhaseInStart## and ModelYearID <= ##cutoff.sulfurModelGPAPhaseInStart## and sulfurLevel >= 0) THEN
-		-- NOx high emitters get sulfGPA1*0.6 and sulfShort30*0.6, which cancel and make no difference in the ratio here
-		(exp(sulfurCoeff * ln(sulfurGPAMax)) - sulfShort30) / sulfShort30
-	ELSE
+	end as sulfgpa1,
+	case when (modelyearid >= ##cutoff.sulfurmodelgpaphaseinstart## and modelyearid <= ##cutoff.sulfurmodelgpaphaseinstart## and sulfurlevel >= 0) then
+		-- nox high emitters get sulfgpa1*0.6 and sulfshort30*0.6, which cancel and make no difference in the ratio here
+		(exp(sulfurcoeff * ln(sulfurgpamax)) - sulfshort30) / sulfshort30
+	else
 		0
-	END as ssulfGPA,
-	CASE WHEN (ModelYearID >= ##cutoff.sulfurModelGPAPhaseInStart## and ModelYearID <= ##cutoff.sulfurModelGPAPhaseInEnd## and sulfurLevel >= 0) THEN
-		-- NOx high emitters get sulfGPA1*0.6 and sulfShort30*0.6, which cancel and make no difference in the ratio here
-		((exp(sulfurCoeff * ln(sulfurGPAMax)) - sulfShort30) / sulfShort30)
-		* sulfurLongCoeff
-	ELSE
+	end as ssulfgpa,
+	case when (modelyearid >= ##cutoff.sulfurmodelgpaphaseinstart## and modelyearid <= ##cutoff.sulfurmodelgpaphaseinend## and sulfurlevel >= 0) then
+		-- nox high emitters get sulfgpa1*0.6 and sulfshort30*0.6, which cancel and make no difference in the ratio here
+		((exp(sulfurcoeff * ln(sulfurgpamax)) - sulfshort30) / sulfshort30)
+		* sulfurlongcoeff
+	else
 		0
-	END as sulfGPA,
-	CASE WHEN (ModelYearID >= ##cutoff.sulfurModelGPAPhaseInStart## and ModelYearID <= ##cutoff.sulfurModelGPAPhaseInEnd## and sulfurLevel >= 0) THEN
-		-- NOx high emitters get sulfGPA1*0.6 and sulfShort30*0.6, which cancel and make no difference in the ratio here
-		1.0 + (sulfurIRFactor * (((exp(sulfurCoeff * ln(sulfurGPAMax)) - sulfShort30) / sulfShort30)
-		* sulfurLongCoeff) + (1.0 - sulfurIRFactor) * sulfAdj2)
-	ELSE
-		CASE WHEN 1.0 + (sulfurIRFactor * ((sulfIRR - sulfShort30) / sulfShort30) 
-				+ (1.0 - sulfurIRFactor) * sulfAdj2) <= minSulfAdjust THEN
-			minSulfAdjust
-		ELSE
-			1.0 + (sulfurIRFactor * ((sulfIRR - sulfShort30) / sulfShort30) 
-			+ (1.0 - sulfurIRFactor) * sulfAdj2)
-		END
-	END as GPASulfadj,
-	minSulfAdjust,
-	lowSulfurCoeff
-from tempSulfurCalcs2 SC2
+	end as sulfgpa,
+	case when (modelyearid >= ##cutoff.sulfurmodelgpaphaseinstart## and modelyearid <= ##cutoff.sulfurmodelgpaphaseinend## and sulfurlevel >= 0) then
+		-- nox high emitters get sulfgpa1*0.6 and sulfshort30*0.6, which cancel and make no difference in the ratio here
+		1.0 + (sulfurirfactor * (((exp(sulfurcoeff * ln(sulfurgpamax)) - sulfshort30) / sulfshort30)
+		* sulfurlongcoeff) + (1.0 - sulfurirfactor) * sulfadj2)
+	else
+		case when 1.0 + (sulfurirfactor * ((sulfirr - sulfshort30) / sulfshort30) 
+				+ (1.0 - sulfurirfactor) * sulfadj2) <= minsulfadjust then
+			minsulfadjust
+		else
+			1.0 + (sulfurirfactor * ((sulfirr - sulfshort30) / sulfshort30) 
+			+ (1.0 - sulfurirfactor) * sulfadj2)
+		end
+	end as gpasulfadj,
+	minsulfadjust,
+	lowsulfurcoeff
+from tempsulfurcalcs2 sc2
 ;
 
-alter table tempSulfurCalcs3 add key(m6emitterID);
+alter table tempsulfurcalcs3 add key(m6emitterid);
 
-insert into tempSulfurCalcs3High (fuelTypeID, fuelFormulationID, baseFuelFormulationID, polProcessID, pollutantID, processID,
-	modelYearID, ageID, sourceTypeID,
-	sulfurCoeff, sulfurLevel, sulfurBasis, ratioNoSulfur, sulfurGPAMax, sulfurIRFactor,
-	sulfShortTarget, sulfShort30, SulfShortAdj, sulfAdj2, SulfIRR, sulfurLongCoeff,
-	sulfMax, sulfAdj3, sulfGPA1, ssulfGPA, sulfGPA, GPASulfadj,minSulfAdjust,lowSulfurCoeff)
+insert into tempsulfurcalcs3high (fueltypeid, fuelformulationid, basefuelformulationid, polprocessid, pollutantid, processid,
+	modelyearid, ageid, sourcetypeid,
+	sulfurcoeff, sulfurlevel, sulfurbasis, rationosulfur, sulfurgpamax, sulfurirfactor,
+	sulfshorttarget, sulfshort30, sulfshortadj, sulfadj2, sulfirr, sulfurlongcoeff,
+	sulfmax, sulfadj3, sulfgpa1, ssulfgpa, sulfgpa, gpasulfadj,minsulfadjust,lowsulfurcoeff)
 select 
-	fuelTypeID, fuelFormulationID, baseFuelFormulationID, polProcessID, pollutantID, processID,
-	modelYearID, ageID, sourceTypeID,
-	sulfurCoeff, sulfurLevel, sulfurBasis, ratioNoSulfur, sulfurGPAMax, sulfurIRFactor,
-	sulfShortTarget, sulfShort30, SulfShortAdj, sulfAdj2, SulfIRR, sulfurLongCoeff,
-	sulfMax, sulfAdj3, sulfGPA1, ssulfGPA, sulfGPA, GPASulfadj, minSulfAdjust, lowSulfurCoeff
-from tempSulfurCalcs3 where m6emitterID = 2
+	fueltypeid, fuelformulationid, basefuelformulationid, polprocessid, pollutantid, processid,
+	modelyearid, ageid, sourcetypeid,
+	sulfurcoeff, sulfurlevel, sulfurbasis, rationosulfur, sulfurgpamax, sulfurirfactor,
+	sulfshorttarget, sulfshort30, sulfshortadj, sulfadj2, sulfirr, sulfurlongcoeff,
+	sulfmax, sulfadj3, sulfgpa1, ssulfgpa, sulfgpa, gpasulfadj, minsulfadjust, lowsulfurcoeff
+from tempsulfurcalcs3 where m6emitterid = 2
 ;
 
-insert into tempSulfurCalcs3Normal (fuelTypeID, fuelFormulationID, polProcessID, pollutantID, processID,
-	modelYearID, ageID, sourceTypeID,
-	sulfurCoeff, sulfurLevel, sulfurBasis, ratioNoSulfur, sulfurGPAMax, sulfurIRFactor,
-	sulfShortTarget, sulfShort30, SulfShortAdj, sulfAdj2, SulfIRR, sulfurLongCoeff,
-	sulfMax, sulfAdj3, sulfGPA1, ssulfGPA, sulfGPA, GPASulfadj, minSulfAdjust, lowSulfurCoeff)
+insert into tempsulfurcalcs3normal (fueltypeid, fuelformulationid, polprocessid, pollutantid, processid,
+	modelyearid, ageid, sourcetypeid,
+	sulfurcoeff, sulfurlevel, sulfurbasis, rationosulfur, sulfurgpamax, sulfurirfactor,
+	sulfshorttarget, sulfshort30, sulfshortadj, sulfadj2, sulfirr, sulfurlongcoeff,
+	sulfmax, sulfadj3, sulfgpa1, ssulfgpa, sulfgpa, gpasulfadj, minsulfadjust, lowsulfurcoeff)
 select 
-	fuelTypeID, fuelFormulationID, polProcessID, pollutantID, processID,
-	modelYearID, ageID, sourceTypeID,
-	sulfurCoeff, sulfurLevel, sulfurBasis, ratioNoSulfur, sulfurGPAMax, sulfurIRFactor,
-	sulfShortTarget, sulfShort30, SulfShortAdj, sulfAdj2, SulfIRR, sulfurLongCoeff,
-	sulfMax, sulfAdj3, sulfGPA1, ssulfGPA, sulfGPA, GPASulfadj, minSulfAdjust, lowSulfurCoeff
-from tempSulfurCalcs3 where m6emitterID = 1
+	fueltypeid, fuelformulationid, polprocessid, pollutantid, processid,
+	modelyearid, ageid, sourcetypeid,
+	sulfurcoeff, sulfurlevel, sulfurbasis, rationosulfur, sulfurgpamax, sulfurirfactor,
+	sulfshorttarget, sulfshort30, sulfshortadj, sulfadj2, sulfirr, sulfurlongcoeff,
+	sulfmax, sulfadj3, sulfgpa1, ssulfgpa, sulfgpa, gpasulfadj, minsulfadjust, lowsulfurcoeff
+from tempsulfurcalcs3 where m6emitterid = 1
 ;
 
-alter table tempSulfurCalcs3High add key(fuelFormulationID, polProcessID, sourceTypeID, ageID, modelYearID);
-alter table tempSulfurCalcs3Normal add key(fuelFormulationID, polProcessID, sourceTypeID, ageID, modelYearID);
+alter table tempsulfurcalcs3high add key(fuelformulationid, polprocessid, sourcetypeid, ageid, modelyearid);
+alter table tempsulfurcalcs3normal add key(fuelformulationid, polprocessid, sourcetypeid, ageid, modelyearid);
 
-insert into tempSulfurCalcs4 (fuelTypeID, fuelFormulationID, modelYearID, ratioNoSulfur, pollutantID,
-	polProcessID, processID, sourceTypeID, ageID, baseFuelFormulationID, sulfAdj3,
-	GPAsulfAdj3, sulfAdj3Normal, sulfAdjHigh, GPASulfadjNormal, GPASulfadjHigh, minSulfAdjust, lowSulfurCoeff, sulfurLevel, sulfurBasis)
+insert into tempsulfurcalcs4 (fueltypeid, fuelformulationid, modelyearid, rationosulfur, pollutantid,
+	polprocessid, processid, sourcetypeid, ageid, basefuelformulationid, sulfadj3,
+	gpasulfadj3, sulfadj3normal, sulfadjhigh, gpasulfadjnormal, gpasulfadjhigh, minsulfadjust, lowsulfurcoeff, sulfurlevel, sulfurbasis)
 select 
-	tempSulfurCalcs3High.fuelTypeID, tempSulfurCalcs3High.fuelFormulationID, tempSulfurCalcs3High.modelYearID, tempSulfurCalcs3High.ratioNoSulfur, 
-	tempSulfurCalcs3High.pollutantID, tempSulfurCalcs3High.polProcessID, tempSulfurCalcs3High.processID, tempSulfurCalcs3High.sourceTypeID, 
-	tempSulfurCalcs3High.ageID, tempSulfurCalcs3High.baseFuelFormulationID,
-	(1 - 0.5) * tempSulfurCalcs3Normal.sulfAdj3 + 0.5 * tempSulfurCalcs3High.sulfAdj3 as sulfAdj3,
-	(1 - 0.5) * tempSulfurCalcs3Normal.GPASulfadj + 0.5 * tempSulfurCalcs3High.GPASulfadj as GPAsulfAdj3,
-	tempSulfurCalcs3Normal.sulfAdj3 as sulfAdj3Normal,
-	tempSulfurCalcs3High.sulfAdj3 as sulfAdjHigh,
-	tempSulfurCalcs3Normal.GPASulfadj as GPASulfadjNormal,
-	tempSulfurCalcs3High.GPASulfadj as GPASulfadjHigh,
-	tempSulfurCalcs3Normal.minSulfAdjust as minSulfAdjust,
-	tempSulfurCalcs3Normal.lowSulfurCoeff as lowSulfurCoeff,
-	tempSulfurCalcs3Normal.sulfurLevel as sulfurLevel,
-	tempSulfurCalcs3Normal.sulfurBasis as sulfurBasis
-from tempSulfurCalcs3High
-inner join tempSulfurCalcs3Normal on tempSulfurCalcs3High.fuelFormulationID = tempSulfurCalcs3Normal.fuelFormulationID and
-	tempSulfurCalcs3High.polProcessID = tempSulfurCalcs3Normal.polProcessID and
-	tempSulfurCalcs3High.modelYearID = tempSulfurCalcs3Normal.modelYearID and
-	tempSulfurCalcs3High.ageID = tempSulfurCalcs3Normal.ageID and
-	tempSulfurCalcs3High.sourceTypeID = tempSulfurCalcs3Normal.sourceTypeID;
+	tempsulfurcalcs3high.fueltypeid, tempsulfurcalcs3high.fuelformulationid, tempsulfurcalcs3high.modelyearid, tempsulfurcalcs3high.rationosulfur, 
+	tempsulfurcalcs3high.pollutantid, tempsulfurcalcs3high.polprocessid, tempsulfurcalcs3high.processid, tempsulfurcalcs3high.sourcetypeid, 
+	tempsulfurcalcs3high.ageid, tempsulfurcalcs3high.basefuelformulationid,
+	(1 - 0.5) * tempsulfurcalcs3normal.sulfadj3 + 0.5 * tempsulfurcalcs3high.sulfadj3 as sulfadj3,
+	(1 - 0.5) * tempsulfurcalcs3normal.gpasulfadj + 0.5 * tempsulfurcalcs3high.gpasulfadj as gpasulfadj3,
+	tempsulfurcalcs3normal.sulfadj3 as sulfadj3normal,
+	tempsulfurcalcs3high.sulfadj3 as sulfadjhigh,
+	tempsulfurcalcs3normal.gpasulfadj as gpasulfadjnormal,
+	tempsulfurcalcs3high.gpasulfadj as gpasulfadjhigh,
+	tempsulfurcalcs3normal.minsulfadjust as minsulfadjust,
+	tempsulfurcalcs3normal.lowsulfurcoeff as lowsulfurcoeff,
+	tempsulfurcalcs3normal.sulfurlevel as sulfurlevel,
+	tempsulfurcalcs3normal.sulfurbasis as sulfurbasis
+from tempsulfurcalcs3high
+inner join tempsulfurcalcs3normal on tempsulfurcalcs3high.fuelformulationid = tempsulfurcalcs3normal.fuelformulationid and
+	tempsulfurcalcs3high.polprocessid = tempsulfurcalcs3normal.polprocessid and
+	tempsulfurcalcs3high.modelyearid = tempsulfurcalcs3normal.modelyearid and
+	tempsulfurcalcs3high.ageid = tempsulfurcalcs3normal.ageid and
+	tempsulfurcalcs3high.sourcetypeid = tempsulfurcalcs3normal.sourcetypeid;
 
-alter table tempSulfurCalcs4 add key (fuelFormulationID, modelYearID, polProcessID, sourceTypeID, ageID);
+alter table tempsulfurcalcs4 add key (fuelformulationid, modelyearid, polprocessid, sourcetypeid, ageid);
 
-insert ignore into ##sulfurOutputTable## (fuelTypeID, fuelFormulationID, polProcessID, pollutantID, processID,
-sourceTypeID, modelYearID, ageID, ratio, ratioGPA, ratioNoSulfur)
+insert ignore into ##sulfuroutputtable## (fueltypeid, fuelformulationid, polprocessid, pollutantid, processid,
+sourcetypeid, modelyearid, ageid, ratio, ratiogpa, rationosulfur)
 select
-	target.fuelTypeID, target.fuelFormulationID, target.polProcessID, target.pollutantID, 
-	target.processID, target.sourceTypeID, target.modelYearID, target.ageID,
-	CASE WHEN (target.lowSulfurCoeff is not null and target.sulfurLevel <= 30 and target.sulfurBasis=30) THEN
-		greatest(1.0-target.lowSulfurCoeff*(30.0-target.sulfurLevel),0) * target.RatioNoSulfur
-	ELSE
-		CASE WHEN (target.modelYearID >= ##cutoff.sulfurModelTHCNOxStart## and target.modelYearID <= ##cutoff.sulfurModelTHCNOxEnd## and target.pollutantID in (1, 3)) 
-				or (target.modelYearID >= ##cutoff.sulfurModelCOStart## and target.pollutantID = 2) THEN
-			greatest(target.sulfAdj3 / base.sulfAdj3, target.minSulfAdjust) * target.RatioNoSulfur
-		ELSE
-			CASE WHEN target.modelYearID > ##cutoff.sulfurModelTHCNOxEnd## and target.pollutantID in (1, 3) THEN
-				greatest(target.sulfAdj3 / base.sulfAdj3, target.minSulfAdjust)
-			ELSE
+	target.fueltypeid, target.fuelformulationid, target.polprocessid, target.pollutantid, 
+	target.processid, target.sourcetypeid, target.modelyearid, target.ageid,
+	case when (target.lowsulfurcoeff is not null and target.sulfurlevel <= 30 and target.sulfurbasis=30) then
+		greatest(1.0-target.lowsulfurcoeff*(30.0-target.sulfurlevel),0) * target.rationosulfur
+	else
+		case when (target.modelyearid >= ##cutoff.sulfurmodelthcnoxstart## and target.modelyearid <= ##cutoff.sulfurmodelthcnoxend## and target.pollutantid in (1, 3)) 
+				or (target.modelyearid >= ##cutoff.sulfurmodelcostart## and target.pollutantid = 2) then
+			greatest(target.sulfadj3 / base.sulfadj3, target.minsulfadjust) * target.rationosulfur
+		else
+			case when target.modelyearid > ##cutoff.sulfurmodelthcnoxend## and target.pollutantid in (1, 3) then
+				greatest(target.sulfadj3 / base.sulfadj3, target.minsulfadjust)
+			else
 				1.0
-			END
-		END
-	END as fuelAdjustment,
-	CASE WHEN (target.lowSulfurCoeff is not null and target.sulfurLevel <= 30 and target.sulfurBasis=30) THEN
-		greatest(1.0-target.lowSulfurCoeff*(30.0-target.sulfurLevel),0) * target.RatioNoSulfur
-	ELSE
-		CASE WHEN (target.modelYearID >= ##cutoff.sulfurModelTHCNOxStart## and target.modelYearID <= ##cutoff.sulfurModelTHCNOxEnd## and target.pollutantID in (1, 3))
-				or (target.modelYearID >= ##cutoff.sulfurModelCOStart## and target.pollutantID = 2) THEN
-			greatest(target.sulfAdj3 / base.sulfAdj3, target.minSulfAdjust) * target.RatioNoSulfur
-		ELSE
-			CASE WHEN target.modelYearID > ##cutoff.sulfurModelTHCNOxEnd## and target.pollutantID in (1,3) THEN
-				greatest(target.sulfAdj3/ base.sulfAdj3, target.minSulfAdjust)
-			ELSE
+			end
+		end
+	end as fueladjustment,
+	case when (target.lowsulfurcoeff is not null and target.sulfurlevel <= 30 and target.sulfurbasis=30) then
+		greatest(1.0-target.lowsulfurcoeff*(30.0-target.sulfurlevel),0) * target.rationosulfur
+	else
+		case when (target.modelyearid >= ##cutoff.sulfurmodelthcnoxstart## and target.modelyearid <= ##cutoff.sulfurmodelthcnoxend## and target.pollutantid in (1, 3))
+				or (target.modelyearid >= ##cutoff.sulfurmodelcostart## and target.pollutantid = 2) then
+			greatest(target.sulfadj3 / base.sulfadj3, target.minsulfadjust) * target.rationosulfur
+		else
+			case when target.modelyearid > ##cutoff.sulfurmodelthcnoxend## and target.pollutantid in (1,3) then
+				greatest(target.sulfadj3/ base.sulfadj3, target.minsulfadjust)
+			else
 				1.0
-			END
-		END
-	END * 
-	CASE WHEN (target.modelYearID >= ##cutoff.sulfurModelGPAPhaseInStart## and target.modelYearID <= ##cutoff.sulfurModelGPAPhaseInEnd## and (target.GPAsulfAdj3/ base.sulfAdj3) > 1.0) THEN
-		greatest(target.GPAsulfAdj3/ base.sulfAdj3, target.minSulfAdjust)
-	ELSE
+			end
+		end
+	end * 
+	case when (target.modelyearid >= ##cutoff.sulfurmodelgpaphaseinstart## and target.modelyearid <= ##cutoff.sulfurmodelgpaphaseinend## and (target.gpasulfadj3/ base.sulfadj3) > 1.0) then
+		greatest(target.gpasulfadj3/ base.sulfadj3, target.minsulfadjust)
+	else
 		1.0
-	END	as fuelAdjustmentGPA,
-	target.ratioNoSulfur
-from tempSulfurCalcs4 target
-inner join tempSulfurCalcs4 base on base.fuelFormulationID = target.baseFuelFormulationID
-	and base.modelYearID = target.modelYearID
-	and base.polProcessID = target.polProcessID
-	and base.sourceTypeID = target.sourceTypeID
-	and base.ageID = target.ageID
+	end	as fueladjustmentgpa,
+	target.rationosulfur
+from tempsulfurcalcs4 target
+inner join tempsulfurcalcs4 base on base.fuelformulationid = target.basefuelformulationid
+	and base.modelyearid = target.modelyearid
+	and base.polprocessid = target.polprocessid
+	and base.sourcetypeid = target.sourcetypeid
+	and base.ageid = target.ageid
 ;
 
-drop table if exists debugSulfurOutputTable;
+drop table if exists debugsulfuroutputtable;
 
-create table debugSulfurOutputTable
+create table debugsulfuroutputtable
 select
-	target.fuelTypeID, target.fuelFormulationID, target.polProcessID, target.pollutantID, 
-	target.processID, target.sourceTypeID, target.modelYearID, target.ageID,
-	CASE WHEN (target.lowSulfurCoeff is not null and target.sulfurLevel <= 30 and target.sulfurBasis=30) THEN
-		greatest(1.0-target.lowSulfurCoeff*(30.0-target.sulfurLevel),0) * target.RatioNoSulfur
-	ELSE
-		CASE WHEN (target.modelYearID >= ##cutoff.sulfurModelTHCNOxStart## and target.modelYearID <= ##cutoff.sulfurModelTHCNOxEnd## and target.pollutantID in (1, 3)) 
-				or (target.modelYearID >= ##cutoff.sulfurModelCOStart## and target.pollutantID = 2) THEN
-			greatest(target.sulfAdj3 / base.sulfAdj3, target.minSulfAdjust) * target.RatioNoSulfur
-		ELSE
-			CASE WHEN target.modelYearID > ##cutoff.sulfurModelTHCNOxEnd## and target.pollutantID in (1, 3) THEN
-				greatest(target.sulfAdj3 / base.sulfAdj3, target.minSulfAdjust)
-			ELSE
+	target.fueltypeid, target.fuelformulationid, target.polprocessid, target.pollutantid, 
+	target.processid, target.sourcetypeid, target.modelyearid, target.ageid,
+	case when (target.lowsulfurcoeff is not null and target.sulfurlevel <= 30 and target.sulfurbasis=30) then
+		greatest(1.0-target.lowsulfurcoeff*(30.0-target.sulfurlevel),0) * target.rationosulfur
+	else
+		case when (target.modelyearid >= ##cutoff.sulfurmodelthcnoxstart## and target.modelyearid <= ##cutoff.sulfurmodelthcnoxend## and target.pollutantid in (1, 3)) 
+				or (target.modelyearid >= ##cutoff.sulfurmodelcostart## and target.pollutantid = 2) then
+			greatest(target.sulfadj3 / base.sulfadj3, target.minsulfadjust) * target.rationosulfur
+		else
+			case when target.modelyearid > ##cutoff.sulfurmodelthcnoxend## and target.pollutantid in (1, 3) then
+				greatest(target.sulfadj3 / base.sulfadj3, target.minsulfadjust)
+			else
 				1.0
-			END
-		END
-	END as fuelAdjustment,
-	CASE WHEN (target.lowSulfurCoeff is not null and target.sulfurLevel <= 30 and target.sulfurBasis=30) THEN
-		greatest(1.0-target.lowSulfurCoeff*(30.0-target.sulfurLevel),0) * target.RatioNoSulfur
-	ELSE
-		CASE WHEN (target.modelYearID >= ##cutoff.sulfurModelTHCNOxStart## and target.modelYearID <= ##cutoff.sulfurModelTHCNOxEnd## and target.pollutantID in (1, 3))
-				or (target.modelYearID >= ##cutoff.sulfurModelCOStart## and target.pollutantID = 2) THEN
-			greatest(target.sulfAdj3 / base.sulfAdj3, target.minSulfAdjust) * target.RatioNoSulfur
-		ELSE
-			CASE WHEN target.modelYearID > ##cutoff.sulfurModelTHCNOxEnd## and target.pollutantID in (1,3) THEN
-				greatest(target.sulfAdj3/ base.sulfAdj3, target.minSulfAdjust)
-			ELSE
+			end
+		end
+	end as fueladjustment,
+	case when (target.lowsulfurcoeff is not null and target.sulfurlevel <= 30 and target.sulfurbasis=30) then
+		greatest(1.0-target.lowsulfurcoeff*(30.0-target.sulfurlevel),0) * target.rationosulfur
+	else
+		case when (target.modelyearid >= ##cutoff.sulfurmodelthcnoxstart## and target.modelyearid <= ##cutoff.sulfurmodelthcnoxend## and target.pollutantid in (1, 3))
+				or (target.modelyearid >= ##cutoff.sulfurmodelcostart## and target.pollutantid = 2) then
+			greatest(target.sulfadj3 / base.sulfadj3, target.minsulfadjust) * target.rationosulfur
+		else
+			case when target.modelyearid > ##cutoff.sulfurmodelthcnoxend## and target.pollutantid in (1,3) then
+				greatest(target.sulfadj3/ base.sulfadj3, target.minsulfadjust)
+			else
 				1.0
-			END
-		END
-	END * 
-	CASE WHEN (target.modelYearID >= ##cutoff.sulfurModelGPAPhaseInStart## and target.modelYearID <= ##cutoff.sulfurModelGPAPhaseInEnd## and (target.GPAsulfAdj3/ base.sulfAdj3) > 1.0) THEN
-		greatest(target.GPAsulfAdj3/ base.sulfAdj3, target.minSulfAdjust)
-	ELSE
+			end
+		end
+	end * 
+	case when (target.modelyearid >= ##cutoff.sulfurmodelgpaphaseinstart## and target.modelyearid <= ##cutoff.sulfurmodelgpaphaseinend## and (target.gpasulfadj3/ base.sulfadj3) > 1.0) then
+		greatest(target.gpasulfadj3/ base.sulfadj3, target.minsulfadjust)
+	else
 		1.0
-	END	as fuelAdjustmentGPA,
-	target.ratioNoSulfur,
-	target.lowSulfurCoeff as target_lowSulfurCoeff,
-	target.sulfurLevel as target_sulfurLevel,
-	target.ratioNoSulfur as target_ratioNoSulfur,
-	target.sulfAdj3 as target_sulfAdj3,
-	base.sulfAdj3 as base_sulfAdj3,
-	target.minSulfAdjust as target_minSulfAdjust,
-	target.sulfurBasis as target_sulfurBasis
-from tempSulfurCalcs4 target
-inner join tempSulfurCalcs4 base on base.fuelFormulationID = target.baseFuelFormulationID
-	and base.modelYearID = target.modelYearID
-	and base.polProcessID = target.polProcessID
-	and base.sourceTypeID = target.sourceTypeID
-	and base.ageID = target.ageID
+	end	as fueladjustmentgpa,
+	target.rationosulfur,
+	target.lowsulfurcoeff as target_lowsulfurcoeff,
+	target.sulfurlevel as target_sulfurlevel,
+	target.rationosulfur as target_rationosulfur,
+	target.sulfadj3 as target_sulfadj3,
+	base.sulfadj3 as base_sulfadj3,
+	target.minsulfadjust as target_minsulfadjust,
+	target.sulfurbasis as target_sulfurbasis
+from tempsulfurcalcs4 target
+inner join tempsulfurcalcs4 base on base.fuelformulationid = target.basefuelformulationid
+	and base.modelyearid = target.modelyearid
+	and base.polprocessid = target.polprocessid
+	and base.sourcetypeid = target.sourcetypeid
+	and base.ageid = target.ageid
 ;

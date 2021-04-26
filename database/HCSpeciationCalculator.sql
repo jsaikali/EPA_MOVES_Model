@@ -1,982 +1,982 @@
--- Version 2017-08-26
--- Wes Faler
+-- version 2017-08-26
+-- wes faler
 
 -- @algorithm
--- @owner HC Speciation Calculator
+-- @owner hc speciation calculator
 -- @calculator
--- @fileNotUsed
+-- @filenotused
 
--- Section Create Remote Tables for Extracted Data
+-- section create remote tables for extracted data
 
--- Section OldCode
+-- section oldcode
 drop table if exists extagecategory;
 create table extagecategory (
-  ageID smallint(6) NOT NULL DEFAULT '0',
-  ageGroupID smallint(6) NOT NULL DEFAULT '0',
-  PRIMARY KEY (ageID),
-  KEY ageGroupID (ageGroupID,ageID),
-  KEY ageID (ageID,ageGroupID)
+  ageid smallint(6) not null default '0',
+  agegroupid smallint(6) not null default '0',
+  primary key (ageid),
+  key agegroupid (agegroupid,ageid),
+  key ageid (ageid,agegroupid)
 );
 
 drop table if exists extfuelsupply;
 create table extfuelsupply (
-	countyID smallint not null,
-	yearID smallint not null,
-	monthID smallint not null,
-	fuelTypeID smallint not null,
-	fuelSubTypeID smallint not null,
-	fuelFormulationID int not null,
-	marketShare double not null
+  countyid smallint not null,
+  yearid smallint not null,
+  monthid smallint not null,
+  fueltypeid smallint not null,
+  fuelsubtypeid smallint not null,
+  fuelformulationid int not null,
+  marketshare double not null
 );
 
 drop table if exists extfueltype;
 create table extfueltype (
-       fuelTypeID           SMALLINT NOT NULL,
-       humidityCorrectionCoeff FLOAT NULL,
- 	   fuelDensity				FLOAT	NULL,
- 	   subjectToEvapCalculations CHAR(1) NOT NULL DEFAULT 'N'
+       fueltypeid           smallint not null,
+       humiditycorrectioncoeff float null,
+     fueldensity        float null,
+     subjecttoevapcalculations char(1) not null default 'N'
 );
 
 drop table if exists extfuelsubtype;
 create table extfuelsubtype (
-       fuelSubtypeID        SMALLINT NOT NULL,
-       fuelTypeID           SMALLINT NOT NULL,
-       fuelSubtypePetroleumFraction FLOAT NULL,
-       fuelSubtypeFossilFraction FLOAT NULL,
-       carbonContent        FLOAT NULL,
-       oxidationFraction    FLOAT NULL,
-	   energyContent		FLOAT NULL,
-       key (fuelTypeID, fuelSubtypeID)
+       fuelsubtypeid        smallint not null,
+       fueltypeid           smallint not null,
+       fuelsubtypepetroleumfraction float null,
+       fuelsubtypefossilfraction float null,
+       carboncontent        float null,
+       oxidationfraction    float null,
+     energycontent    float null,
+       key (fueltypeid, fuelsubtypeid)
 );
 
 drop table if exists extfuelformulation;
 create table extfuelformulation (
-    fuelFormulationID SMALLINT NOT NULL PRIMARY KEY,
-    fuelSubtypeID SMALLINT NOT NULL,
-    RVP FLOAT NULL,
-    sulfurLevel FLOAT NULL,
-    ETOHVolume FLOAT NULL,
-    MTBEVolume FLOAT NULL,
-    ETBEVolume FLOAT NULL,
-    TAMEVolume FLOAT NULL,
-    aromaticContent FLOAT NULL,
-    olefinContent FLOAT NULL,
-    benzeneContent FLOAT NULL,
-    e200 FLOAT NULL,
-    e300 FLOAT NULL,
-	volToWtPercentOxy FLOAT NULL,
-	BioDieselEsterVolume float DEFAULT NULL,
-	CetaneIndex float DEFAULT NULL,
-	PAHContent float DEFAULT NULL,
-	T50 float DEFAULT NULL,
-	T90 float DEFAULT NULL,
-	key (fuelSubTypeID, fuelFormulationID)
+    fuelformulationid smallint not null primary key,
+    fuelsubtypeid smallint not null,
+    rvp float null,
+    sulfurlevel float null,
+    etohvolume float null,
+    mtbevolume float null,
+    etbevolume float null,
+    tamevolume float null,
+    aromaticcontent float null,
+    olefincontent float null,
+    benzenecontent float null,
+    e200 float null,
+    e300 float null,
+  voltowtpercentoxy float null,
+  biodieselestervolume float default null,
+  cetaneindex float default null,
+  pahcontent float default null,
+  t50 float default null,
+  t90 float default null,
+  key (fuelsubtypeid, fuelformulationid)
 );
 
--- End Section OldCode
+-- end section oldcode
 
-drop table if exists HCAgeCategory;
-CREATE TABLE HCAgeCategory (
-  ageID smallint(6) NOT NULL DEFAULT '0',
-  ageGroupID smallint(6) NOT NULL DEFAULT '0',
-  ageCategoryName char(50) DEFAULT NULL,
-  PRIMARY KEY (ageID),
-  KEY ageGroupID (ageGroupID,ageID),
-  KEY ageID (ageID,ageGroupID)
+drop table if exists hcagecategory;
+create table hcagecategory (
+  ageid smallint(6) not null default '0',
+  agegroupid smallint(6) not null default '0',
+  agecategoryname char(50) default null,
+  primary key (ageid),
+  key agegroupid (agegroupid,ageid),
+  key ageid (ageid,agegroupid)
 );
 
-drop table if exists HCETOHBin;
-CREATE TABLE IF NOT EXISTS HCETOHBin (
-  etohThreshID smallint(6) NOT NULL DEFAULT '0',
-  etohThreshLow float DEFAULT NULL,
-  etohThreshHigh float DEFAULT NULL,
-  etohNominalValue float DEFAULT NULL,
-  PRIMARY KEY (etohThreshID),
-  key (etohThreshLow, etohThreshHigh, etohThreshID)
+drop table if exists hcetohbin;
+create table if not exists hcetohbin (
+  etohthreshid smallint(6) not null default '0',
+  etohthreshlow float default null,
+  etohthreshhigh float default null,
+  etohnominalvalue float default null,
+  primary key (etohthreshid),
+  key (etohthreshlow, etohthreshhigh, etohthreshid)
 );
 
-drop table if exists HCFuelSupply;
-CREATE TABLE IF NOT EXISTS HCFuelSupply (
-  countyID int(11) NOT NULL,
-  monthID smallint(6) NOT NULL,
-  fuelFormulationID smallint(6) NOT NULL,
-  marketShare float default NULL,
-  yearID smallint(6) NOT NULL,
-  fuelTypeID smallint(6) NOT NULL,
-  fuelSubtypeID smallint(6) NOT NULL,
-  KEY (countyID,yearID,monthID,fuelTypeID,fuelSubtypeID,fuelFormulationID)
+drop table if exists hcfuelsupply;
+create table if not exists hcfuelsupply (
+  countyid int(11) not null,
+  monthid smallint(6) not null,
+  fuelformulationid smallint(6) not null,
+  marketshare float default null,
+  yearid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  fuelsubtypeid smallint(6) not null,
+  key (countyid,yearid,monthid,fueltypeid,fuelsubtypeid,fuelformulationid)
 );
-TRUNCATE TABLE HCFuelSupply;
+truncate table hcfuelsupply;
 
-drop table if exists HCFuelFormulation;
-CREATE TABLE IF NOT EXISTS HCFuelFormulation (
-    fuelFormulationID SMALLINT NOT NULL PRIMARY KEY,
-    fuelSubtypeID SMALLINT NOT NULL,
-    RVP FLOAT NULL,
-    sulfurLevel FLOAT NULL,
-    ETOHVolume FLOAT NULL,
-    MTBEVolume FLOAT NULL,
-    ETBEVolume FLOAT NULL,
-    TAMEVolume FLOAT NULL,
-    aromaticContent FLOAT NULL,
-    olefinContent FLOAT NULL,
-    benzeneContent FLOAT NULL,
-    e200 FLOAT NULL,
-    e300 FLOAT NULL,
-	volToWtPercentOxy FLOAT NULL,
-	BioDieselEsterVolume float DEFAULT NULL,
-	CetaneIndex float DEFAULT NULL,
-	PAHContent float DEFAULT NULL,
-	oxyThreshID int null,
-	key (fuelFormulationID, fuelSubtypeID, oxyThreshID),
-	key (fuelSubtypeID, fuelFormulationID, oxyThreshID),
-	key (fuelSubtypeID, oxyThreshID, fuelFormulationID),
-	key (oxyThreshID, fuelSubtypeID, fuelFormulationID)
+drop table if exists hcfuelformulation;
+create table if not exists hcfuelformulation (
+    fuelformulationid smallint not null primary key,
+    fuelsubtypeid smallint not null,
+    rvp float null,
+    sulfurlevel float null,
+    etohvolume float null,
+    mtbevolume float null,
+    etbevolume float null,
+    tamevolume float null,
+    aromaticcontent float null,
+    olefincontent float null,
+    benzenecontent float null,
+    e200 float null,
+    e300 float null,
+  voltowtpercentoxy float null,
+  biodieselestervolume float default null,
+  cetaneindex float default null,
+  pahcontent float default null,
+  oxythreshid int null,
+  key (fuelformulationid, fuelsubtypeid, oxythreshid),
+  key (fuelsubtypeid, fuelformulationid, oxythreshid),
+  key (fuelsubtypeid, oxythreshid, fuelformulationid),
+  key (oxythreshid, fuelsubtypeid, fuelformulationid)
 );
-TRUNCATE TABLE HCFuelFormulation;
+truncate table hcfuelformulation;
 
-drop table if exists HCOxyThreshName;
-CREATE TABLE IF NOT EXISTS HCOxyThreshName 
+drop table if exists hcoxythreshname;
+create table if not exists hcoxythreshname 
 (
-	oxyThreshID				smallint(6)		NOT NULL	default '0' primary key
+  oxythreshid       smallint(6)   not null  default '0' primary key
 );
-TRUNCATE TABLE HCOxyThreshName;
+truncate table hcoxythreshname;
 
-drop table if exists HCspeciation;
-##create.HCspeciation##;
-TRUNCATE TABLE HCspeciation;
+drop table if exists hcspeciation;
+##create.hcspeciation##;
+truncate table hcspeciation;
 
-drop table if exists HCPollutantProcessModelYear;
-CREATE TABLE IF NOT EXISTS HCPollutantProcessModelYear (
-    polProcessID int NOT NULL ,
-    modelYearID SMALLINT NOT NULL ,
-    modelYearGroupID INT NOT NULL ,
-    fuelMYGroupID INTEGER NULL,
-    IMModelYearGroupID INTEGER NULL,
-    key (polProcessID),
-    key (modelYearID),
-    key (fuelMYGroupID),
-    key (polProcessID, modelYearID, fuelMYGroupID)
+drop table if exists hcpollutantprocessmodelyear;
+create table if not exists hcpollutantprocessmodelyear (
+    polprocessid int not null ,
+    modelyearid smallint not null ,
+    modelyeargroupid int not null ,
+    fuelmygroupid integer null,
+    immodelyeargroupid integer null,
+    key (polprocessid),
+    key (modelyearid),
+    key (fuelmygroupid),
+    key (polprocessid, modelyearid, fuelmygroupid)
 );
-truncate table HCPollutantProcessModelYear;
+truncate table hcpollutantprocessmodelyear;
 
-drop table if exists HCPollutantProcessMappedModelYear;
-CREATE TABLE IF NOT EXISTS HCPollutantProcessMappedModelYear (
-    polProcessID int NOT NULL ,
-    modelYearID SMALLINT NOT NULL ,
-    modelYearGroupID INT NOT NULL ,
-    fuelMYGroupID INTEGER NULL,
-    IMModelYearGroupID INTEGER NULL,
-    key (polProcessID),
-    key (modelYearID),
-    key (fuelMYGroupID),
-    key (polProcessID, modelYearID, fuelMYGroupID)
+drop table if exists hcpollutantprocessmappedmodelyear;
+create table if not exists hcpollutantprocessmappedmodelyear (
+    polprocessid int not null ,
+    modelyearid smallint not null ,
+    modelyeargroupid int not null ,
+    fuelmygroupid integer null,
+    immodelyeargroupid integer null,
+    key (polprocessid),
+    key (modelyearid),
+    key (fuelmygroupid),
+    key (polprocessid, modelyearid, fuelmygroupid)
 );
-truncate table HCPollutantProcessMappedModelYear;
+truncate table hcpollutantprocessmappedmodelyear;
 
-drop table if exists THCPollutantProcessModelYear;
-CREATE TABLE IF NOT EXISTS THCPollutantProcessModelYear (
-    polProcessID int NOT NULL ,
-    modelYearID SMALLINT NOT NULL ,
-    modelYearGroupID INT NOT NULL ,
-    fuelMYGroupID INTEGER NULL,
-    IMModelYearGroupID INTEGER NULL,
-    key (polProcessID),
-    key (modelYearID),
-    key (fuelMYGroupID),
-    key (polProcessID, modelYearID, fuelMYGroupID)
+drop table if exists thcpollutantprocessmodelyear;
+create table if not exists thcpollutantprocessmodelyear (
+    polprocessid int not null ,
+    modelyearid smallint not null ,
+    modelyeargroupid int not null ,
+    fuelmygroupid integer null,
+    immodelyeargroupid integer null,
+    key (polprocessid),
+    key (modelyearid),
+    key (fuelmygroupid),
+    key (polprocessid, modelyearid, fuelmygroupid)
 );
-truncate table THCPollutantProcessModelYear;
+truncate table thcpollutantprocessmodelyear;
 
-drop table if exists THCPollutantProcessMappedModelYear;
-CREATE TABLE IF NOT EXISTS THCPollutantProcessMappedModelYear (
-    polProcessID int NOT NULL ,
-    modelYearID SMALLINT NOT NULL ,
-    modelYearGroupID INT NOT NULL ,
-    fuelMYGroupID INTEGER NULL,
-    IMModelYearGroupID INTEGER NULL,
-    key (polProcessID),
-    key (modelYearID),
-    key (fuelMYGroupID),
-    key (polProcessID, modelYearID, fuelMYGroupID)
+drop table if exists thcpollutantprocessmappedmodelyear;
+create table if not exists thcpollutantprocessmappedmodelyear (
+    polprocessid int not null ,
+    modelyearid smallint not null ,
+    modelyeargroupid int not null ,
+    fuelmygroupid integer null,
+    immodelyeargroupid integer null,
+    key (polprocessid),
+    key (modelyearid),
+    key (fuelmygroupid),
+    key (polprocessid, modelyearid, fuelmygroupid)
 );
-truncate table THCPollutantProcessMappedModelYear;
+truncate table thcpollutantprocessmappedmodelyear;
 
-drop table if exists HCPollutantProcessAssoc;
-CREATE TABLE IF NOT EXISTS HCPollutantProcessAssoc (
-       polProcessID         int NOT NULL,
-       processID            SMALLINT NOT NULL,
-       pollutantID          SMALLINT NOT NULL,
-	   isAffectedByExhaustIM CHAR(1) NOT NULL DEFAULT "N",
-       isAffectedByEvapIM CHAR(1) NOT NULL DEFAULT "N",
-       chainedto1 int NULL DEFAULT NULL,
-       chainedto2 int NULL DEFAULT NULL,
-       key (processID),
-       key (pollutantID),
-       key (polProcessID),
-       key (polProcessID, processID, pollutantID),
-       key (pollutantID, processID, polProcessID)
+drop table if exists hcpollutantprocessassoc;
+create table if not exists hcpollutantprocessassoc (
+       polprocessid         int not null,
+       processid            smallint not null,
+       pollutantid          smallint not null,
+     isaffectedbyexhaustim char(1) not null default "n",
+       isaffectedbyevapim char(1) not null default "n",
+       chainedto1 int null default null,
+       chainedto2 int null default null,
+       key (processid),
+       key (pollutantid),
+       key (polprocessid),
+       key (polprocessid, processid, pollutantid),
+       key (pollutantid, processid, polprocessid)
 );
-truncate table HCPollutantProcessAssoc;
+truncate table hcpollutantprocessassoc;
 
-##create.methaneTHCRatio##;
-TRUNCATE TABLE methaneTHCRatio;
+##create.methanethcratio##;
+truncate table methanethcratio;
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
+-- section extract data
 
--- Section OldCode
-cache select ageID, ageGroupID
+-- section oldcode
+cache select ageid, agegroupid
 into outfile '##extagecategory##'
-from AgeCategory;
+from agecategory;
 
-cache select ##context.iterLocation.countyRecordID##, ##context.year##, ##context.monthID##, 
-		fst.fuelTypeID, fst.fuelSubTypeID, ff.fuelFormulationID, fs.marketShare
+cache select ##context.iterlocation.countyrecordid##, ##context.year##, ##context.monthid##, 
+    fst.fueltypeid, fst.fuelsubtypeid, ff.fuelformulationid, fs.marketshare
 into outfile '##extfuelsupply##'
 from year
-inner join fuelSupply fs on (fs.fuelYearID=year.fuelYearID)
-inner join monthOfAnyYear moay on (moay.monthGroupID=fs.monthGroupID)
-inner join fuelFormulation ff on (ff.fuelFormulationID=fs.fuelFormulationID)
-inner join fuelSubtype fst on (fst.fuelSubtypeID=ff.fuelSubtypeID)
-where yearID = ##context.year##
-and fs.fuelRegionID = ##context.fuelRegionID##
-and moay.monthID = ##context.monthID##
-and fst.fuelTypeID in (##macro.csv.all.fuelTypeID##);
+inner join fuelsupply fs on (fs.fuelyearid=year.fuelyearid)
+inner join monthofanyyear moay on (moay.monthgroupid=fs.monthgroupid)
+inner join fuelformulation ff on (ff.fuelformulationid=fs.fuelformulationid)
+inner join fuelsubtype fst on (fst.fuelsubtypeid=ff.fuelsubtypeid)
+where yearid = ##context.year##
+and fs.fuelregionid = ##context.fuelregionid##
+and moay.monthid = ##context.monthid##
+and fst.fueltypeid in (##macro.csv.all.fueltypeid##);
 
-cache select fuelTypeID, humidityCorrectionCoeff, fuelDensity, subjectToEvapCalculations
+cache select fueltypeid, humiditycorrectioncoeff, fueldensity, subjecttoevapcalculations
 into outfile '##extfueltype##'
-from fuelType;
+from fueltype;
 
-cache select fuelSubtypeID, fuelTypeID, fuelSubtypePetroleumFraction, fuelSubtypeFossilFraction,
-	carbonContent, oxidationFraction, energyContent
+cache select fuelsubtypeid, fueltypeid, fuelsubtypepetroleumfraction, fuelsubtypefossilfraction,
+  carboncontent, oxidationfraction, energycontent
 into outfile '##extfuelsubtype##'
-from fuelSubtype;
+from fuelsubtype;
 
 cache select distinct
-	FuelFormulation.fuelFormulationID,
-	FuelFormulation.fuelSubtypeID,
-	ifnull(FuelFormulation.RVP,0),
-	ifnull(FuelFormulation.sulfurLevel,0),
-	ifnull(FuelFormulation.ETOHVolume,0),
-	ifnull(FuelFormulation.MTBEVolume,0),
-	ifnull(FuelFormulation.ETBEVolume,0),
-	ifnull(FuelFormulation.TAMEVolume,0),
-	ifnull(FuelFormulation.aromaticContent,0),
-	ifnull(FuelFormulation.olefinContent,0),
-	ifnull(FuelFormulation.benzeneContent,0),
-	ifnull(FuelFormulation.e200,0),
-	ifnull(FuelFormulation.e300,0),
-	ifnull(FuelFormulation.volToWtPercentOxy,0),
-	ifnull(FuelFormulation.BioDieselEsterVolume,0),
-	ifnull(FuelFormulation.CetaneIndex,0),
-	ifnull(FuelFormulation.PAHContent,0),
-	ifnull(FuelFormulation.T50,0),
-	ifnull(FuelFormulation.T90,0)
-INTO OUTFILE '##extfuelformulation##'
-FROM FuelSupply
-INNER JOIN RunSpecMonthGroup ON (FuelSupply.monthGroupID = RunSpecMonthGroup.monthGroupID)
-INNER JOIN Year ON (FuelSupply.fuelYearID = Year.fuelYearID)
-INNER JOIN FuelFormulation ON (FuelFormulation.fuelFormulationID = FuelSupply.fuelFormulationID)
-INNER JOIN FuelSubtype ON (FuelSubtype.fuelSubtypeID = FuelFormulation.fuelSubtypeID)
-INNER JOIN MonthOfAnyYear ON (MonthOfAnyYear.monthGroupID = FuelSupply.monthGroupID)
-INNER JOIN RunSpecMonth ON (RunSpecMonth.monthID = MonthOfAnyYear.monthID)
-WHERE fuelRegionID = ##context.fuelRegionID##
-AND yearID = ##context.year##
-AND MonthOfAnyYear.monthID = ##context.monthID##
-AND FuelSubtype.fuelTypeID in (##macro.csv.all.fuelTypeID##);
+  fuelformulation.fuelformulationid,
+  fuelformulation.fuelsubtypeid,
+  ifnull(fuelformulation.rvp,0),
+  ifnull(fuelformulation.sulfurlevel,0),
+  ifnull(fuelformulation.etohvolume,0),
+  ifnull(fuelformulation.mtbevolume,0),
+  ifnull(fuelformulation.etbevolume,0),
+  ifnull(fuelformulation.tamevolume,0),
+  ifnull(fuelformulation.aromaticcontent,0),
+  ifnull(fuelformulation.olefincontent,0),
+  ifnull(fuelformulation.benzenecontent,0),
+  ifnull(fuelformulation.e200,0),
+  ifnull(fuelformulation.e300,0),
+  ifnull(fuelformulation.voltowtpercentoxy,0),
+  ifnull(fuelformulation.biodieselestervolume,0),
+  ifnull(fuelformulation.cetaneindex,0),
+  ifnull(fuelformulation.pahcontent,0),
+  ifnull(fuelformulation.t50,0),
+  ifnull(fuelformulation.t90,0)
+into outfile '##extfuelformulation##'
+from fuelsupply
+inner join runspecmonthgroup on (fuelsupply.monthgroupid = runspecmonthgroup.monthgroupid)
+inner join year on (fuelsupply.fuelyearid = year.fuelyearid)
+inner join fuelformulation on (fuelformulation.fuelformulationid = fuelsupply.fuelformulationid)
+inner join fuelsubtype on (fuelsubtype.fuelsubtypeid = fuelformulation.fuelsubtypeid)
+inner join monthofanyyear on (monthofanyyear.monthgroupid = fuelsupply.monthgroupid)
+inner join runspecmonth on (runspecmonth.monthid = monthofanyyear.monthid)
+where fuelregionid = ##context.fuelregionid##
+and yearid = ##context.year##
+and monthofanyyear.monthid = ##context.monthid##
+and fuelsubtype.fueltypeid in (##macro.csv.all.fueltypeid##);
 
-cache SELECT *
-INTO OUTFILE '##HCETOHBin##'
-FROM ETOHBin;
+cache select *
+into outfile '##hcetohbin##'
+from etohbin;
 
-cache SELECT oxyThreshID
-INTO OUTFILE '##HCOxyThreshName##'
-FROM OxyThreshName;
+cache select oxythreshid
+into outfile '##hcoxythreshname##'
+from oxythreshname;
 
--- End Section OldCode
+-- end section oldcode
 
 -- -----------------------------
 
-cache SELECT *
-INTO OUTFILE '##HCAgeCategory##'
-FROM AgeCategory;
+cache select *
+into outfile '##hcagecategory##'
+from agecategory;
 
-cache SELECT ##context.iterLocation.countyRecordID## as countyID, MonthOfAnyYear.monthID, FuelSupply.fuelFormulationID, FuelSupply.marketShare, Year.yearID, FuelSubtype.fuelTypeID, FuelSubtype.fuelSubtypeID
-INTO OUTFILE '##HCFuelSupply##'
-FROM FuelSupply
-INNER JOIN RunSpecMonthGroup ON (FuelSupply.monthGroupID = RunSpecMonthGroup.monthGroupID)
-INNER JOIN Year ON (FuelSupply.fuelYearID = Year.fuelYearID)
-INNER JOIN FuelFormulation ON (FuelFormulation.fuelFormulationID = FuelSupply.fuelFormulationID)
-INNER JOIN FuelSubtype ON (FuelSubtype.fuelSubtypeID = FuelFormulation.fuelSubtypeID)
-INNER JOIN MonthOfAnyYear ON (MonthOfAnyYear.monthGroupID = FuelSupply.monthGroupID)
-INNER JOIN RunSpecMonth ON (RunSpecMonth.monthID = MonthOfAnyYear.monthID)
-WHERE fuelRegionID = ##context.fuelRegionID##
-AND yearID = ##context.year##;
+cache select ##context.iterlocation.countyrecordid## as countyid, monthofanyyear.monthid, fuelsupply.fuelformulationid, fuelsupply.marketshare, year.yearid, fuelsubtype.fueltypeid, fuelsubtype.fuelsubtypeid
+into outfile '##hcfuelsupply##'
+from fuelsupply
+inner join runspecmonthgroup on (fuelsupply.monthgroupid = runspecmonthgroup.monthgroupid)
+inner join year on (fuelsupply.fuelyearid = year.fuelyearid)
+inner join fuelformulation on (fuelformulation.fuelformulationid = fuelsupply.fuelformulationid)
+inner join fuelsubtype on (fuelsubtype.fuelsubtypeid = fuelformulation.fuelsubtypeid)
+inner join monthofanyyear on (monthofanyyear.monthgroupid = fuelsupply.monthgroupid)
+inner join runspecmonth on (runspecmonth.monthid = monthofanyyear.monthid)
+where fuelregionid = ##context.fuelregionid##
+and yearid = ##context.year##;
 
-cache SELECT polProcessID, modelYearID, modelYearGroupID, fuelMYGroupID, IMModelYearGroupID
-INTO OUTFILE '##HCPollutantProcessModelYear##'
-FROM PollutantProcessModelYear
-WHERE modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND polProcessID IN (##hcPolProcessIDs##);
+cache select polprocessid, modelyearid, modelyeargroupid, fuelmygroupid, immodelyeargroupid
+into outfile '##hcpollutantprocessmodelyear##'
+from pollutantprocessmodelyear
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and polprocessid in (##hcpolprocessids##);
 
-cache SELECT polProcessID, modelYearID, modelYearGroupID, fuelMYGroupID, IMModelYearGroupID
-INTO OUTFILE '##HCPollutantProcessMappedModelYear##'
-FROM PollutantProcessMappedModelYear
-WHERE modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND polProcessID IN (##hcPolProcessIDs##);
+cache select polprocessid, modelyearid, modelyeargroupid, fuelmygroupid, immodelyeargroupid
+into outfile '##hcpollutantprocessmappedmodelyear##'
+from pollutantprocessmappedmodelyear
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and polprocessid in (##hcpolprocessids##);
 
-cache SELECT ppmy.polProcessID, ppmy.modelYearID, ppmy.modelYearGroupID, ppmy.fuelMYGroupID, ppmy.IMModelYearGroupID
-INTO OUTFILE '##THCPollutantProcessModelYear##'
-FROM PollutantProcessModelYear ppmy
-INNER JOIN PollutantProcessAssoc ppa using (polProcessID)
-WHERE modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND pollutantID = 1;
+cache select ppmy.polprocessid, ppmy.modelyearid, ppmy.modelyeargroupid, ppmy.fuelmygroupid, ppmy.immodelyeargroupid
+into outfile '##thcpollutantprocessmodelyear##'
+from pollutantprocessmodelyear ppmy
+inner join pollutantprocessassoc ppa using (polprocessid)
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and pollutantid = 1;
 
-cache SELECT ppmy.polProcessID, ppmy.modelYearID, ppmy.modelYearGroupID, ppmy.fuelMYGroupID, ppmy.IMModelYearGroupID
-INTO OUTFILE '##THCPollutantProcessMappedModelYear##'
-FROM PollutantProcessMappedModelYear ppmy
-INNER JOIN PollutantProcessAssoc ppa using (polProcessID)
-WHERE modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND pollutantID = 1;
+cache select ppmy.polprocessid, ppmy.modelyearid, ppmy.modelyeargroupid, ppmy.fuelmygroupid, ppmy.immodelyeargroupid
+into outfile '##thcpollutantprocessmappedmodelyear##'
+from pollutantprocessmappedmodelyear ppmy
+inner join pollutantprocessassoc ppa using (polprocessid)
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and pollutantid = 1;
 
-cache select HCSpeciation.*
-into outfile '##HCspeciation##'
-from HCSpeciation
-where polProcessID in (##hcPolProcessIDs##);
+cache select hcspeciation.*
+into outfile '##hcspeciation##'
+from hcspeciation
+where polprocessid in (##hcpolprocessids##);
 
-cache select polProcessID,processID,pollutantID,isAffectedByExhaustIM,isAffectedByEvapIM,chainedto1,chainedto2
-into outfile '##HCPollutantProcessAssoc##'
-from PollutantProcessAssoc
-where polProcessID in (##hcPolProcessIDs##)
-or pollutantID = 1;
+cache select polprocessid,processid,pollutantid,isaffectedbyexhaustim,isaffectedbyevapim,chainedto1,chainedto2
+into outfile '##hcpollutantprocessassoc##'
+from pollutantprocessassoc
+where polprocessid in (##hcpolprocessids##)
+or pollutantid = 1;
 
-cache SELECT DISTINCT
-	FuelFormulation.fuelFormulationID,
-	FuelFormulation.fuelSubtypeID,
-	ifnull(FuelFormulation.RVP,0),
-	ifnull(FuelFormulation.sulfurLevel,0),
-	ifnull(FuelFormulation.ETOHVolume,0),
-	ifnull(FuelFormulation.MTBEVolume,0),
-	ifnull(FuelFormulation.ETBEVolume,0),
-	ifnull(FuelFormulation.TAMEVolume,0),
-	ifnull(FuelFormulation.aromaticContent,0),
-	ifnull(FuelFormulation.olefinContent,0),
-	ifnull(FuelFormulation.benzeneContent,0),
-	ifnull(FuelFormulation.e200,0),
-	ifnull(FuelFormulation.e300,0),
-	ifnull(FuelFormulation.volToWtPercentOxy,0),
-	ifnull(FuelFormulation.BioDieselEsterVolume,0),
-	ifnull(FuelFormulation.CetaneIndex,0),
-	ifnull(FuelFormulation.PAHContent,0),
-	0 as oxyThreshID
-INTO OUTFILE '##HCFuelFormulation##'
-FROM FuelSupply
-INNER JOIN RunSpecMonthGroup ON (FuelSupply.monthGroupID = RunSpecMonthGroup.monthGroupID)
-INNER JOIN Year ON (FuelSupply.fuelYearID = Year.fuelYearID)
-INNER JOIN FuelFormulation ON (FuelFormulation.fuelFormulationID = FuelSupply.fuelFormulationID)
-INNER JOIN FuelSubtype ON (FuelSubtype.fuelSubtypeID = FuelFormulation.fuelSubtypeID)
-INNER JOIN MonthOfAnyYear ON (MonthOfAnyYear.monthGroupID = FuelSupply.monthGroupID)
-INNER JOIN RunSpecMonth ON (RunSpecMonth.monthID = MonthOfAnyYear.monthID)
-WHERE fuelRegionID = ##context.fuelRegionID##
-AND yearID = ##context.year##;
+cache select distinct
+  fuelformulation.fuelformulationid,
+  fuelformulation.fuelsubtypeid,
+  ifnull(fuelformulation.rvp,0),
+  ifnull(fuelformulation.sulfurlevel,0),
+  ifnull(fuelformulation.etohvolume,0),
+  ifnull(fuelformulation.mtbevolume,0),
+  ifnull(fuelformulation.etbevolume,0),
+  ifnull(fuelformulation.tamevolume,0),
+  ifnull(fuelformulation.aromaticcontent,0),
+  ifnull(fuelformulation.olefincontent,0),
+  ifnull(fuelformulation.benzenecontent,0),
+  ifnull(fuelformulation.e200,0),
+  ifnull(fuelformulation.e300,0),
+  ifnull(fuelformulation.voltowtpercentoxy,0),
+  ifnull(fuelformulation.biodieselestervolume,0),
+  ifnull(fuelformulation.cetaneindex,0),
+  ifnull(fuelformulation.pahcontent,0),
+  0 as oxythreshid
+into outfile '##hcfuelformulation##'
+from fuelsupply
+inner join runspecmonthgroup on (fuelsupply.monthgroupid = runspecmonthgroup.monthgroupid)
+inner join year on (fuelsupply.fuelyearid = year.fuelyearid)
+inner join fuelformulation on (fuelformulation.fuelformulationid = fuelsupply.fuelformulationid)
+inner join fuelsubtype on (fuelsubtype.fuelsubtypeid = fuelformulation.fuelsubtypeid)
+inner join monthofanyyear on (monthofanyyear.monthgroupid = fuelsupply.monthgroupid)
+inner join runspecmonth on (runspecmonth.monthid = monthofanyyear.monthid)
+where fuelregionid = ##context.fuelregionid##
+and yearid = ##context.year##;
 
-cache select methaneTHCRatio.*
-into outfile '##methaneTHCRatio##'
-from methaneTHCRatio
-where processID in (##hcProcessIDs##);
+cache select methanethcratio.*
+into outfile '##methanethcratio##'
+from methanethcratio
+where processid in (##hcprocessids##);
 
--- End Section Extract Data
+-- end section extract data
 
--- Section Processing
+-- section processing
 
 starttimer savemwo;
 savemwo;
-starttimer HCSpeciationCalculator;
+starttimer hcspeciationcalculator;
 
-update HCFuelFormulation set oxyThreshID = (
-##oxyThreshCase##
+update hcfuelformulation set oxythreshid = (
+##oxythreshcase##
 );
 
-alter table HCFuelFormulation add etohThreshID smallint(6) NULL default '0';
+alter table hcfuelformulation add etohthreshid smallint(6) null default '0';
 
--- @algorithm Assign etohThreshID to each fuel formulation.
--- etohThreshLow <= ETOHVolume < etohThreshHigh
-update HCFuelFormulation, HCETOHBin set HCFuelFormulation.etohThreshID = HCETOHBin.etohThreshID
-where etohThreshLow <= ETOHVolume and ETOHVolume < etohThreshHigh;
+-- @algorithm assign etohthreshid to each fuel formulation.
+-- etohthreshlow <= etohvolume < etohthreshhigh
+update hcfuelformulation, hcetohbin set hcfuelformulation.etohthreshid = hcetohbin.etohthreshid
+where etohthreshlow <= etohvolume and etohvolume < etohthreshhigh;
 
--- alter table MOVESWorkerOutput add key HCPollutantID (pollutantID);
+-- alter table movesworkeroutput add key hcpollutantid (pollutantid);
 
--- @algorithm Fill in missing HCSpeciation entries so that joins to the table are valid.
--- Use speciationConstant of 0 and oxySpeciation of 0 for missing entries.
-insert ignore into HCSpeciation (polProcessID, fuelMYGroupID, fuelSubtypeID, etohThreshID, oxyThreshID, speciationConstant, oxySpeciation)
-select distinct ppmy.polProcessID, ppmy.fuelMYGroupID, fs.fuelSubtypeID, etohThreshID, oxyThreshID, 0.0 as speciationConstant, 0.0 as oxySpeciation
-from HCPollutantProcessModelYear ppmy,
-HCFuelSupply fs,
-HCETOHBin,
-HCOxyThreshName;
+-- @algorithm fill in missing hcspeciation entries so that joins to the table are valid.
+-- use speciationconstant of 0 and oxyspeciation of 0 for missing entries.
+insert ignore into hcspeciation (polprocessid, fuelmygroupid, fuelsubtypeid, etohthreshid, oxythreshid, speciationconstant, oxyspeciation)
+select distinct ppmy.polprocessid, ppmy.fuelmygroupid, fs.fuelsubtypeid, etohthreshid, oxythreshid, 0.0 as speciationconstant, 0.0 as oxyspeciation
+from hcpollutantprocessmodelyear ppmy,
+hcfuelsupply fs,
+hcetohbin,
+hcoxythreshname;
 
-drop table if exists HCWorkerOutput;
-CREATE TABLE IF NOT EXISTS HCWorkerOutput (
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL DEFAULT 0,
-	iterationID			 SMALLINT UNSIGNED DEFAULT 1,
-	yearID               SMALLINT UNSIGNED NULL,
-	monthID              SMALLINT UNSIGNED NULL,
-	dayID                SMALLINT UNSIGNED NULL,
-	hourID               SMALLINT UNSIGNED NULL,
-	stateID              SMALLINT UNSIGNED NULL,
-	countyID             INTEGER UNSIGNED NULL,
-	zoneID               INTEGER UNSIGNED NULL,
-	linkID               INTEGER UNSIGNED NULL,
-	pollutantID          SMALLINT UNSIGNED NULL,
-	processID            SMALLINT UNSIGNED NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL,
-	fuelSubtypeID		 SMALLINT UNSIGNED NULL,
-	fuelFormulationID	 SMALLINT UNSIGNED NULL,
-	modelYearID          SMALLINT UNSIGNED NULL,
-	roadTypeID           SMALLINT UNSIGNED NULL,
-	SCC                  CHAR(10) NULL,
-	regClassID			 SMALLINT UNSIGNED NULL,
-	emissionQuant        FLOAT NULL,
-	emissionRate		 FLOAT NULL,
-	
-	key (yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-			processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,regClassID)
+drop table if exists hcworkeroutput;
+create table if not exists hcworkeroutput (
+  movesrunid           smallint unsigned not null default 0,
+  iterationid      smallint unsigned default 1,
+  yearid               smallint unsigned null,
+  monthid              smallint unsigned null,
+  dayid                smallint unsigned null,
+  hourid               smallint unsigned null,
+  stateid              smallint unsigned null,
+  countyid             integer unsigned null,
+  zoneid               integer unsigned null,
+  linkid               integer unsigned null,
+  pollutantid          smallint unsigned null,
+  processid            smallint unsigned null,
+  sourcetypeid         smallint unsigned null,
+  fueltypeid           smallint unsigned null,
+  fuelsubtypeid    smallint unsigned null,
+  fuelformulationid  smallint unsigned null,
+  modelyearid          smallint unsigned null,
+  roadtypeid           smallint unsigned null,
+  scc                  char(10) null,
+  regclassid       smallint unsigned null,
+  emissionquant        float null,
+  emissionrate     float null,
+  
+  key (yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+      processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,regclassid)
 );
-truncate table HCWorkerOutput;
+truncate table hcworkeroutput;
 
-drop table if exists HCWorkerOutputAll;
+drop table if exists hcworkeroutputall;
 
--- @algorithm HCWorkerOutputAll holds all data generated by HC speciation, plus THC data used for Methane and NMHC.
--- It is for quick lookups, avoiding long scans of MOVESWorkerOutput.  Data is first placed into HCWorkerOutput
--- then copied to both MOVESWorkerOutput and to HCWorkerOutputAll.
-CREATE TABLE IF NOT EXISTS HCWorkerOutputAll (
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL DEFAULT 0,
-	iterationID			 SMALLINT UNSIGNED DEFAULT 1,
-	yearID               SMALLINT UNSIGNED NULL,
-	monthID              SMALLINT UNSIGNED NULL,
-	dayID                SMALLINT UNSIGNED NULL,
-	hourID               SMALLINT UNSIGNED NULL,
-	stateID              SMALLINT UNSIGNED NULL,
-	countyID             INTEGER UNSIGNED NULL,
-	zoneID               INTEGER UNSIGNED NULL,
-	linkID               INTEGER UNSIGNED NULL,
-	pollutantID          SMALLINT UNSIGNED NULL,
-	processID            SMALLINT UNSIGNED NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL,
-	fuelSubtypeID		 SMALLINT UNSIGNED NULL,
-	fuelFormulationID	 SMALLINT UNSIGNED NULL,
-	modelYearID          SMALLINT UNSIGNED NULL,
-	roadTypeID           SMALLINT UNSIGNED NULL,
-	SCC                  CHAR(10) NULL,
-	regClassID			 SMALLINT UNSIGNED NULL,
-	emissionQuant        FLOAT NULL,
-	emissionRate		 FLOAT NULL,
+-- @algorithm hcworkeroutputall holds all data generated by hc speciation, plus thc data used for methane and nmhc.
+-- it is for quick lookups, avoiding long scans of movesworkeroutput.  data is first placed into hcworkeroutput
+-- then copied to both movesworkeroutput and to hcworkeroutputall.
+create table if not exists hcworkeroutputall (
+  movesrunid           smallint unsigned not null default 0,
+  iterationid      smallint unsigned default 1,
+  yearid               smallint unsigned null,
+  monthid              smallint unsigned null,
+  dayid                smallint unsigned null,
+  hourid               smallint unsigned null,
+  stateid              smallint unsigned null,
+  countyid             integer unsigned null,
+  zoneid               integer unsigned null,
+  linkid               integer unsigned null,
+  pollutantid          smallint unsigned null,
+  processid            smallint unsigned null,
+  sourcetypeid         smallint unsigned null,
+  fueltypeid           smallint unsigned null,
+  fuelsubtypeid    smallint unsigned null,
+  fuelformulationid  smallint unsigned null,
+  modelyearid          smallint unsigned null,
+  roadtypeid           smallint unsigned null,
+  scc                  char(10) null,
+  regclassid       smallint unsigned null,
+  emissionquant        float null,
+  emissionrate     float null,
 
-	key (pollutantID),
-	key (pollutantID, processID),
-	key (
-		pollutantID asc,
-		fuelTypeID asc,
-		countyID asc, 
-		yearID asc,
-		monthID asc,
-		modelYearID asc, 
-		processID asc)
+  key (pollutantid),
+  key (pollutantid, processid),
+  key (
+    pollutantid asc,
+    fueltypeid asc,
+    countyid asc, 
+    yearid asc,
+    monthid asc,
+    modelyearid asc, 
+    processid asc)
 );
-truncate table HCWorkerOutputAll;
+truncate table hcworkeroutputall;
 
--- CREATE INDEX MOVESWorkerOutput_A2 ON MOVESWorkerOutput (
--- 	pollutantID asc,
--- 	fuelTypeID asc,
--- 	countyID asc, 
--- 	yearID asc,
--- 	monthID asc,
--- 	modelYearID asc, 
--- 	processID asc
+-- create index movesworkeroutput_a2 on movesworkeroutput (
+--  pollutantid asc,
+--  fueltypeid asc,
+--  countyid asc, 
+--  yearid asc,
+--  monthid asc,
+--  modelyearid asc, 
+--  processid asc
 -- );
 
-CREATE INDEX HCFuelSupply_A1 ON HCFuelSupply (
-	fuelTypeID asc, 
-	countyID asc, 
-	yearID asc, 
-	monthID asc, 
-	fuelFormulationID asc
+create index hcfuelsupply_a1 on hcfuelsupply (
+  fueltypeid asc, 
+  countyid asc, 
+  yearid asc, 
+  monthid asc, 
+  fuelformulationid asc
 );
 
-CREATE INDEX HCspeciation_A1 ON HCspeciation (
-	oxyThreshID asc, 
-	fuelSubtypeID asc, 
-	etohThreshID asc, 
-	polProcessID asc, 
-	fuelMYGroupID asc
+create index hcspeciation_a1 on hcspeciation (
+  oxythreshid asc, 
+  fuelsubtypeid asc, 
+  etohthreshid asc, 
+  polprocessid asc, 
+  fuelmygroupid asc
 );
 
-CREATE INDEX HCETOHBin_A1 ON HCETOHBin (
-	etohThreshID asc, 
-	etohThreshLow asc, 
-	etohThreshHigh asc
+create index hcetohbin_a1 on hcetohbin (
+  etohthreshid asc, 
+  etohthreshlow asc, 
+  etohthreshhigh asc
 );
 
-CREATE INDEX HCPollutantProcessAssoc_A1 ON HCPollutantProcessAssoc (
-	processID asc, 
-	polProcessID asc, 
-	pollutantID asc
+create index hcpollutantprocessassoc_a1 on hcpollutantprocessassoc (
+  processid asc, 
+  polprocessid asc, 
+  pollutantid asc
 );
 
-create index HCFuelFormulation_A1 on HCFuelFormulation (
-	fuelFormulationID asc,
-	fuelSubtypeID asc
+create index hcfuelformulation_a1 on hcfuelformulation (
+  fuelformulationid asc,
+  fuelsubtypeid asc
 );
 
--- @algorithm Extract THC (1) and altTHC (10001) into HCWorkerOutputAll to make tables faster to search
-insert into HCWorkerOutputAll (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,emissionQuant,
-	regClassID,emissionRate,
-	fuelFormulationID,fuelSubtypeID
+-- @algorithm extract thc (1) and altthc (10001) into hcworkeroutputall to make tables faster to search
+insert into hcworkeroutputall (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,emissionquant,
+  regclassid,emissionrate,
+  fuelformulationid,fuelsubtypeid
 )
-select MOVESRunID,iterationID,mwo.yearID,mwo.monthID,dayID,hourID,stateID,mwo.countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,mwo.fuelTypeID,modelYearID,roadTypeID,SCC,marketShare*emissionQuant,
-	regClassID,marketShare*emissionRate,
-	fuelFormulationID,fuelSubtypeID
-from MOVESWorkerOutput mwo
-inner join HCFuelSupply fs using (countyID, monthID, fuelTypeID, yearID)
-where pollutantID in (1, 10001);
+select movesrunid,iterationid,mwo.yearid,mwo.monthid,dayid,hourid,stateid,mwo.countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,mwo.fueltypeid,modelyearid,roadtypeid,scc,marketshare*emissionquant,
+  regclassid,marketshare*emissionrate,
+  fuelformulationid,fuelsubtypeid
+from movesworkeroutput mwo
+inner join hcfuelsupply fs using (countyid, monthid, fueltypeid, yearid)
+where pollutantid in (1, 10001);
 
--- Section Methane
-truncate HCWorkerOutput;
+-- section methane
+truncate hcworkeroutput;
 
--- @algorithm methane = THC * CH4THCRatio
-insert into HCWorkerOutput (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,emissionQuant,
-	emissionRate,
-	regClassID,fuelFormulationID,fuelSubtypeID
+-- @algorithm methane = thc * ch4thcratio
+insert into hcworkeroutput (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,emissionquant,
+  emissionrate,
+  regclassid,fuelformulationid,fuelsubtypeid
 )
-select mwo.MOVESRunID,mwo.iterationID,mwo.yearID,mwo.monthID,mwo.dayID,mwo.hourID,mwo.stateID,mwo.countyID,mwo.zoneID,mwo.linkID,
-	5 as pollutantID,
-	mwo.processID,mwo.sourceTypeID,mwo.fuelTypeID,mwo.modelYearID,mwo.roadTypeID,mwo.SCC,
-	(emissionQuant * CH4THCRatio) as emissionQuant,
-	(emissionRate * CH4THCRatio) as emissionRate,
-	mwo.regClassID,mwo.fuelFormulationID,mwo.fuelSubtypeID
-from HCWorkerOutputAll mwo
-inner join HCAgeCategory acat on (mwo.modelYearID=##context.year##-acat.ageID)
-inner join HCPollutantProcessAssoc ppa on (
-	ppa.processID=mwo.processID
-	and ppa.pollutantID=1)
-inner join THCPollutantProcessMappedModelYear ppmy on (
-	ppmy.polProcessID=ppa.polProcessID
-	and ppmy.modelYearID=mwo.modelYearID)
-inner join methaneTHCRatio r on (
-	r.processID = mwo.processID
-	and r.fuelTypeID = mwo.fuelTypeID
-	and r.sourceTypeID = mwo.sourceTypeID
-	and r.modelYearGroupID = ppmy.modelYearGroupID
-	and r.ageGroupID = acat.ageGroupID)
-where mwo.pollutantID = 1
-and mwo.processID in (##methaneProcessIDs##);
+select mwo.movesrunid,mwo.iterationid,mwo.yearid,mwo.monthid,mwo.dayid,mwo.hourid,mwo.stateid,mwo.countyid,mwo.zoneid,mwo.linkid,
+  5 as pollutantid,
+  mwo.processid,mwo.sourcetypeid,mwo.fueltypeid,mwo.modelyearid,mwo.roadtypeid,mwo.scc,
+  (emissionquant * ch4thcratio) as emissionquant,
+  (emissionrate * ch4thcratio) as emissionrate,
+  mwo.regclassid,mwo.fuelformulationid,mwo.fuelsubtypeid
+from hcworkeroutputall mwo
+inner join hcagecategory acat on (mwo.modelyearid=##context.year##-acat.ageid)
+inner join hcpollutantprocessassoc ppa on (
+  ppa.processid=mwo.processid
+  and ppa.pollutantid=1)
+inner join thcpollutantprocessmappedmodelyear ppmy on (
+  ppmy.polprocessid=ppa.polprocessid
+  and ppmy.modelyearid=mwo.modelyearid)
+inner join methanethcratio r on (
+  r.processid = mwo.processid
+  and r.fueltypeid = mwo.fueltypeid
+  and r.sourcetypeid = mwo.sourcetypeid
+  and r.modelyeargroupid = ppmy.modelyeargroupid
+  and r.agegroupid = acat.agegroupid)
+where mwo.pollutantid = 1
+and mwo.processid in (##methaneprocessids##);
 
--- Move values back into MOVESWorkerOutput
-insert into MOVESWorkerOutput (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	emissionQuant,emissionRate)
-select MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	sum(emissionQuant),sum(emissionRate)
-from HCWorkerOutput
-where emissionQuant >= 0
-group by yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,regClassID;
+-- move values back into movesworkeroutput
+insert into movesworkeroutput (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  emissionquant,emissionrate)
+select movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  sum(emissionquant),sum(emissionrate)
+from hcworkeroutput
+where emissionquant >= 0
+group by yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,regclassid;
 
-insert into HCWorkerOutputAll (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	emissionQuant,emissionRate,
-	fuelFormulationID,fuelSubtypeID
+insert into hcworkeroutputall (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  emissionquant,emissionrate,
+  fuelformulationid,fuelsubtypeid
 )
-select MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	emissionQuant,emissionRate,
-	fuelFormulationID,fuelSubtypeID
-from HCWorkerOutput
-where emissionQuant >= 0;
--- End Section Methane
+select movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  emissionquant,emissionrate,
+  fuelformulationid,fuelsubtypeid
+from hcworkeroutput
+where emissionquant >= 0;
+-- end section methane
 
--- Section NMHC
-truncate HCWorkerOutput;
+-- section nmhc
+truncate hcworkeroutput;
 
--- @algorithm NMHC = THC * (1-CH4THCRatio)
-insert into HCWorkerOutput (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,emissionQuant,
-	emissionRate,
-	regClassID,fuelFormulationID,fuelSubtypeID
+-- @algorithm nmhc = thc * (1-ch4thcratio)
+insert into hcworkeroutput (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,emissionquant,
+  emissionrate,
+  regclassid,fuelformulationid,fuelsubtypeid
 )
-select mwo.MOVESRunID,mwo.iterationID,mwo.yearID,mwo.monthID,mwo.dayID,mwo.hourID,mwo.stateID,mwo.countyID,mwo.zoneID,mwo.linkID,
-	79 as pollutantID,
-	mwo.processID,mwo.sourceTypeID,mwo.fuelTypeID,mwo.modelYearID,mwo.roadTypeID,mwo.SCC,
-	(emissionQuant * (1-CH4THCRatio)) as emissionQuant,
-	(emissionRate * (1-CH4THCRatio)) as emissionRate,
-	regClassID,fuelFormulationID,fuelSubtypeID
-from HCWorkerOutputAll mwo
-inner join HCAgeCategory acat on (mwo.modelYearID=##context.year##-acat.ageID)
-inner join HCPollutantProcessAssoc ppa on (
-	ppa.processID=mwo.processID
-	and ppa.pollutantID=1)
-inner join THCPollutantProcessMappedModelYear ppmy on (
-	ppmy.polProcessID=ppa.polProcessID
-	and ppmy.modelYearID=mwo.modelYearID)
-inner join methaneTHCRatio r on (
-	r.processID = mwo.processID
-	and r.fuelTypeID = mwo.fuelTypeID
-	and r.sourceTypeID = mwo.sourceTypeID
-	and r.modelYearGroupID = ppmy.modelYearGroupID
-	and r.ageGroupID = acat.ageGroupID)
-where mwo.pollutantID = 1
-and mwo.processID in (##nmhcProcessIDs##);
+select mwo.movesrunid,mwo.iterationid,mwo.yearid,mwo.monthid,mwo.dayid,mwo.hourid,mwo.stateid,mwo.countyid,mwo.zoneid,mwo.linkid,
+  79 as pollutantid,
+  mwo.processid,mwo.sourcetypeid,mwo.fueltypeid,mwo.modelyearid,mwo.roadtypeid,mwo.scc,
+  (emissionquant * (1-ch4thcratio)) as emissionquant,
+  (emissionrate * (1-ch4thcratio)) as emissionrate,
+  regclassid,fuelformulationid,fuelsubtypeid
+from hcworkeroutputall mwo
+inner join hcagecategory acat on (mwo.modelyearid=##context.year##-acat.ageid)
+inner join hcpollutantprocessassoc ppa on (
+  ppa.processid=mwo.processid
+  and ppa.pollutantid=1)
+inner join thcpollutantprocessmappedmodelyear ppmy on (
+  ppmy.polprocessid=ppa.polprocessid
+  and ppmy.modelyearid=mwo.modelyearid)
+inner join methanethcratio r on (
+  r.processid = mwo.processid
+  and r.fueltypeid = mwo.fueltypeid
+  and r.sourcetypeid = mwo.sourcetypeid
+  and r.modelyeargroupid = ppmy.modelyeargroupid
+  and r.agegroupid = acat.agegroupid)
+where mwo.pollutantid = 1
+and mwo.processid in (##nmhcprocessids##);
 
--- and not (mwo.processID in (1,2) and mwo.fuelTypeID=5 
---	and mwo.fuelSubtypeID in (??e85E70FuelSubtypeIDs??) and mwo.modelYearID >= 2001)
+-- and not (mwo.processid in (1,2) and mwo.fueltypeid=5 
+--  and mwo.fuelsubtypeid in (??e85e70fuelsubtypeids??) and mwo.modelyearid >= 2001)
 
--- @algorithm Calculate altNMHC (10079) from altTHC (10001) using E10's ratios.
--- altNMHC (pollutant 10079) = altTHC (10001) * (1-CH4THCRatio[E10 fuel subtype]).
--- @condition Running Exhaust, Start Exhaust, Ethanol fuel type, E70 and E85 fuel subtypes, Model years >= 2001.
-insert into HCWorkerOutput (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,emissionQuant,
-	emissionRate,
-	regClassID,fuelFormulationID,fuelSubtypeID
+-- @algorithm calculate altnmhc (10079) from altthc (10001) using e10's ratios.
+-- altnmhc (pollutant 10079) = altthc (10001) * (1-ch4thcratio[e10 fuel subtype]).
+-- @condition running exhaust, start exhaust, ethanol fuel type, e70 and e85 fuel subtypes, model years >= 2001.
+insert into hcworkeroutput (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,emissionquant,
+  emissionrate,
+  regclassid,fuelformulationid,fuelsubtypeid
 )
-select mwo.MOVESRunID,mwo.iterationID,mwo.yearID,mwo.monthID,mwo.dayID,mwo.hourID,mwo.stateID,mwo.countyID,mwo.zoneID,mwo.linkID,
-	10079 as pollutantID,
-	mwo.processID,mwo.sourceTypeID,mwo.fuelTypeID,mwo.modelYearID,mwo.roadTypeID,mwo.SCC,
-	(emissionQuant * (1-CH4THCRatio)) as emissionQuant,
-	(emissionRate * (1-CH4THCRatio)) as emissionRate,
-	regClassID,fuelFormulationID,fuelSubtypeID
-from HCWorkerOutputAll mwo
-inner join HCAgeCategory acat on (mwo.modelYearID=##context.year##-acat.ageID)
-inner join HCPollutantProcessAssoc ppa on (
-	ppa.processID=mwo.processID
-	and ppa.pollutantID=1)
-inner join THCPollutantProcessMappedModelYear ppmy on (
-	ppmy.polProcessID=ppa.polProcessID
-	and ppmy.modelYearID=mwo.modelYearID)
-inner join methaneTHCRatio r on (
-	r.processID = mwo.processID
-	and r.fuelTypeID = 1
-	and r.sourceTypeID = mwo.sourceTypeID
-	and r.modelYearGroupID = ppmy.modelYearGroupID
-	and r.ageGroupID = acat.ageGroupID)
-where mwo.pollutantID = 10001
-and mwo.processID in (##nmhcProcessIDs##)
-and (mwo.processID in (1,2) and mwo.fuelTypeID=5 
-	and mwo.fuelSubtypeID in (##e85E70FuelSubtypeIDs##) and mwo.modelYearID >= 2001);
+select mwo.movesrunid,mwo.iterationid,mwo.yearid,mwo.monthid,mwo.dayid,mwo.hourid,mwo.stateid,mwo.countyid,mwo.zoneid,mwo.linkid,
+  10079 as pollutantid,
+  mwo.processid,mwo.sourcetypeid,mwo.fueltypeid,mwo.modelyearid,mwo.roadtypeid,mwo.scc,
+  (emissionquant * (1-ch4thcratio)) as emissionquant,
+  (emissionrate * (1-ch4thcratio)) as emissionrate,
+  regclassid,fuelformulationid,fuelsubtypeid
+from hcworkeroutputall mwo
+inner join hcagecategory acat on (mwo.modelyearid=##context.year##-acat.ageid)
+inner join hcpollutantprocessassoc ppa on (
+  ppa.processid=mwo.processid
+  and ppa.pollutantid=1)
+inner join thcpollutantprocessmappedmodelyear ppmy on (
+  ppmy.polprocessid=ppa.polprocessid
+  and ppmy.modelyearid=mwo.modelyearid)
+inner join methanethcratio r on (
+  r.processid = mwo.processid
+  and r.fueltypeid = 1
+  and r.sourcetypeid = mwo.sourcetypeid
+  and r.modelyeargroupid = ppmy.modelyeargroupid
+  and r.agegroupid = acat.agegroupid)
+where mwo.pollutantid = 10001
+and mwo.processid in (##nmhcprocessids##)
+and (mwo.processid in (1,2) and mwo.fueltypeid=5 
+  and mwo.fuelsubtypeid in (##e85e70fuelsubtypeids##) and mwo.modelyearid >= 2001);
 
--- Move values back into MOVESWorkerOutput
-insert into MOVESWorkerOutput (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	emissionQuant,emissionRate)
-select MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	sum(emissionQuant),sum(emissionRate)
-from HCWorkerOutput
-where emissionQuant >= 0
-group by yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,regClassID;
+-- move values back into movesworkeroutput
+insert into movesworkeroutput (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  emissionquant,emissionrate)
+select movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  sum(emissionquant),sum(emissionrate)
+from hcworkeroutput
+where emissionquant >= 0
+group by yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,regclassid;
 
-insert into HCWorkerOutputAll (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	emissionQuant,emissionRate,
-	fuelFormulationID,fuelSubtypeID
+insert into hcworkeroutputall (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  emissionquant,emissionrate,
+  fuelformulationid,fuelsubtypeid
 )
-select MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	emissionQuant,emissionRate,
-	fuelFormulationID,fuelSubtypeID
-from HCWorkerOutput
-where emissionQuant >= 0;
--- End Section NMHC
+select movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  emissionquant,emissionrate,
+  fuelformulationid,fuelsubtypeid
+from hcworkeroutput
+where emissionquant >= 0;
+-- end section nmhc
 
--- Section NMOG
-truncate HCWorkerOutput;
+-- section nmog
+truncate hcworkeroutput;
 
--- @algorithm NMOG = NMHC*(speciationConstant + oxySpeciation* volToWtPercentOxy*(MTBEVolume+ETBEVolume+TAMEVolume+ETOHVolume)).
--- @condition When (MTBEVolume+ETBEVolume+TAMEVolume+ETOHVolume) >= 0. Otherwise, NMOG = 0.
--- @condition NOT (Running Exhaust, Start Exhaust, Ethanol fuel type, E70 and E85 fuel subtypes, Model years >= 2001).
-insert into HCWorkerOutput (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,
-	regClassID,fuelFormulationID,fuelSubtypeID,
-	emissionQuant,emissionRate
+-- @algorithm nmog = nmhc*(speciationconstant + oxyspeciation* voltowtpercentoxy*(mtbevolume+etbevolume+tamevolume+etohvolume)).
+-- @condition when (mtbevolume+etbevolume+tamevolume+etohvolume) >= 0. otherwise, nmog = 0.
+-- @condition not (running exhaust, start exhaust, ethanol fuel type, e70 and e85 fuel subtypes, model years >= 2001).
+insert into hcworkeroutput (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,
+  regclassid,fuelformulationid,fuelsubtypeid,
+  emissionquant,emissionrate
 )
-select mwo.MOVESRunID,mwo.iterationID,mwo.yearID,mwo.monthID,mwo.dayID,mwo.hourID,mwo.stateID,mwo.countyID,mwo.zoneID,mwo.linkID,
-	ppa.pollutantID,
-	mwo.processID,mwo.sourceTypeID,mwo.fuelTypeID,mwo.modelYearID,mwo.roadTypeID,mwo.SCC,
-	mwo.regClassID,mwo.fuelFormulationID,mwo.fuelSubtypeID,
-	emissionQuant*(
-		(case when (MTBEVolume+ETBEVolume+TAMEVolume+ETOHVolume) >= 0 then
-			(speciationConstant + oxySpeciation* volToWtPercentOxy*(MTBEVolume+ETBEVolume+TAMEVolume+ETOHVolume))
-		 else 0 end)
-	) as emissionQuant,
-	emissionRate*(
-		(case when (MTBEVolume+ETBEVolume+TAMEVolume+ETOHVolume) >= 0 then
-			(speciationConstant + oxySpeciation* volToWtPercentOxy*(MTBEVolume+ETBEVolume+TAMEVolume+ETOHVolume))
-		 else 0 end)
-	) as emissionRate
-from HCWorkerOutputAll mwo
-inner join HCFuelFormulation ff on (ff.fuelFormulationID=mwo.fuelFormulationID)
-inner join HCspeciation hcs on (hcs.oxyThreshID=ff.oxyThreshID and hcs.fuelSubtypeID=ff.fuelSubtypeID and hcs.etohThreshID=ff.etohThreshID)
-inner join HCPollutantProcessModelYear ppmy on (ppmy.polProcessID=hcs.polProcessID
-	and ppmy.modelYearID=mwo.modelYearID and ppmy.fuelMYGroupID=hcs.fuelMYGroupID)
-inner join HCPollutantProcessAssoc ppa on (ppa.processID=mwo.processID
-	and ppa.polProcessID=ppmy.polProcessID
-	and ppa.processID in (##nmogProcessIDs##)
-	and ppa.pollutantID = 80)
-where mwo.pollutantID = 79
-and not (mwo.processID in (1,2) and mwo.fuelTypeID=5 
-	and mwo.fuelSubtypeID in (##e85E70FuelSubtypeIDs##) and mwo.modelYearID >= 2001);
+select mwo.movesrunid,mwo.iterationid,mwo.yearid,mwo.monthid,mwo.dayid,mwo.hourid,mwo.stateid,mwo.countyid,mwo.zoneid,mwo.linkid,
+  ppa.pollutantid,
+  mwo.processid,mwo.sourcetypeid,mwo.fueltypeid,mwo.modelyearid,mwo.roadtypeid,mwo.scc,
+  mwo.regclassid,mwo.fuelformulationid,mwo.fuelsubtypeid,
+  emissionquant*(
+    (case when (mtbevolume+etbevolume+tamevolume+etohvolume) >= 0 then
+      (speciationconstant + oxyspeciation* voltowtpercentoxy*(mtbevolume+etbevolume+tamevolume+etohvolume))
+     else 0 end)
+  ) as emissionquant,
+  emissionrate*(
+    (case when (mtbevolume+etbevolume+tamevolume+etohvolume) >= 0 then
+      (speciationconstant + oxyspeciation* voltowtpercentoxy*(mtbevolume+etbevolume+tamevolume+etohvolume))
+     else 0 end)
+  ) as emissionrate
+from hcworkeroutputall mwo
+inner join hcfuelformulation ff on (ff.fuelformulationid=mwo.fuelformulationid)
+inner join hcspeciation hcs on (hcs.oxythreshid=ff.oxythreshid and hcs.fuelsubtypeid=ff.fuelsubtypeid and hcs.etohthreshid=ff.etohthreshid)
+inner join hcpollutantprocessmodelyear ppmy on (ppmy.polprocessid=hcs.polprocessid
+  and ppmy.modelyearid=mwo.modelyearid and ppmy.fuelmygroupid=hcs.fuelmygroupid)
+inner join hcpollutantprocessassoc ppa on (ppa.processid=mwo.processid
+  and ppa.polprocessid=ppmy.polprocessid
+  and ppa.processid in (##nmogprocessids##)
+  and ppa.pollutantid = 80)
+where mwo.pollutantid = 79
+and not (mwo.processid in (1,2) and mwo.fueltypeid=5 
+  and mwo.fuelsubtypeid in (##e85e70fuelsubtypeids##) and mwo.modelyearid >= 2001);
 
--- @algorithm Calculate NMOG from altNMHC (10079) that originates from altTHC (10001). Use E10's factors even though the fuel is Ethanol.
--- This is done by joining to HCSpeciation using E10's values rather than the current fuel formulation's values.
--- NMOG = altNMHC*(speciationConstant + oxySpeciation* volToWtPercentOxy*(MTBEVolume+ETBEVolume+TAMEVolume+10)).
--- @condition Running Exhaust, Start Exhaust, Ethanol fuel type, E70 and E85 fuel subtypes, Model years >= 2001.
-insert into HCWorkerOutput (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,
-	regClassID,fuelFormulationID,fuelSubtypeID,
-	emissionQuant,emissionRate
+-- @algorithm calculate nmog from altnmhc (10079) that originates from altthc (10001). use e10's factors even though the fuel is ethanol.
+-- this is done by joining to hcspeciation using e10's values rather than the current fuel formulation's values.
+-- nmog = altnmhc*(speciationconstant + oxyspeciation* voltowtpercentoxy*(mtbevolume+etbevolume+tamevolume+10)).
+-- @condition running exhaust, start exhaust, ethanol fuel type, e70 and e85 fuel subtypes, model years >= 2001.
+insert into hcworkeroutput (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,
+  regclassid,fuelformulationid,fuelsubtypeid,
+  emissionquant,emissionrate
 )
-select mwo.MOVESRunID,mwo.iterationID,mwo.yearID,mwo.monthID,mwo.dayID,mwo.hourID,mwo.stateID,mwo.countyID,mwo.zoneID,mwo.linkID,
-	ppa.pollutantID,
-	mwo.processID,mwo.sourceTypeID,mwo.fuelTypeID,mwo.modelYearID,mwo.roadTypeID,mwo.SCC,
-	mwo.regClassID,mwo.fuelFormulationID,mwo.fuelSubtypeID,
-	emissionQuant*(
-		(speciationConstant + oxySpeciation* volToWtPercentOxy*(MTBEVolume+ETBEVolume+TAMEVolume+10))
-	) as emissionQuant,
-	emissionRate*(
-		(speciationConstant + oxySpeciation* volToWtPercentOxy*(MTBEVolume+ETBEVolume+TAMEVolume+10))
-	) as emissionRate
-from HCWorkerOutputAll mwo
-inner join HCFuelFormulation ff on (ff.fuelFormulationID=mwo.fuelFormulationID)
-inner join HCspeciation hcs on (hcs.oxyThreshID=0 and hcs.fuelSubtypeID=12 and hcs.etohThreshID=3)
-inner join HCPollutantProcessModelYear ppmy on (ppmy.polProcessID=hcs.polProcessID
-	and ppmy.modelYearID=mwo.modelYearID and ppmy.fuelMYGroupID=hcs.fuelMYGroupID)
-inner join HCPollutantProcessAssoc ppa on (ppa.processID=mwo.processID
-	and ppa.polProcessID=ppmy.polProcessID
-	and ppa.processID in (##nmogProcessIDs##)
-	and ppa.pollutantID = 80)
-where mwo.pollutantID = 10079
-and (mwo.processID in (1,2) and mwo.fuelTypeID=5 
-	and mwo.fuelSubtypeID in (##e85E70FuelSubtypeIDs##) and mwo.modelYearID >= 2001);
+select mwo.movesrunid,mwo.iterationid,mwo.yearid,mwo.monthid,mwo.dayid,mwo.hourid,mwo.stateid,mwo.countyid,mwo.zoneid,mwo.linkid,
+  ppa.pollutantid,
+  mwo.processid,mwo.sourcetypeid,mwo.fueltypeid,mwo.modelyearid,mwo.roadtypeid,mwo.scc,
+  mwo.regclassid,mwo.fuelformulationid,mwo.fuelsubtypeid,
+  emissionquant*(
+    (speciationconstant + oxyspeciation* voltowtpercentoxy*(mtbevolume+etbevolume+tamevolume+10))
+  ) as emissionquant,
+  emissionrate*(
+    (speciationconstant + oxyspeciation* voltowtpercentoxy*(mtbevolume+etbevolume+tamevolume+10))
+  ) as emissionrate
+from hcworkeroutputall mwo
+inner join hcfuelformulation ff on (ff.fuelformulationid=mwo.fuelformulationid)
+inner join hcspeciation hcs on (hcs.oxythreshid=0 and hcs.fuelsubtypeid=12 and hcs.etohthreshid=3)
+inner join hcpollutantprocessmodelyear ppmy on (ppmy.polprocessid=hcs.polprocessid
+  and ppmy.modelyearid=mwo.modelyearid and ppmy.fuelmygroupid=hcs.fuelmygroupid)
+inner join hcpollutantprocessassoc ppa on (ppa.processid=mwo.processid
+  and ppa.polprocessid=ppmy.polprocessid
+  and ppa.processid in (##nmogprocessids##)
+  and ppa.pollutantid = 80)
+where mwo.pollutantid = 10079
+and (mwo.processid in (1,2) and mwo.fueltypeid=5 
+  and mwo.fuelsubtypeid in (##e85e70fuelsubtypeids##) and mwo.modelyearid >= 2001);
 
--- Move values back into MOVESWorkerOutput
-insert into MOVESWorkerOutput (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	emissionQuant,emissionRate)
-select MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	sum(emissionQuant),sum(emissionRate)
-from HCWorkerOutput
-where emissionQuant >= 0
-group by yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,regClassID;
+-- move values back into movesworkeroutput
+insert into movesworkeroutput (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  emissionquant,emissionrate)
+select movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  sum(emissionquant),sum(emissionrate)
+from hcworkeroutput
+where emissionquant >= 0
+group by yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,regclassid;
 
-insert into HCWorkerOutputAll (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	emissionQuant,emissionRate,
-	fuelFormulationID,fuelSubtypeID
+insert into hcworkeroutputall (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  emissionquant,emissionrate,
+  fuelformulationid,fuelsubtypeid
 )
-select MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	emissionQuant,emissionRate,
-	fuelFormulationID,fuelSubtypeID
-from HCWorkerOutput
-where emissionQuant >= 0;
--- End Section NMOG
+select movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  emissionquant,emissionrate,
+  fuelformulationid,fuelsubtypeid
+from hcworkeroutput
+where emissionquant >= 0;
+-- end section nmog
 
--- Section VOC
-truncate HCWorkerOutput;
+-- section voc
+truncate hcworkeroutput;
 
--- @algorithm VOC = NMHC*(speciationConstant + oxySpeciation* volToWtPercentOxy*(MTBEVolume+ETBEVolume+TAMEVolume+ETOHVolume)).
--- @condition When (MTBEVolume+ETBEVolume+TAMEVolume+ETOHVolume) >= 0. Otherwise, VOC = 0.
--- @condition NOT (Running Exhaust, Start Exhaust, Ethanol fuel type, E70 and E85 fuel subtypes, Model years >= 2001).
-insert into HCWorkerOutput (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,
-	regClassID,fuelFormulationID,fuelSubtypeID,
-	emissionQuant,emissionRate
+-- @algorithm voc = nmhc*(speciationconstant + oxyspeciation* voltowtpercentoxy*(mtbevolume+etbevolume+tamevolume+etohvolume)).
+-- @condition when (mtbevolume+etbevolume+tamevolume+etohvolume) >= 0. otherwise, voc = 0.
+-- @condition not (running exhaust, start exhaust, ethanol fuel type, e70 and e85 fuel subtypes, model years >= 2001).
+insert into hcworkeroutput (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,
+  regclassid,fuelformulationid,fuelsubtypeid,
+  emissionquant,emissionrate
 )
-select mwo.MOVESRunID,mwo.iterationID,mwo.yearID,mwo.monthID,mwo.dayID,mwo.hourID,mwo.stateID,mwo.countyID,mwo.zoneID,mwo.linkID,
-	ppa.pollutantID,
-	mwo.processID,mwo.sourceTypeID,mwo.fuelTypeID,mwo.modelYearID,mwo.roadTypeID,mwo.SCC,
-	mwo.regClassID,mwo.fuelFormulationID,mwo.fuelSubtypeID,
-	emissionQuant*(
-		(case when (MTBEVolume+ETBEVolume+TAMEVolume+ETOHVolume) >= 0 then
-			(speciationConstant + oxySpeciation* volToWtPercentOxy*(MTBEVolume+ETBEVolume+TAMEVolume+ETOHVolume))
-		 else 0 end)
-	) as emissionQuant,
-	emissionRate*(
-		(case when (MTBEVolume+ETBEVolume+TAMEVolume+ETOHVolume) >= 0 then
-			(speciationConstant + oxySpeciation* volToWtPercentOxy*(MTBEVolume+ETBEVolume+TAMEVolume+ETOHVolume))
-		 else 0 end)
-	) as emissionRate
-from HCWorkerOutputAll mwo
-inner join HCFuelFormulation ff on (ff.fuelFormulationID=mwo.fuelFormulationID)
-inner join HCspeciation hcs on (hcs.oxyThreshID=ff.oxyThreshID and hcs.fuelSubtypeID=ff.fuelSubtypeID and hcs.etohThreshID=ff.etohThreshID)
-inner join HCPollutantProcessMappedModelYear ppmy on (ppmy.polProcessID=hcs.polProcessID
-	and ppmy.modelYearID=mwo.modelYearID and ppmy.fuelMYGroupID=hcs.fuelMYGroupID)
-inner join HCPollutantProcessAssoc ppa on (ppa.processID=mwo.processID
-	and ppa.polProcessID=ppmy.polProcessID
-	and ppa.processID in (##vocProcessIDs##)
-	and ppa.pollutantID = 87)
-where mwo.pollutantID = 79
-and not (mwo.processID in (1,2) and mwo.fuelTypeID=5 
-	and mwo.fuelSubtypeID in (##e85E70FuelSubtypeIDs##) and mwo.modelYearID >= 2001);
+select mwo.movesrunid,mwo.iterationid,mwo.yearid,mwo.monthid,mwo.dayid,mwo.hourid,mwo.stateid,mwo.countyid,mwo.zoneid,mwo.linkid,
+  ppa.pollutantid,
+  mwo.processid,mwo.sourcetypeid,mwo.fueltypeid,mwo.modelyearid,mwo.roadtypeid,mwo.scc,
+  mwo.regclassid,mwo.fuelformulationid,mwo.fuelsubtypeid,
+  emissionquant*(
+    (case when (mtbevolume+etbevolume+tamevolume+etohvolume) >= 0 then
+      (speciationconstant + oxyspeciation* voltowtpercentoxy*(mtbevolume+etbevolume+tamevolume+etohvolume))
+     else 0 end)
+  ) as emissionquant,
+  emissionrate*(
+    (case when (mtbevolume+etbevolume+tamevolume+etohvolume) >= 0 then
+      (speciationconstant + oxyspeciation* voltowtpercentoxy*(mtbevolume+etbevolume+tamevolume+etohvolume))
+     else 0 end)
+  ) as emissionrate
+from hcworkeroutputall mwo
+inner join hcfuelformulation ff on (ff.fuelformulationid=mwo.fuelformulationid)
+inner join hcspeciation hcs on (hcs.oxythreshid=ff.oxythreshid and hcs.fuelsubtypeid=ff.fuelsubtypeid and hcs.etohthreshid=ff.etohthreshid)
+inner join hcpollutantprocessmappedmodelyear ppmy on (ppmy.polprocessid=hcs.polprocessid
+  and ppmy.modelyearid=mwo.modelyearid and ppmy.fuelmygroupid=hcs.fuelmygroupid)
+inner join hcpollutantprocessassoc ppa on (ppa.processid=mwo.processid
+  and ppa.polprocessid=ppmy.polprocessid
+  and ppa.processid in (##vocprocessids##)
+  and ppa.pollutantid = 87)
+where mwo.pollutantid = 79
+and not (mwo.processid in (1,2) and mwo.fueltypeid=5 
+  and mwo.fuelsubtypeid in (##e85e70fuelsubtypeids##) and mwo.modelyearid >= 2001);
 
--- @algorithm Calculate VOC from altNMHC (10079) that originates from altTHC (10001). Use E10's factors even though the fuel is Ethanol.
--- This is done by joining to HCSpeciation using E10's values rather than the current fuel formulation's values.
--- VOC = altNMHC*(speciationConstant + oxySpeciation* volToWtPercentOxy*(MTBEVolume+ETBEVolume+TAMEVolume+10)).
--- @condition Running Exhaust, Start Exhaust, Ethanol fuel type, E70 and E85 fuel subtypes, Model years >= 2001.
-insert into HCWorkerOutput (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,
-	regClassID,fuelFormulationID,fuelSubtypeID,
-	emissionQuant,emissionRate
+-- @algorithm calculate voc from altnmhc (10079) that originates from altthc (10001). use e10's factors even though the fuel is ethanol.
+-- this is done by joining to hcspeciation using e10's values rather than the current fuel formulation's values.
+-- voc = altnmhc*(speciationconstant + oxyspeciation* voltowtpercentoxy*(mtbevolume+etbevolume+tamevolume+10)).
+-- @condition running exhaust, start exhaust, ethanol fuel type, e70 and e85 fuel subtypes, model years >= 2001.
+insert into hcworkeroutput (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,
+  regclassid,fuelformulationid,fuelsubtypeid,
+  emissionquant,emissionrate
 )
-select mwo.MOVESRunID,mwo.iterationID,mwo.yearID,mwo.monthID,mwo.dayID,mwo.hourID,mwo.stateID,mwo.countyID,mwo.zoneID,mwo.linkID,
-	ppa.pollutantID,
-	mwo.processID,mwo.sourceTypeID,mwo.fuelTypeID,mwo.modelYearID,mwo.roadTypeID,mwo.SCC,
-	mwo.regClassID,mwo.fuelFormulationID,mwo.fuelSubtypeID,
-	emissionQuant*(
-		(speciationConstant + oxySpeciation* volToWtPercentOxy*(MTBEVolume+ETBEVolume+TAMEVolume+10))
-	) as emissionQuant,
-	emissionRate*(
-		(speciationConstant + oxySpeciation* volToWtPercentOxy*(MTBEVolume+ETBEVolume+TAMEVolume+10))
-	) as emissionRate
-from HCWorkerOutputAll mwo
-inner join HCFuelFormulation ff on (ff.fuelFormulationID=mwo.fuelFormulationID)
-inner join HCspeciation hcs on (hcs.oxyThreshID=0 and hcs.fuelSubtypeID=12 and hcs.etohThreshID=3)
-inner join HCPollutantProcessMappedModelYear ppmy on (ppmy.polProcessID=hcs.polProcessID
-	and ppmy.modelYearID=mwo.modelYearID and ppmy.fuelMYGroupID=hcs.fuelMYGroupID)
-inner join HCPollutantProcessAssoc ppa on (ppa.processID=mwo.processID
-	and ppa.polProcessID=ppmy.polProcessID
-	and ppa.processID in (##vocProcessIDs##)
-	and ppa.pollutantID = 87)
-where mwo.pollutantID = 10079
-and (mwo.processID in (1,2) and mwo.fuelTypeID=5 
-	and mwo.fuelSubtypeID in (##e85E70FuelSubtypeIDs##) and mwo.modelYearID >= 2001);
+select mwo.movesrunid,mwo.iterationid,mwo.yearid,mwo.monthid,mwo.dayid,mwo.hourid,mwo.stateid,mwo.countyid,mwo.zoneid,mwo.linkid,
+  ppa.pollutantid,
+  mwo.processid,mwo.sourcetypeid,mwo.fueltypeid,mwo.modelyearid,mwo.roadtypeid,mwo.scc,
+  mwo.regclassid,mwo.fuelformulationid,mwo.fuelsubtypeid,
+  emissionquant*(
+    (speciationconstant + oxyspeciation* voltowtpercentoxy*(mtbevolume+etbevolume+tamevolume+10))
+  ) as emissionquant,
+  emissionrate*(
+    (speciationconstant + oxyspeciation* voltowtpercentoxy*(mtbevolume+etbevolume+tamevolume+10))
+  ) as emissionrate
+from hcworkeroutputall mwo
+inner join hcfuelformulation ff on (ff.fuelformulationid=mwo.fuelformulationid)
+inner join hcspeciation hcs on (hcs.oxythreshid=0 and hcs.fuelsubtypeid=12 and hcs.etohthreshid=3)
+inner join hcpollutantprocessmappedmodelyear ppmy on (ppmy.polprocessid=hcs.polprocessid
+  and ppmy.modelyearid=mwo.modelyearid and ppmy.fuelmygroupid=hcs.fuelmygroupid)
+inner join hcpollutantprocessassoc ppa on (ppa.processid=mwo.processid
+  and ppa.polprocessid=ppmy.polprocessid
+  and ppa.processid in (##vocprocessids##)
+  and ppa.pollutantid = 87)
+where mwo.pollutantid = 10079
+and (mwo.processid in (1,2) and mwo.fueltypeid=5 
+  and mwo.fuelsubtypeid in (##e85e70fuelsubtypeids##) and mwo.modelyearid >= 2001);
 
--- Move values back into MOVESWorkerOutput
-insert into MOVESWorkerOutput (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	emissionQuant,emissionRate)
-select MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	sum(emissionQuant),sum(emissionRate)
-from HCWorkerOutput
-where emissionQuant >= 0
-group by yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,regClassID;
+-- move values back into movesworkeroutput
+insert into movesworkeroutput (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  emissionquant,emissionrate)
+select movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  sum(emissionquant),sum(emissionrate)
+from hcworkeroutput
+where emissionquant >= 0
+group by yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,regclassid;
 
--- VOC is not an input to further HC speciation calculations.
--- If so, uncomment the following.
--- insert into HCWorkerOutputAll (
--- 	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
--- 	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
--- 	emissionQuant,emissionRate,
--- 	fuelFormulationID,fuelSubtypeID
+-- voc is not an input to further hc speciation calculations.
+-- if so, uncomment the following.
+-- insert into hcworkeroutputall (
+--  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+--  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+--  emissionquant,emissionrate,
+--  fuelformulationid,fuelsubtypeid
 -- )
--- select MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
--- 	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
--- 	emissionQuant,emissionRate,
--- 	fuelFormulationID,fuelSubtypeID
--- from HCWorkerOutput
--- where emissionQuant >= 0
+-- select movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+--  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+--  emissionquant,emissionrate,
+--  fuelformulationid,fuelsubtypeid
+-- from hcworkeroutput
+-- where emissionquant >= 0
 
--- End Section VOC
+-- end section voc
 
--- Section TOG
-truncate HCWorkerOutput;
--- @algorithm TOG=NMOG+Methane
-insert into HCWorkerOutput (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,
-	regClassID,fuelFormulationID,fuelSubtypeID,
-	emissionQuant,emissionRate
+-- section tog
+truncate hcworkeroutput;
+-- @algorithm tog=nmog+methane
+insert into hcworkeroutput (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,
+  regclassid,fuelformulationid,fuelsubtypeid,
+  emissionquant,emissionrate
 )
-select mwo.MOVESRunID,mwo.iterationID,mwo.yearID,mwo.monthID,mwo.dayID,mwo.hourID,mwo.stateID,mwo.countyID,mwo.zoneID,mwo.linkID,
-	ppa.pollutantID,
-	mwo.processID,mwo.sourceTypeID,mwo.fuelTypeID,mwo.modelYearID,mwo.roadTypeID,mwo.SCC,
-	mwo.regClassID,mwo.fuelFormulationID,mwo.fuelSubtypeID,
-	emissionQuant,emissionRate
-from HCWorkerOutputAll mwo
-inner join HCPollutantProcessAssoc ppa on (ppa.processID=mwo.processID
-	and ppa.processID in (##togProcessIDs##)
-	and ppa.pollutantID = 86)
-where mwo.pollutantID in (80,5);
+select mwo.movesrunid,mwo.iterationid,mwo.yearid,mwo.monthid,mwo.dayid,mwo.hourid,mwo.stateid,mwo.countyid,mwo.zoneid,mwo.linkid,
+  ppa.pollutantid,
+  mwo.processid,mwo.sourcetypeid,mwo.fueltypeid,mwo.modelyearid,mwo.roadtypeid,mwo.scc,
+  mwo.regclassid,mwo.fuelformulationid,mwo.fuelsubtypeid,
+  emissionquant,emissionrate
+from hcworkeroutputall mwo
+inner join hcpollutantprocessassoc ppa on (ppa.processid=mwo.processid
+  and ppa.processid in (##togprocessids##)
+  and ppa.pollutantid = 86)
+where mwo.pollutantid in (80,5);
 
--- Move values back into MOVESWorkerOutput
-insert into MOVESWorkerOutput (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	emissionQuant,emissionRate)
-select MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
-	sum(emissionQuant),sum(emissionRate)
-from HCWorkerOutput
-where emissionQuant >= 0
-group by yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,regClassID;
+-- move values back into movesworkeroutput
+insert into movesworkeroutput (
+  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  emissionquant,emissionrate)
+select movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+  sum(emissionquant),sum(emissionrate)
+from hcworkeroutput
+where emissionquant >= 0
+group by yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,regclassid;
 
--- TOG values aren't needed by subsequent steps.
--- If they are needed, uncomment the following.
--- insert into HCWorkerOutputAll (
--- 	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
--- 	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
--- 	emissionQuant,emissionRate,
--- 	fuelFormulationID,fuelSubtypeID
+-- tog values aren't needed by subsequent steps.
+-- if they are needed, uncomment the following.
+-- insert into hcworkeroutputall (
+--  movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+--  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+--  emissionquant,emissionrate,
+--  fuelformulationid,fuelsubtypeid
 -- )
--- select MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
--- 	processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC,regClassID,
--- 	emissionQuant,emissionRate,
--- 	fuelFormulationID,fuelSubtypeID
--- from HCWorkerOutput
--- where emissionQuant >= 0
+-- select movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+--  processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc,regclassid,
+--  emissionquant,emissionrate,
+--  fuelformulationid,fuelsubtypeid
+-- from hcworkeroutput
+-- where emissionquant >= 0
 
--- End Section TOG
+-- end section tog
 
--- alter table MOVESWorkerOutput drop key HCPollutantID;
--- alter table MOVESWorkerOutput drop index MOVESWorkerOutput_A2;
+-- alter table movesworkeroutput drop key hcpollutantid;
+-- alter table movesworkeroutput drop index movesworkeroutput_a2;
 
-alter table HCFuelSupply drop index HCFuelSupply_A1;
-alter table HCspeciation drop index HCspeciation_A1;
-alter table HCETOHBin drop index HCETOHBin_A1;
-alter table HCPollutantProcessAssoc drop index HCPollutantProcessAssoc_A1;
-alter table HCFuelFormulation drop index HCFuelFormulation_A1;
+alter table hcfuelsupply drop index hcfuelsupply_a1;
+alter table hcspeciation drop index hcspeciation_a1;
+alter table hcetohbin drop index hcetohbin_a1;
+alter table hcpollutantprocessassoc drop index hcpollutantprocessassoc_a1;
+alter table hcfuelformulation drop index hcfuelformulation_a1;
 
 starttimer savemwo2;
 savemwo2;
-starttimer HCSpeciationCalculator;
+starttimer hcspeciationcalculator;
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
-drop table if exists HCWorkerOutput;
-drop table if exists HCWorkerOutputAll;
--- End Section Cleanup
+-- section cleanup
+drop table if exists hcworkeroutput;
+drop table if exists hcworkeroutputall;
+-- end section cleanup
 
--- Section Final Cleanup
--- End Section Final Cleanup
+-- section final cleanup
+-- end section final cleanup

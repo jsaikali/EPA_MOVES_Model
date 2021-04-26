@@ -12,59 +12,59 @@
 -- for guidance on filling out the MOVES RunSpec and importing the appropriate inputs
 --
 
-FLUSH TABLES;
-SELECT CURRENT_TIME;
+flush tables;
+select current_time;
 
-Drop   table if exists CO_EmissionFactorsT;
-Create table CO_EmissionFactorsT
-Select   a.movesRunId,
-         a.yearId,
-         a.monthId,
-         a.dayId,
-         a.hourId,
-         a.linkId,
+drop   table if exists co_emissionfactorst;
+create table co_emissionfactorst
+select   a.movesrunid,
+         a.yearid,
+         a.monthid,
+         a.dayid,
+         a.hourid,
+         a.linkid,
          'CO' as pollutant,
-         sum(a.emissionQuant) as co
-From     MovesOutput          as a
-Group by a.movesRunId,
-         a.yearId,
-         a.linkId;
+         sum(a.emissionquant) as co
+from     movesoutput          as a
+group by a.movesrunid,
+         a.yearid,
+         a.linkid;
 
 
-Alter table CO_EmissionFactorsT add column distance        real;
-Alter table CO_EmissionFactorsT add column population      real;
-Alter table CO_EmissionFactorsT add column GramsPerVehMile real;
-Alter table CO_EmissionFactorsT add column GramsPerVehHour real;
+alter table co_emissionfactorst add column distance        real;
+alter table co_emissionfactorst add column population      real;
+alter table co_emissionfactorst add column gramspervehmile real;
+alter table co_emissionfactorst add column gramspervehhour real;
 
 
-Update CO_EmissionFactorsT as a set distance = (select sum(b.activity)
-                                                from   movesActivityOutput as b
-                                                where  a.movesRunId = b.movesRunId
-                                                  and  a.yearId     = b.yearId
-                                                  and  a.linkId     = b.linkId
-                                                  and  b.activityTypeId = 1);
+update co_emissionfactorst as a set distance = (select sum(b.activity)
+                                                from   movesactivityoutput as b
+                                                where  a.movesrunid = b.movesrunid
+                                                  and  a.yearid     = b.yearid
+                                                  and  a.linkid     = b.linkid
+                                                  and  b.activitytypeid = 1);
 
-Update CO_EmissionFactorsT as a set population = (select sum(b.activity)
-                                    from   movesActivityOutput as b
-                                    where  a.movesRunId = b.movesRunId
-                                      and  a.yearId     = b.yearId
-                                      and  a.linkId     = b.linkId
-                                      and  b.activityTypeId = 6);
+update co_emissionfactorst as a set population = (select sum(b.activity)
+                                    from   movesactivityoutput as b
+                                    where  a.movesrunid = b.movesrunid
+                                      and  a.yearid     = b.yearid
+                                      and  a.linkid     = b.linkid
+                                      and  b.activitytypeid = 6);
 
-Update CO_EmissionFactorsT set GramsPerVehMile = CO / Distance    where Distance >  0.0;
-Update CO_EmissionFactorsT set GramsPerVehHour = CO / Population  where Distance <= 0.0;
+update co_emissionfactorst set gramspervehmile = co / distance    where distance >  0.0;
+update co_emissionfactorst set gramspervehhour = co / population  where distance <= 0.0;
 
-Drop   table if exists CO_EmissionFactors;
-Create table CO_EmissionFactors
-Select movesRunId,
-       yearId,
-       monthId,
-       dayId,
-       hourId,
-       linkId,
+drop   table if exists co_emissionfactors;
+create table co_emissionfactors
+select movesrunid,
+       yearid,
+       monthid,
+       dayid,
+       hourid,
+       linkid,
        pollutant,
-       GramsPerVehMile,
-       GramsPerVehHour
-From   CO_EmissionFactorsT;
+       gramspervehmile,
+       gramspervehhour
+from   co_emissionfactorst;
 
-Drop   table if exists CO_EmissionFactorsT;  
+drop   table if exists co_emissionfactorst;  

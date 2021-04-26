@@ -1,2066 +1,2066 @@
--- Author Wesley Faler
--- Author David Hawkins
--- Version 2014-06-24
+-- author wesley faler
+-- author david hawkins
+-- version 2014-06-24
 
 -- @algorithm
--- @owner Tank Vapor Venting Calculator
+-- @owner tank vapor venting calculator
 -- @calculator
 
--- Section Create Remote Tables for Extracted Data
+-- section create remote tables for extracted data
 
-##create.AgeCategory##;
-TRUNCATE AgeCategory;
+##create.agecategory##;
+truncate agecategory;
 
-##create.AverageTankGasoline##;
-TRUNCATE AverageTankGasoline;
+##create.averagetankgasoline##;
+truncate averagetankgasoline;
 
-##create.AverageTankTemperature##;
-TRUNCATE AverageTankTemperature;
+##create.averagetanktemperature##;
+truncate averagetanktemperature;
 
-##create.ColdSoakInitialHourFraction##;
-TRUNCATE ColdSoakInitialHourFraction;
+##create.coldsoakinitialhourfraction##;
+truncate coldsoakinitialhourfraction;
 
-##create.ColdSoakTankTemperature##;
-TRUNCATE ColdSoakTankTemperature;
+##create.coldsoaktanktemperature##;
+truncate coldsoaktanktemperature;
 
-##create.County##;
-TRUNCATE County;
+##create.county##;
+truncate county;
 
-##create.CumTVVCoeffs##;
-TRUNCATE CumTVVCoeffs;
+##create.cumtvvcoeffs##;
+truncate cumtvvcoeffs;
 
-##create.EmissionRateByAge##;
-TRUNCATE EmissionRateByAge;
+##create.emissionratebyage##;
+truncate emissionratebyage;
 
-##create.evapTemperatureAdjustment##;
-TRUNCATE evapTemperatureAdjustment;
+##create.evaptemperatureadjustment##;
+truncate evaptemperatureadjustment;
 
-##create.evapRVPTemperatureAdjustment##;
-TRUNCATE evapRVPTemperatureAdjustment;
+##create.evaprvptemperatureadjustment##;
+truncate evaprvptemperatureadjustment;
 
-##create.FuelType##;
-TRUNCATE FuelType;
+##create.fueltype##;
+truncate fueltype;
 
-##create.HourDay##;
-TRUNCATE HourDay;
+##create.hourday##;
+truncate hourday;
 
-##create.IMCoverage##;
-TRUNCATE IMCoverage;
+##create.imcoverage##;
+truncate imcoverage;
 
-##create.IMFactor##;
-TRUNCATE IMFactor;
+##create.imfactor##;
+truncate imfactor;
 
-##create.Link##;
-TRUNCATE Link;
+##create.link##;
+truncate link;
 
-##create.MonthOfAnyYear##;
-TRUNCATE MonthOfAnyYear;
+##create.monthofanyyear##;
+truncate monthofanyyear;
 
-##create.OpModeDistribution##;
-TRUNCATE OpModeDistribution;
+##create.opmodedistribution##;
+truncate opmodedistribution;
 
-##create.PollutantProcessAssoc##;
-TRUNCATE PollutantProcessAssoc;
+##create.pollutantprocessassoc##;
+truncate pollutantprocessassoc;
 
-##create.PollutantProcessModelYear##;
-TRUNCATE PollutantProcessModelYear;
+##create.pollutantprocessmodelyear##;
+truncate pollutantprocessmodelyear;
 
-##create.PollutantProcessMappedModelYear##;
-TRUNCATE PollutantProcessMappedModelYear;
+##create.pollutantprocessmappedmodelyear##;
+truncate pollutantprocessmappedmodelyear;
 
-##create.RunSpecDay##;
-TRUNCATE RunSpecDay;
+##create.runspecday##;
+truncate runspecday;
 
-##create.RunSpecHourDay##;
-TRUNCATE RunSpecHourDay;
+##create.runspechourday##;
+truncate runspechourday;
 
-##create.RunSpecMonth##;
-TRUNCATE RunSpecMonth;
+##create.runspecmonth##;
+truncate runspecmonth;
 
-##create.RunSpecSourceType##;
-TRUNCATE RunSpecSourceType;
+##create.runspecsourcetype##;
+truncate runspecsourcetype;
 
-##create.sampleVehicleSoaking##;
-TRUNCATE sampleVehicleSoaking;
+##create.samplevehiclesoaking##;
+truncate samplevehiclesoaking;
 
-##create.SourceBin##;
-TRUNCATE SourceBin;
+##create.sourcebin##;
+truncate sourcebin;
 
-##create.SourceBinDistribution##;
-TRUNCATE SourceBinDistribution;
+##create.sourcebindistribution##;
+truncate sourcebindistribution;
 
-##create.SourceHours##;
-TRUNCATE SourceHours;
+##create.sourcehours##;
+truncate sourcehours;
 
-##create.SourceTypeModelYear##;
-TRUNCATE SourceTypeModelYear;
+##create.sourcetypemodelyear##;
+truncate sourcetypemodelyear;
 
-##create.SourceTypeModelYearGroup##;
-TRUNCATE SourceTypeModelYearGroup;
+##create.sourcetypemodelyeargroup##;
+truncate sourcetypemodelyeargroup;
 
-create table if not exists stmyTVVCoeffs (
-  sourceTypeID smallint not null,
-  modelYearID smallint not null,
-  fuelTypeID smallint not null,
-  polProcessID int NOT NULL DEFAULT '0',
-  backPurgeFactor double DEFAULT NULL,
-  averageCanisterCapacity double DEFAULT NULL,
-  leakFraction double DEFAULT NULL,
-  leakFractionIM double DEFAULT NULL,
-  tankSize double DEFAULT NULL,
-  tankFillFraction double DEFAULT NULL,
-  PRIMARY KEY (sourceTypeID,modelYearID,fuelTypeID,polProcessID)
+create table if not exists stmytvvcoeffs (
+  sourcetypeid smallint not null,
+  modelyearid smallint not null,
+  fueltypeid smallint not null,
+  polprocessid int not null default '0',
+  backpurgefactor double default null,
+  averagecanistercapacity double default null,
+  leakfraction double default null,
+  leakfractionim double default null,
+  tanksize double default null,
+  tankfillfraction double default null,
+  primary key (sourcetypeid,modelyearid,fueltypeid,polprocessid)
 );
-truncate stmyTVVCoeffs;
+truncate stmytvvcoeffs;
 
-create table if not exists stmyTVVEquations (
-  sourceTypeID smallint not null,
-  modelYearID smallint not null,
-  fuelTypeID smallint not null,
-  polProcessID int NOT NULL DEFAULT '0',
-  regClassID smallint not null,
-  backPurgeFactor double DEFAULT NULL,
-  averageCanisterCapacity double DEFAULT NULL,
-  regClassFractionOfSourceTypeModelYearFuel double not null,
-  tvvEquation varchar(100) NOT NULL DEFAULT '',
-  leakEquation varchar(100) NOT NULL DEFAULT '',
-  leakFraction double DEFAULT NULL,
-  leakFractionIM double DEFAULT NULL,
-  tankSize double DEFAULT NULL,
-  tankFillFraction double DEFAULT NULL,
-  PRIMARY KEY (sourceTypeID,modelYearID,fuelTypeID,polProcessID,regClassID,tvvEquation,leakEquation)
+create table if not exists stmytvvequations (
+  sourcetypeid smallint not null,
+  modelyearid smallint not null,
+  fueltypeid smallint not null,
+  polprocessid int not null default '0',
+  regclassid smallint not null,
+  backpurgefactor double default null,
+  averagecanistercapacity double default null,
+  regclassfractionofsourcetypemodelyearfuel double not null,
+  tvvequation varchar(100) not null default '',
+  leakequation varchar(100) not null default '',
+  leakfraction double default null,
+  leakfractionim double default null,
+  tanksize double default null,
+  tankfillfraction double default null,
+  primary key (sourcetypeid,modelyearid,fueltypeid,polprocessid,regclassid,tvvequation,leakequation)
 );
-truncate stmyTVVEquations;
+truncate stmytvvequations;
 
-##create.TankVaporGenCoeffs##;
-TRUNCATE TankVaporGenCoeffs;
+##create.tankvaporgencoeffs##;
+truncate tankvaporgencoeffs;
 
-##create.Year##;
-TRUNCATE Year;
+##create.year##;
+truncate year;
 
-##create.Zone##;
-TRUNCATE Zone;
+##create.zone##;
+truncate zone;
 
-##create.ZoneMonthHour##;
-TRUNCATE ZoneMonthHour;
+##create.zonemonthhour##;
+truncate zonemonthhour;
 
--- Section WithRegClassID
-##create.RegClassSourceTypeFraction##;
-TRUNCATE TABLE RegClassSourceTypeFraction;
--- End Section WithRegClassID
+-- section withregclassid
+##create.regclasssourcetypefraction##;
+truncate table regclasssourcetypefraction;
+-- end section withregclassid
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
--- CREATE TABLE IF NOT EXISTS EventLog (eventRowID INTEGER UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (eventRowID), eventTime DATETIME, eventName VARCHAR(120));
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'Extracting Data';
+-- section extract data
+-- create table if not exists eventlog (eventrowid integer unsigned not null auto_increment, primary key (eventrowid), eventtime datetime, eventname varchar(120));
+-- insert into eventlog (eventtime, eventname) select now(), 'EXTRACTING DATA';
 
-cache SELECT * INTO OUTFILE '##AgeCategory##'
-FROM AgeCategory;
+cache select * into outfile '##agecategory##'
+from agecategory;
 
-cache SELECT AverageTankGasoline.* INTO OUTFILE '##AverageTankGasoline##'
-FROM AverageTankGasoline
-INNER JOIN MonthOfAnyYear ON (MonthOfAnyYear.monthGroupID = AverageTankGasoline.monthGroupID)
-INNER JOIN Year ON (Year.yearID = ##context.year##)
-WHERE zoneID = ##context.iterLocation.zoneRecordID##
-AND AverageTankGasoline.fuelYearID = Year.fuelYearID
-AND monthID = ##context.monthID##;
+cache select averagetankgasoline.* into outfile '##averagetankgasoline##'
+from averagetankgasoline
+inner join monthofanyyear on (monthofanyyear.monthgroupid = averagetankgasoline.monthgroupid)
+inner join year on (year.yearid = ##context.year##)
+where zoneid = ##context.iterlocation.zonerecordid##
+and averagetankgasoline.fuelyearid = year.fuelyearid
+and monthid = ##context.monthid##;
 
-cache SELECT * INTO OUTFILE '##AverageTankTemperature##' FROM AverageTankTemperature
-WHERE zoneID = ##context.iterLocation.zoneRecordID##
-AND monthID = ##context.monthID##;
+cache select * into outfile '##averagetanktemperature##' from averagetanktemperature
+where zoneid = ##context.iterlocation.zonerecordid##
+and monthid = ##context.monthid##;
 
-cache SELECT * INTO OUTFILE '##ColdSoakInitialHourFraction##' FROM ColdSoakInitialHourFraction
-WHERE zoneID = ##context.iterLocation.zoneRecordID##
-AND monthID = ##context.monthID##;
+cache select * into outfile '##coldsoakinitialhourfraction##' from coldsoakinitialhourfraction
+where zoneid = ##context.iterlocation.zonerecordid##
+and monthid = ##context.monthid##;
 
-cache SELECT * INTO OUTFILE '##ColdSoakTankTemperature##' FROM ColdSoakTankTemperature
-WHERE zoneID = ##context.iterLocation.zoneRecordID##
-AND monthID = ##context.monthID##;
+cache select * into outfile '##coldsoaktanktemperature##' from coldsoaktanktemperature
+where zoneid = ##context.iterlocation.zonerecordid##
+and monthid = ##context.monthid##;
 
-cache SELECT * INTO OUTFILE '##County##'
-FROM County
-WHERE countyID = ##context.iterLocation.countyRecordID##;
+cache select * into outfile '##county##'
+from county
+where countyid = ##context.iterlocation.countyrecordid##;
 
-cache SELECT DISTINCT CumTVVCoeffs.* INTO OUTFILE '##CumTVVCoeffs##'
-FROM CumTVVCoeffs, SourceBinDistribution, SourceTypeModelYear, SourceBin, RunSpecSourceFuelType
-WHERE SourceBinDistribution.polProcessID IN (##pollutantProcessIDs##)
-AND CumTVVCoeffs.polProcessID IN (##pollutantProcessIDs##)
-AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
-AND SourceTypeModelYear.modelYearID <= ##context.year##
-AND SourceTypeModelYear.modelYearID >= ##context.year## - 30
-AND SourceTypeModelYear.sourceTypeID = RunSpecSourceFuelType.sourceTypeID
-AND SourceBinDistribution.SourceBinID = SourceBin.SourceBinID
-AND SourceBin.fuelTypeID = RunSpecSourceFuelType.fuelTypeID
-AND SourceBin.regClassID = CumTVVCoeffs.regClassID;
+cache select distinct cumtvvcoeffs.* into outfile '##cumtvvcoeffs##'
+from cumtvvcoeffs, sourcebindistribution, sourcetypemodelyear, sourcebin, runspecsourcefueltype
+where sourcebindistribution.polprocessid in (##pollutantprocessids##)
+and cumtvvcoeffs.polprocessid in (##pollutantprocessids##)
+and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+and sourcetypemodelyear.modelyearid <= ##context.year##
+and sourcetypemodelyear.modelyearid >= ##context.year## - 30
+and sourcetypemodelyear.sourcetypeid = runspecsourcefueltype.sourcetypeid
+and sourcebindistribution.sourcebinid = sourcebin.sourcebinid
+and sourcebin.fueltypeid = runspecsourcefueltype.fueltypeid
+and sourcebin.regclassid = cumtvvcoeffs.regclassid;
 
-cache SELECT DISTINCT EmissionRateByAge.* INTO OUTFILE '##EmissionRateByAge##'
-FROM EmissionRateByAge, SourceBinDistribution, SourceTypeModelYear, SourceBin, RunSpecSourceFuelType
-WHERE RunSpecSourceFuelType.fuelTypeID = SourceBin.fuelTypeID
-AND EmissionRateByAge.polProcessID = SourceBinDistribution.polProcessID
-AND EmissionRateByAge.sourceBinID = SourceBin.sourceBinID
-AND EmissionRateByAge.sourceBinID = SourceBinDistribution.sourceBinID
-AND SourceBin.sourceBinID = SourceBinDistribution.sourceBinID
-AND RunSpecSourceFuelType.sourceTypeID = SourceTypeModelYear.sourceTypeID
-AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
-AND SourceTypeModelYear.modelYearID <= ##context.year##
-AND SourceTypeModelYear.modelYearID >= ##context.year## - 30
-AND EmissionRateByAge.polProcessID IN (##pollutantProcessIDs##)
-AND EmissionRateByAge.opModeID IN (150, 300);
+cache select distinct emissionratebyage.* into outfile '##emissionratebyage##'
+from emissionratebyage, sourcebindistribution, sourcetypemodelyear, sourcebin, runspecsourcefueltype
+where runspecsourcefueltype.fueltypeid = sourcebin.fueltypeid
+and emissionratebyage.polprocessid = sourcebindistribution.polprocessid
+and emissionratebyage.sourcebinid = sourcebin.sourcebinid
+and emissionratebyage.sourcebinid = sourcebindistribution.sourcebinid
+and sourcebin.sourcebinid = sourcebindistribution.sourcebinid
+and runspecsourcefueltype.sourcetypeid = sourcetypemodelyear.sourcetypeid
+and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+and sourcetypemodelyear.modelyearid <= ##context.year##
+and sourcetypemodelyear.modelyearid >= ##context.year## - 30
+and emissionratebyage.polprocessid in (##pollutantprocessids##)
+and emissionratebyage.opmodeid in (150, 300);
 
-cache select * into outfile '##evapTemperatureAdjustment##'
-from evapTemperatureAdjustment
-where processID=12;
+cache select * into outfile '##evaptemperatureadjustment##'
+from evaptemperatureadjustment
+where processid=12;
 
-cache select * into outfile '##evapRVPTemperatureAdjustment##'
-from evapRVPTemperatureAdjustment
-where processID=12
-and fuelTypeID in (1,5);
+cache select * into outfile '##evaprvptemperatureadjustment##'
+from evaprvptemperatureadjustment
+where processid=12
+and fueltypeid in (1,5);
 
-cache SELECT DISTINCT FuelType.* INTO OUTFILE '##FuelType##'
-FROM FuelType
-INNER JOIN RunSpecSourceFuelType ON (RunSpecSourceFuelType.fuelTypeID = FuelType.fuelTypeID);
+cache select distinct fueltype.* into outfile '##fueltype##'
+from fueltype
+inner join runspecsourcefueltype on (runspecsourcefueltype.fueltypeid = fueltype.fueltypeid);
 
-cache SELECT DISTINCT HourDay.* INTO OUTFILE '##HourDay##'
-FROM HourDay,RunSpecHour,RunSpecDay
-WHERE HourDay.dayID = RunSpecDay.dayID
-AND HourDay.hourID = RunSpecHour.hourID;
+cache select distinct hourday.* into outfile '##hourday##'
+from hourday,runspechour,runspecday
+where hourday.dayid = runspecday.dayid
+and hourday.hourid = runspechour.hourid;
 
-cache SELECT DISTINCT IMCoverage.* INTO OUTFILE '##IMCoverage##'
-FROM IMCoverage
-INNER JOIN RunSpecSourceFuelType ON (RunSpecSourceFuelType.fuelTypeID = IMCoverage.fuelTypeID
-	and RunSpecSourceFuelType.sourceTypeID = IMCoverage.sourceTypeID)
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND countyID = ##context.iterLocation.countyRecordID## 
-AND yearID = ##context.year##
-AND useIMyn = 'Y';
+cache select distinct imcoverage.* into outfile '##imcoverage##'
+from imcoverage
+inner join runspecsourcefueltype on (runspecsourcefueltype.fueltypeid = imcoverage.fueltypeid
+  and runspecsourcefueltype.sourcetypeid = imcoverage.sourcetypeid)
+where polprocessid in (##pollutantprocessids##)
+and countyid = ##context.iterlocation.countyrecordid## 
+and yearid = ##context.year##
+and useimyn = 'Y';
 
-cache SELECT DISTINCT IMFactor.* INTO OUTFILE '##IMFactor##'
-FROM IMFactor
-INNER JOIN RunSpecSourceFuelType ON (RunSpecSourceFuelType.fuelTypeID = IMFactor.fuelTypeID
-	and RunSpecSourceFuelType.sourceTypeID = IMFactor.sourceTypeID)
-WHERE polProcessID IN (##pollutantProcessIDs##);
+cache select distinct imfactor.* into outfile '##imfactor##'
+from imfactor
+inner join runspecsourcefueltype on (runspecsourcefueltype.fueltypeid = imfactor.fueltypeid
+  and runspecsourcefueltype.sourcetypeid = imfactor.sourcetypeid)
+where polprocessid in (##pollutantprocessids##);
 
-cache SELECT Link.* INTO OUTFILE '##Link##'
-FROM Link WHERE linkID = ##context.iterLocation.linkRecordID##;
+cache select link.* into outfile '##link##'
+from link where linkid = ##context.iterlocation.linkrecordid##;
 
-cache SELECT * INTO OUTFILE '##MonthOfAnyYear##'
-FROM MonthOfAnyYear
-WHERE monthID = ##context.monthID##;
+cache select * into outfile '##monthofanyyear##'
+from monthofanyyear
+where monthid = ##context.monthid##;
 
-cache(monthID=##context.monthID##) SELECT OpModeDistribution.* INTO OUTFILE '##OpModeDistribution##'
-FROM OpModeDistribution, RunSpecSourceType
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND linkID = ##context.iterLocation.linkRecordID##
-AND RunSpecSourceType.sourceTypeID = OpModeDistribution.sourceTypeID
-AND opModeID IN (150, 151, 300);
+cache(monthid=##context.monthid##) select opmodedistribution.* into outfile '##opmodedistribution##'
+from opmodedistribution, runspecsourcetype
+where polprocessid in (##pollutantprocessids##)
+and linkid = ##context.iterlocation.linkrecordid##
+and runspecsourcetype.sourcetypeid = opmodedistribution.sourcetypeid
+and opmodeid in (150, 151, 300);
 
-cache SELECT * INTO OUTFILE '##PollutantProcessAssoc##'
-FROM PollutantProcessAssoc
-WHERE processID=##context.iterProcess.databaseKey##;
+cache select * into outfile '##pollutantprocessassoc##'
+from pollutantprocessassoc
+where processid=##context.iterprocess.databasekey##;
 
-cache SELECT * INTO OUTFILE '##PollutantProcessModelYear##'
-FROM PollutantProcessModelYear
-WHERE modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND polProcessID IN (##pollutantProcessIDs##);
+cache select * into outfile '##pollutantprocessmodelyear##'
+from pollutantprocessmodelyear
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and polprocessid in (##pollutantprocessids##);
 
-cache SELECT * INTO OUTFILE '##PollutantProcessMappedModelYear##'
-FROM PollutantProcessMappedModelYear
-WHERE modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND polProcessID IN (##pollutantProcessIDs##);
+cache select * into outfile '##pollutantprocessmappedmodelyear##'
+from pollutantprocessmappedmodelyear
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and polprocessid in (##pollutantprocessids##);
 
-cache SELECT * INTO OUTFILE '##RunSpecMonth##'
-FROM RunSpecMonth
-WHERE monthID = ##context.monthID##;
+cache select * into outfile '##runspecmonth##'
+from runspecmonth
+where monthid = ##context.monthid##;
 
-cache SELECT * INTO OUTFILE '##RunSpecDay##'
-FROM RunSpecDay;
+cache select * into outfile '##runspecday##'
+from runspecday;
 
-cache SELECT * INTO OUTFILE '##RunSpecHourDay##'
-FROM RunSpecHourDay;
+cache select * into outfile '##runspechourday##'
+from runspechourday;
 
-cache SELECT * INTO OUTFILE '##RunSpecSourceType##'
-FROM RunSpecSourceType;
+cache select * into outfile '##runspecsourcetype##'
+from runspecsourcetype;
 
-cache SELECT DISTINCT SourceBin.* INTO OUTFILE '##SourceBin##'
-FROM SourceBinDistribution, SourceTypeModelYear, SourceBin, RunSpecSourceFuelType
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
-AND SourceTypeModelYear.modelYearID <= ##context.year##
-AND SourceTypeModelYear.modelYearID >= ##context.year## - 30
-AND SourceTypeModelYear.sourceTypeID = RunSpecSourceFuelType.sourceTypeID
-AND SourceBinDistribution.SourceBinID = SourceBin.SourceBinID
-AND SourceBin.fuelTypeID = RunSpecSourceFuelType.fuelTypeID;
+cache select distinct sourcebin.* into outfile '##sourcebin##'
+from sourcebindistribution, sourcetypemodelyear, sourcebin, runspecsourcefueltype
+where polprocessid in (##pollutantprocessids##)
+and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+and sourcetypemodelyear.modelyearid <= ##context.year##
+and sourcetypemodelyear.modelyearid >= ##context.year## - 30
+and sourcetypemodelyear.sourcetypeid = runspecsourcefueltype.sourcetypeid
+and sourcebindistribution.sourcebinid = sourcebin.sourcebinid
+and sourcebin.fueltypeid = runspecsourcefueltype.fueltypeid;
 
-cache SELECT DISTINCT SourceBinDistribution.* INTO OUTFILE '##SourceBinDistribution##'
-FROM sourceBinDistributionFuelUsage_##context.iterProcess.databaseKey##_##context.iterLocation.countyRecordID##_##context.year## as SourceBinDistribution, 
-SourceTypeModelYear, SourceBin, RunSpecSourceFuelType
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
-AND SourceTypeModelYear.modelYearID <= ##context.year##
-AND SourceTypeModelYear.modelYearID >= ##context.year## - 30
-AND SourceTypeModelYear.sourceTypeID = RunSpecSourceFuelType.sourceTypeID
-AND SourceBinDistribution.SourceBinID = SourceBin.SourceBinID
-AND SourceBin.fuelTypeID = RunSpecSourceFuelType.fuelTypeID;
+cache select distinct sourcebindistribution.* into outfile '##sourcebindistribution##'
+from sourcebindistributionfuelusage_##context.iterprocess.databasekey##_##context.iterlocation.countyrecordid##_##context.year## as sourcebindistribution, 
+sourcetypemodelyear, sourcebin, runspecsourcefueltype
+where polprocessid in (##pollutantprocessids##)
+and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+and sourcetypemodelyear.modelyearid <= ##context.year##
+and sourcetypemodelyear.modelyearid >= ##context.year## - 30
+and sourcetypemodelyear.sourcetypeid = runspecsourcefueltype.sourcetypeid
+and sourcebindistribution.sourcebinid = sourcebin.sourcebinid
+and sourcebin.fueltypeid = runspecsourcefueltype.fueltypeid;
 
-cache SELECT * INTO OUTFILE '##SourceHours##' FROM SourceHours
-WHERE monthID = ##context.monthID##
-AND yearID = ##context.year##
-AND linkID = ##context.iterLocation.linkRecordID##;
+cache select * into outfile '##sourcehours##' from sourcehours
+where monthid = ##context.monthid##
+and yearid = ##context.year##
+and linkid = ##context.iterlocation.linkrecordid##;
 
-cache SELECT SourceTypeModelYear.* INTO OUTFILE '##SourceTypeModelYear##'
-FROM SourceTypeModelYear,RunSpecSourceType
-WHERE SourceTypeModelYear.sourceTypeID = RunSpecSourceType.sourceTypeID
-AND modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30;
+cache select sourcetypemodelyear.* into outfile '##sourcetypemodelyear##'
+from sourcetypemodelyear,runspecsourcetype
+where sourcetypemodelyear.sourcetypeid = runspecsourcetype.sourcetypeid
+and modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30;
 
-cache SELECT SourceTypeModelYearGroup.* INTO OUTFILE '##SourceTypeModelYearGroup##'
-FROM SourceTypeModelYearGroup,RunSpecSourceType
-WHERE SourceTypeModelYearGroup.sourceTypeID = RunSpecSourceType.sourceTypeID;
+cache select sourcetypemodelyeargroup.* into outfile '##sourcetypemodelyeargroup##'
+from sourcetypemodelyeargroup,runspecsourcetype
+where sourcetypemodelyeargroup.sourcetypeid = runspecsourcetype.sourcetypeid;
 
-cache SELECT * INTO OUTFILE '##TankVaporGenCoeffs##' FROM TankVaporGenCoeffs;
+cache select * into outfile '##tankvaporgencoeffs##' from tankvaporgencoeffs;
 
-cache SELECT Year.* INTO OUTFILE '##Year##'
-FROM Year
-WHERE yearID = ##context.year##;
+cache select year.* into outfile '##year##'
+from year
+where yearid = ##context.year##;
 
-cache SELECT * INTO OUTFILE '##Zone##'
-FROM Zone
-WHERE zoneID = ##context.iterLocation.zoneRecordID##;
+cache select * into outfile '##zone##'
+from zone
+where zoneid = ##context.iterlocation.zonerecordid##;
 
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'End Extracting Data';
+-- insert into eventlog (eventtime, eventname) select now(), 'END EXTRACTING DATA';
 
--- Section NewTVVYear
-drop table if exists regClassFractionOfSTMY##context.year##;
+-- section newtvvyear
+drop table if exists regclassfractionofstmy##context.year##;
 
-create table regClassFractionOfSTMY##context.year## (
-	sourceTypeID smallint not null,
-	modelYearID smallint not null,
-	fuelTypeID smallint not null,
-	regClassID smallint not null,
-	regClassFractionOfSourceTypeModelYearFuel double not null,
-	primary key (sourceTypeID, modelYearID, fuelTypeID, regClassID)
-);
-
-insert into regClassFractionOfSTMY##context.year## (sourceTypeID, modelYearID, fuelTypeID, regClassID, regClassFractionOfSourceTypeModelYearFuel)
-select sourceTypeID, modelYearID, fuelTypeID, regClassID, sum(stmyFraction) as regClassFractionOfSourceTypeModelYearFuel
-from SampleVehiclePopulation svp
-where sourceTypeID in (##macro.csv.all.sourceTypeID##)
-and modelYearID in (##macro.csv.all.modelYearID##)
-group by sourceTypeModelYearID, fuelTypeID, regClassID
-having sum(stmyFraction) > 0;
-
-drop table if exists stmyTVVEquations##context.year##;
-
-create table stmyTVVEquations##context.year## (
-  sourceTypeID smallint not null,
-  modelYearID smallint not null,
-  fuelTypeID smallint not null,
-  polProcessID int NOT NULL DEFAULT '0',
-  regClassID smallint not null,
-  backPurgeFactor double DEFAULT NULL,
-  averageCanisterCapacity double DEFAULT NULL,
-  regClassFractionOfSourceTypeModelYearFuel double not null,
-  tvvEquation varchar(100) NOT NULL DEFAULT '',
-  leakEquation varchar(100) NOT NULL DEFAULT '',
-  leakFraction double DEFAULT NULL,
-  leakFractionIM double DEFAULT NULL,
-  tankSize double DEFAULT NULL,
-  tankFillFraction double DEFAULT NULL,
-  PRIMARY KEY (sourceTypeID,modelYearID,fuelTypeID,polProcessID,regClassID,tvvEquation,leakEquation)
+create table regclassfractionofstmy##context.year## (
+  sourcetypeid smallint not null,
+  modelyearid smallint not null,
+  fueltypeid smallint not null,
+  regclassid smallint not null,
+  regclassfractionofsourcetypemodelyearfuel double not null,
+  primary key (sourcetypeid, modelyearid, fueltypeid, regclassid)
 );
 
-insert into stmyTVVEquations##context.year## (sourceTypeID, modelYearID, fuelTypeID, polProcessID, regClassID,
-	backPurgeFactor, averageCanisterCapacity, regClassFractionOfSourceTypeModelYearFuel,
-	tvvEquation, leakEquation, leakFraction, leakFractionIM, tankSize, tankFillFraction)
-select rf.sourceTypeID, rf.modelYearID, rf.fuelTypeID,
-	c.polProcessID, c.regClassID,
-	sum(backPurgeFactor*regClassFractionOfSourceTypeModelYearFuel) as backPurgeFactor,
-	sum(averageCanisterCapacity*regClassFractionOfSourceTypeModelYearFuel) as averageCanisterCapacity,
-	sum(regClassFractionOfSourceTypeModelYearFuel) as regClassFractionOfSourceTypeModelYearFuel,
-	c.tvvEquation,
-	c.leakEquation,
-	sum(leakFraction*regClassFractionOfSourceTypeModelYearFuel) as leakFraction,
-	sum(leakFractionIM*regClassFractionOfSourceTypeModelYearFuel) as leakFractionIM,
-	sum(tankSize*regClassFractionOfSourceTypeModelYearFuel) as tankSize,
-	sum(tankFillFraction*regClassFractionOfSourceTypeModelYearFuel) as tankFillFraction
-from cumTVVCoeffs c
-inner join pollutantProcessMappedModelYear ppmy on (
-	ppmy.polProcessID = c.polProcessID
-	and ppmy.modelYearGroupID = c.modelYearGroupID)
-inner join ageCategory a on (
-	a.ageGroupID = c.ageGroupID)
-inner join regClassFractionOfSTMY##context.year## rf on (
-	rf.modelYearID = ppmy.modelYearID
-	and rf.regClassID = c.regClassID)
-where ppmy.modelYearID = ##context.year## - a.ageID
-and c.polProcessID in (##pollutantProcessIDs##)
-group by rf.sourceTypeID, rf.modelYearID, rf.fuelTypeID,
-	c.polProcessID, c.regClassID,
-	c.tvvEquation,
-	c.leakEquation;
+insert into regclassfractionofstmy##context.year## (sourcetypeid, modelyearid, fueltypeid, regclassid, regclassfractionofsourcetypemodelyearfuel)
+select sourcetypeid, modelyearid, fueltypeid, regclassid, sum(stmyfraction) as regclassfractionofsourcetypemodelyearfuel
+from samplevehiclepopulation svp
+where sourcetypeid in (##macro.csv.all.sourcetypeid##)
+and modelyearid in (##macro.csv.all.modelyearid##)
+group by sourcetypemodelyearid, fueltypeid, regclassid
+having sum(stmyfraction) > 0;
 
-drop table if exists stmyTVVCoeffs##context.year##;
+drop table if exists stmytvvequations##context.year##;
 
-create table stmyTVVCoeffs##context.year## (
-  sourceTypeID smallint not null,
-  modelYearID smallint not null,
-  fuelTypeID smallint not null,
-  polProcessID int NOT NULL DEFAULT '0',
-  backPurgeFactor double DEFAULT NULL,
-  averageCanisterCapacity double DEFAULT NULL,
-  leakFraction double DEFAULT NULL,
-  leakFractionIM double DEFAULT NULL,
-  tankSize double DEFAULT NULL,
-  tankFillFraction double DEFAULT NULL,
-  PRIMARY KEY (sourceTypeID,modelYearID,fuelTypeID,polProcessID)
+create table stmytvvequations##context.year## (
+  sourcetypeid smallint not null,
+  modelyearid smallint not null,
+  fueltypeid smallint not null,
+  polprocessid int not null default '0',
+  regclassid smallint not null,
+  backpurgefactor double default null,
+  averagecanistercapacity double default null,
+  regclassfractionofsourcetypemodelyearfuel double not null,
+  tvvequation varchar(100) not null default '',
+  leakequation varchar(100) not null default '',
+  leakfraction double default null,
+  leakfractionim double default null,
+  tanksize double default null,
+  tankfillfraction double default null,
+  primary key (sourcetypeid,modelyearid,fueltypeid,polprocessid,regclassid,tvvequation,leakequation)
 );
 
-insert into stmyTVVCoeffs##context.year## (sourceTypeID, modelYearID, fuelTypeID, polProcessID,
-	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM, tankSize, tankFillFraction)
-select sourceTypeID, modelYearID, fuelTypeID, polProcessID,
-	sum(backPurgeFactor),
-	sum(averageCanisterCapacity),
-	sum(leakFraction),
-	sum(leakFractionIM),
-	sum(tankSize),
-	sum(tankFillFraction)
-from stmyTVVEquations##context.year##
-group by sourceTypeiD, modelYearID, fuelTypeID, polProcessID;
--- End Section NewTVVYear
+insert into stmytvvequations##context.year## (sourcetypeid, modelyearid, fueltypeid, polprocessid, regclassid,
+  backpurgefactor, averagecanistercapacity, regclassfractionofsourcetypemodelyearfuel,
+  tvvequation, leakequation, leakfraction, leakfractionim, tanksize, tankfillfraction)
+select rf.sourcetypeid, rf.modelyearid, rf.fueltypeid,
+  c.polprocessid, c.regclassid,
+  sum(backpurgefactor*regclassfractionofsourcetypemodelyearfuel) as backpurgefactor,
+  sum(averagecanistercapacity*regclassfractionofsourcetypemodelyearfuel) as averagecanistercapacity,
+  sum(regclassfractionofsourcetypemodelyearfuel) as regclassfractionofsourcetypemodelyearfuel,
+  c.tvvequation,
+  c.leakequation,
+  sum(leakfraction*regclassfractionofsourcetypemodelyearfuel) as leakfraction,
+  sum(leakfractionim*regclassfractionofsourcetypemodelyearfuel) as leakfractionim,
+  sum(tanksize*regclassfractionofsourcetypemodelyearfuel) as tanksize,
+  sum(tankfillfraction*regclassfractionofsourcetypemodelyearfuel) as tankfillfraction
+from cumtvvcoeffs c
+inner join pollutantprocessmappedmodelyear ppmy on (
+  ppmy.polprocessid = c.polprocessid
+  and ppmy.modelyeargroupid = c.modelyeargroupid)
+inner join agecategory a on (
+  a.agegroupid = c.agegroupid)
+inner join regclassfractionofstmy##context.year## rf on (
+  rf.modelyearid = ppmy.modelyearid
+  and rf.regclassid = c.regclassid)
+where ppmy.modelyearid = ##context.year## - a.ageid
+and c.polprocessid in (##pollutantprocessids##)
+group by rf.sourcetypeid, rf.modelyearid, rf.fueltypeid,
+  c.polprocessid, c.regclassid,
+  c.tvvequation,
+  c.leakequation;
 
-cache(yearID=##context.year##) select * into outfile '##stmyTVVEquations##' from stmyTVVEquations##context.year##;
-cache(yearID=##context.year##) select * into outfile '##stmyTVVCoeffs##' from stmyTVVCoeffs##context.year##;
+drop table if exists stmytvvcoeffs##context.year##;
 
--- Section FirstBundle
-
--- Section FillSampleVehicleSoaking
-
--- Fill sampleVehicleSoaking
-truncate sampleVehicleSoaking;
-
--- Get total vehicle counts
-drop table if exists sampleVehicleCount;
-
-create table sampleVehicleCount (
-	dayID smallint not null,
-	sourceTypeID smallint not null,
-	totalVehicles int not null,
-	primary key (dayID, sourceTypeID),
-	unique key (sourceTypeID, dayID)
+create table stmytvvcoeffs##context.year## (
+  sourcetypeid smallint not null,
+  modelyearid smallint not null,
+  fueltypeid smallint not null,
+  polprocessid int not null default '0',
+  backpurgefactor double default null,
+  averagecanistercapacity double default null,
+  leakfraction double default null,
+  leakfractionim double default null,
+  tanksize double default null,
+  tankfillfraction double default null,
+  primary key (sourcetypeid,modelyearid,fueltypeid,polprocessid)
 );
 
--- @algorithm totalVehicles = count(dayID, sourceTypeID) from sampleVehicleDay.
--- @condition First bundle only.
-insert into sampleVehicleCount (dayID, sourceTypeID, totalVehicles)
-select svd.dayID, sourceTypeID, count(*)
-from sampleVehicleDay svd
-group by svd.dayID, sourceTypeID
+insert into stmytvvcoeffs##context.year## (sourcetypeid, modelyearid, fueltypeid, polprocessid,
+  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim, tanksize, tankfillfraction)
+select sourcetypeid, modelyearid, fueltypeid, polprocessid,
+  sum(backpurgefactor),
+  sum(averagecanistercapacity),
+  sum(leakfraction),
+  sum(leakfractionim),
+  sum(tanksize),
+  sum(tankfillfraction)
+from stmytvvequations##context.year##
+group by sourcetypeid, modelyearid, fueltypeid, polprocessid;
+-- end section newtvvyear
+
+cache(yearid=##context.year##) select * into outfile '##stmytvvequations##' from stmytvvequations##context.year##;
+cache(yearid=##context.year##) select * into outfile '##stmytvvcoeffs##' from stmytvvcoeffs##context.year##;
+
+-- section firstbundle
+
+-- section fillsamplevehiclesoaking
+
+-- fill samplevehiclesoaking
+truncate samplevehiclesoaking;
+
+-- get total vehicle counts
+drop table if exists samplevehiclecount;
+
+create table samplevehiclecount (
+  dayid smallint not null,
+  sourcetypeid smallint not null,
+  totalvehicles int not null,
+  primary key (dayid, sourcetypeid),
+  unique key (sourcetypeid, dayid)
+);
+
+-- @algorithm totalvehicles = count(dayid, sourcetypeid) from samplevehicleday.
+-- @condition first bundle only.
+insert into samplevehiclecount (dayid, sourcetypeid, totalvehicles)
+select svd.dayid, sourcetypeid, count(*)
+from samplevehicleday svd
+group by svd.dayid, sourcetypeid
 order by null;
 
--- Count vehicles that never started
-drop table if exists sampleVehicleNeverStarted;
+-- count vehicles that never started
+drop table if exists samplevehicleneverstarted;
 
-create table sampleVehicleNeverStarted (
-	dayID smallint not null,
-	sourceTypeID smallint not null,
-	vehiclesNeverStarted int not null,
-	fractionNeverStarted double,
-	primary key (dayID, sourceTypeID),
-	unique key (sourceTypeID, dayID)
+create table samplevehicleneverstarted (
+  dayid smallint not null,
+  sourcetypeid smallint not null,
+  vehiclesneverstarted int not null,
+  fractionneverstarted double,
+  primary key (dayid, sourcetypeid),
+  unique key (sourcetypeid, dayid)
 );
 
--- @algorithm vehiclesNeverStarted = count(dayID, sourceTypeID) from sampleVehicleDay without any corresponding entry in sampleVehicleTrip.
--- @condition First bundle only.
-insert into sampleVehicleNeverStarted (dayID, sourceTypeID, vehiclesNeverStarted)
-select svd.dayID, sourceTypeID, count(*)
-from sampleVehicleDay svd
-left outer join sampleVehicleTrip svt using (vehID, dayID)
-where svt.vehID is null and svt.dayID is null
-group by svd.dayID, sourceTypeID
+-- @algorithm vehiclesneverstarted = count(dayid, sourcetypeid) from samplevehicleday without any corresponding entry in samplevehicletrip.
+-- @condition first bundle only.
+insert into samplevehicleneverstarted (dayid, sourcetypeid, vehiclesneverstarted)
+select svd.dayid, sourcetypeid, count(*)
+from samplevehicleday svd
+left outer join samplevehicletrip svt using (vehid, dayid)
+where svt.vehid is null and svt.dayid is null
+group by svd.dayid, sourcetypeid
 order by null;
 
--- @algorithm fractionNeverStarted[dayID,sourceTypeID] = vehiclesNeverStarted/totalVehicles.
--- @condition First bundle only.
-update sampleVehicleNeverStarted, sampleVehicleCount
-	set fractionNeverStarted=case when totalVehicles <= 0 then 0 else vehiclesNeverStarted*1.0/totalVehicles end
-where sampleVehicleNeverStarted.dayID = sampleVehicleCount.dayID
-and sampleVehicleNeverStarted.sourceTypeID = sampleVehicleCount.sourceTypeID;
+-- @algorithm fractionneverstarted[dayid,sourcetypeid] = vehiclesneverstarted/totalvehicles.
+-- @condition first bundle only.
+update samplevehicleneverstarted, samplevehiclecount
+  set fractionneverstarted=case when totalvehicles <= 0 then 0 else vehiclesneverstarted*1.0/totalvehicles end
+where samplevehicleneverstarted.dayid = samplevehiclecount.dayid
+and samplevehicleneverstarted.sourcetypeid = samplevehiclecount.sourcetypeid;
 
--- Count vehicles by when they started
-drop table if exists sampleVehicleFirstStart;
+-- count vehicles by when they started
+drop table if exists samplevehiclefirststart;
 
-create table sampleVehicleFirstStart (
-	vehID int not null,
-	dayID smallint not null,
-	sourceTypeID smallint not null,
-	hourID smallint not null,
-	primary key (dayID, sourceTypeID, hourID, vehID),
-	unique key (sourceTypeID, dayID, hourID, vehID)
+create table samplevehiclefirststart (
+  vehid int not null,
+  dayid smallint not null,
+  sourcetypeid smallint not null,
+  hourid smallint not null,
+  primary key (dayid, sourcetypeid, hourid, vehid),
+  unique key (sourcetypeid, dayid, hourid, vehid)
 );
 
--- @algorithm hour of first start[vehID,dayID,sourceTypeID] = min(SampleVehicleTrip.hourID).
--- @condition First bundle only.
-insert into sampleVehicleFirstStart (vehID, dayID, sourceTypeID, hourID)
-select svd.vehID, svd.dayID, svd.sourceTypeID, min(svt.hourID)
-from sampleVehicleDay svd
-inner join sampleVehicleTrip svt using (vehID, dayID)
+-- @algorithm hour of first start[vehid,dayid,sourcetypeid] = min(samplevehicletrip.hourid).
+-- @condition first bundle only.
+insert into samplevehiclefirststart (vehid, dayid, sourcetypeid, hourid)
+select svd.vehid, svd.dayid, svd.sourcetypeid, min(svt.hourid)
+from samplevehicleday svd
+inner join samplevehicletrip svt using (vehid, dayid)
 where svt.keyontime is not null
-group by svd.vehID, svd.dayID
+group by svd.vehid, svd.dayid
 order by null;
 
-drop table if exists sampleVehicleSoakTemp;
+drop table if exists samplevehiclesoaktemp;
 
-create table sampleVehicleSoakTemp (
-	dayID smallint not null,
-	sourceTypeID smallint not null,
-	hourID smallint not null,
-	vehiclesFirstStarted int not null,
-	primary key (dayID, sourceTypeID, hourID),
-	unique key (sourceTypeID, dayID, hourID)
+create table samplevehiclesoaktemp (
+  dayid smallint not null,
+  sourcetypeid smallint not null,
+  hourid smallint not null,
+  vehiclesfirststarted int not null,
+  primary key (dayid, sourcetypeid, hourid),
+  unique key (sourcetypeid, dayid, hourid)
 );
 
--- @algorithm In each day and hour, count the number of vehicles that start for the first time.
--- vehiclesFirstStarted[dayID,sourceTypeID,hourID] = count(dayID,sourceTypeID,hourID) by hour of first start.
--- @condition First bundle only.
-insert into sampleVehicleSoakTemp (dayID, sourceTypeID, hourID, vehiclesFirstStarted)
-select dayID, sourceTypeID, hourID, count(*) as vehiclesFirstStarted
-from sampleVehicleFirstStart
-group by dayID, sourceTypeID, hourID
+-- @algorithm in each day and hour, count the number of vehicles that start for the first time.
+-- vehiclesfirststarted[dayid,sourcetypeid,hourid] = count(dayid,sourcetypeid,hourid) by hour of first start.
+-- @condition first bundle only.
+insert into samplevehiclesoaktemp (dayid, sourcetypeid, hourid, vehiclesfirststarted)
+select dayid, sourcetypeid, hourid, count(*) as vehiclesfirststarted
+from samplevehiclefirststart
+group by dayid, sourcetypeid, hourid
 order by null;
 
-drop table if exists sampleVehicleSoakTemp2;
+drop table if exists samplevehiclesoaktemp2;
 
-create table sampleVehicleSoakTemp2 (
-	dayID smallint not null,
-	sourceTypeID smallint not null,
-	hourID smallint not null,
-	totalVehiclesStarted int not null,
-	primary key (dayID, sourceTypeID, hourID),
-	unique key (sourceTypeID, dayID, hourID)
+create table samplevehiclesoaktemp2 (
+  dayid smallint not null,
+  sourcetypeid smallint not null,
+  hourid smallint not null,
+  totalvehiclesstarted int not null,
+  primary key (dayid, sourcetypeid, hourid),
+  unique key (sourcetypeid, dayid, hourid)
 );
 
--- @algorithm In each day and hour, sum the number of vehicles that have started up to then.
--- totalVehiclesStarted[dayID,sourceTypeID,hourID]=sum(vehiclesFirstStarted) for all hours up to hourID.
--- @condition First bundle only.
-insert into sampleVehicleSoakTemp2 (dayID, sourceTypeID, hourID, totalVehiclesStarted)
-select s.dayID, s.sourceTypeID, h.hourID, sum(vehiclesFirstStarted) as totalVehiclesStarted
-from sampleVehicleSoakTemp s, hourOfAnyDay h
-where s.hourID <= h.hourID
-group by s.dayID, s.sourceTypeID, h.hourID
+-- @algorithm in each day and hour, sum the number of vehicles that have started up to then.
+-- totalvehiclesstarted[dayid,sourcetypeid,hourid]=sum(vehiclesfirststarted) for all hours up to hourid.
+-- @condition first bundle only.
+insert into samplevehiclesoaktemp2 (dayid, sourcetypeid, hourid, totalvehiclesstarted)
+select s.dayid, s.sourcetypeid, h.hourid, sum(vehiclesfirststarted) as totalvehiclesstarted
+from samplevehiclesoaktemp s, hourofanyday h
+where s.hourid <= h.hourid
+group by s.dayid, s.sourcetypeid, h.hourid
 order by null;
 
-truncate sampleVehicleSoaking;
+truncate samplevehiclesoaking;
 
--- @algorithm Obtain the fraction of vehicles soaking, awaiting their first start, for each day and hour.
--- soakFraction[soakDayID=0,sourceTypeID,dayID,hourID]=(totalVehicles-totalVehiclesStarted)/totalVehicles.
--- @condition First bundle only.
-insert into sampleVehicleSoaking (soakDayID, sourceTypeID, dayID, hourID, soakFraction)
-select 0, st.sourceTypeID, st.dayID, st.hourID, 
-	case when totalVehicles <= 0 then 0
-	else (totalVehicles - totalVehiclesStarted)*1.0/totalVehicles end as soakFraction
-from sampleVehicleSoakTemp2 st
-inner join sampleVehicleCount c using (dayID, sourceTypeID);
+-- @algorithm obtain the fraction of vehicles soaking, awaiting their first start, for each day and hour.
+-- soakfraction[soakdayid=0,sourcetypeid,dayid,hourid]=(totalvehicles-totalvehiclesstarted)/totalvehicles.
+-- @condition first bundle only.
+insert into samplevehiclesoaking (soakdayid, sourcetypeid, dayid, hourid, soakfraction)
+select 0, st.sourcetypeid, st.dayid, st.hourid, 
+  case when totalvehicles <= 0 then 0
+  else (totalvehicles - totalvehiclesstarted)*1.0/totalvehicles end as soakfraction
+from samplevehiclesoaktemp2 st
+inner join samplevehiclecount c using (dayid, sourcetypeid);
 
--- @algorithm Assume a default soakFraction of 1 for any day and hour that has no vehicles started previously.
--- @condition First bundle only.
-insert ignore into sampleVehicleSoaking (soakDayID, sourceTypeID, dayID, hourID, soakFraction)
-select distinct 0, s.sourceTypeID, s.dayID, h.hourID, 1.0 as soakFraction
-from sampleVehicleSoakTemp s, hourOfAnyDay h;
+-- @algorithm assume a default soakfraction of 1 for any day and hour that has no vehicles started previously.
+-- @condition first bundle only.
+insert ignore into samplevehiclesoaking (soakdayid, sourcetypeid, dayid, hourid, soakfraction)
+select distinct 0, s.sourcetypeid, s.dayid, h.hourid, 1.0 as soakfraction
+from samplevehiclesoaktemp s, hourofanyday h;
 
-drop table if exists sampleVehicleSoakingF;
+drop table if exists samplevehiclesoakingf;
 
-create table if not exists sampleVehicleSoakingF (
-	soakDayID smallint not null,
-	sourceTypeID smallint not null,
-	dayID smallint not null,
-	F double,
-	GammaFn1 double,
-	GammaFn double,
-	NextF double,
-	P1 double,
-	P24 double,
-	primary key (soakDayID, sourceTypeID, dayID)
+create table if not exists samplevehiclesoakingf (
+  soakdayid smallint not null,
+  sourcetypeid smallint not null,
+  dayid smallint not null,
+  f double,
+  gammafn1 double,
+  gammafn double,
+  nextf double,
+  p1 double,
+  p24 double,
+  primary key (soakdayid, sourcetypeid, dayid)
 );
 
--- SampleVehicleSoaking Day 1
+-- samplevehiclesoaking day 1
 
--- @algorithm dayF[soakDayID=1,sourceTypeID,dayID]=soakFraction[soakDayID=0,sourceTypeID,dayID,hourID=24]
--- @condition First bundle only.
-insert ignore into sampleVehicleSoakingDay (soakDayID, sourceTypeID, dayID, F)
-select 1, sourceTypeID, dayID, soakFraction as F
-from sampleVehicleSoaking
-where soakDayID=0
-and hourID=24;
+-- @algorithm dayf[soakdayid=1,sourcetypeid,dayid]=soakfraction[soakdayid=0,sourcetypeid,dayid,hourid=24]
+-- @condition first bundle only.
+insert ignore into samplevehiclesoakingday (soakdayid, sourcetypeid, dayid, f)
+select 1, sourcetypeid, dayid, soakfraction as f
+from samplevehiclesoaking
+where soakdayid=0
+and hourid=24;
 
--- @algorithm soakF[soakDayID=1,sourceTypeID,dayID]=dayF[soakDayID=1,sourceTypeID,dayID].
--- GammaFn1[soakDayID=1,sourceTypeID,dayID]=dayF[soakDayID=1,sourceTypeID,dayID].
--- GammaFn[soakDayID=1,sourceTypeID,dayID]=dayF[soakDayID=1,sourceTypeID,dayID].
--- @condition First bundle only.
-insert into sampleVehicleSoakingF (soakDayID, sourceTypeID, dayID, F, GammaFn1, GammaFn)
-select soakDayID, sourceTypeID, dayID, F, F as GammaFn1, F as GammaFn
-from sampleVehicleSoakingDay
-where soakDayID=1;
+-- @algorithm soakf[soakdayid=1,sourcetypeid,dayid]=dayf[soakdayid=1,sourcetypeid,dayid].
+-- gammafn1[soakdayid=1,sourcetypeid,dayid]=dayf[soakdayid=1,sourcetypeid,dayid].
+-- gammafn[soakdayid=1,sourcetypeid,dayid]=dayf[soakdayid=1,sourcetypeid,dayid].
+-- @condition first bundle only.
+insert into samplevehiclesoakingf (soakdayid, sourcetypeid, dayid, f, gammafn1, gammafn)
+select soakdayid, sourcetypeid, dayid, f, f as gammafn1, f as gammafn
+from samplevehiclesoakingday
+where soakdayid=1;
 
--- SampleVehicleSoaking Day 2
+-- samplevehiclesoaking day 2
 
--- @algorithm dayF[soakDayID=2,sourceTypeID,dayID]=greatest(dayF[soakDayID=1,sourceTypeID,dayID], basisF[soakDayID=2,dayID]).
--- @condition First bundle only.
-insert ignore into sampleVehicleSoakingDay (soakDayID, sourceTypeID, dayID, F)
-select 2, d.sourceTypeID, d.dayID, if(b.F<d.F,d.F,b.F)
-from sampleVehicleSoakingDay d
-inner join sampleVehicleSoakingDayBasis b on (
-	b.soakDayID = d.soakDayID+1
-	and b.dayID = d.dayID)
-where d.soakDayID=2-1;
+-- @algorithm dayf[soakdayid=2,sourcetypeid,dayid]=greatest(dayf[soakdayid=1,sourcetypeid,dayid], basisf[soakdayid=2,dayid]).
+-- @condition first bundle only.
+insert ignore into samplevehiclesoakingday (soakdayid, sourcetypeid, dayid, f)
+select 2, d.sourcetypeid, d.dayid, if(b.f<d.f,d.f,b.f)
+from samplevehiclesoakingday d
+inner join samplevehiclesoakingdaybasis b on (
+  b.soakdayid = d.soakdayid+1
+  and b.dayid = d.dayid)
+where d.soakdayid=2-1;
 
--- @algorithm soakF[soakDayID=2,sourceTypeID,dayID]=dayF[soakDayID=2,sourceTypeID,dayID].
--- GammaFn1[soakDayID=2,sourceTypeID,dayID]=GammaFn[soakDayID=1,sourceTypeID,dayID].
--- GammaFn[soakDayID=2,sourceTypeID,dayID]=dayF[soakDayID=2,sourceTypeID,dayID] * GammaFn[soakDayID=1,sourceTypeID,dayID].
--- @condition First bundle only.
-insert into sampleVehicleSoakingF (soakDayID, sourceTypeID, dayID, F, GammaFn1, GammaFn)
-select sd.soakDayID, sd.sourceTypeID, sd.dayID, sd.F, sf.GammaFn as GammaFn1, sd.F*sf.GammaFn as GammaFn
-from sampleVehicleSoakingDay sd
-inner join sampleVehicleSoakingF sf on (
-	sf.soakDayID=sd.soakDayID-1
-	and sf.sourceTypeID=sd.sourceTypeID
-	and sf.dayID=sd.dayID)
-where sd.soakDayID=2;
+-- @algorithm soakf[soakdayid=2,sourcetypeid,dayid]=dayf[soakdayid=2,sourcetypeid,dayid].
+-- gammafn1[soakdayid=2,sourcetypeid,dayid]=gammafn[soakdayid=1,sourcetypeid,dayid].
+-- gammafn[soakdayid=2,sourcetypeid,dayid]=dayf[soakdayid=2,sourcetypeid,dayid] * gammafn[soakdayid=1,sourcetypeid,dayid].
+-- @condition first bundle only.
+insert into samplevehiclesoakingf (soakdayid, sourcetypeid, dayid, f, gammafn1, gammafn)
+select sd.soakdayid, sd.sourcetypeid, sd.dayid, sd.f, sf.gammafn as gammafn1, sd.f*sf.gammafn as gammafn
+from samplevehiclesoakingday sd
+inner join samplevehiclesoakingf sf on (
+  sf.soakdayid=sd.soakdayid-1
+  and sf.sourcetypeid=sd.sourcetypeid
+  and sf.dayid=sd.dayid)
+where sd.soakdayid=2;
 
--- SampleVehicleSoaking Day 3
+-- samplevehiclesoaking day 3
 
--- @algorithm dayF[soakDayID=3,sourceTypeID,dayID]=greatest(dayF[soakDayID=2,sourceTypeID,dayID], basisF[soakDayID=3,dayID]).
--- @condition First bundle only.
-insert ignore into sampleVehicleSoakingDay (soakDayID, sourceTypeID, dayID, F)
-select 3, d.sourceTypeID, d.dayID, if(b.F<d.F,d.F,b.F)
-from sampleVehicleSoakingDay d
-inner join sampleVehicleSoakingDayBasis b on (
-	b.soakDayID = d.soakDayID+1
-	and b.dayID = d.dayID)
-where d.soakDayID=3-1;
+-- @algorithm dayf[soakdayid=3,sourcetypeid,dayid]=greatest(dayf[soakdayid=2,sourcetypeid,dayid], basisf[soakdayid=3,dayid]).
+-- @condition first bundle only.
+insert ignore into samplevehiclesoakingday (soakdayid, sourcetypeid, dayid, f)
+select 3, d.sourcetypeid, d.dayid, if(b.f<d.f,d.f,b.f)
+from samplevehiclesoakingday d
+inner join samplevehiclesoakingdaybasis b on (
+  b.soakdayid = d.soakdayid+1
+  and b.dayid = d.dayid)
+where d.soakdayid=3-1;
 
--- @algorithm soakF[soakDayID=3,sourceTypeID,dayID]=dayF[soakDayID=3,sourceTypeID,dayID].
--- GammaFn1[soakDayID=3,sourceTypeID,dayID]=GammaFn[soakDayID=2,sourceTypeID,dayID].
--- GammaFn[soakDayID=3,sourceTypeID,dayID]=dayF[soakDayID=3,sourceTypeID,dayID] * GammaFn[soakDayID=2,sourceTypeID,dayID].
--- @condition First bundle only.
-insert into sampleVehicleSoakingF (soakDayID, sourceTypeID, dayID, F, GammaFn1, GammaFn)
-select sd.soakDayID, sd.sourceTypeID, sd.dayID, sd.F, sf.GammaFn as GammaFn1, sd.F*sf.GammaFn as GammaFn
-from sampleVehicleSoakingDay sd
-inner join sampleVehicleSoakingF sf on (
-	sf.soakDayID=sd.soakDayID-1
-	and sf.sourceTypeID=sd.sourceTypeID
-	and sf.dayID=sd.dayID)
-where sd.soakDayID=3;
+-- @algorithm soakf[soakdayid=3,sourcetypeid,dayid]=dayf[soakdayid=3,sourcetypeid,dayid].
+-- gammafn1[soakdayid=3,sourcetypeid,dayid]=gammafn[soakdayid=2,sourcetypeid,dayid].
+-- gammafn[soakdayid=3,sourcetypeid,dayid]=dayf[soakdayid=3,sourcetypeid,dayid] * gammafn[soakdayid=2,sourcetypeid,dayid].
+-- @condition first bundle only.
+insert into samplevehiclesoakingf (soakdayid, sourcetypeid, dayid, f, gammafn1, gammafn)
+select sd.soakdayid, sd.sourcetypeid, sd.dayid, sd.f, sf.gammafn as gammafn1, sd.f*sf.gammafn as gammafn
+from samplevehiclesoakingday sd
+inner join samplevehiclesoakingf sf on (
+  sf.soakdayid=sd.soakdayid-1
+  and sf.sourcetypeid=sd.sourcetypeid
+  and sf.dayid=sd.dayid)
+where sd.soakdayid=3;
 
--- SampleVehicleSoaking Day 4
+-- samplevehiclesoaking day 4
 
--- @algorithm dayF[soakDayID=4,sourceTypeID,dayID]=greatest(dayF[soakDayID=3,sourceTypeID,dayID], basisF[soakDayID=4,dayID]).
--- @condition First bundle only.
-insert ignore into sampleVehicleSoakingDay (soakDayID, sourceTypeID, dayID, F)
-select 4, d.sourceTypeID, d.dayID, if(b.F<d.F,d.F,b.F)
-from sampleVehicleSoakingDay d
-inner join sampleVehicleSoakingDayBasis b on (
-	b.soakDayID = d.soakDayID+1
-	and b.dayID = d.dayID)
-where d.soakDayID=4-1;
+-- @algorithm dayf[soakdayid=4,sourcetypeid,dayid]=greatest(dayf[soakdayid=3,sourcetypeid,dayid], basisf[soakdayid=4,dayid]).
+-- @condition first bundle only.
+insert ignore into samplevehiclesoakingday (soakdayid, sourcetypeid, dayid, f)
+select 4, d.sourcetypeid, d.dayid, if(b.f<d.f,d.f,b.f)
+from samplevehiclesoakingday d
+inner join samplevehiclesoakingdaybasis b on (
+  b.soakdayid = d.soakdayid+1
+  and b.dayid = d.dayid)
+where d.soakdayid=4-1;
 
--- @algorithm soakF[soakDayID=4,sourceTypeID,dayID]=dayF[soakDayID=4,sourceTypeID,dayID].
--- GammaFn1[soakDayID=4,sourceTypeID,dayID]=GammaFn[soakDayID=3,sourceTypeID,dayID].
--- GammaFn[soakDayID=4,sourceTypeID,dayID]=dayF[soakDayID=4,sourceTypeID,dayID] * GammaFn[soakDayID=3,sourceTypeID,dayID].
--- @condition First bundle only.
-insert into sampleVehicleSoakingF (soakDayID, sourceTypeID, dayID, F, GammaFn1, GammaFn)
-select sd.soakDayID, sd.sourceTypeID, sd.dayID, sd.F, sf.GammaFn as GammaFn1, sd.F*sf.GammaFn as GammaFn
-from sampleVehicleSoakingDay sd
-inner join sampleVehicleSoakingF sf on (
-	sf.soakDayID=sd.soakDayID-1
-	and sf.sourceTypeID=sd.sourceTypeID
-	and sf.dayID=sd.dayID)
-where sd.soakDayID=4;
+-- @algorithm soakf[soakdayid=4,sourcetypeid,dayid]=dayf[soakdayid=4,sourcetypeid,dayid].
+-- gammafn1[soakdayid=4,sourcetypeid,dayid]=gammafn[soakdayid=3,sourcetypeid,dayid].
+-- gammafn[soakdayid=4,sourcetypeid,dayid]=dayf[soakdayid=4,sourcetypeid,dayid] * gammafn[soakdayid=3,sourcetypeid,dayid].
+-- @condition first bundle only.
+insert into samplevehiclesoakingf (soakdayid, sourcetypeid, dayid, f, gammafn1, gammafn)
+select sd.soakdayid, sd.sourcetypeid, sd.dayid, sd.f, sf.gammafn as gammafn1, sd.f*sf.gammafn as gammafn
+from samplevehiclesoakingday sd
+inner join samplevehiclesoakingf sf on (
+  sf.soakdayid=sd.soakdayid-1
+  and sf.sourcetypeid=sd.sourcetypeid
+  and sf.dayid=sd.dayid)
+where sd.soakdayid=4;
 
--- SampleVehicleSoaking Day 5
+-- samplevehiclesoaking day 5
 
--- @algorithm dayF[soakDayID=5,sourceTypeID,dayID]=greatest(dayF[soakDayID=4,sourceTypeID,dayID], basisF[soakDayID=5,dayID]).
--- @condition First bundle only.
-insert ignore into sampleVehicleSoakingDay (soakDayID, sourceTypeID, dayID, F)
-select 5, d.sourceTypeID, d.dayID, if(b.F<d.F,d.F,b.F)
-from sampleVehicleSoakingDay d
-inner join sampleVehicleSoakingDayBasis b on (
-	b.soakDayID = d.soakDayID+1
-	and b.dayID = d.dayID)
-where d.soakDayID=5-1;
+-- @algorithm dayf[soakdayid=5,sourcetypeid,dayid]=greatest(dayf[soakdayid=4,sourcetypeid,dayid], basisf[soakdayid=5,dayid]).
+-- @condition first bundle only.
+insert ignore into samplevehiclesoakingday (soakdayid, sourcetypeid, dayid, f)
+select 5, d.sourcetypeid, d.dayid, if(b.f<d.f,d.f,b.f)
+from samplevehiclesoakingday d
+inner join samplevehiclesoakingdaybasis b on (
+  b.soakdayid = d.soakdayid+1
+  and b.dayid = d.dayid)
+where d.soakdayid=5-1;
 
--- @algorithm soakF[soakDayID=5,sourceTypeID,dayID]=dayF[soakDayID=5,sourceTypeID,dayID].
--- GammaFn1[soakDayID=5,sourceTypeID,dayID]=GammaFn[soakDayID=4,sourceTypeID,dayID].
--- GammaFn[soakDayID=5,sourceTypeID,dayID]=dayF[soakDayID=5,sourceTypeID,dayID] * GammaFn[soakDayID=4,sourceTypeID,dayID].
--- @condition First bundle only.
-insert into sampleVehicleSoakingF (soakDayID, sourceTypeID, dayID, F, GammaFn1, GammaFn)
-select sd.soakDayID, sd.sourceTypeID, sd.dayID, sd.F, sf.GammaFn as GammaFn1, sd.F*sf.GammaFn as GammaFn
-from sampleVehicleSoakingDay sd
-inner join sampleVehicleSoakingF sf on (
-	sf.soakDayID=sd.soakDayID-1
-	and sf.sourceTypeID=sd.sourceTypeID
-	and sf.dayID=sd.dayID)
-where sd.soakDayID=5;
+-- @algorithm soakf[soakdayid=5,sourcetypeid,dayid]=dayf[soakdayid=5,sourcetypeid,dayid].
+-- gammafn1[soakdayid=5,sourcetypeid,dayid]=gammafn[soakdayid=4,sourcetypeid,dayid].
+-- gammafn[soakdayid=5,sourcetypeid,dayid]=dayf[soakdayid=5,sourcetypeid,dayid] * gammafn[soakdayid=4,sourcetypeid,dayid].
+-- @condition first bundle only.
+insert into samplevehiclesoakingf (soakdayid, sourcetypeid, dayid, f, gammafn1, gammafn)
+select sd.soakdayid, sd.sourcetypeid, sd.dayid, sd.f, sf.gammafn as gammafn1, sd.f*sf.gammafn as gammafn
+from samplevehiclesoakingday sd
+inner join samplevehiclesoakingf sf on (
+  sf.soakdayid=sd.soakdayid-1
+  and sf.sourcetypeid=sd.sourcetypeid
+  and sf.dayid=sd.dayid)
+where sd.soakdayid=5;
 
 
-drop table if exists sampleVehicleSoakingF2;
+drop table if exists samplevehiclesoakingf2;
 
-create table if not exists sampleVehicleSoakingF2 (
-	soakDayID smallint not null,
-	sourceTypeID smallint not null,
-	dayID smallint not null,
-	F double,
-	primary key (soakDayID, sourceTypeID, dayID)
+create table if not exists samplevehiclesoakingf2 (
+  soakdayid smallint not null,
+  sourcetypeid smallint not null,
+  dayid smallint not null,
+  f double,
+  primary key (soakdayid, sourcetypeid, dayid)
 );
 
-insert into sampleVehicleSoakingF2 (soakDayID, sourceTypeID, dayID, F)
-select soakDayID, sourceTypeID, dayID, F
-from sampleVehicleSoakingF;
+insert into samplevehiclesoakingf2 (soakdayid, sourcetypeid, dayid, f)
+select soakdayid, sourcetypeid, dayid, f
+from samplevehiclesoakingf;
 
--- @algorithm nextF[soakDayID,sourceTypeID,dayID]=soakF[soakDayID+1,sourceTypeID,dayID].
--- @condition First bundle only.
-update sampleVehicleSoakingF, sampleVehicleSoakingF2 set sampleVehicleSoakingF.NextF=sampleVehicleSoakingF2.F
-where sampleVehicleSoakingF2.soakDayID=sampleVehicleSoakingF.soakDayID+1
-and sampleVehicleSoakingF2.sourceTypeID=sampleVehicleSoakingF.sourceTypeID
-and sampleVehicleSoakingF2.dayID=sampleVehicleSoakingF.dayID;
+-- @algorithm nextf[soakdayid,sourcetypeid,dayid]=soakf[soakdayid+1,sourcetypeid,dayid].
+-- @condition first bundle only.
+update samplevehiclesoakingf, samplevehiclesoakingf2 set samplevehiclesoakingf.nextf=samplevehiclesoakingf2.f
+where samplevehiclesoakingf2.soakdayid=samplevehiclesoakingf.soakdayid+1
+and samplevehiclesoakingf2.sourcetypeid=samplevehiclesoakingf.sourcetypeid
+and samplevehiclesoakingf2.dayid=samplevehiclesoakingf.dayid;
 
-drop table if exists sampleVehicleSoakingF2;
+drop table if exists samplevehiclesoakingf2;
 
-drop table if exists sampleVehicleSoakingProportion;
+drop table if exists samplevehiclesoakingproportion;
 
-create table sampleVehicleSoakingProportion (
-	soakDayID smallint not null,
-	sourceTypeID smallint not null,
-	dayID smallint not null,
-	hourID smallint not null,
-	P double,
-	primary key (soakDayID, sourceTypeID, dayID, hourID)
+create table samplevehiclesoakingproportion (
+  soakdayid smallint not null,
+  sourcetypeid smallint not null,
+  dayid smallint not null,
+  hourid smallint not null,
+  p double,
+  primary key (soakdayid, sourcetypeid, dayid, hourid)
 );
 
--- @algorithm P[n,1] = 1 for each soaking day
--- @condition First bundle only.
-insert into sampleVehicleSoakingProportion (soakDayID, sourceTypeID, dayID, hourID, P)
-select soakDayID, sourceTypeID, dayID, 1, 1
-from sampleVehicleSoakingDay;
+-- @algorithm p[n,1] = 1 for each soaking day
+-- @condition first bundle only.
+insert into samplevehiclesoakingproportion (soakdayid, sourcetypeid, dayid, hourid, p)
+select soakdayid, sourcetypeid, dayid, 1, 1
+from samplevehiclesoakingday;
 
--- @algorithm D[5,1] = Gamma[F4]
--- @condition First bundle only.
-insert ignore into sampleVehicleSoaking (soakDayID, sourceTypeID, dayID, hourID, soakFraction)
-select soakDayID, sourceTypeID, dayID, 1, GammaFn1
-from sampleVehicleSoakingF
-where soakDayID=5;
+-- @algorithm d[5,1] = gamma[f4]
+-- @condition first bundle only.
+insert ignore into samplevehiclesoaking (soakdayid, sourcetypeid, dayid, hourid, soakfraction)
+select soakdayid, sourcetypeid, dayid, 1, gammafn1
+from samplevehiclesoakingf
+where soakdayid=5;
 
--- @algorithm D[5,24] = Gamma[F5], for soakday 5
--- @condition First bundle only.
-insert ignore into sampleVehicleSoaking (soakDayID, sourceTypeID, dayID, hourID, soakFraction)
-select soakDayID, sourceTypeID, dayID, 24, GammaFn
-from sampleVehicleSoakingF
-where soakDayID=5;
+-- @algorithm d[5,24] = gamma[f5], for soakday 5
+-- @condition first bundle only.
+insert ignore into samplevehiclesoaking (soakdayid, sourcetypeid, dayid, hourid, soakfraction)
+select soakdayid, sourcetypeid, dayid, 24, gammafn
+from samplevehiclesoakingf
+where soakdayid=5;
 
--- @algorithm D[n,24] = Gamma[Fn] * (1-F[n+1]), for soakdays 1-4
--- @condition First bundle only.
-insert ignore into sampleVehicleSoaking (soakDayID, sourceTypeID, dayID, hourID, soakFraction)
-select soakDayID, sourceTypeID, dayID, 24, GammaFn * (1-NextF)
-from sampleVehicleSoakingF
-where soakDayID in (1,2,3,4);
+-- @algorithm d[n,24] = gamma[fn] * (1-f[n+1]), for soakdays 1-4
+-- @condition first bundle only.
+insert ignore into samplevehiclesoaking (soakdayid, sourcetypeid, dayid, hourid, soakfraction)
+select soakdayid, sourcetypeid, dayid, 24, gammafn * (1-nextf)
+from samplevehiclesoakingf
+where soakdayid in (1,2,3,4);
 
--- @algorithm D[1,1] = D1-D24 for soakday 1
--- @condition First bundle only.
-insert ignore into sampleVehicleSoaking (soakDayID, sourceTypeID, dayID, hourID, soakFraction)
-select 1 as soakDayID, d1.sourceTypeID, d1.dayID, 1 as hourID, d1.soakFraction-d24.soakFraction
-from sampleVehicleSoaking as d1
-inner join sampleVehicleSoaking as d24 using (sourceTypeID, dayID)
-where d1.soakDayID=0 and d1.hourID=1
-and d24.soakDayID=0 and d24.hourID=24;
+-- @algorithm d[1,1] = d1-d24 for soakday 1
+-- @condition first bundle only.
+insert ignore into samplevehiclesoaking (soakdayid, sourcetypeid, dayid, hourid, soakfraction)
+select 1 as soakdayid, d1.sourcetypeid, d1.dayid, 1 as hourid, d1.soakfraction-d24.soakfraction
+from samplevehiclesoaking as d1
+inner join samplevehiclesoaking as d24 using (sourcetypeid, dayid)
+where d1.soakdayid=0 and d1.hourid=1
+and d24.soakdayid=0 and d24.hourid=24;
 
--- @algorithm D[n,1] = D[n-1,24] for soakday 2,3,4
--- @condition First bundle only.
-insert ignore into sampleVehicleSoaking (soakDayID, sourceTypeID, dayID, hourID, soakFraction)
-select soakDayID+1, sourceTypeID, dayID, 1 as hourID, soakFraction
-from sampleVehicleSoaking
-where soakDayID in (2-1,3-1,4-1) and hourID=24;
+-- @algorithm d[n,1] = d[n-1,24] for soakday 2,3,4
+-- @condition first bundle only.
+insert ignore into samplevehiclesoaking (soakdayid, sourcetypeid, dayid, hourid, soakfraction)
+select soakdayid+1, sourcetypeid, dayid, 1 as hourid, soakfraction
+from samplevehiclesoaking
+where soakdayid in (2-1,3-1,4-1) and hourid=24;
 
--- @algorithm P[n,24]=D[n,24]/D[n,1]
--- @condition First bundle only.
-insert ignore into sampleVehicleSoakingProportion (soakDayID, sourceTypeID, dayID, hourID, P)
-select d1.soakDayID, d1.sourceTypeID, d1.dayID, 24 as hourID, 
-	case when d1.soakFraction <= 0 then 0 
-	else d24.soakFraction/d1.soakFraction end
-from sampleVehicleSoaking as d1
-inner join sampleVehicleSoaking as d24 using (soakDayID, sourceTypeID, dayID)
-where d1.hourID=1
-and d24.hourID=24
-and d1.soakDayID>0;
+-- @algorithm p[n,24]=d[n,24]/d[n,1]
+-- @condition first bundle only.
+insert ignore into samplevehiclesoakingproportion (soakdayid, sourcetypeid, dayid, hourid, p)
+select d1.soakdayid, d1.sourcetypeid, d1.dayid, 24 as hourid, 
+  case when d1.soakfraction <= 0 then 0 
+  else d24.soakfraction/d1.soakfraction end
+from samplevehiclesoaking as d1
+inner join samplevehiclesoaking as d24 using (soakdayid, sourcetypeid, dayid)
+where d1.hourid=1
+and d24.hourid=24
+and d1.soakdayid>0;
 
-drop table if exists sampleVehicleSoakingDH;
+drop table if exists samplevehiclesoakingdh;
 
-create table sampleVehicleSoakingDH (
-	sourceTypeID smallint not null,
-	dayID smallint not null,
-	hourID smallint not null,
-	DFraction double,
-	primary key (sourceTypeID, dayID, hourID)
+create table samplevehiclesoakingdh (
+  sourcetypeid smallint not null,
+  dayid smallint not null,
+  hourid smallint not null,
+  dfraction double,
+  primary key (sourcetypeid, dayid, hourid)
 );
 
--- @algorithm Precalc[h] = (D[0,h]-D[0,24]) / (D[0,1]-D[0,24]) because it is used in P[n,1 < h < 24]
--- @condition First bundle only.
-insert into sampleVehicleSoakingDH (sourceTypeID, dayID, hourID, DFraction)
-select d1.sourceTypeID, d1.dayID, d.hourID, 
-	case when (d1.soakFraction-d24.soakFraction) <= 0 then 0 
-	else (d.soakFraction-d24.soakFraction)/(d1.soakFraction-d24.soakFraction) end
-from sampleVehicleSoaking as d
-inner join sampleVehicleSoaking as d1 using (sourceTypeID, dayID)
-inner join sampleVehicleSoaking as d24 using (sourceTypeID, dayID)
-where d.soakDayID=0
-and d1.soakDayID=0 and d1.hourID=1
-and d24.soakDayID=0 and d24.hourID=24
-and d.hourID > 1 and d.hourID < 24;
+-- @algorithm precalc[h] = (d[0,h]-d[0,24]) / (d[0,1]-d[0,24]) because it is used in p[n,1 < h < 24]
+-- @condition first bundle only.
+insert into samplevehiclesoakingdh (sourcetypeid, dayid, hourid, dfraction)
+select d1.sourcetypeid, d1.dayid, d.hourid, 
+  case when (d1.soakfraction-d24.soakfraction) <= 0 then 0 
+  else (d.soakfraction-d24.soakfraction)/(d1.soakfraction-d24.soakfraction) end
+from samplevehiclesoaking as d
+inner join samplevehiclesoaking as d1 using (sourcetypeid, dayid)
+inner join samplevehiclesoaking as d24 using (sourcetypeid, dayid)
+where d.soakdayid=0
+and d1.soakdayid=0 and d1.hourid=1
+and d24.soakdayid=0 and d24.hourid=24
+and d.hourid > 1 and d.hourid < 24;
 
--- @algorithm Store P[n,1] for each day alongside P[n,24] since they are used together
--- @condition First bundle only.
-update sampleVehicleSoakingF, sampleVehicleSoakingProportion set P1=P
-where sampleVehicleSoakingProportion.soakDayID=sampleVehicleSoakingF.soakDayID
-and sampleVehicleSoakingProportion.dayID=sampleVehicleSoakingF.dayID
-and sampleVehicleSoakingProportion.sourceTypeID=sampleVehicleSoakingF.sourceTypeID
-and sampleVehicleSoakingProportion.hourID=1;
+-- @algorithm store p[n,1] for each day alongside p[n,24] since they are used together
+-- @condition first bundle only.
+update samplevehiclesoakingf, samplevehiclesoakingproportion set p1=p
+where samplevehiclesoakingproportion.soakdayid=samplevehiclesoakingf.soakdayid
+and samplevehiclesoakingproportion.dayid=samplevehiclesoakingf.dayid
+and samplevehiclesoakingproportion.sourcetypeid=samplevehiclesoakingf.sourcetypeid
+and samplevehiclesoakingproportion.hourid=1;
 
-update sampleVehicleSoakingF, sampleVehicleSoakingProportion set P24=P
-where sampleVehicleSoakingProportion.soakDayID=sampleVehicleSoakingF.soakDayID
-and sampleVehicleSoakingProportion.dayID=sampleVehicleSoakingF.dayID
-and sampleVehicleSoakingProportion.sourceTypeID=sampleVehicleSoakingF.sourceTypeID
-and sampleVehicleSoakingProportion.hourID=24;
+update samplevehiclesoakingf, samplevehiclesoakingproportion set p24=p
+where samplevehiclesoakingproportion.soakdayid=samplevehiclesoakingf.soakdayid
+and samplevehiclesoakingproportion.dayid=samplevehiclesoakingf.dayid
+and samplevehiclesoakingproportion.sourcetypeid=samplevehiclesoakingf.sourcetypeid
+and samplevehiclesoakingproportion.hourid=24;
 
--- @algorithm P[n,h]=Precalc[h]*(P[n,1]-P[n,24]) + P[n,24] for 1 <= n <= 5, 1 < h < 24
--- @condition First bundle only.
-insert into sampleVehicleSoakingProportion (soakDayID, sourceTypeID, dayID, hourID, P)
-select p1.soakDayID, p1.sourceTypeID, p1.dayID, dh.hourID, DFraction*(p1.P-p24.P) + p24.P
-from sampleVehicleSoakingDH dh
-inner join sampleVehicleSoakingProportion p1 using (sourceTypeID,dayID)
-inner join sampleVehicleSoakingProportion p24 using (soakDayID,sourceTypeID,dayID)
-where p1.hourID=1
-and p24.hourID=24;
+-- @algorithm p[n,h]=precalc[h]*(p[n,1]-p[n,24]) + p[n,24] for 1 <= n <= 5, 1 < h < 24
+-- @condition first bundle only.
+insert into samplevehiclesoakingproportion (soakdayid, sourcetypeid, dayid, hourid, p)
+select p1.soakdayid, p1.sourcetypeid, p1.dayid, dh.hourid, dfraction*(p1.p-p24.p) + p24.p
+from samplevehiclesoakingdh dh
+inner join samplevehiclesoakingproportion p1 using (sourcetypeid,dayid)
+inner join samplevehiclesoakingproportion p24 using (soakdayid,sourcetypeid,dayid)
+where p1.hourid=1
+and p24.hourid=24;
 
--- @algorithm D[n,h] = D[n,1]*P[n,h] for 1 <= n <= 5, 1 < h < 24
--- @condition First bundle only.
-insert ignore into sampleVehicleSoaking (soakDayID, sourceTypeID, dayID, hourID, soakFraction)
-select p.soakDayID, p.sourceTypeID, p.dayID, p.hourID, s.soakFraction * p.P
-from sampleVehicleSoakingProportion p
-inner join sampleVehicleSoaking s using (soakDayID, sourceTypeID, dayID)
-where s.hourID=1;
+-- @algorithm d[n,h] = d[n,1]*p[n,h] for 1 <= n <= 5, 1 < h < 24
+-- @condition first bundle only.
+insert ignore into samplevehiclesoaking (soakdayid, sourcetypeid, dayid, hourid, soakfraction)
+select p.soakdayid, p.sourcetypeid, p.dayid, p.hourid, s.soakfraction * p.p
+from samplevehiclesoakingproportion p
+inner join samplevehiclesoaking s using (soakdayid, sourcetypeid, dayid)
+where s.hourid=1;
 
--- End Section FillSampleVehicleSoaking
+-- end section fillsamplevehiclesoaking
 
--- End Section FirstBundle
+-- end section firstbundle
 
-cache select * into outfile '##sampleVehicleSoaking##' from sampleVehicleSoaking;
+cache select * into outfile '##samplevehiclesoaking##' from samplevehiclesoaking;
 
-cache SELECT DISTINCT ZoneMonthHour.* INTO OUTFILE '##ZoneMonthHour##'
-FROM ZoneMonthHour,RunSpecHour
-WHERE zoneID = ##context.iterLocation.zoneRecordID##
-AND ZoneMonthHour.monthID = ##context.monthID##
-AND RunSpecHour.hourID = ZoneMonthHour.hourID;
+cache select distinct zonemonthhour.* into outfile '##zonemonthhour##'
+from zonemonthhour,runspechour
+where zoneid = ##context.iterlocation.zonerecordid##
+and zonemonthhour.monthid = ##context.monthid##
+and runspechour.hourid = zonemonthhour.hourid;
 
--- Section WithRegClassID
+-- section withregclassid
 cache select *
-into outfile '##RegClassSourceTypeFraction##'
-from RegClassSourceTypeFraction
-where modelYearID <= ##context.year##
-and modelYearID >= ##context.year## - 30;
--- End Section WithRegClassID
+into outfile '##regclasssourcetypefraction##'
+from regclasssourcetypefraction
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30;
+-- end section withregclassid
 
--- End Section Extract Data
+-- end section extract data
 
--- Section Processing
+-- section processing
 
--- @algorithm Index by hourID to speedup later joins.
--- @input ColdSoakTankTemperature
-alter table ColdSoakTankTemperature add key speed1 (hourID);
-analyze table ColdSoakTankTemperature;
+-- @algorithm index by hourid to speedup later joins.
+-- @input coldsoaktanktemperature
+alter table coldsoaktanktemperature add key speed1 (hourid);
+analyze table coldsoaktanktemperature;
 
--- Create tables needed for processing
--- CREATE TABLE IF NOT EXISTS EventLog (eventRowID INTEGER UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (eventRowID), eventTime DATETIME, eventName VARCHAR(120));
+-- create tables needed for processing
+-- create table if not exists eventlog (eventrowid integer unsigned not null auto_increment, primary key (eventrowid), eventtime datetime, eventname varchar(120));
 
--- @algorithm Include soakDayID in ColdSoakInitialHourFraction.
--- @input ColdSoakInitialHourFraction
-alter table ColdSoakInitialHourFraction add column soakDayID smallint not null default 1;
-alter table coldSoakInitialHourFraction drop primary key;
-alter table coldSoakInitialHourFraction add primary key (sourceTypeID,zoneID,monthID,hourDayID,initialHourDayID,soakDayID);
+-- @algorithm include soakdayid in coldsoakinitialhourfraction.
+-- @input coldsoakinitialhourfraction
+alter table coldsoakinitialhourfraction add column soakdayid smallint not null default 1;
+alter table coldsoakinitialhourfraction drop primary key;
+alter table coldsoakinitialhourfraction add primary key (sourcetypeid,zoneid,monthid,hourdayid,initialhourdayid,soakdayid);
 
 -- 
--- TVV-1: Complete I/M adjustment fraction information (like CREC 1-a)
+-- tvv-1: complete i/m adjustment fraction information (like crec 1-a)
 --
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'TVV-1';
-DROP TABLE IF EXISTS IMCoverageMergedUngrouped;
-CREATE TABLE IMCoverageMergedUngrouped (
-       processID SMALLINT NOT NULL,
-       pollutantID SMALLINT NOT NULL,
-       modelYearID SMALLINT NOT NULL,
-       fuelTypeID SMALLINT NOT NULL,
-       sourceTypeID SMALLINT NOT NULL,
-       IMAdjustFract FLOAT
+-- insert into eventlog (eventtime, eventname) select now(), 'TVV-1';
+drop table if exists imcoveragemergedungrouped;
+create table imcoveragemergedungrouped (
+       processid smallint not null,
+       pollutantid smallint not null,
+       modelyearid smallint not null,
+       fueltypeid smallint not null,
+       sourcetypeid smallint not null,
+       imadjustfract float
 );
 
-CREATE INDEX XPKIMCoverageMergedUngrouped ON IMCoverageMergedUngrouped
+create index xpkimcoveragemergedungrouped on imcoveragemergedungrouped
 (
-       processID ASC,
-       pollutantID ASC,
-       modelYearID ASC,
-       fuelTypeID ASC,
-       sourceTypeID ASC
+       processid asc,
+       pollutantid asc,
+       modelyearid asc,
+       fueltypeid asc,
+       sourcetypeid asc
 );
 
--- @algorithm Disaggregate IMCoverage records, expanding model year ranges into individual model years. 
--- IMAdjustFract[processID,pollutantID,modelYearID,fuelTypeID,sourceTypeID]=IMFactor*complianceFactor*0.01.
-INSERT INTO IMCoverageMergedUngrouped (
-	processID,pollutantID,modelYearID,fuelTypeID,sourceTypeID,IMAdjustFract)
-SELECT
- ppa.processID,
- ppa.pollutantID,
- ppmy.modelYearID,
- imf.fuelTypeID,
- imc.sourceTypeID,
- sum(IMFactor*complianceFactor*.01) AS IMAdjustFract
-FROM PollutantProcessMappedModelYear ppmy
-INNER JOIN PollutantProcessAssoc ppa on (ppa.polProcessID=ppmy.polProcessID)
-INNER JOIN IMFactor imf ON (
-	imf.polProcessID = ppa.polProcessID
-	AND imf.IMModelYearGroupID = ppmy.IMModelYearGroupID)
-INNER JOIN AgeCategory ac ON (
-	ac.ageGroupID = imf.ageGroupID)
-INNER JOIN IMCoverage imc ON (
-	imc.polProcessID = imf.polProcessID
-	AND imc.inspectFreq = imf.inspectFreq
-	AND imc.testStandardsID = imf.testStandardsID
-	AND imc.sourceTypeID = imf.sourceTypeID
-	AND imc.fuelTypeID = imf.fuelTypeID
-	AND imc.begModelYearID <= ppmy.modelYearID
-	AND imc.endModelYearID >= ppmy.modelYearID)
-WHERE imc.countyID = ##context.iterLocation.countyRecordID##
-AND ppmy.modelYearID = ##context.year##-ageID
-AND ppmy.polProcessID IN (##pollutantProcessIDs##)
-GROUP BY ppa.processID,
- ppa.pollutantID,
- ppmy.modelYearID,
- imf.fuelTypeID,
- imc.sourceTypeID;
+-- @algorithm disaggregate imcoverage records, expanding model year ranges into individual model years. 
+-- imadjustfract[processid,pollutantid,modelyearid,fueltypeid,sourcetypeid]=imfactor*compliancefactor*0.01.
+insert into imcoveragemergedungrouped (
+  processid,pollutantid,modelyearid,fueltypeid,sourcetypeid,imadjustfract)
+select
+ ppa.processid,
+ ppa.pollutantid,
+ ppmy.modelyearid,
+ imf.fueltypeid,
+ imc.sourcetypeid,
+ sum(imfactor*compliancefactor*.01) as imadjustfract
+from pollutantprocessmappedmodelyear ppmy
+inner join pollutantprocessassoc ppa on (ppa.polprocessid=ppmy.polprocessid)
+inner join imfactor imf on (
+  imf.polprocessid = ppa.polprocessid
+  and imf.immodelyeargroupid = ppmy.immodelyeargroupid)
+inner join agecategory ac on (
+  ac.agegroupid = imf.agegroupid)
+inner join imcoverage imc on (
+  imc.polprocessid = imf.polprocessid
+  and imc.inspectfreq = imf.inspectfreq
+  and imc.teststandardsid = imf.teststandardsid
+  and imc.sourcetypeid = imf.sourcetypeid
+  and imc.fueltypeid = imf.fueltypeid
+  and imc.begmodelyearid <= ppmy.modelyearid
+  and imc.endmodelyearid >= ppmy.modelyearid)
+where imc.countyid = ##context.iterlocation.countyrecordid##
+and ppmy.modelyearid = ##context.year##-ageid
+and ppmy.polprocessid in (##pollutantprocessids##)
+group by ppa.processid,
+ ppa.pollutantid,
+ ppmy.modelyearid,
+ imf.fueltypeid,
+ imc.sourcetypeid;
 
 -- 
--- TVV-2: Determine Hour of Peak Cold Soak Tank Temperature
+-- tvv-2: determine hour of peak cold soak tank temperature
 --
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'TVV-2';
-drop table if exists PeakHourOfColdSoak;
+-- insert into eventlog (eventtime, eventname) select now(), 'TVV-2';
+drop table if exists peakhourofcoldsoak;
 
---zoneID int not null,  NOTE: since calc is at year level, there is only 1 zone
-create table PeakHourOfColdSoak (
-monthID smallint(6) not null,
-peakHourID smallint(6) not null,
-primary key (monthID),
-index (peakHourID)
+--zoneid int not null,  note: since calc is at year level, there is only 1 zone
+create table peakhourofcoldsoak (
+monthid smallint(6) not null,
+peakhourid smallint(6) not null,
+primary key (monthid),
+index (peakhourid)
 );
 
--- @algorithm Compute peakHourID by monthID. The maximum value of the expression <coldSoakTankTemperature*
--- 100000 + (999-hourID)> is found. This finds the maximum temperature and the earliest time of day
+-- @algorithm compute peakhourid by monthid. the maximum value of the expression <coldsoaktanktemperature*
+-- 100000 + (999-hourid)> is found. this finds the maximum temperature and the earliest time of day
 -- in which the temperature occurs, storing both as a single number.
-insert into PeakHourOfColdSoak (monthID, peakHourID)
-select monthID,
-999-mod(max(round(coldSoakTankTemperature,2)*100000+(999-hourID)),1000) as peakHourID
-from ColdSoakTankTemperature
-group by monthID
+insert into peakhourofcoldsoak (monthid, peakhourid)
+select monthid,
+999-mod(max(round(coldsoaktanktemperature,2)*100000+(999-hourid)),1000) as peakhourid
+from coldsoaktanktemperature
+group by monthid
 order by null;
 
-analyze table PeakHourOfColdSoak;
+analyze table peakhourofcoldsoak;
 
 -- 
--- TVV-3: Calculate TankVaporGenerated (TVG) by Ethanol Level
+-- tvv-3: calculate tankvaporgenerated (tvg) by ethanol level
 --
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'TVV-3';
-drop table if exists TankVaporGenerated;
+-- insert into eventlog (eventtime, eventname) select now(), 'TVV-3';
+drop table if exists tankvaporgenerated;
 
--- Section DebugTankVaporGenerated
-drop table if exists DebugTankVaporGenerated;
+-- section debugtankvaporgenerated
+drop table if exists debugtankvaporgenerated;
 
-create table DebugTankVaporGenerated (
-	hourDayID smallint(6) not null,
-	initialHourDayID smallint(6) not null,
-	ethanolLevelID smallint(6) not null,
-	monthID smallint(6) not null,
-	sourceTypeID smallint(6) not null,
-	fuelTypeID smallint(6) not null,
-	modelYearID smallint not null,
-	polProcessID int NOT NULL DEFAULT '0',
-	tankVaporGenerated float null,
-	backPurgeFactor double DEFAULT NULL,
-	averageCanisterCapacity double DEFAULT NULL,
-	leakFraction double DEFAULT NULL,
-	leakFractionIM double DEFAULT NULL,
-	primary key (hourDayID, initialHourDayID, ethanolLevelID, monthID, sourceTypeID, fuelTypeID, modelYearID, polProcessID)
+create table debugtankvaporgenerated (
+  hourdayid smallint(6) not null,
+  initialhourdayid smallint(6) not null,
+  ethanollevelid smallint(6) not null,
+  monthid smallint(6) not null,
+  sourcetypeid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  modelyearid smallint not null,
+  polprocessid int not null default '0',
+  tankvaporgenerated float null,
+  backpurgefactor double default null,
+  averagecanistercapacity double default null,
+  leakfraction double default null,
+  leakfractionim double default null,
+  primary key (hourdayid, initialhourdayid, ethanollevelid, monthid, sourcetypeid, fueltypeid, modelyearid, polprocessid)
 );
 
-insert into DebugTankVaporGenerated (hourDayID, initialHourDayID, ethanolLevelID,
-	monthID, sourceTypeID, fuelTypeID, 
-	modelYearID, polProcessID,
-	tankVaporGenerated,
-	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM)
-select ihf.hourDayID, ihf.initialHourDayID, coeffs.ethanolLevelID,
-	ihf.monthID, ihf.sourceTypeID, avggas.fuelTypeID,
-	stmycoeffs.modelYearID, stmycoeffs.polProcessID,
-	case when t1.coldSoakTankTemperature >= t2.coldSoakTankTemperature then 0.0
-		else
-		(stmycoeffs.tankSize*(1-stmycoeffs.tankFillFraction))*(tvgTermA*exp(tvgTermB*RVP)*(exp(tvgTermC*t2.coldSoakTankTemperature)-exp(tvgTermC*t1.coldSoakTankTemperature)))
-	end as tankVaporGenerated,
-	stmycoeffs.backPurgeFactor, stmycoeffs.averageCanisterCapacity, stmycoeffs.leakFraction, stmycoeffs.leakFractionIM
-from ColdSoakInitialHourFraction ihf
-inner join HourDay hd on (hd.hourDayID = ihf.hourDayID)
-inner join HourDay ihd on (ihd.hourDayID = ihf.initialHourDayID)
-inner join PeakHourOfColdSoak ph on (ihf.monthID = ph.monthID)
-inner join ColdSoakTankTemperature t2 on (ihf.monthID = t2.monthID and hd.hourID = t2.hourID)
-inner join ColdSoakTankTemperature t1 on (ihf.monthID = t1.monthID and ihd.hourID = t1.hourID)
-inner join Zone on (ihf.zoneID = Zone.zoneID)
-inner join County on (Zone.countyID = County.countyID)
-inner join TankVaporGenCoeffs coeffs on (County.altitude = coeffs.altitude)
-inner join MonthOfAnyYear m on (ihf.monthID = m.monthID)
-inner join AverageTankGasoline avggas on (m.monthGroupID = avggas.monthGroupID)
-inner join stmyTVVCoeffs stmycoeffs on (
-	stmycoeffs.sourceTypeID = ihf.sourceTypeID
-	and stmycoeffs.fuelTypeID = avggas.fuelTypeID
+insert into debugtankvaporgenerated (hourdayid, initialhourdayid, ethanollevelid,
+  monthid, sourcetypeid, fueltypeid, 
+  modelyearid, polprocessid,
+  tankvaporgenerated,
+  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim)
+select ihf.hourdayid, ihf.initialhourdayid, coeffs.ethanollevelid,
+  ihf.monthid, ihf.sourcetypeid, avggas.fueltypeid,
+  stmycoeffs.modelyearid, stmycoeffs.polprocessid,
+  case when t1.coldsoaktanktemperature >= t2.coldsoaktanktemperature then 0.0
+    else
+    (stmycoeffs.tanksize*(1-stmycoeffs.tankfillfraction))*(tvgterma*exp(tvgtermb*rvp)*(exp(tvgtermc*t2.coldsoaktanktemperature)-exp(tvgtermc*t1.coldsoaktanktemperature)))
+  end as tankvaporgenerated,
+  stmycoeffs.backpurgefactor, stmycoeffs.averagecanistercapacity, stmycoeffs.leakfraction, stmycoeffs.leakfractionim
+from coldsoakinitialhourfraction ihf
+inner join hourday hd on (hd.hourdayid = ihf.hourdayid)
+inner join hourday ihd on (ihd.hourdayid = ihf.initialhourdayid)
+inner join peakhourofcoldsoak ph on (ihf.monthid = ph.monthid)
+inner join coldsoaktanktemperature t2 on (ihf.monthid = t2.monthid and hd.hourid = t2.hourid)
+inner join coldsoaktanktemperature t1 on (ihf.monthid = t1.monthid and ihd.hourid = t1.hourid)
+inner join zone on (ihf.zoneid = zone.zoneid)
+inner join county on (zone.countyid = county.countyid)
+inner join tankvaporgencoeffs coeffs on (county.altitude = coeffs.altitude)
+inner join monthofanyyear m on (ihf.monthid = m.monthid)
+inner join averagetankgasoline avggas on (m.monthgroupid = avggas.monthgroupid)
+inner join stmytvvcoeffs stmycoeffs on (
+  stmycoeffs.sourcetypeid = ihf.sourcetypeid
+  and stmycoeffs.fueltypeid = avggas.fueltypeid
 )
-where ihf.hourDayID <> ihf.initialHourDayID
-	and hd.hourID <= ph.peakHourID
-	and ihf.coldSoakInitialHourFraction > 0;
+where ihf.hourdayid <> ihf.initialhourdayid
+  and hd.hourid <= ph.peakhourid
+  and ihf.coldsoakinitialhourfraction > 0;
 
-analyze table DebugTankVaporGenerated;
+analyze table debugtankvaporgenerated;
 
--- End Section DebugTankVaporGenerated
+-- end section debugtankvaporgenerated
 
-drop table if exists TankVaporGeneratedHighAndLow;
+drop table if exists tankvaporgeneratedhighandlow;
 
-create table TankVaporGeneratedHighAndLow (
-	altitudeFlag varchar(1) not null,
-	hourDayID smallint(6) not null,
-	initialHourDayID smallint(6) not null,
-	ethanolLevelID smallint(6) not null,
-	monthID smallint(6) not null,
-	sourceTypeID smallint(6) not null,
-	fuelTypeID smallint(6) not null,
-	modelYearID smallint not null,
-	polProcessID int NOT NULL DEFAULT '0',
-	tankVaporGenerated float null,
-	backPurgeFactor double DEFAULT NULL,
-	averageCanisterCapacity double DEFAULT NULL,
-	leakFraction double DEFAULT NULL,
-	leakFractionIM double DEFAULT NULL,
-	primary key (altitudeFlag, hourDayID, initialHourDayID, ethanolLevelID, monthID, sourceTypeID, fuelTypeID, modelYearID, polProcessID)
+create table tankvaporgeneratedhighandlow (
+  altitudeflag varchar(1) not null,
+  hourdayid smallint(6) not null,
+  initialhourdayid smallint(6) not null,
+  ethanollevelid smallint(6) not null,
+  monthid smallint(6) not null,
+  sourcetypeid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  modelyearid smallint not null,
+  polprocessid int not null default '0',
+  tankvaporgenerated float null,
+  backpurgefactor double default null,
+  averagecanistercapacity double default null,
+  leakfraction double default null,
+  leakfractionim double default null,
+  primary key (altitudeflag, hourdayid, initialhourdayid, ethanollevelid, monthid, sourcetypeid, fueltypeid, modelyearid, polprocessid)
 );
 
--- @algorithm Calculate tankVaporGenerated for high and low altitudes.
--- The time spans t1 (based upon ColdSoakInitialHourFraction.initialHourDayID) to t2 (based upon ColdSoakInitialHourFraction.hourDayID).
--- tankVaporGenerated[high and low altitudes] = (tankSize*(1-tankFillFraction))*(tvgTermA*exp(tvgTermB*RVP)*(exp(tvgTermC*t2.coldSoakTankTemperature)-exp(tvgTermC*t1.coldSoakTankTemperature)))
--- @condition t1.coldSoakTankTemperature < t2.coldSoakTankTemperature, 0 otherwise.
-insert into TankVaporGeneratedHighAndLow (altitudeFlag, hourDayID, initialHourDayID, ethanolLevelID,
-	monthID, sourceTypeID, fuelTypeID, 
-	modelYearID, polProcessID,
-	tankVaporGenerated,
-	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM)
-select coeffs.altitude, ihf.hourDayID, ihf.initialHourDayID, coeffs.ethanolLevelID,
-	ihf.monthID, ihf.sourceTypeID, avggas.fuelTypeID,
-	stmycoeffs.modelYearID, stmycoeffs.polProcessID,
-	case when t1.coldSoakTankTemperature >= t2.coldSoakTankTemperature then 0.0
-		else
-		(stmycoeffs.tankSize*(1-stmycoeffs.tankFillFraction))*(tvgTermA*exp(tvgTermB*RVP)*(exp(tvgTermC*t2.coldSoakTankTemperature)-exp(tvgTermC*t1.coldSoakTankTemperature)))
-	end as tankVaporGenerated,
-	stmycoeffs.backPurgeFactor, stmycoeffs.averageCanisterCapacity, stmycoeffs.leakFraction, stmycoeffs.leakFractionIM
-from TankVaporGenCoeffs coeffs, ColdSoakInitialHourFraction ihf
-inner join HourDay hd on (hd.hourDayID = ihf.hourDayID)
-inner join HourDay ihd on (ihd.hourDayID = ihf.initialHourDayID)
-inner join PeakHourOfColdSoak ph on (ihf.monthID = ph.monthID)
-inner join ColdSoakTankTemperature t2 on (ihf.monthID = t2.monthID and hd.hourID = t2.hourID)
-inner join ColdSoakTankTemperature t1 on (ihf.monthID = t1.monthID and ihd.hourID = t1.hourID)
-inner join MonthOfAnyYear m on (ihf.monthID = m.monthID)
-inner join AverageTankGasoline avggas on (m.monthGroupID = avggas.monthGroupID)
-inner join stmyTVVCoeffs stmycoeffs on (
-	stmycoeffs.sourceTypeID = ihf.sourceTypeID
-	and stmycoeffs.fuelTypeID = avggas.fuelTypeID
+-- @algorithm calculate tankvaporgenerated for high and low altitudes.
+-- the time spans t1 (based upon coldsoakinitialhourfraction.initialhourdayid) to t2 (based upon coldsoakinitialhourfraction.hourdayid).
+-- tankvaporgenerated[high and low altitudes] = (tanksize*(1-tankfillfraction))*(tvgterma*exp(tvgtermb*rvp)*(exp(tvgtermc*t2.coldsoaktanktemperature)-exp(tvgtermc*t1.coldsoaktanktemperature)))
+-- @condition t1.coldsoaktanktemperature < t2.coldsoaktanktemperature, 0 otherwise.
+insert into tankvaporgeneratedhighandlow (altitudeflag, hourdayid, initialhourdayid, ethanollevelid,
+  monthid, sourcetypeid, fueltypeid, 
+  modelyearid, polprocessid,
+  tankvaporgenerated,
+  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim)
+select coeffs.altitude, ihf.hourdayid, ihf.initialhourdayid, coeffs.ethanollevelid,
+  ihf.monthid, ihf.sourcetypeid, avggas.fueltypeid,
+  stmycoeffs.modelyearid, stmycoeffs.polprocessid,
+  case when t1.coldsoaktanktemperature >= t2.coldsoaktanktemperature then 0.0
+    else
+    (stmycoeffs.tanksize*(1-stmycoeffs.tankfillfraction))*(tvgterma*exp(tvgtermb*rvp)*(exp(tvgtermc*t2.coldsoaktanktemperature)-exp(tvgtermc*t1.coldsoaktanktemperature)))
+  end as tankvaporgenerated,
+  stmycoeffs.backpurgefactor, stmycoeffs.averagecanistercapacity, stmycoeffs.leakfraction, stmycoeffs.leakfractionim
+from tankvaporgencoeffs coeffs, coldsoakinitialhourfraction ihf
+inner join hourday hd on (hd.hourdayid = ihf.hourdayid)
+inner join hourday ihd on (ihd.hourdayid = ihf.initialhourdayid)
+inner join peakhourofcoldsoak ph on (ihf.monthid = ph.monthid)
+inner join coldsoaktanktemperature t2 on (ihf.monthid = t2.monthid and hd.hourid = t2.hourid)
+inner join coldsoaktanktemperature t1 on (ihf.monthid = t1.monthid and ihd.hourid = t1.hourid)
+inner join monthofanyyear m on (ihf.monthid = m.monthid)
+inner join averagetankgasoline avggas on (m.monthgroupid = avggas.monthgroupid)
+inner join stmytvvcoeffs stmycoeffs on (
+  stmycoeffs.sourcetypeid = ihf.sourcetypeid
+  and stmycoeffs.fueltypeid = avggas.fueltypeid
 )
-where (ihf.hourDayID <> ihf.initialHourDayID or (hd.hourID=1 and ihd.hourID=1 and hd.dayID=ihd.dayID))
-	and hd.hourID <= ph.peakHourID
-	and ihf.coldSoakInitialHourFraction > 0;
+where (ihf.hourdayid <> ihf.initialhourdayid or (hd.hourid=1 and ihd.hourid=1 and hd.dayid=ihd.dayid))
+  and hd.hourid <= ph.peakhourid
+  and ihf.coldsoakinitialhourfraction > 0;
 
-analyze table TankVaporGeneratedHighAndLow;
+analyze table tankvaporgeneratedhighandlow;
 
-drop table if exists TankVaporGenerated;
+drop table if exists tankvaporgenerated;
 
-create table TankVaporGenerated (
-	hourDayID smallint(6) not null,
-	initialHourDayID smallint(6) not null,
-	ethanolLevelID smallint(6) not null,
-	monthID smallint(6) not null,
-	sourceTypeID smallint(6) not null,
-	fuelTypeID smallint(6) not null,
-	modelYearID smallint not null,
-	polProcessID int NOT NULL DEFAULT '0',
-	tankVaporGenerated float null,
-	backPurgeFactor double DEFAULT NULL,
-	averageCanisterCapacity double DEFAULT NULL,
-	leakFraction double DEFAULT NULL,
-	leakFractionIM double DEFAULT NULL,
-	primary key (hourDayID, initialHourDayID, ethanolLevelID, monthID, sourceTypeID, fuelTypeID, modelYearID, polProcessID)
+create table tankvaporgenerated (
+  hourdayid smallint(6) not null,
+  initialhourdayid smallint(6) not null,
+  ethanollevelid smallint(6) not null,
+  monthid smallint(6) not null,
+  sourcetypeid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  modelyearid smallint not null,
+  polprocessid int not null default '0',
+  tankvaporgenerated float null,
+  backpurgefactor double default null,
+  averagecanistercapacity double default null,
+  leakfraction double default null,
+  leakfractionim double default null,
+  primary key (hourdayid, initialhourdayid, ethanollevelid, monthid, sourcetypeid, fueltypeid, modelyearid, polprocessid)
 );
 
--- @algorithm Interpolate tankVaporGenerated based upon the county's barometric pressure.
--- Don't allow negative values.
--- Low altitude is based upon Wayne County, Michigan (26163) with a barometric pressure of 29.069.
--- High altitude is based upon Denver County, Colorado (8031) with a barometric pressure of 24.087.
--- tankVaporGenerated = greatest(((barometricPressure - 29.069) / (24.087 - 29.069)) * (high.tankVaporGenerated - low.tankVaporGenerated) + low.tankVaporGenerated,0).
-insert into TankVaporGenerated (hourDayID, initialHourDayID, ethanolLevelID,
-	monthID, sourceTypeID, fuelTypeID, 
-	modelYearID, polProcessID,
-	tankVaporGenerated,
-	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM)
-select low.hourDayID, low.initialHourDayID, low.ethanolLevelID,
-	low.monthID, low.sourceTypeID, low.fuelTypeID,
-	low.modelYearID, low.polProcessID,
-	greatest(((c.barometricPressure - 29.069) / (24.087 - 29.069)) * (high.tankVaporGenerated - low.tankVaporGenerated) + low.tankVaporGenerated,0) as tankVaporGenerated,
-	low.backPurgeFactor, low.averageCanisterCapacity, low.leakFraction, low.leakFractionIM
-from County c, 
-TankVaporGeneratedHighAndLow low
-inner join TankVaporGeneratedHighAndLow high using (hourDayID, initialHourDayID, ethanolLevelID, monthID, sourceTypeID, fuelTypeID, modelYearID, polProcessID)
-where low.altitudeFlag='L'
-and high.altitudeFlag='H';
+-- @algorithm interpolate tankvaporgenerated based upon the county's barometric pressure.
+-- don't allow negative values.
+-- low altitude is based upon wayne county, michigan (26163) with a barometric pressure of 29.069.
+-- high altitude is based upon denver county, colorado (8031) with a barometric pressure of 24.087.
+-- tankvaporgenerated = greatest(((barometricpressure - 29.069) / (24.087 - 29.069)) * (high.tankvaporgenerated - low.tankvaporgenerated) + low.tankvaporgenerated,0).
+insert into tankvaporgenerated (hourdayid, initialhourdayid, ethanollevelid,
+  monthid, sourcetypeid, fueltypeid, 
+  modelyearid, polprocessid,
+  tankvaporgenerated,
+  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim)
+select low.hourdayid, low.initialhourdayid, low.ethanollevelid,
+  low.monthid, low.sourcetypeid, low.fueltypeid,
+  low.modelyearid, low.polprocessid,
+  greatest(((c.barometricpressure - 29.069) / (24.087 - 29.069)) * (high.tankvaporgenerated - low.tankvaporgenerated) + low.tankvaporgenerated,0) as tankvaporgenerated,
+  low.backpurgefactor, low.averagecanistercapacity, low.leakfraction, low.leakfractionim
+from county c, 
+tankvaporgeneratedhighandlow low
+inner join tankvaporgeneratedhighandlow high using (hourdayid, initialhourdayid, ethanollevelid, monthid, sourcetypeid, fueltypeid, modelyearid, polprocessid)
+where low.altitudeflag='L'
+and high.altitudeflag='H';
 
 
-analyze table TankVaporGenerated;
+analyze table tankvaporgenerated;
 
 -- 
--- TVV-4: Calculate Ethanol-weighted TVG
+-- tvv-4: calculate ethanol-weighted tvg
 --
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'TVV-4';
-drop table if exists EthanolWeightedTVG;
+-- insert into eventlog (eventtime, eventname) select now(), 'TVV-4';
+drop table if exists ethanolweightedtvg;
 
-create table EthanolWeightedTVGTemp (
-	hourDayID smallint(6) not null,
-	hourID smallint(6) not null,
-	dayID smallint(6) not null,
-	initialHourDayID smallint(6) not null,
-	monthID smallint(6) not null,
-	sourceTypeID smallint(6) not null,
-	fuelTypeID smallint(6) not null,
-	modelYearID smallint not null,
-	polProcessID int NOT NULL DEFAULT '0',
-	ethanolWeightedTVG float null,
-	backPurgeFactor double DEFAULT NULL,
-	averageCanisterCapacity double DEFAULT NULL,
-	leakFraction double DEFAULT NULL,
-	leakFractionIM double DEFAULT NULL,
-	primary key (hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, modelYearID, polProcessID),
-	key (hourID, dayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, modelYearID, polProcessID)
+create table ethanolweightedtvgtemp (
+  hourdayid smallint(6) not null,
+  hourid smallint(6) not null,
+  dayid smallint(6) not null,
+  initialhourdayid smallint(6) not null,
+  monthid smallint(6) not null,
+  sourcetypeid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  modelyearid smallint not null,
+  polprocessid int not null default '0',
+  ethanolweightedtvg float null,
+  backpurgefactor double default null,
+  averagecanistercapacity double default null,
+  leakfraction double default null,
+  leakfractionim double default null,
+  primary key (hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, modelyearid, polprocessid),
+  key (hourid, dayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, modelyearid, polprocessid)
 );
 
--- @algorithm Calculated the ethanol weighted TVG using tankVaporGenerated for E10 fuel (t10) and that of E0 fuel (t0).
--- ethanolWeightedTVG=(t10.tankVaporGenerated*(least(10.0,ETOHVolume)/10.0)+t0.tankVaporGenerated*(1.0-least(10.0,ETOHVolume)/10.0)).
-insert into EthanolWeightedTVGTemp (hourDayID, hourID, dayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, 
-	modelYearID, polProcessID,
-	ethanolWeightedTVG,
-	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM)
-select t0.hourDayID, floor(t0.hourDayID/10) as hourID, mod(t0.hourDayID,10) as dayID,
-	t0.initialHourDayID, t0.monthID, t0.sourceTypeiD, t0.fuelTypeID,
-	t0.modelYearID, t0.polProcessID,
-	(t10.tankVaporGenerated*(least(10.0,ETOHVolume)/10.0)+t0.tankVaporGenerated*(1.0-least(10.0,ETOHVolume)/10.0)) as ethanolWeightedTVG,
-	t0.backPurgeFactor, t0.averageCanisterCapacity, t0.leakFraction, t0.leakFractionIM
-from TankVaporGenerated t0
-inner join TankVaporGenerated t10 on (t0.hourDayID=t10.hourDayID and t0.initialHourDayID=t10.initialHourDayID
-	and t0.monthID=t10.monthID and t0.sourceTypeID=t10.sourceTypeID
-	and t0.fuelTypeID=t10.fuelTypeID
-	and t0.modelYearID=t10.modelYearID
-	and t0.polProcessID=t10.polProcessID)
-inner join MonthOfAnyYear m on (t10.monthID = m.monthID)
-inner join AverageTankGasoline avggas on (m.monthGroupID = avggas.monthGroupID
-	and t10.fuelTypeID=avggas.fuelTypeID)
-where t0.ethanolLevelID = 0
-and t10.ethanolLevelID = 10;
+-- @algorithm calculated the ethanol weighted tvg using tankvaporgenerated for e10 fuel (t10) and that of e0 fuel (t0).
+-- ethanolweightedtvg=(t10.tankvaporgenerated*(least(10.0,etohvolume)/10.0)+t0.tankvaporgenerated*(1.0-least(10.0,etohvolume)/10.0)).
+insert into ethanolweightedtvgtemp (hourdayid, hourid, dayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, 
+  modelyearid, polprocessid,
+  ethanolweightedtvg,
+  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim)
+select t0.hourdayid, floor(t0.hourdayid/10) as hourid, mod(t0.hourdayid,10) as dayid,
+  t0.initialhourdayid, t0.monthid, t0.sourcetypeid, t0.fueltypeid,
+  t0.modelyearid, t0.polprocessid,
+  (t10.tankvaporgenerated*(least(10.0,etohvolume)/10.0)+t0.tankvaporgenerated*(1.0-least(10.0,etohvolume)/10.0)) as ethanolweightedtvg,
+  t0.backpurgefactor, t0.averagecanistercapacity, t0.leakfraction, t0.leakfractionim
+from tankvaporgenerated t0
+inner join tankvaporgenerated t10 on (t0.hourdayid=t10.hourdayid and t0.initialhourdayid=t10.initialhourdayid
+  and t0.monthid=t10.monthid and t0.sourcetypeid=t10.sourcetypeid
+  and t0.fueltypeid=t10.fueltypeid
+  and t0.modelyearid=t10.modelyearid
+  and t0.polprocessid=t10.polprocessid)
+inner join monthofanyyear m on (t10.monthid = m.monthid)
+inner join averagetankgasoline avggas on (m.monthgroupid = avggas.monthgroupid
+  and t10.fueltypeid=avggas.fueltypeid)
+where t0.ethanollevelid = 0
+and t10.ethanollevelid = 10;
 
-analyze table EthanolWeightedTVGTemp;
+analyze table ethanolweightedtvgtemp;
 
-create table EthanolWeightedTVG (
-	hourDayID smallint(6) not null,
-	initialHourDayID smallint(6) not null,
-	monthID smallint(6) not null,
-	sourceTypeID smallint(6) not null,
-	fuelTypeID smallint(6) not null,
-	modelYearID smallint not null,
-	polProcessID int NOT NULL DEFAULT '0',
-	ethanolWeightedTVG float null,
-	backPurgeFactor double DEFAULT NULL,
-	averageCanisterCapacity double DEFAULT NULL,
-	leakFraction double DEFAULT NULL,
-	leakFractionIM double DEFAULT NULL,
-	primary key (hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, modelYearID, polProcessID)
+create table ethanolweightedtvg (
+  hourdayid smallint(6) not null,
+  initialhourdayid smallint(6) not null,
+  monthid smallint(6) not null,
+  sourcetypeid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  modelyearid smallint not null,
+  polprocessid int not null default '0',
+  ethanolweightedtvg float null,
+  backpurgefactor double default null,
+  averagecanistercapacity double default null,
+  leakfraction double default null,
+  leakfractionim double default null,
+  primary key (hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, modelyearid, polprocessid)
 );
 
--- @algorithm Until now, ethanolWeightedTVG has been a cummulative total.
--- Convert it to an hourly increment by subtracting the total of the previous hour.
--- ethanolWeightedTVG[hourID]=ethanolWeightedTVG[hourID]-ethanolWeightedTVG[hourID-1].
-insert into EthanolWeightedTVG (hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, 
-	modelYearID, polProcessID,
-	ethanolWeightedTVG,
-	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM)
-select h.hourDayID, h.initialHourDayID, h.monthID, h.sourceTypeID, h.fuelTypeID, 
-	h.modelYearID, h.polProcessID,
-	greatest(0,h.ethanolWeightedTVG - coalesce(hm1.ethanolWeightedTVG,0)) as ethanolWeightedTVG,
-	h.backPurgeFactor, h.averageCanisterCapacity, h.leakFraction, h.leakFractionIM
-from EthanolWeightedTVGTemp h
-left outer join EthanolWeightedTVGTemp hm1 on (
-	h.hourID-1 = hm1.hourID
-	and h.dayID = hm1.dayID
-	and h.initialHourDayID = hm1.initialHourDayID
-	and h.monthID = hm1.monthID
-	and h.sourceTypeID = hm1.sourceTypeID
-	and h.fuelTypeID = hm1.fuelTypeID
-	and h.modelYearID = hm1.modelYearID
-	and h.polProcessID = hm1.polProcessID
+-- @algorithm until now, ethanolweightedtvg has been a cummulative total.
+-- convert it to an hourly increment by subtracting the total of the previous hour.
+-- ethanolweightedtvg[hourid]=ethanolweightedtvg[hourid]-ethanolweightedtvg[hourid-1].
+insert into ethanolweightedtvg (hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, 
+  modelyearid, polprocessid,
+  ethanolweightedtvg,
+  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim)
+select h.hourdayid, h.initialhourdayid, h.monthid, h.sourcetypeid, h.fueltypeid, 
+  h.modelyearid, h.polprocessid,
+  greatest(0,h.ethanolweightedtvg - coalesce(hm1.ethanolweightedtvg,0)) as ethanolweightedtvg,
+  h.backpurgefactor, h.averagecanistercapacity, h.leakfraction, h.leakfractionim
+from ethanolweightedtvgtemp h
+left outer join ethanolweightedtvgtemp hm1 on (
+  h.hourid-1 = hm1.hourid
+  and h.dayid = hm1.dayid
+  and h.initialhourdayid = hm1.initialhourdayid
+  and h.monthid = hm1.monthid
+  and h.sourcetypeid = hm1.sourcetypeid
+  and h.fueltypeid = hm1.fueltypeid
+  and h.modelyearid = hm1.modelyearid
+  and h.polprocessid = hm1.polprocessid
 );
 
-analyze table EthanolWeightedTVG;
+analyze table ethanolweightedtvg;
 
-drop table if exists TVG;
+drop table if exists tvg;
 
-create table TVG (
-	soakDayID smallint(6) not null,
-	hourDayID smallint(6) not null,
-	initialHourDayID smallint(6) not null,
-	monthID smallint(6) not null,
-	sourceTypeID smallint(6) not null,
-	fuelTypeID smallint(6) not null,
-	modelYearID smallint not null,
-	polProcessID int NOT NULL DEFAULT '0',
-	TVGdaily float null,
-	Xn double null,
-	backPurgeFactor double DEFAULT NULL,
-	averageCanisterCapacity double DEFAULT NULL,
-	leakFraction double DEFAULT NULL,
-	leakFractionIM double DEFAULT NULL,
-	tvgSum1H double default null,
-	tvgSumH24 double default null,
-	primary key (sourceTypeID, modelYearID, fuelTypeID, polProcessID, soakDayID, hourDayID, initialHourDayID, monthID)
+create table tvg (
+  soakdayid smallint(6) not null,
+  hourdayid smallint(6) not null,
+  initialhourdayid smallint(6) not null,
+  monthid smallint(6) not null,
+  sourcetypeid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  modelyearid smallint not null,
+  polprocessid int not null default '0',
+  tvgdaily float null,
+  xn double null,
+  backpurgefactor double default null,
+  averagecanistercapacity double default null,
+  leakfraction double default null,
+  leakfractionim double default null,
+  tvgsum1h double default null,
+  tvgsumh24 double default null,
+  primary key (sourcetypeid, modelyearid, fueltypeid, polprocessid, soakdayid, hourdayid, initialhourdayid, monthid)
 );
 
-drop table if exists tvgSumIH;
-drop table if exists tvgSumI24;
-drop table if exists tvgSum1H;
-drop table if exists tvgSumH24;
+drop table if exists tvgsumih;
+drop table if exists tvgsumi24;
+drop table if exists tvgsum1h;
+drop table if exists tvgsumh24;
 
--- Sum of TVG hourly from initial hour I to hour H
-create table tvgSumIH (
-	hourDayID smallint(6) not null default '0',
-	initialHourDayID smallint(6) not null default '0',
-	monthID smallint(6) not null default '0',
-	sourceTypeID smallint(6) not null default '0',
-	fuelTypeID smallint(6) not null default '0',
-	modelYearID smallint(6) not null default '0',
-	polProcessID int not null default '0',
-	tvgSum double,
-	primary key (hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, modelYearID, polProcessID)
+-- sum of tvg hourly from initial hour i to hour h
+create table tvgsumih (
+  hourdayid smallint(6) not null default '0',
+  initialhourdayid smallint(6) not null default '0',
+  monthid smallint(6) not null default '0',
+  sourcetypeid smallint(6) not null default '0',
+  fueltypeid smallint(6) not null default '0',
+  modelyearid smallint(6) not null default '0',
+  polprocessid int not null default '0',
+  tvgsum double,
+  primary key (hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, modelyearid, polprocessid)
 );
 
--- Sum of TVG hourly from initial hour I to the last hour of the day
-create table tvgSumI24 like tvgSumIH;
+-- sum of tvg hourly from initial hour i to the last hour of the day
+create table tvgsumi24 like tvgsumih;
 
--- Sum of TVG hourly from the first hour of the day to hour H
-create table tvgSum1H like tvgSumIH;
+-- sum of tvg hourly from the first hour of the day to hour h
+create table tvgsum1h like tvgsumih;
 
--- Sum of TVG hourly from after hour H to the last hour of the day
-create table tvgSumH24 like tvgSumIH;
+-- sum of tvg hourly from after hour h to the last hour of the day
+create table tvgsumh24 like tvgsumih;
 
--- @algorithm tvgSumIH = Sum of TVG hourly from initial hour I to hour H
-insert into tvgSumIH (hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, modelYearID, polProcessID, tvgSum)
-select e.hourDayID, e.initialHourDayID, e.monthID, e.sourceTypeID, e.fuelTypeID, e.modelYearID, e.polProcessID,
-	sum(e2.ethanolWeightedTVG) as tvgSum
-from EthanolWeightedTVG as e
-inner join hourDay as hd on (hd.hourDayID = e.hourDayID)
-inner join hourDay as ihd on (ihd.hourDayID = e.initialHourDayID)
-inner join hourDay as ahd on (ahd.dayID = hd.dayID and ahd.hourID >= ihd.hourID and ahd.hourID <= hd.hourID)
-inner join EthanolWeightedTVG e2 on (e2.hourDayID = ahd.hourDayID and e2.initialHourDayID = e.initialHourDayID
-and e2.monthID = e.monthID and e2.sourceTypeID = e.sourceTypeID and e2.fuelTypeID = e.fuelTypeID and e2.modelYearID = e.modelYearID and e2.polProcessID = e.polProcessID)
-where hd.hourID >= ihd.hourID
-group by e.hourDayID, e.initialHourDayID, e.monthID, e.sourceTypeID, e.fuelTypeID, e.modelYearID, e.polProcessID;
+-- @algorithm tvgsumih = sum of tvg hourly from initial hour i to hour h
+insert into tvgsumih (hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, modelyearid, polprocessid, tvgsum)
+select e.hourdayid, e.initialhourdayid, e.monthid, e.sourcetypeid, e.fueltypeid, e.modelyearid, e.polprocessid,
+  sum(e2.ethanolweightedtvg) as tvgsum
+from ethanolweightedtvg as e
+inner join hourday as hd on (hd.hourdayid = e.hourdayid)
+inner join hourday as ihd on (ihd.hourdayid = e.initialhourdayid)
+inner join hourday as ahd on (ahd.dayid = hd.dayid and ahd.hourid >= ihd.hourid and ahd.hourid <= hd.hourid)
+inner join ethanolweightedtvg e2 on (e2.hourdayid = ahd.hourdayid and e2.initialhourdayid = e.initialhourdayid
+and e2.monthid = e.monthid and e2.sourcetypeid = e.sourcetypeid and e2.fueltypeid = e.fueltypeid and e2.modelyearid = e.modelyearid and e2.polprocessid = e.polprocessid)
+where hd.hourid >= ihd.hourid
+group by e.hourdayid, e.initialhourdayid, e.monthid, e.sourcetypeid, e.fueltypeid, e.modelyearid, e.polprocessid;
 
-insert into tvgSumIH (hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, modelYearID, polProcessID, tvgSum)
-select e.hourDayID, e.initialHourDayID, e.monthID, e.sourceTypeID, e.fuelTypeID, e.modelYearID, e.polProcessID,
-	0 as tvgSum
-from EthanolWeightedTVG as e
-inner join hourDay as hd on (hd.hourDayID = e.hourDayID)
-inner join hourDay as ihd on (ihd.hourDayID = e.initialHourDayID)
-where hd.hourID < ihd.hourID
-group by e.hourDayID, e.initialHourDayID, e.monthID, e.sourceTypeID, e.fuelTypeID, e.modelYearID, e.polProcessID;
+insert into tvgsumih (hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, modelyearid, polprocessid, tvgsum)
+select e.hourdayid, e.initialhourdayid, e.monthid, e.sourcetypeid, e.fueltypeid, e.modelyearid, e.polprocessid,
+  0 as tvgsum
+from ethanolweightedtvg as e
+inner join hourday as hd on (hd.hourdayid = e.hourdayid)
+inner join hourday as ihd on (ihd.hourdayid = e.initialhourdayid)
+where hd.hourid < ihd.hourid
+group by e.hourdayid, e.initialhourdayid, e.monthid, e.sourcetypeid, e.fueltypeid, e.modelyearid, e.polprocessid;
 
--- @algorithm tvgSumI24 = Sum of TVG hourly from initial hour I to the last hour of the day
-insert into tvgSumI24 (hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, modelYearID, polProcessID, tvgSum)
-select e.hourDayID, e.initialHourDayID, e.monthID, e.sourceTypeID, e.fuelTypeID, e.modelYearID, e.polProcessID,
-	sum(e2.ethanolWeightedTVG) as tvgSum
-from EthanolWeightedTVG as e
-inner join hourDay as hd on (hd.hourDayID = e.hourDayID)
-inner join hourDay as ihd on (ihd.hourDayID = e.initialHourDayID)
-inner join hourDay as ahd on (ahd.dayID = hd.dayID and ahd.hourID >= ihd.hourID and ahd.hourID <= 24)
-inner join EthanolWeightedTVG e2 on (e2.hourDayID = ahd.hourDayID and e2.initialHourDayID = e.initialHourDayID
-and e2.monthID = e.monthID and e2.sourceTypeID = e.sourceTypeID and e2.fuelTypeID = e.fuelTypeID and e2.modelYearID = e.modelYearID and e2.polProcessID = e.polProcessID)
-group by e.hourDayID, e.initialHourDayID, e.monthID, e.sourceTypeID, e.fuelTypeID, e.modelYearID, e.polProcessID;
+-- @algorithm tvgsumi24 = sum of tvg hourly from initial hour i to the last hour of the day
+insert into tvgsumi24 (hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, modelyearid, polprocessid, tvgsum)
+select e.hourdayid, e.initialhourdayid, e.monthid, e.sourcetypeid, e.fueltypeid, e.modelyearid, e.polprocessid,
+  sum(e2.ethanolweightedtvg) as tvgsum
+from ethanolweightedtvg as e
+inner join hourday as hd on (hd.hourdayid = e.hourdayid)
+inner join hourday as ihd on (ihd.hourdayid = e.initialhourdayid)
+inner join hourday as ahd on (ahd.dayid = hd.dayid and ahd.hourid >= ihd.hourid and ahd.hourid <= 24)
+inner join ethanolweightedtvg e2 on (e2.hourdayid = ahd.hourdayid and e2.initialhourdayid = e.initialhourdayid
+and e2.monthid = e.monthid and e2.sourcetypeid = e.sourcetypeid and e2.fueltypeid = e.fueltypeid and e2.modelyearid = e.modelyearid and e2.polprocessid = e.polprocessid)
+group by e.hourdayid, e.initialhourdayid, e.monthid, e.sourcetypeid, e.fueltypeid, e.modelyearid, e.polprocessid;
 
--- @algorithm tvgSum1H = Sum of TVG hourly from the first hour of the day to hour H
-insert into tvgSum1H (hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, modelYearID, polProcessID, tvgSum)
-select e.hourDayID, e.initialHourDayID, e.monthID, e.sourceTypeID, e.fuelTypeID, e.modelYearID, e.polProcessID,
-	sum(e2.ethanolWeightedTVG) as tvgSum
-from EthanolWeightedTVG as e
-inner join hourDay as hd on (hd.hourDayID = e.hourDayID)
-inner join hourDay as ihd on (ihd.hourDayID = e.initialHourDayID)
-inner join hourDay as ahd on (ahd.dayID = hd.dayID and ahd.hourID >= 1 and ahd.hourID <= hd.hourID)
-inner join hourDay as hd1 on (hd1.dayID = hd.dayID and hd1.hourID = 1)
-inner join EthanolWeightedTVG e2 on (e2.hourDayID = ahd.hourDayID and e2.initialHourDayID = hd1.hourDayID
-and e2.monthID = e.monthID and e2.sourceTypeID = e.sourceTypeID and e2.fuelTypeID = e.fuelTypeID and e2.modelYearID = e.modelYearID and e2.polProcessID = e.polProcessID)
-group by e.hourDayID, e.initialHourDayID, e.monthID, e.sourceTypeID, e.fuelTypeID, e.modelYearID, e.polProcessID;
+-- @algorithm tvgsum1h = sum of tvg hourly from the first hour of the day to hour h
+insert into tvgsum1h (hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, modelyearid, polprocessid, tvgsum)
+select e.hourdayid, e.initialhourdayid, e.monthid, e.sourcetypeid, e.fueltypeid, e.modelyearid, e.polprocessid,
+  sum(e2.ethanolweightedtvg) as tvgsum
+from ethanolweightedtvg as e
+inner join hourday as hd on (hd.hourdayid = e.hourdayid)
+inner join hourday as ihd on (ihd.hourdayid = e.initialhourdayid)
+inner join hourday as ahd on (ahd.dayid = hd.dayid and ahd.hourid >= 1 and ahd.hourid <= hd.hourid)
+inner join hourday as hd1 on (hd1.dayid = hd.dayid and hd1.hourid = 1)
+inner join ethanolweightedtvg e2 on (e2.hourdayid = ahd.hourdayid and e2.initialhourdayid = hd1.hourdayid
+and e2.monthid = e.monthid and e2.sourcetypeid = e.sourcetypeid and e2.fueltypeid = e.fueltypeid and e2.modelyearid = e.modelyearid and e2.polprocessid = e.polprocessid)
+group by e.hourdayid, e.initialhourdayid, e.monthid, e.sourcetypeid, e.fueltypeid, e.modelyearid, e.polprocessid;
 
--- @algorithm tvgSumH24 = Sum of TVG hourly from after hour H to the last hour of the day
-insert into tvgSumH24 (hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, modelYearID, polProcessID, tvgSum)
-select e.hourDayID, e.initialHourDayID, e.monthID, e.sourceTypeID, e.fuelTypeID, e.modelYearID, e.polProcessID,
-	sum(e2.ethanolWeightedTVG) as tvgSum
-from EthanolWeightedTVG as e
-inner join hourDay as hd on (hd.hourDayID = e.hourDayID)
-inner join hourDay as ihd on (ihd.hourDayID = e.initialHourDayID)
-inner join hourDay as ahd on (ahd.dayID = hd.dayID and ahd.hourID > hd.hourID and ahd.hourID <= 24)
-inner join EthanolWeightedTVG e2 on (e2.hourDayID = ahd.hourDayID and e2.initialHourDayID = e.initialHourDayID
-and e2.monthID = e.monthID and e2.sourceTypeID = e.sourceTypeID and e2.fuelTypeID = e.fuelTypeID and e2.modelYearID = e.modelYearID and e2.polProcessID = e.polProcessID)
-group by e.hourDayID, e.initialHourDayID, e.monthID, e.sourceTypeID, e.fuelTypeID, e.modelYearID, e.polProcessID;
+-- @algorithm tvgsumh24 = sum of tvg hourly from after hour h to the last hour of the day
+insert into tvgsumh24 (hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, modelyearid, polprocessid, tvgsum)
+select e.hourdayid, e.initialhourdayid, e.monthid, e.sourcetypeid, e.fueltypeid, e.modelyearid, e.polprocessid,
+  sum(e2.ethanolweightedtvg) as tvgsum
+from ethanolweightedtvg as e
+inner join hourday as hd on (hd.hourdayid = e.hourdayid)
+inner join hourday as ihd on (ihd.hourdayid = e.initialhourdayid)
+inner join hourday as ahd on (ahd.dayid = hd.dayid and ahd.hourid > hd.hourid and ahd.hourid <= 24)
+inner join ethanolweightedtvg e2 on (e2.hourdayid = ahd.hourdayid and e2.initialhourdayid = e.initialhourdayid
+and e2.monthid = e.monthid and e2.sourcetypeid = e.sourcetypeid and e2.fueltypeid = e.fueltypeid and e2.modelyearid = e.modelyearid and e2.polprocessid = e.polprocessid)
+group by e.hourdayid, e.initialhourdayid, e.monthid, e.sourcetypeid, e.fueltypeid, e.modelyearid, e.polprocessid;
 
--- Fill the first soaking day (soakDayID=1)
--- Soak Day 1, including X0 (TVGDaily)
+-- fill the first soaking day (soakdayid=1)
+-- soak day 1, including x0 (tvgdaily)
 
--- @algorithm TVGdaily[soakDayID=1] = tvgSumIH.
--- Xn[soakDayID=1] = tvgSumIH.
-insert into TVG (soakDayID, hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, 
-	modelYearID, polProcessID,
-	TVGdaily, Xn,
-	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM, tvgSum1H, tvgSumH24)
-select 1 as soakDayID, e.hourDayID, e.initialHourDayID, e.monthID, e.sourceTypeID, e.fuelTypeID, 
-	e.modelYearID, e.polProcessID,
-	sih.tvgSum as TVGdaily,
-	sih.tvgSum as Xn,
-	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM,
-	s1h.tvgSum as tvgSum1H,
-	coalesce(sh24.tvgSum,0) as tvgSumH24
-from EthanolWeightedTVG e
-inner join tvgSum1H s1h on (s1h.hourDayID = e.hourDayID and s1h.initialHourDayID = e.initialHourDayID and s1h.monthID = e.monthID and s1h.sourceTypeID = e.sourceTypeID and s1h.fuelTypeID = e.fuelTypeID and s1h.modelYearID = e.modelYearID and s1h.polProcessID = e.polProcessID)
-inner join tvgSumIH sih on (sih.hourDayID = e.hourDayID and sih.initialHourDayID = e.initialHourDayID and sih.monthID = e.monthID and sih.sourceTypeID = e.sourceTypeID and sih.fuelTypeID = e.fuelTypeID and sih.modelYearID = e.modelYearID and sih.polProcessID = e.polProcessID)
-left outer join tvgSumH24 sh24 on (sh24.hourDayID = e.hourDayID and sh24.initialHourDayID = e.initialHourDayID and sh24.monthID = e.monthID and sh24.sourceTypeID = e.sourceTypeID and sh24.fuelTypeID = e.fuelTypeID and sh24.modelYearID = e.modelYearID and sh24.polProcessID = e.polProcessID);
+-- @algorithm tvgdaily[soakdayid=1] = tvgsumih.
+-- xn[soakdayid=1] = tvgsumih.
+insert into tvg (soakdayid, hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, 
+  modelyearid, polprocessid,
+  tvgdaily, xn,
+  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim, tvgsum1h, tvgsumh24)
+select 1 as soakdayid, e.hourdayid, e.initialhourdayid, e.monthid, e.sourcetypeid, e.fueltypeid, 
+  e.modelyearid, e.polprocessid,
+  sih.tvgsum as tvgdaily,
+  sih.tvgsum as xn,
+  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim,
+  s1h.tvgsum as tvgsum1h,
+  coalesce(sh24.tvgsum,0) as tvgsumh24
+from ethanolweightedtvg e
+inner join tvgsum1h s1h on (s1h.hourdayid = e.hourdayid and s1h.initialhourdayid = e.initialhourdayid and s1h.monthid = e.monthid and s1h.sourcetypeid = e.sourcetypeid and s1h.fueltypeid = e.fueltypeid and s1h.modelyearid = e.modelyearid and s1h.polprocessid = e.polprocessid)
+inner join tvgsumih sih on (sih.hourdayid = e.hourdayid and sih.initialhourdayid = e.initialhourdayid and sih.monthid = e.monthid and sih.sourcetypeid = e.sourcetypeid and sih.fueltypeid = e.fueltypeid and sih.modelyearid = e.modelyearid and sih.polprocessid = e.polprocessid)
+left outer join tvgsumh24 sh24 on (sh24.hourdayid = e.hourdayid and sh24.initialhourdayid = e.initialhourdayid and sh24.monthid = e.monthid and sh24.sourcetypeid = e.sourcetypeid and sh24.fueltypeid = e.fueltypeid and sh24.modelyearid = e.modelyearid and sh24.polprocessid = e.polprocessid);
 
--- inner join tvgSumH24 sh24 on (sh24.hourDayID = e.hourDayID and sh24.initialHourDayID = e.initialHourDayID and sh24.monthID = e.monthID and sh24.sourceTypeID = e.sourceTypeID and sh24.fuelTypeID = e.fuelTypeID and sh24.modelYearID = e.modelYearID and sh24.polProcessID = e.polProcessID)
+-- inner join tvgsumh24 sh24 on (sh24.hourdayid = e.hourdayid and sh24.initialhourdayid = e.initialhourdayid and sh24.monthid = e.monthid and sh24.sourcetypeid = e.sourcetypeid and sh24.fueltypeid = e.fueltypeid and sh24.modelyearid = e.modelyearid and sh24.polprocessid = e.polprocessid)
 
--- Soak Day 2
+-- soak day 2
 
--- @algorithm TVGdaily[soakDayID=2] = TVGdaily[soakDayID=1].
--- Xn[soakDayID=2] = ((1-backPurgeFactor)*least(tvgSumI24,averageCanisterCapacity))+tvgSum1H.
-insert into TVG (soakDayID, hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, 
-	modelYearID, polProcessID,
-	TVGdaily, Xn,
-	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM, tvgSum1H, tvgSumH24)
-select 2 as soakDayID, e.hourDayID, e.initialHourDayID, e.monthID, e.sourceTypeID, e.fuelTypeID, 
-	e.modelYearID, e.polProcessID,
-	TVGdaily as TVGdaily,
-	(((1-backPurgeFactor)*least(si24.tvgSum,averageCanisterCapacity))+tvgSum1H) as Xn,
-	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM, tvgSum1H, tvgSumH24
-from TVG e
-inner join tvgSumI24 si24 on (si24.hourDayID = e.hourDayID and si24.initialHourDayID = e.initialHourDayID and si24.monthID = e.monthID and si24.sourceTypeID = e.sourceTypeID and si24.fuelTypeID = e.fuelTypeID and si24.modelYearID = e.modelYearID and si24.polProcessID = e.polProcessID)
-where soakDayID=2-1;
+-- @algorithm tvgdaily[soakdayid=2] = tvgdaily[soakdayid=1].
+-- xn[soakdayid=2] = ((1-backpurgefactor)*least(tvgsumi24,averagecanistercapacity))+tvgsum1h.
+insert into tvg (soakdayid, hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, 
+  modelyearid, polprocessid,
+  tvgdaily, xn,
+  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim, tvgsum1h, tvgsumh24)
+select 2 as soakdayid, e.hourdayid, e.initialhourdayid, e.monthid, e.sourcetypeid, e.fueltypeid, 
+  e.modelyearid, e.polprocessid,
+  tvgdaily as tvgdaily,
+  (((1-backpurgefactor)*least(si24.tvgsum,averagecanistercapacity))+tvgsum1h) as xn,
+  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim, tvgsum1h, tvgsumh24
+from tvg e
+inner join tvgsumi24 si24 on (si24.hourdayid = e.hourdayid and si24.initialhourdayid = e.initialhourdayid and si24.monthid = e.monthid and si24.sourcetypeid = e.sourcetypeid and si24.fueltypeid = e.fueltypeid and si24.modelyearid = e.modelyearid and si24.polprocessid = e.polprocessid)
+where soakdayid=2-1;
 
--- Fill all subsequent soak days
-loop ##loop.soakDayID##;
-select distinct soakDayID from sampleVehicleSoaking where soakDayID > 2 order by soakDayID;
+-- fill all subsequent soak days
+loop ##loop.soakdayid##;
+select distinct soakdayid from samplevehiclesoaking where soakdayid > 2 order by soakdayid;
 
--- insert into TVG (soakDayID, hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, 
--- 	modelYearID, polProcessID,
--- 	TVGdaily, Xn,
--- 	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM)
--- select ##loop.soakDayID## as soakDayID, hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, 
--- 	modelYearID, polProcessID,
--- 	TVGdaily as TVGdaily,
--- 	Xn,
--- 	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM
--- from TVG
--- where soakDayID=##loop.soakDayID##-1
+-- insert into tvg (soakdayid, hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, 
+--  modelyearid, polprocessid,
+--  tvgdaily, xn,
+--  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim)
+-- select ##loop.soakdayid## as soakdayid, hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, 
+--  modelyearid, polprocessid,
+--  tvgdaily as tvgdaily,
+--  xn,
+--  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim
+-- from tvg
+-- where soakdayid=##loop.soakdayid##-1
 
--- insert into TVG (soakDayID, hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, 
--- 	modelYearID, polProcessID,
--- 	TVGdaily, Xn,
--- 	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM)
--- select ##loop.soakDayID## as soakDayID, hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, 
--- 	modelYearID, polProcessID,
--- 	TVGdaily as TVGdaily,
--- 	(((1-backPurgeFactor)*least(Xn,averageCanisterCapacity))+TVGdaily) as Xn,
--- 	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM
--- from TVG
--- where soakDayID=##loop.soakDayID##-1
+-- insert into tvg (soakdayid, hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, 
+--  modelyearid, polprocessid,
+--  tvgdaily, xn,
+--  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim)
+-- select ##loop.soakdayid## as soakdayid, hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, 
+--  modelyearid, polprocessid,
+--  tvgdaily as tvgdaily,
+--  (((1-backpurgefactor)*least(xn,averagecanistercapacity))+tvgdaily) as xn,
+--  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim
+-- from tvg
+-- where soakdayid=##loop.soakdayid##-1
 
--- @algorithm TVGdaily[soakDayID>2] = TVGdaily[soakDayID-1].
--- Xn[soakDayID>2] = ((1-backPurgeFactor)*least(Xn[soakDayID-1] + tvgSumH24,averageCanisterCapacity))+tvgSum1H.
-insert into TVG (soakDayID, hourDayID, initialHourDayID, monthID, sourceTypeID, fuelTypeID, 
-	modelYearID, polProcessID,
-	TVGdaily, Xn,
-	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM, tvgSum1H, tvgSumH24)
-select ##loop.soakDayID## as soakDayID, e.hourDayID, e.initialHourDayID, e.monthID, e.sourceTypeID, e.fuelTypeID, 
-	e.modelYearID, e.polProcessID,
-	TVGdaily as TVGdaily,
-	(((1-backPurgeFactor)*least(Xn + tvgSumH24,averageCanisterCapacity))+tvgSum1H) as Xn,
-	backPurgeFactor, averageCanisterCapacity, leakFraction, leakFractionIM, tvgSum1H, tvgSumH24
-from TVG e
-where soakDayID=##loop.soakDayID##-1;
+-- @algorithm tvgdaily[soakdayid>2] = tvgdaily[soakdayid-1].
+-- xn[soakdayid>2] = ((1-backpurgefactor)*least(xn[soakdayid-1] + tvgsumh24,averagecanistercapacity))+tvgsum1h.
+insert into tvg (soakdayid, hourdayid, initialhourdayid, monthid, sourcetypeid, fueltypeid, 
+  modelyearid, polprocessid,
+  tvgdaily, xn,
+  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim, tvgsum1h, tvgsumh24)
+select ##loop.soakdayid## as soakdayid, e.hourdayid, e.initialhourdayid, e.monthid, e.sourcetypeid, e.fueltypeid, 
+  e.modelyearid, e.polprocessid,
+  tvgdaily as tvgdaily,
+  (((1-backpurgefactor)*least(xn + tvgsumh24,averagecanistercapacity))+tvgsum1h) as xn,
+  backpurgefactor, averagecanistercapacity, leakfraction, leakfractionim, tvgsum1h, tvgsumh24
+from tvg e
+where soakdayid=##loop.soakdayid##-1;
 
-end loop ##loop.soakDayID##;
+end loop ##loop.soakdayid##;
 
 -- 
--- TVV-5: Calculate Cummulative Tank Vapor Vented (TVV)
+-- tvv-5: calculate cummulative tank vapor vented (tvv)
 --
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'TVV-5';
-drop table if exists CummulativeTankVaporVented;
+-- insert into eventlog (eventtime, eventname) select now(), 'TVV-5';
+drop table if exists cummulativetankvaporvented;
 
-create table CummulativeTankVaporVented (
-	soakDayID smallint(6) not null,
-	regClassID smallint(6) not null,
-	ageID smallint(6) not null,
-	polProcessID int not null,
-	dayID smallint(6) not null,
-	hourID smallint(6) not null,
-	initialHourDayID smallint(6) not null,
-	monthID smallint(6) not null,
-	sourceTypeID smallint(6) not null,
-	fuelTypeID smallint(6) not null,
-	tankVaporVented float null,
-	tankVaporVentedIM float null,
-	hourDayID smallint(6) not null,
-	priorHourID smallint(6) not null,
-	primary key (soakDayID, regClassID, ageID, polProcessID, dayID, hourID, initialHourDayID, monthID, sourceTypeID, fuelTypeID),
-	index (priorHourID)
+create table cummulativetankvaporvented (
+  soakdayid smallint(6) not null,
+  regclassid smallint(6) not null,
+  ageid smallint(6) not null,
+  polprocessid int not null,
+  dayid smallint(6) not null,
+  hourid smallint(6) not null,
+  initialhourdayid smallint(6) not null,
+  monthid smallint(6) not null,
+  sourcetypeid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  tankvaporvented float null,
+  tankvaporventedim float null,
+  hourdayid smallint(6) not null,
+  priorhourid smallint(6) not null,
+  primary key (soakdayid, regclassid, ageid, polprocessid, dayid, hourid, initialhourdayid, monthid, sourcetypeid, fueltypeid),
+  index (priorhourid)
 );
 
--- @algorithm Include leaking using database-driven TVV and Leak equations.
--- tankVaporVented = (1-leakFraction)*(TVV equation) + leakFraction*(Leak equation).
--- tankVaporVentedIM = (1-leakFractionIM)*(TVV equation) + leakFractionIM*(Leak equation).
-insert into CummulativeTankVaporVented (soakDayID, regClassID, ageID, polProcessID, dayID, hourID, initialHourDayID, 
-	monthID, sourceTypeID, fuelTypeID, tankVaporVented, tankVaporVentedIM,
-	hourDayID, priorHourID)
-select t.soakDayID, coeffs.regClassID, acat.ageID, coeffs.polProcessID, hd.dayID, hd.hourID, t.initialHourDayID,
-	t.monthID, t.sourceTypeID, t.fuelTypeID,
-	regClassFractionOfSourceTypeModelYearFuel*greatest(0.0,
-		(1.0-coeffs.leakFraction)*(##tvvEquations##)
-		+ (coeffs.leakFraction)*(##leakEquations##)
-	) as tankVaporVented,
-	regClassFractionOfSourceTypeModelYearFuel*greatest(0.0,
-		(1.0-coalesce(coeffs.leakFractionIM,coeffs.leakFraction))*(##tvvEquations##)
-		+ coalesce(coeffs.leakFractionIM,coeffs.leakFraction)*(##leakEquations##)
-	) as tankVaporVentedIM,
-	t.hourDayID,
-	mod(hd.hourID-1-1+24,24)+1
-from stmyTVVEquations coeffs
-inner join TVG t on (
-	t.sourceTypeID=coeffs.sourceTypeID
-	and t.modelYearID=coeffs.modelYearID
-	and t.fuelTypeID=coeffs.fuelTypeID
-	and t.polProcessID=coeffs.polProcessID)
-inner join AgeCategory acat on (acat.ageID = ##context.year## - coeffs.modelYearID)
-inner join HourDay hd on (hd.hourDayID = t.hourDayID);
+-- @algorithm include leaking using database-driven tvv and leak equations.
+-- tankvaporvented = (1-leakfraction)*(tvv equation) + leakfraction*(leak equation).
+-- tankvaporventedim = (1-leakfractionim)*(tvv equation) + leakfractionim*(leak equation).
+insert into cummulativetankvaporvented (soakdayid, regclassid, ageid, polprocessid, dayid, hourid, initialhourdayid, 
+  monthid, sourcetypeid, fueltypeid, tankvaporvented, tankvaporventedim,
+  hourdayid, priorhourid)
+select t.soakdayid, coeffs.regclassid, acat.ageid, coeffs.polprocessid, hd.dayid, hd.hourid, t.initialhourdayid,
+  t.monthid, t.sourcetypeid, t.fueltypeid,
+  regclassfractionofsourcetypemodelyearfuel*greatest(0.0,
+    (1.0-coeffs.leakfraction)*(##tvvequations##)
+    + (coeffs.leakfraction)*(##leakequations##)
+  ) as tankvaporvented,
+  regclassfractionofsourcetypemodelyearfuel*greatest(0.0,
+    (1.0-coalesce(coeffs.leakfractionim,coeffs.leakfraction))*(##tvvequations##)
+    + coalesce(coeffs.leakfractionim,coeffs.leakfraction)*(##leakequations##)
+  ) as tankvaporventedim,
+  t.hourdayid,
+  mod(hd.hourid-1-1+24,24)+1
+from stmytvvequations coeffs
+inner join tvg t on (
+  t.sourcetypeid=coeffs.sourcetypeid
+  and t.modelyearid=coeffs.modelyearid
+  and t.fueltypeid=coeffs.fueltypeid
+  and t.polprocessid=coeffs.polprocessid)
+inner join agecategory acat on (acat.ageid = ##context.year## - coeffs.modelyearid)
+inner join hourday hd on (hd.hourdayid = t.hourdayid);
 
-analyze table CummulativeTankVaporVented;
+analyze table cummulativetankvaporvented;
 
 -- 
--- TVV-6: Calculate Unweighted Hourly TVV Emission by Regulatory Class and Vehicle Age
+-- tvv-6: calculate unweighted hourly tvv emission by regulatory class and vehicle age
 --
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'TVV-6';
-drop table if exists UnweightedHourlyTVV;
+-- insert into eventlog (eventtime, eventname) select now(), 'TVV-6';
+drop table if exists unweightedhourlytvv;
 
-create table UnweightedHourlyTVV (
-	zoneID int(11) not null default ##context.iterLocation.zoneRecordID##,
-	regClassID smallint(6) not null,
-	ageID smallint(6) not null,
-	polProcessID int not null,
-	hourDayID smallint(6) not null,
-	initialHourDayID smallint(6) not null,
-	monthID smallint(6) not null,
-	sourceTypeID smallint(6) not null,
-	fuelTypeID smallint(6) not null,
-	soakDayID smallint(6) not null,
-	unweightedHourlyTVV float null,
-	unweightedHourlyTVVIM float null,
-	index (sourceTypeID, zoneID, monthID, hourDayID, initialHourDayID, fuelTypeID, soakDayID),
-	index (soakDayID, sourceTypeID, zoneID, monthID, hourDayID, initialHourDayID, fuelTypeID)
+create table unweightedhourlytvv (
+  zoneid int(11) not null default ##context.iterlocation.zonerecordid##,
+  regclassid smallint(6) not null,
+  ageid smallint(6) not null,
+  polprocessid int not null,
+  hourdayid smallint(6) not null,
+  initialhourdayid smallint(6) not null,
+  monthid smallint(6) not null,
+  sourcetypeid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  soakdayid smallint(6) not null,
+  unweightedhourlytvv float null,
+  unweightedhourlytvvim float null,
+  index (sourcetypeid, zoneid, monthid, hourdayid, initialhourdayid, fueltypeid, soakdayid),
+  index (soakdayid, sourcetypeid, zoneid, monthid, hourdayid, initialhourdayid, fueltypeid)
 );
 
--- @algorithm unweightedHourlyTVV = tankVaporVented[hourID] - tankVaporVented[hourID-1].
--- unweightedHourlyTVVIM = tankVaporVentedIM[hourID] - tankVaporVentedIM[hourID-1].
--- @condition only when coldSoakTankTemperature[hourID] > coldSoakTankTemperature[hourID-1], 0 otherwise.
-insert into UnweightedHourlyTVV (soakDayID, regClassID, ageID, polProcessID, hourDayID, initialHourDayID, 
-	monthID, sourceTypeID, fuelTypeID, unweightedHourlyTVV, unweightedHourlyTVVIM)
-select ctv1.soakDayID, ctv1.regClassID, ctv1.ageID, ctv1.polProcessID, ctv1.hourDayID, ctv1.initialHourDayID, 
-	ctv1.monthID, ctv1.sourceTypeID, ctv1.fuelTypeID,
-  	case when (ctt1.coldSoakTankTemperature <= ctt2.coldSoakTankTemperature) then
-    	0.0
-  	else greatest(0,(ctv1.tankVaporVented-coalesce(ctv2.tankVaporVented,0.0)))
-  	end
-  	as unweightedHourlyTVV,
-  	case when (ctt1.coldSoakTankTemperature <= ctt2.coldSoakTankTemperature) then
-  	0.0
-  	else greatest(0,(ctv1.tankVaporVentedIM-coalesce(ctv2.tankVaporVentedIM,0.0)))
-  	end
-  	as unweightedHourlyTVVIM
-from CummulativeTankVaporVented ctv1
-left join CummulativeTankVaporVented ctv2 on (
-	ctv1.soakDayID = ctv2.soakDayID
-	and ctv1.regClassID = ctv2.regClassID and ctv1.ageID = ctv2.ageID
-	and ctv1.polProcessID = ctv2.polProcessID and ctv1.initialHourDayID = ctv2.initialHourDayID 
-	and ctv1.monthID = ctv2.monthID and ctv1.sourceTypeID = ctv2.sourceTypeID
-	and ctv1.fuelTypeID = ctv2.fuelTypeID
-	and ctv1.priorHourID = ctv2.hourID
-	and ctv1.dayID = ctv2.dayID)
+-- @algorithm unweightedhourlytvv = tankvaporvented[hourid] - tankvaporvented[hourid-1].
+-- unweightedhourlytvvim = tankvaporventedim[hourid] - tankvaporventedim[hourid-1].
+-- @condition only when coldsoaktanktemperature[hourid] > coldsoaktanktemperature[hourid-1], 0 otherwise.
+insert into unweightedhourlytvv (soakdayid, regclassid, ageid, polprocessid, hourdayid, initialhourdayid, 
+  monthid, sourcetypeid, fueltypeid, unweightedhourlytvv, unweightedhourlytvvim)
+select ctv1.soakdayid, ctv1.regclassid, ctv1.ageid, ctv1.polprocessid, ctv1.hourdayid, ctv1.initialhourdayid, 
+  ctv1.monthid, ctv1.sourcetypeid, ctv1.fueltypeid,
+    case when (ctt1.coldsoaktanktemperature <= ctt2.coldsoaktanktemperature) then
+      0.0
+    else greatest(0,(ctv1.tankvaporvented-coalesce(ctv2.tankvaporvented,0.0)))
+    end
+    as unweightedhourlytvv,
+    case when (ctt1.coldsoaktanktemperature <= ctt2.coldsoaktanktemperature) then
+    0.0
+    else greatest(0,(ctv1.tankvaporventedim-coalesce(ctv2.tankvaporventedim,0.0)))
+    end
+    as unweightedhourlytvvim
+from cummulativetankvaporvented ctv1
+left join cummulativetankvaporvented ctv2 on (
+  ctv1.soakdayid = ctv2.soakdayid
+  and ctv1.regclassid = ctv2.regclassid and ctv1.ageid = ctv2.ageid
+  and ctv1.polprocessid = ctv2.polprocessid and ctv1.initialhourdayid = ctv2.initialhourdayid 
+  and ctv1.monthid = ctv2.monthid and ctv1.sourcetypeid = ctv2.sourcetypeid
+  and ctv1.fueltypeid = ctv2.fueltypeid
+  and ctv1.priorhourid = ctv2.hourid
+  and ctv1.dayid = ctv2.dayid)
 left join coldsoaktanktemperature ctt1 on (
-  	ctt1.hourID = ctv1.HourID and
-  	ctt1.monthID = ctv1.monthID)
+    ctt1.hourid = ctv1.hourid and
+    ctt1.monthid = ctv1.monthid)
 left join coldsoaktanktemperature ctt2 on (
-  	ctt2.hourID = ctv1.priorHourID and
-  	ctt2.monthID = ctv1.monthID);
+    ctt2.hourid = ctv1.priorhourid and
+    ctt2.monthid = ctv1.monthid);
 
-analyze table UnweightedHourlyTVV;
+analyze table unweightedhourlytvv;
 
 -- 
--- TVV-7: Calculate Weighted Hourly TVV Across Initial/Current pair
+-- tvv-7: calculate weighted hourly tvv across initial/current pair
 --
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'TVV-7';
+-- insert into eventlog (eventtime, eventname) select now(), 'TVV-7';
 
--- @algorithm Add coldSoakInitialHourFraction entries for soaking days beyond the first day
-insert into coldSoakInitialHourFraction (soakDayID, sourceTypeID, zoneID, monthID,
-	hourDayID,
-	initialHourDayID,
-	coldSoakInitialHourFraction)
-select s.soakDayID, s.sourceTypeID, ##context.iterLocation.zoneRecordID## as zoneID, ##context.monthID## as monthID,
-	hd.hourDayID,
-	ihd.hourDayID as initialHourDayID,
-	soakFraction as coldSoakInitialHourFraction
-from sampleVehicleSoaking s 
-inner join HourDay hd on (hd.hourID=s.hourID and hd.dayID=s.dayID)
-inner join HourDay ihd on (ihd.hourID=1 and ihd.dayID=s.dayID)
-where s.soakDayID > 1;
+-- @algorithm add coldsoakinitialhourfraction entries for soaking days beyond the first day
+insert into coldsoakinitialhourfraction (soakdayid, sourcetypeid, zoneid, monthid,
+  hourdayid,
+  initialhourdayid,
+  coldsoakinitialhourfraction)
+select s.soakdayid, s.sourcetypeid, ##context.iterlocation.zonerecordid## as zoneid, ##context.monthid## as monthid,
+  hd.hourdayid,
+  ihd.hourdayid as initialhourdayid,
+  soakfraction as coldsoakinitialhourfraction
+from samplevehiclesoaking s 
+inner join hourday hd on (hd.hourid=s.hourid and hd.dayid=s.dayid)
+inner join hourday ihd on (ihd.hourid=1 and ihd.dayid=s.dayid)
+where s.soakdayid > 1;
 
-drop table if exists HourlyTVV;
+drop table if exists hourlytvv;
 
-create table HourlyTVV (
-	regClassID smallint(6) not null,
-	ageID smallint(6) not null,
-	polProcessID int not null,
-	hourDayID smallint(6) not null,
-	monthID smallint(6) not null,
-	sourceTypeID smallint(6) not null,
-	fuelTypeID smallint(6) not null,
-	hourlyTVV float null,
-	hourlyTVVIM float null,
-	primary key (regClassID, ageID, polProcessID, hourDayID, monthID, sourceTypeID, fuelTypeID)
+create table hourlytvv (
+  regclassid smallint(6) not null,
+  ageid smallint(6) not null,
+  polprocessid int not null,
+  hourdayid smallint(6) not null,
+  monthid smallint(6) not null,
+  sourcetypeid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  hourlytvv float null,
+  hourlytvvim float null,
+  primary key (regclassid, ageid, polprocessid, hourdayid, monthid, sourcetypeid, fueltypeid)
 );
 
--- Handle hourDayIDs <= the peak hour
-drop table if exists HourlyTVVTemp;
+-- handle hourdayids <= the peak hour
+drop table if exists hourlytvvtemp;
 
-create table HourlyTVVTemp (
-	regClassID smallint(6) not null,
-	ageID smallint(6) not null,
-	polProcessID int not null,
-	hourDayID smallint(6) not null,
-	monthID smallint(6) not null,
-	sourceTypeID smallint(6) not null,
-	fuelTypeID smallint(6) not null,
-	soakDayID smallint not null,
-	hourlyTVV float null,
-	hourlyTVVIM float null,
-	index (regClassID, ageID, polProcessID, hourDayID, monthID, sourceTypeID, fuelTypeID, soakDayID)
+create table hourlytvvtemp (
+  regclassid smallint(6) not null,
+  ageid smallint(6) not null,
+  polprocessid int not null,
+  hourdayid smallint(6) not null,
+  monthid smallint(6) not null,
+  sourcetypeid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  soakdayid smallint not null,
+  hourlytvv float null,
+  hourlytvvim float null,
+  index (regclassid, ageid, polprocessid, hourdayid, monthid, sourcetypeid, fueltypeid, soakdayid)
 );
 
--- @algorithm hourlyTVV = unweightedHourlyTVV * coldSoakInitialHourFraction.
--- hourlyTVVIM = unweightedHourlyTVVIM * coldSoakInitialHourFraction.
-insert into HourlyTVVTemp (soakDayID, regClassID, ageID, polProcessID, hourDayID, monthID, sourceTypeID, fuelTypeID,
-	hourlyTVV, hourlyTVVIM)
-select uhtvv.soakDayID, uhtvv.regClassID, uhtvv.ageID, uhtvv.polProcessID, uhtvv.hourDayID, uhtvv.monthID, uhtvv.sourceTypeID, uhtvv.fuelTypeID,
-	(unweightedHourlyTVV*coldSoakInitialHourFraction) as hourlyTVV,
-	(unweightedHourlyTVVIM*coldSoakInitialHourFraction) as hourlyTVVIM
-from UnweightedHourlyTVV uhtvv
-inner join ColdSoakInitialHourFraction ihf on (
-	uhtvv.soakDayID = ihf.soakDayID
-	and uhtvv.sourceTypeID = ihf.sourceTypeID
-	and uhtvv.zoneID = ihf.zoneID and uhtvv.monthID = ihf.monthID 
-	and uhtvv.hourDayID = ihf.hourDayID and uhtvv.initialHourDayID = ihf.initialHourDayID);
+-- @algorithm hourlytvv = unweightedhourlytvv * coldsoakinitialhourfraction.
+-- hourlytvvim = unweightedhourlytvvim * coldsoakinitialhourfraction.
+insert into hourlytvvtemp (soakdayid, regclassid, ageid, polprocessid, hourdayid, monthid, sourcetypeid, fueltypeid,
+  hourlytvv, hourlytvvim)
+select uhtvv.soakdayid, uhtvv.regclassid, uhtvv.ageid, uhtvv.polprocessid, uhtvv.hourdayid, uhtvv.monthid, uhtvv.sourcetypeid, uhtvv.fueltypeid,
+  (unweightedhourlytvv*coldsoakinitialhourfraction) as hourlytvv,
+  (unweightedhourlytvvim*coldsoakinitialhourfraction) as hourlytvvim
+from unweightedhourlytvv uhtvv
+inner join coldsoakinitialhourfraction ihf on (
+  uhtvv.soakdayid = ihf.soakdayid
+  and uhtvv.sourcetypeid = ihf.sourcetypeid
+  and uhtvv.zoneid = ihf.zoneid and uhtvv.monthid = ihf.monthid 
+  and uhtvv.hourdayid = ihf.hourdayid and uhtvv.initialhourdayid = ihf.initialhourdayid);
 
--- @algorithm hourlyTVV = sum(hourlyTVV).
--- hourlyTVVIM = sum(hourlyTVVIM).
-insert into HourlyTVV (regClassID, ageID, polProcessID, hourDayID, monthID, sourceTypeID, fuelTypeID, hourlyTVV, hourlyTVVIM)
-select regClassID, ageID, polProcessID, hourDayID, monthID, sourceTypeID, fuelTypeID,
-	sum(hourlyTVV) as hourlyTVV,
-	sum(hourlyTVVIM) as hourlyTVVIM
-from HourlyTVVTemp
-group by regClassID, ageID, polProcessID, hourDayID, monthID, sourceTypeID, fuelTypeID
+-- @algorithm hourlytvv = sum(hourlytvv).
+-- hourlytvvim = sum(hourlytvvim).
+insert into hourlytvv (regclassid, ageid, polprocessid, hourdayid, monthid, sourcetypeid, fueltypeid, hourlytvv, hourlytvvim)
+select regclassid, ageid, polprocessid, hourdayid, monthid, sourcetypeid, fueltypeid,
+  sum(hourlytvv) as hourlytvv,
+  sum(hourlytvvim) as hourlytvvim
+from hourlytvvtemp
+group by regclassid, ageid, polprocessid, hourdayid, monthid, sourcetypeid, fueltypeid
 order by null;
 
--- Handle hourDayIDs > the peak hour
-drop table if exists CopyOfHourlyTVV;
-create table CopyOfHourlyTVV (
-	regClassID smallint(6) not null,
-	ageID smallint(6) not null,
-	polProcessID int not null,
-	dayID smallint(6) not null,
-	hourID smallint(6) not null,
-	monthID smallint(6) not null,
-	sourceTypeID smallint(6) not null,
-	fuelTypeID smallint(6) not null,
-	hourlyTVV float null,
-	hourlyTVVIM float null,
-	primary key (regClassID, ageID, polProcessID, dayID, hourID, monthID, sourceTypeID, fuelTypeID)
+-- handle hourdayids > the peak hour
+drop table if exists copyofhourlytvv;
+create table copyofhourlytvv (
+  regclassid smallint(6) not null,
+  ageid smallint(6) not null,
+  polprocessid int not null,
+  dayid smallint(6) not null,
+  hourid smallint(6) not null,
+  monthid smallint(6) not null,
+  sourcetypeid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  hourlytvv float null,
+  hourlytvvim float null,
+  primary key (regclassid, ageid, polprocessid, dayid, hourid, monthid, sourcetypeid, fueltypeid)
 );
-insert into CopyOfHourlyTVV (regClassID, ageID, polProcessID, dayID, hourID, 
-	monthID, sourceTypeID, fuelTypeID, hourlyTVV, hourlyTVVIM)
-select regClassID, ageID, polProcessID, dayID, hourID,
-	monthID, sourceTypeID, fuelTypeID, hourlyTVV, hourlyTVVIM 
-from HourlyTVV
-inner join HourDay on (HourDay.hourDayID=HourlyTVV.hourDayID);
+insert into copyofhourlytvv (regclassid, ageid, polprocessid, dayid, hourid, 
+  monthid, sourcetypeid, fueltypeid, hourlytvv, hourlytvvim)
+select regclassid, ageid, polprocessid, dayid, hourid,
+  monthid, sourcetypeid, fueltypeid, hourlytvv, hourlytvvim 
+from hourlytvv
+inner join hourday on (hourday.hourdayid=hourlytvv.hourdayid);
 
--- @algorithm Reduce TVV emissions for hours past the hour with the peak temperature.
--- hourlyTVV(with and without I/M) = hourlyTVV(with and without I/M) * 
+-- @algorithm reduce tvv emissions for hours past the hour with the peak temperature.
+-- hourlytvv(with and without i/m) = hourlytvv(with and without i/m) * 
 -- (0 when >= 5 hours past the peak, 0.0005 when >= 4 hours, 0.0040 when >= 3 hours, 0.0100 when >= 2 hours, 
 -- 0.0200 when >= 1 hour, 1.0 otherwise).
-insert into HourlyTVV (regClassID, ageID, polProcessID, hourDayID, monthID,
-	sourceTypeID, fuelTypeID, hourlyTVV, hourlyTVVIM)
-select htvv.regClassID, htvv.ageID, htvv.polProcessID, hd.hourDayID, htvv.monthID, htvv.sourceTypeID, htvv.fuelTypeID,
-	hourlyTVV * case 
-		when (hd.hourID-ph.peakHourID) >= 4 then 0.0005
-		when (hd.hourID-ph.peakHourID) >= 3 then 0.0040
-		when (hd.hourID-ph.peakHourID) >= 2 then 0.0100
-		when (hd.hourID-ph.peakHourID) >= 1 then 0.0200
-		end as hourlyTVV,
-	hourlyTVVIM * case 
-		when (hd.hourID-ph.peakHourID) >= 4 then 0.0005
-		when (hd.hourID-ph.peakHourID) >= 3 then 0.0040
-		when (hd.hourID-ph.peakHourID) >= 2 then 0.0100
-		when (hd.hourID-ph.peakHourID) >= 1 then 0.0200
-		end as hourlyTVVIM
-from CopyOfHourlyTVV htvv
-inner join PeakHourOfColdSoak ph on (htvv.monthID = ph.monthID and htvv.hourID = ph.peakHourID)
-inner join HourDay hd on (
-	hd.hourID > ph.peakHourID 
-	and hd.hourID < ph.peakHourID + 5 
-	and hd.dayID = htvv.dayID
+insert into hourlytvv (regclassid, ageid, polprocessid, hourdayid, monthid,
+  sourcetypeid, fueltypeid, hourlytvv, hourlytvvim)
+select htvv.regclassid, htvv.ageid, htvv.polprocessid, hd.hourdayid, htvv.monthid, htvv.sourcetypeid, htvv.fueltypeid,
+  hourlytvv * case 
+    when (hd.hourid-ph.peakhourid) >= 4 then 0.0005
+    when (hd.hourid-ph.peakhourid) >= 3 then 0.0040
+    when (hd.hourid-ph.peakhourid) >= 2 then 0.0100
+    when (hd.hourid-ph.peakhourid) >= 1 then 0.0200
+    end as hourlytvv,
+  hourlytvvim * case 
+    when (hd.hourid-ph.peakhourid) >= 4 then 0.0005
+    when (hd.hourid-ph.peakhourid) >= 3 then 0.0040
+    when (hd.hourid-ph.peakhourid) >= 2 then 0.0100
+    when (hd.hourid-ph.peakhourid) >= 1 then 0.0200
+    end as hourlytvvim
+from copyofhourlytvv htvv
+inner join peakhourofcoldsoak ph on (htvv.monthid = ph.monthid and htvv.hourid = ph.peakhourid)
+inner join hourday hd on (
+  hd.hourid > ph.peakhourid 
+  and hd.hourid < ph.peakhourid + 5 
+  and hd.dayid = htvv.dayid
 );
 
-analyze table HourlyTVV;
+analyze table hourlytvv;
 
--- TVV-8: Calculate I/M-Adjusted MeanBaseRates
+-- tvv-8: calculate i/m-adjusted meanbaserates
 --
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'TVV-8';
-drop table if exists WeightedMeanBaseRate;
+-- insert into eventlog (eventtime, eventname) select now(), 'TVV-8';
+drop table if exists weightedmeanbaserate;
 
-create table WeightedMeanBaseRate (
-	polProcessID int not null,
-	sourceTypeID smallint(6) not null,
-	regClassID smallint(6) not null,
-	fuelTypeID smallint(6) not null,
-	monthID smallint(6) not null,
-	hourDayID smallint(6) not null,
-	modelYearID smallint(6) not null,
-	opModeID smallint(6) not null,
-	weightedMeanBaseRate float not null,
-	weightedMeanBaseRateIM float not null,
-	tempAdjustment float null,
-	rvpAdjustment float null,
-	unadjustedWeightedMeanBaseRate float null,
-	primary key (polProcessID, sourceTypeID, regClassID, fuelTypeID, monthID, hourDayID, modelYearID, opModeID)
+create table weightedmeanbaserate (
+  polprocessid int not null,
+  sourcetypeid smallint(6) not null,
+  regclassid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  monthid smallint(6) not null,
+  hourdayid smallint(6) not null,
+  modelyearid smallint(6) not null,
+  opmodeid smallint(6) not null,
+  weightedmeanbaserate float not null,
+  weightedmeanbaserateim float not null,
+  tempadjustment float null,
+  rvpadjustment float null,
+  unadjustedweightedmeanbaserate float null,
+  primary key (polprocessid, sourcetypeid, regclassid, fueltypeid, monthid, hourdayid, modelyearid, opmodeid)
 );
 
--- For cold soak mode (opModeID=151)
--- Section WithRegClassID
+-- for cold soak mode (opmodeid=151)
+-- section withregclassid
 
--- @algorithm THC rate[opModeID=151 cold soak]=sum(sourceBinActivityFraction * hourlyTVV).
--- THC I/M rate[opModeID=151 cold soak]=sum(sourceBinActivityFraction * hourlyTVVIM).
-insert into WeightedMeanBaseRate (polProcessID, sourceTypeID, regClassID, fuelTypeID, monthID, hourDayID, 
-	modelYearID, opModeID, weightedMeanBaseRate, weightedMeanBaseRateIM)
-select htvv.polProcessID, htvv.sourceTypeID, sb.regClassID, sb.fuelTypeID, htvv.monthID, htvv.hourDayID, 
-	stmy.modelYearID, 151 as opModeID,
-	sum(sourceBinActivityFraction*hourlyTVV) as weightedMeanBaseRate,
-	sum(sourceBinActivityFraction*hourlyTVVIM) as weightedMeanBaseRateIM
-from HourlyTVV htvv
-inner join SourceTypeModelYear stmy on (stmy.modelYearID=##context.year##-htvv.ageID
-	and stmy.sourceTypeID=htvv.sourceTypeID)
-inner join SourceBinDistribution sbd on (sbd.sourceTypeModelYearID=stmy.sourceTypeModelYearID
-	and sbd.polProcessID=htvv.polProcessID)
-inner join SourceBin sb on (sb.sourceBinID=sbd.sourceBinID and sb.fuelTypeID=htvv.fuelTypeID
-	and sb.regClassID=htvv.regClassID)
-inner join FuelType on (FuelType.fuelTypeID = sb.fuelTypeID and subjectToEvapCalculations = 'Y')
-inner join PollutantProcessModelYear ppmy on (ppmy.polProcessID=sbd.polProcessID
-	and ppmy.modelYearID=stmy.modelYearID and ppmy.modelYearGroupID=sb.modelYearGroupID)
-group by htvv.polProcessID, htvv.sourceTypeID, sb.regClassID, sb.fuelTypeID, htvv.monthID, htvv.hourDayID, 
-	stmy.modelYearID
+-- @algorithm thc rate[opmodeid=151 cold soak]=sum(sourcebinactivityfraction * hourlytvv).
+-- thc i/m rate[opmodeid=151 cold soak]=sum(sourcebinactivityfraction * hourlytvvim).
+insert into weightedmeanbaserate (polprocessid, sourcetypeid, regclassid, fueltypeid, monthid, hourdayid, 
+  modelyearid, opmodeid, weightedmeanbaserate, weightedmeanbaserateim)
+select htvv.polprocessid, htvv.sourcetypeid, sb.regclassid, sb.fueltypeid, htvv.monthid, htvv.hourdayid, 
+  stmy.modelyearid, 151 as opmodeid,
+  sum(sourcebinactivityfraction*hourlytvv) as weightedmeanbaserate,
+  sum(sourcebinactivityfraction*hourlytvvim) as weightedmeanbaserateim
+from hourlytvv htvv
+inner join sourcetypemodelyear stmy on (stmy.modelyearid=##context.year##-htvv.ageid
+  and stmy.sourcetypeid=htvv.sourcetypeid)
+inner join sourcebindistribution sbd on (sbd.sourcetypemodelyearid=stmy.sourcetypemodelyearid
+  and sbd.polprocessid=htvv.polprocessid)
+inner join sourcebin sb on (sb.sourcebinid=sbd.sourcebinid and sb.fueltypeid=htvv.fueltypeid
+  and sb.regclassid=htvv.regclassid)
+inner join fueltype on (fueltype.fueltypeid = sb.fueltypeid and subjecttoevapcalculations = 'Y')
+inner join pollutantprocessmodelyear ppmy on (ppmy.polprocessid=sbd.polprocessid
+  and ppmy.modelyearid=stmy.modelyearid and ppmy.modelyeargroupid=sb.modelyeargroupid)
+group by htvv.polprocessid, htvv.sourcetypeid, sb.regclassid, sb.fueltypeid, htvv.monthid, htvv.hourdayid, 
+  stmy.modelyearid
 order by null;
--- End Section WithRegClassID
+-- end section withregclassid
 
--- Section NoRegClassID
-insert into WeightedMeanBaseRate (polProcessID, sourceTypeID, regClassID, fuelTypeID, monthID, hourDayID, 
-	modelYearID, opModeID, weightedMeanBaseRate, weightedMeanBaseRateIM)
-select htvv.polProcessID, htvv.sourceTypeID, 0 as regClassID, sb.fuelTypeID, htvv.monthID, htvv.hourDayID, 
-	stmy.modelYearID, 151 as opModeID,
-	sum(sourceBinActivityFraction*hourlyTVV) as weightedMeanBaseRate,
-	sum(sourceBinActivityFraction*hourlyTVVIM) as weightedMeanBaseRateIM
-from HourlyTVV htvv
-inner join SourceTypeModelYear stmy on (stmy.modelYearID=##context.year##-htvv.ageID
-	and stmy.sourceTypeID=htvv.sourceTypeID)
-inner join SourceBinDistribution sbd on (sbd.sourceTypeModelYearID=stmy.sourceTypeModelYearID
-	and sbd.polProcessID=htvv.polProcessID)
-inner join SourceBin sb on (sb.sourceBinID=sbd.sourceBinID and sb.fuelTypeID=htvv.fuelTypeID
-	and sb.regClassID=htvv.regClassID)
-inner join FuelType on (FuelType.fuelTypeID = sb.fuelTypeID and subjectToEvapCalculations = 'Y')
-inner join PollutantProcessModelYear ppmy on (ppmy.polProcessID=sbd.polProcessID
-	and ppmy.modelYearID=stmy.modelYearID and ppmy.modelYearGroupID=sb.modelYearGroupID)
-group by htvv.polProcessID, htvv.sourceTypeID, sb.fuelTypeID, htvv.monthID, htvv.hourDayID, 
-	stmy.modelYearID
+-- section noregclassid
+insert into weightedmeanbaserate (polprocessid, sourcetypeid, regclassid, fueltypeid, monthid, hourdayid, 
+  modelyearid, opmodeid, weightedmeanbaserate, weightedmeanbaserateim)
+select htvv.polprocessid, htvv.sourcetypeid, 0 as regclassid, sb.fueltypeid, htvv.monthid, htvv.hourdayid, 
+  stmy.modelyearid, 151 as opmodeid,
+  sum(sourcebinactivityfraction*hourlytvv) as weightedmeanbaserate,
+  sum(sourcebinactivityfraction*hourlytvvim) as weightedmeanbaserateim
+from hourlytvv htvv
+inner join sourcetypemodelyear stmy on (stmy.modelyearid=##context.year##-htvv.ageid
+  and stmy.sourcetypeid=htvv.sourcetypeid)
+inner join sourcebindistribution sbd on (sbd.sourcetypemodelyearid=stmy.sourcetypemodelyearid
+  and sbd.polprocessid=htvv.polprocessid)
+inner join sourcebin sb on (sb.sourcebinid=sbd.sourcebinid and sb.fueltypeid=htvv.fueltypeid
+  and sb.regclassid=htvv.regclassid)
+inner join fueltype on (fueltype.fueltypeid = sb.fueltypeid and subjecttoevapcalculations = 'Y')
+inner join pollutantprocessmodelyear ppmy on (ppmy.polprocessid=sbd.polprocessid
+  and ppmy.modelyearid=stmy.modelyearid and ppmy.modelyeargroupid=sb.modelyeargroupid)
+group by htvv.polprocessid, htvv.sourcetypeid, sb.fueltypeid, htvv.monthid, htvv.hourdayid, 
+  stmy.modelyearid
 order by null;
--- End Section NoRegClassID
+-- end section noregclassid
 
--- For operating and hot soak modes (opModeIDs 300 and 150)
-alter table averageTankGasoline 
-	add column adjustTerm3 double not null default 0,
-	add column adjustTerm2 double not null default 0,
-	add column adjustTerm1 double not null default 0,
-	add column adjustConstant double not null default 0;
+-- for operating and hot soak modes (opmodeids 300 and 150)
+alter table averagetankgasoline 
+  add column adjustterm3 double not null default 0,
+  add column adjustterm2 double not null default 0,
+  add column adjustterm1 double not null default 0,
+  add column adjustconstant double not null default 0;
 
-drop table if exists evapRVPTemperatureAdjustmentSummary;
+drop table if exists evaprvptemperatureadjustmentsummary;
 
--- @algorithm Find bounds on RVP-based operating and hot soak adjustments (opModeIDs 300 and 150).
-create table evapRVPTemperatureAdjustmentSummary
-select processID, fuelTypeID, min(RVP) as minRVP, max(RVP) as maxRVP
-from evapRVPTemperatureAdjustment
-group by processID, fuelTypeID;
+-- @algorithm find bounds on rvp-based operating and hot soak adjustments (opmodeids 300 and 150).
+create table evaprvptemperatureadjustmentsummary
+select processid, fueltypeid, min(rvp) as minrvp, max(rvp) as maxrvp
+from evaprvptemperatureadjustment
+group by processid, fueltypeid;
 
-alter table evapRVPTemperatureAdjustmentSummary add key (processID, fuelTypeID);
+alter table evaprvptemperatureadjustmentsummary add key (processid, fueltypeid);
 
-insert ignore into evapRVPTemperatureAdjustment (processID, fuelTypeID, RVP, adjustTerm3, adjustTerm2, adjustTerm1, adjustConstant)
-select adj.processID, adj.fuelTypeID, -1 as RVP, adj.adjustTerm3, adj.adjustTerm2, adj.adjustTerm1, adj.adjustConstant
-from evapRVPTemperatureAdjustment adj
-inner join evapRVPTemperatureAdjustmentSummary sadj on (
-	sadj.processID=adj.processID
-	and sadj.fuelTypeID=adj.fuelTypeID
-	and sadj.minRVP=adj.RVP);
+insert ignore into evaprvptemperatureadjustment (processid, fueltypeid, rvp, adjustterm3, adjustterm2, adjustterm1, adjustconstant)
+select adj.processid, adj.fueltypeid, -1 as rvp, adj.adjustterm3, adj.adjustterm2, adj.adjustterm1, adj.adjustconstant
+from evaprvptemperatureadjustment adj
+inner join evaprvptemperatureadjustmentsummary sadj on (
+  sadj.processid=adj.processid
+  and sadj.fueltypeid=adj.fueltypeid
+  and sadj.minrvp=adj.rvp);
 
-insert ignore into evapRVPTemperatureAdjustment (processID, fuelTypeID, RVP, adjustTerm3, adjustTerm2, adjustTerm1, adjustConstant)
-select adj.processID, adj.fuelTypeID, 1000 as RVP, adj.adjustTerm3, adj.adjustTerm2, adj.adjustTerm1, adj.adjustConstant
-from evapRVPTemperatureAdjustment adj
-inner join evapRVPTemperatureAdjustmentSummary sadj on (
-	sadj.processID=adj.processID
-	and sadj.fuelTypeID=adj.fuelTypeID
-	and sadj.maxRVP=adj.RVP);
+insert ignore into evaprvptemperatureadjustment (processid, fueltypeid, rvp, adjustterm3, adjustterm2, adjustterm1, adjustconstant)
+select adj.processid, adj.fueltypeid, 1000 as rvp, adj.adjustterm3, adj.adjustterm2, adj.adjustterm1, adj.adjustconstant
+from evaprvptemperatureadjustment adj
+inner join evaprvptemperatureadjustmentsummary sadj on (
+  sadj.processid=adj.processid
+  and sadj.fueltypeid=adj.fueltypeid
+  and sadj.maxrvp=adj.rvp);
 
-drop table if exists tempATG;
-create table tempATG like averageTankGasoline;
-insert into tempATG select * from averageTankGasoline;
-truncate averageTankGasoline;
+drop table if exists tempatg;
+create table tempatg like averagetankgasoline;
+insert into tempatg select * from averagetankgasoline;
+truncate averagetankgasoline;
 
--- @algorithm Linearly interpolate RVP adjustment terms for each entry in averageTankGasoline, where lowAdj is the evapRVPTemperatureAdjustment
--- record such that lowAdj.RVP <= averageTankGasoline.RVP and highAdj is similar with highAdj.RVP > averageTankGasoline.RVP.
--- adjustTerm3 = lowAdj.adjustTerm3 + (highAdj.adjustTerm3 - lowAdj.adjustTerm3)/(highAdj.RVP - lowAdj.RVP) * (atg.RVP - lowAdj.RVP)).
--- adjustTerm2 = lowAdj.adjustTerm2 + (highAdj.adjustTerm2 - lowAdj.adjustTerm2)/(highAdj.RVP - lowAdj.RVP) * (atg.RVP - lowAdj.RVP).
--- adjustTerm1 = lowAdj.adjustTerm1 + (highAdj.adjustTerm1 - lowAdj.adjustTerm1)/(highAdj.RVP - lowAdj.RVP) * (atg.RVP - lowAdj.RVP).
--- adjustConstant = lowAdj.adjustConstant + (highAdj.adjustConstant - lowAdj.adjustConstant)/(highAdj.RVP - lowAdj.RVP) * (atg.RVP - lowAdj.RVP).
-insert ignore into averageTankGasoline (zoneID, fuelYearID, monthGroupID, ETOHVolume, RVP, fuelTypeID, isUserInput,
-	adjustTerm3, adjustTerm2, adjustTerm1, adjustConstant)
-select atg.zoneID, atg.fuelYearID, atg.monthGroupID, atg.ETOHVolume, atg.RVP, atg.fuelTypeID, atg.isUserInput,
-	(lowAdj.adjustTerm3 + (highAdj.adjustTerm3 - lowAdj.adjustTerm3)/(highAdj.RVP - lowAdj.RVP) * (atg.RVP - lowAdj.RVP)) as adjustTerm3,
-	(lowAdj.adjustTerm2 + (highAdj.adjustTerm2 - lowAdj.adjustTerm2)/(highAdj.RVP - lowAdj.RVP) * (atg.RVP - lowAdj.RVP)) as adjustTerm2,
-	(lowAdj.adjustTerm1 + (highAdj.adjustTerm1 - lowAdj.adjustTerm1)/(highAdj.RVP - lowAdj.RVP) * (atg.RVP - lowAdj.RVP)) as adjustTerm1,
-	(lowAdj.adjustConstant + (highAdj.adjustConstant - lowAdj.adjustConstant)/(highAdj.RVP - lowAdj.RVP) * (atg.RVP - lowAdj.RVP)) as adjustConstant
-from tempATG atg
-inner join evapRVPTemperatureAdjustment lowAdj on (lowAdj.RVP <= atg.RVP and lowAdj.processID=12 and lowAdj.fuelTypeID=atg.fuelTypeID)
-inner join evapRVPTemperatureAdjustment highAdj on (highAdj.RVP > atg.RVP and highAdj.processID=12 and highAdj.fuelTypeID=atg.fuelTypeID)
-where lowAdj.RVP = (select max(RVP) from evapRVPTemperatureAdjustment lowAdj2 where lowAdj2.RVP <= atg.RVP and lowAdj2.processID=12 and lowAdj2.fuelTypeID=atg.fuelTypeID)
-and highAdj.RVP = (select min(RVP) from evapRVPTemperatureAdjustment highAdj2 where highAdj2.RVP > atg.RVP and highAdj2.processID=12 and highAdj2.fuelTypeID=atg.fuelTypeID);
+-- @algorithm linearly interpolate rvp adjustment terms for each entry in averagetankgasoline, where lowadj is the evaprvptemperatureadjustment
+-- record such that lowadj.rvp <= averagetankgasoline.rvp and highadj is similar with highadj.rvp > averagetankgasoline.rvp.
+-- adjustterm3 = lowadj.adjustterm3 + (highadj.adjustterm3 - lowadj.adjustterm3)/(highadj.rvp - lowadj.rvp) * (atg.rvp - lowadj.rvp)).
+-- adjustterm2 = lowadj.adjustterm2 + (highadj.adjustterm2 - lowadj.adjustterm2)/(highadj.rvp - lowadj.rvp) * (atg.rvp - lowadj.rvp).
+-- adjustterm1 = lowadj.adjustterm1 + (highadj.adjustterm1 - lowadj.adjustterm1)/(highadj.rvp - lowadj.rvp) * (atg.rvp - lowadj.rvp).
+-- adjustconstant = lowadj.adjustconstant + (highadj.adjustconstant - lowadj.adjustconstant)/(highadj.rvp - lowadj.rvp) * (atg.rvp - lowadj.rvp).
+insert ignore into averagetankgasoline (zoneid, fuelyearid, monthgroupid, etohvolume, rvp, fueltypeid, isuserinput,
+  adjustterm3, adjustterm2, adjustterm1, adjustconstant)
+select atg.zoneid, atg.fuelyearid, atg.monthgroupid, atg.etohvolume, atg.rvp, atg.fueltypeid, atg.isuserinput,
+  (lowadj.adjustterm3 + (highadj.adjustterm3 - lowadj.adjustterm3)/(highadj.rvp - lowadj.rvp) * (atg.rvp - lowadj.rvp)) as adjustterm3,
+  (lowadj.adjustterm2 + (highadj.adjustterm2 - lowadj.adjustterm2)/(highadj.rvp - lowadj.rvp) * (atg.rvp - lowadj.rvp)) as adjustterm2,
+  (lowadj.adjustterm1 + (highadj.adjustterm1 - lowadj.adjustterm1)/(highadj.rvp - lowadj.rvp) * (atg.rvp - lowadj.rvp)) as adjustterm1,
+  (lowadj.adjustconstant + (highadj.adjustconstant - lowadj.adjustconstant)/(highadj.rvp - lowadj.rvp) * (atg.rvp - lowadj.rvp)) as adjustconstant
+from tempatg atg
+inner join evaprvptemperatureadjustment lowadj on (lowadj.rvp <= atg.rvp and lowadj.processid=12 and lowadj.fueltypeid=atg.fueltypeid)
+inner join evaprvptemperatureadjustment highadj on (highadj.rvp > atg.rvp and highadj.processid=12 and highadj.fueltypeid=atg.fueltypeid)
+where lowadj.rvp = (select max(rvp) from evaprvptemperatureadjustment lowadj2 where lowadj2.rvp <= atg.rvp and lowadj2.processid=12 and lowadj2.fueltypeid=atg.fueltypeid)
+and highadj.rvp = (select min(rvp) from evaprvptemperatureadjustment highadj2 where highadj2.rvp > atg.rvp and highadj2.processid=12 and highadj2.fueltypeid=atg.fueltypeid);
 
--- Section WithRegClassID
+-- section withregclassid
 
--- @algorithm Adjust hot soak (opModeID 150) and running (opModeID 300) by temperature and RVP effects.
--- tempAdjustment[opModeID=300]=
--- (tempAdjustTerm3*power(greatest(temperature,40.0),3)
--- + tempAdjustTerm2*power(greatest(temperature,40.0),2)
--- + tempAdjustTerm1*greatest(temperature,40.0)
--- + tempAdjustConstant).
--- tempAdjustment[opModeID=150]=1.
--- rvpAdjustment[opModeID=300]=1 for temperature < 40F, otherwise for temperature >= 40F:
--- (adjustTerm3*power(temperature,3)
--- + adjustTerm2*power(temperature,2)
--- + adjustTerm1*temperature
--- + adjustConstant).
--- rvpAdjustment[opModeID=150]=1.
--- weightedMeanBaseRate=sum(sourceBinActivityFraction*meanBaseRate)*rvpAdjustment*tempAdjustment.
--- weightedMeanBaseRateIM=sum(sourceBinActivityFraction*meanBaseRateIM)*rvpAdjustment*tempAdjustment.
--- @condition Only Gasoline (1) and Ethanol (5) fuel types, all others have no adjustments in this step.
-insert into WeightedMeanBaseRate (polProcessID, sourceTypeID, regClassID, fuelTypeID, monthID, hourDayID, 
-	modelYearID, opModeID, weightedMeanBaseRate, weightedMeanBaseRateIM,
-	tempAdjustment, rvpAdjustment, unadjustedWeightedMeanBaseRate)
-select er.polProcessID, stmy.sourceTypeID, sb.regClassID, sb.fuelTypeID, zmh.monthID, rshd.hourDayID, 
-	stmy.modelYearID, er.opModeID,
-	sum(sourceBinActivityFraction*meanBaseRate)
-		* case when (er.opModeID=300 and sb.fuelTypeID in(1,5)) then
-			(eta.tempAdjustTerm3*power(greatest(zmh.temperature,40.0),3)
-			+ eta.tempAdjustTerm2*power(greatest(zmh.temperature,40.0),2)
-			+ eta.tempAdjustTerm1*greatest(zmh.temperature,40.0)
-			+ eta.tempAdjustConstant)
-			* case when zmh.temperature >= 40.0 then
-				(atg.adjustTerm3*power(zmh.temperature,3)
-				+ atg.adjustTerm2*power(zmh.temperature,2)
-				+ atg.adjustTerm1*zmh.temperature
-				+ atg.adjustConstant)
-			else 1.0
-			end
-		else 1.0
-		end 
-		as weightedMeanBaseRate,
-	sum(sourceBinActivityFraction*meanBaseRateIM)
-		* case when (er.opModeID=300 and sb.fuelTypeID in (1,5)) then
-			(eta.tempAdjustTerm3*power(greatest(zmh.temperature,40.0),3)
-			+ eta.tempAdjustTerm2*power(greatest(zmh.temperature,40.0),2)
-			+ eta.tempAdjustTerm1*greatest(zmh.temperature,40.0)
-			+ eta.tempAdjustConstant)
-			* case when zmh.temperature >= 40.0 then
-				(atg.adjustTerm3*power(zmh.temperature,3)
-				+ atg.adjustTerm2*power(zmh.temperature,2)
-				+ atg.adjustTerm1*zmh.temperature
-				+ atg.adjustConstant)
-			else 1.0
-			end
-		else 1.0
-		end 
-		as weightedMeanBaseRateIM,
-	case when (er.opModeID=300 and sb.fuelTypeID in (1,5)) then
-			(eta.tempAdjustTerm3*power(greatest(zmh.temperature,40.0),3)
-			+ eta.tempAdjustTerm2*power(greatest(zmh.temperature,40.0),2)
-			+ eta.tempAdjustTerm1*greatest(zmh.temperature,40.0)
-			+ eta.tempAdjustConstant)
-		else 1.0
-		end as tempAdjustment,
-	case when (er.opModeID=300 and sb.fuelTypeID in (1,5)) then
-			case when zmh.temperature >= 40.0 then
-				(atg.adjustTerm3*power(zmh.temperature,3)
-				+ atg.adjustTerm2*power(zmh.temperature,2)
-				+ atg.adjustTerm1*zmh.temperature
-				+ atg.adjustConstant)
-			else 1.0
-			end
-		else 1.0
-		end as rvpAdjustment,
-	sum(sourceBinActivityFraction*meanBaseRate) as unadjustedWeightedMeanBaseRate
-from EmissionRateByAge er
-inner join AgeCategory acat on (acat.ageGroupID=er.ageGroupID)
-inner join SourceBin sb on (sb.sourceBinID=er.sourceBinID)
-inner join FuelType on (FuelType.fuelTypeID = sb.fuelTypeID and subjectToEvapCalculations = 'Y')
-inner join SourceBinDistribution sbd on (sbd.sourceBinID=sb.sourceBinID
-	and sbd.polProcessID=er.polProcessID)
-inner join SourceTypeModelYear stmy on (stmy.sourceTypeModelYearID=sbd.sourceTypeModelYearID
-	and stmy.modelYearID=##context.year##-acat.ageID)
-inner join PollutantProcessModelYear ppmy on (ppmy.polProcessID=sbd.polProcessID
-	and ppmy.modelYearID=stmy.modelYearID and ppmy.modelYearGroupID=sb.modelYearGroupID)
-inner join RunSpecSourceType rsst on (rsst.sourceTypeID=stmy.sourceTypeID)
-inner join RunSpecHourDay rshd
-inner join HourDay hd on (hd.hourDayID = rshd.hourDayID)
-inner join ZoneMonthHour zmh on (zmh.hourID = hd.hourID)
-inner join averageTankGasoline atg on (atg.fuelTypeID = FuelType.fuelTypeID)
-inner join evapTemperatureAdjustment eta
-where er.polProcessID in (##pollutantProcessIDs##)
-and opModeID in (150, 300)
-group by er.polProcessID, stmy.sourceTypeID, sb.regClassID, sb.fuelTypeID, zmh.monthID, rshd.hourDayID, 
-	stmy.modelYearID, er.opModeID
+-- @algorithm adjust hot soak (opmodeid 150) and running (opmodeid 300) by temperature and rvp effects.
+-- tempadjustment[opmodeid=300]=
+-- (tempadjustterm3*power(greatest(temperature,40.0),3)
+-- + tempadjustterm2*power(greatest(temperature,40.0),2)
+-- + tempadjustterm1*greatest(temperature,40.0)
+-- + tempadjustconstant).
+-- tempadjustment[opmodeid=150]=1.
+-- rvpadjustment[opmodeid=300]=1 for temperature < 40f, otherwise for temperature >= 40f:
+-- (adjustterm3*power(temperature,3)
+-- + adjustterm2*power(temperature,2)
+-- + adjustterm1*temperature
+-- + adjustconstant).
+-- rvpadjustment[opmodeid=150]=1.
+-- weightedmeanbaserate=sum(sourcebinactivityfraction*meanbaserate)*rvpadjustment*tempadjustment.
+-- weightedmeanbaserateim=sum(sourcebinactivityfraction*meanbaserateim)*rvpadjustment*tempadjustment.
+-- @condition only gasoline (1) and ethanol (5) fuel types, all others have no adjustments in this step.
+insert into weightedmeanbaserate (polprocessid, sourcetypeid, regclassid, fueltypeid, monthid, hourdayid, 
+  modelyearid, opmodeid, weightedmeanbaserate, weightedmeanbaserateim,
+  tempadjustment, rvpadjustment, unadjustedweightedmeanbaserate)
+select er.polprocessid, stmy.sourcetypeid, sb.regclassid, sb.fueltypeid, zmh.monthid, rshd.hourdayid, 
+  stmy.modelyearid, er.opmodeid,
+  sum(sourcebinactivityfraction*meanbaserate)
+    * case when (er.opmodeid=300 and sb.fueltypeid in(1,5)) then
+      (eta.tempadjustterm3*power(greatest(zmh.temperature,40.0),3)
+      + eta.tempadjustterm2*power(greatest(zmh.temperature,40.0),2)
+      + eta.tempadjustterm1*greatest(zmh.temperature,40.0)
+      + eta.tempadjustconstant)
+      * case when zmh.temperature >= 40.0 then
+        (atg.adjustterm3*power(zmh.temperature,3)
+        + atg.adjustterm2*power(zmh.temperature,2)
+        + atg.adjustterm1*zmh.temperature
+        + atg.adjustconstant)
+      else 1.0
+      end
+    else 1.0
+    end 
+    as weightedmeanbaserate,
+  sum(sourcebinactivityfraction*meanbaserateim)
+    * case when (er.opmodeid=300 and sb.fueltypeid in (1,5)) then
+      (eta.tempadjustterm3*power(greatest(zmh.temperature,40.0),3)
+      + eta.tempadjustterm2*power(greatest(zmh.temperature,40.0),2)
+      + eta.tempadjustterm1*greatest(zmh.temperature,40.0)
+      + eta.tempadjustconstant)
+      * case when zmh.temperature >= 40.0 then
+        (atg.adjustterm3*power(zmh.temperature,3)
+        + atg.adjustterm2*power(zmh.temperature,2)
+        + atg.adjustterm1*zmh.temperature
+        + atg.adjustconstant)
+      else 1.0
+      end
+    else 1.0
+    end 
+    as weightedmeanbaserateim,
+  case when (er.opmodeid=300 and sb.fueltypeid in (1,5)) then
+      (eta.tempadjustterm3*power(greatest(zmh.temperature,40.0),3)
+      + eta.tempadjustterm2*power(greatest(zmh.temperature,40.0),2)
+      + eta.tempadjustterm1*greatest(zmh.temperature,40.0)
+      + eta.tempadjustconstant)
+    else 1.0
+    end as tempadjustment,
+  case when (er.opmodeid=300 and sb.fueltypeid in (1,5)) then
+      case when zmh.temperature >= 40.0 then
+        (atg.adjustterm3*power(zmh.temperature,3)
+        + atg.adjustterm2*power(zmh.temperature,2)
+        + atg.adjustterm1*zmh.temperature
+        + atg.adjustconstant)
+      else 1.0
+      end
+    else 1.0
+    end as rvpadjustment,
+  sum(sourcebinactivityfraction*meanbaserate) as unadjustedweightedmeanbaserate
+from emissionratebyage er
+inner join agecategory acat on (acat.agegroupid=er.agegroupid)
+inner join sourcebin sb on (sb.sourcebinid=er.sourcebinid)
+inner join fueltype on (fueltype.fueltypeid = sb.fueltypeid and subjecttoevapcalculations = 'Y')
+inner join sourcebindistribution sbd on (sbd.sourcebinid=sb.sourcebinid
+  and sbd.polprocessid=er.polprocessid)
+inner join sourcetypemodelyear stmy on (stmy.sourcetypemodelyearid=sbd.sourcetypemodelyearid
+  and stmy.modelyearid=##context.year##-acat.ageid)
+inner join pollutantprocessmodelyear ppmy on (ppmy.polprocessid=sbd.polprocessid
+  and ppmy.modelyearid=stmy.modelyearid and ppmy.modelyeargroupid=sb.modelyeargroupid)
+inner join runspecsourcetype rsst on (rsst.sourcetypeid=stmy.sourcetypeid)
+inner join runspechourday rshd
+inner join hourday hd on (hd.hourdayid = rshd.hourdayid)
+inner join zonemonthhour zmh on (zmh.hourid = hd.hourid)
+inner join averagetankgasoline atg on (atg.fueltypeid = fueltype.fueltypeid)
+inner join evaptemperatureadjustment eta
+where er.polprocessid in (##pollutantprocessids##)
+and opmodeid in (150, 300)
+group by er.polprocessid, stmy.sourcetypeid, sb.regclassid, sb.fueltypeid, zmh.monthid, rshd.hourdayid, 
+  stmy.modelyearid, er.opmodeid
 order by null;
--- End Section WithRegClassID
+-- end section withregclassid
 
--- Section NoRegClassID
-insert into WeightedMeanBaseRate (polProcessID, sourceTypeID, regClassID, fuelTypeID, monthID, hourDayID, 
-	modelYearID, opModeID, weightedMeanBaseRate, weightedMeanBaseRateIM,
-	tempAdjustment, rvpAdjustment, unadjustedWeightedMeanBaseRate)
-select er.polProcessID, stmy.sourceTypeID, 0 as regClassID, sb.fuelTypeID, zmh.monthID, rshd.hourDayID, 
-	stmy.modelYearID, er.opModeID,
-	sum(sourceBinActivityFraction*meanBaseRate)
-		* case when (er.opModeID=300 and sb.fuelTypeID in(1,5)) then
-			(eta.tempAdjustTerm3*power(greatest(zmh.temperature,40.0),3)
-			+ eta.tempAdjustTerm2*power(greatest(zmh.temperature,40.0),2)
-			+ eta.tempAdjustTerm1*greatest(zmh.temperature,40.0)
-			+ eta.tempAdjustConstant)
-			* case when zmh.temperature >= 40.0 then
-				(atg.adjustTerm3*power(zmh.temperature,3)
-				+ atg.adjustTerm2*power(zmh.temperature,2)
-				+ atg.adjustTerm1*zmh.temperature
-				+ atg.adjustConstant)
-			else 1.0
-			end
-		else 1.0
-		end 
-		as weightedMeanBaseRate,
-	sum(sourceBinActivityFraction*meanBaseRateIM)
-		* case when (er.opModeID=300 and sb.fuelTypeID in (1,5)) then
-			(eta.tempAdjustTerm3*power(greatest(zmh.temperature,40.0),3)
-			+ eta.tempAdjustTerm2*power(greatest(zmh.temperature,40.0),2)
-			+ eta.tempAdjustTerm1*greatest(zmh.temperature,40.0)
-			+ eta.tempAdjustConstant)
-			* case when zmh.temperature >= 40.0 then
-				(atg.adjustTerm3*power(zmh.temperature,3)
-				+ atg.adjustTerm2*power(zmh.temperature,2)
-				+ atg.adjustTerm1*zmh.temperature
-				+ atg.adjustConstant)
-			else 1.0
-			end
-		else 1.0
-		end 
-		as weightedMeanBaseRateIM,
-	case when (er.opModeID=300 and sb.fuelTypeID in (1,5)) then
-			(eta.tempAdjustTerm3*power(greatest(zmh.temperature,40.0),3)
-			+ eta.tempAdjustTerm2*power(greatest(zmh.temperature,40.0),2)
-			+ eta.tempAdjustTerm1*greatest(zmh.temperature,40.0)
-			+ eta.tempAdjustConstant)
-		else 1.0
-		end as tempAdjustment,
-	case when (er.opModeID=300 and sb.fuelTypeID in (1,5)) then
-			case when zmh.temperature >= 40.0 then
-				(atg.adjustTerm3*power(zmh.temperature,3)
-				+ atg.adjustTerm2*power(zmh.temperature,2)
-				+ atg.adjustTerm1*zmh.temperature
-				+ atg.adjustConstant)
-			else 1.0
-			end
-		else 1.0
-		end as rvpAdjustment,
-	sum(sourceBinActivityFraction*meanBaseRate) as unadjustedWeightedMeanBaseRate
-from EmissionRateByAge er
-inner join AgeCategory acat on (acat.ageGroupID=er.ageGroupID)
-inner join SourceBin sb on (sb.sourceBinID=er.sourceBinID)
-inner join FuelType on (FuelType.fuelTypeID = sb.fuelTypeID and subjectToEvapCalculations = 'Y')
-inner join SourceBinDistribution sbd on (sbd.sourceBinID=sb.sourceBinID
-	and sbd.polProcessID=er.polProcessID)
-inner join SourceTypeModelYear stmy on (stmy.sourceTypeModelYearID=sbd.sourceTypeModelYearID
-	and stmy.modelYearID=##context.year##-acat.ageID)
-inner join PollutantProcessModelYear ppmy on (ppmy.polProcessID=sbd.polProcessID
-	and ppmy.modelYearID=stmy.modelYearID and ppmy.modelYearGroupID=sb.modelYearGroupID)
-inner join RunSpecSourceType rsst on (rsst.sourceTypeID=stmy.sourceTypeID)
-inner join RunSpecHourDay rshd
-inner join HourDay hd on (hd.hourDayID = rshd.hourDayID)
-inner join ZoneMonthHour zmh on (zmh.hourID = hd.hourID)
-inner join averageTankGasoline atg on (atg.fuelTypeID = FuelType.fuelTypeID)
-inner join evapTemperatureAdjustment eta
-where er.polProcessID in (##pollutantProcessIDs##)
-and opModeID in (150, 300)
-group by er.polProcessID, stmy.sourceTypeID, sb.fuelTypeID, zmh.monthID, rshd.hourDayID, 
-	stmy.modelYearID, er.opModeID
+-- section noregclassid
+insert into weightedmeanbaserate (polprocessid, sourcetypeid, regclassid, fueltypeid, monthid, hourdayid, 
+  modelyearid, opmodeid, weightedmeanbaserate, weightedmeanbaserateim,
+  tempadjustment, rvpadjustment, unadjustedweightedmeanbaserate)
+select er.polprocessid, stmy.sourcetypeid, 0 as regclassid, sb.fueltypeid, zmh.monthid, rshd.hourdayid, 
+  stmy.modelyearid, er.opmodeid,
+  sum(sourcebinactivityfraction*meanbaserate)
+    * case when (er.opmodeid=300 and sb.fueltypeid in(1,5)) then
+      (eta.tempadjustterm3*power(greatest(zmh.temperature,40.0),3)
+      + eta.tempadjustterm2*power(greatest(zmh.temperature,40.0),2)
+      + eta.tempadjustterm1*greatest(zmh.temperature,40.0)
+      + eta.tempadjustconstant)
+      * case when zmh.temperature >= 40.0 then
+        (atg.adjustterm3*power(zmh.temperature,3)
+        + atg.adjustterm2*power(zmh.temperature,2)
+        + atg.adjustterm1*zmh.temperature
+        + atg.adjustconstant)
+      else 1.0
+      end
+    else 1.0
+    end 
+    as weightedmeanbaserate,
+  sum(sourcebinactivityfraction*meanbaserateim)
+    * case when (er.opmodeid=300 and sb.fueltypeid in (1,5)) then
+      (eta.tempadjustterm3*power(greatest(zmh.temperature,40.0),3)
+      + eta.tempadjustterm2*power(greatest(zmh.temperature,40.0),2)
+      + eta.tempadjustterm1*greatest(zmh.temperature,40.0)
+      + eta.tempadjustconstant)
+      * case when zmh.temperature >= 40.0 then
+        (atg.adjustterm3*power(zmh.temperature,3)
+        + atg.adjustterm2*power(zmh.temperature,2)
+        + atg.adjustterm1*zmh.temperature
+        + atg.adjustconstant)
+      else 1.0
+      end
+    else 1.0
+    end 
+    as weightedmeanbaserateim,
+  case when (er.opmodeid=300 and sb.fueltypeid in (1,5)) then
+      (eta.tempadjustterm3*power(greatest(zmh.temperature,40.0),3)
+      + eta.tempadjustterm2*power(greatest(zmh.temperature,40.0),2)
+      + eta.tempadjustterm1*greatest(zmh.temperature,40.0)
+      + eta.tempadjustconstant)
+    else 1.0
+    end as tempadjustment,
+  case when (er.opmodeid=300 and sb.fueltypeid in (1,5)) then
+      case when zmh.temperature >= 40.0 then
+        (atg.adjustterm3*power(zmh.temperature,3)
+        + atg.adjustterm2*power(zmh.temperature,2)
+        + atg.adjustterm1*zmh.temperature
+        + atg.adjustconstant)
+      else 1.0
+      end
+    else 1.0
+    end as rvpadjustment,
+  sum(sourcebinactivityfraction*meanbaserate) as unadjustedweightedmeanbaserate
+from emissionratebyage er
+inner join agecategory acat on (acat.agegroupid=er.agegroupid)
+inner join sourcebin sb on (sb.sourcebinid=er.sourcebinid)
+inner join fueltype on (fueltype.fueltypeid = sb.fueltypeid and subjecttoevapcalculations = 'Y')
+inner join sourcebindistribution sbd on (sbd.sourcebinid=sb.sourcebinid
+  and sbd.polprocessid=er.polprocessid)
+inner join sourcetypemodelyear stmy on (stmy.sourcetypemodelyearid=sbd.sourcetypemodelyearid
+  and stmy.modelyearid=##context.year##-acat.ageid)
+inner join pollutantprocessmodelyear ppmy on (ppmy.polprocessid=sbd.polprocessid
+  and ppmy.modelyearid=stmy.modelyearid and ppmy.modelyeargroupid=sb.modelyeargroupid)
+inner join runspecsourcetype rsst on (rsst.sourcetypeid=stmy.sourcetypeid)
+inner join runspechourday rshd
+inner join hourday hd on (hd.hourdayid = rshd.hourdayid)
+inner join zonemonthhour zmh on (zmh.hourid = hd.hourid)
+inner join averagetankgasoline atg on (atg.fueltypeid = fueltype.fueltypeid)
+inner join evaptemperatureadjustment eta
+where er.polprocessid in (##pollutantprocessids##)
+and opmodeid in (150, 300)
+group by er.polprocessid, stmy.sourcetypeid, sb.fueltypeid, zmh.monthid, rshd.hourdayid, 
+  stmy.modelyearid, er.opmodeid
 order by null;
--- End Section NoRegClassID
+-- end section noregclassid
 
-analyze table WeightedMeanBaseRate;
+analyze table weightedmeanbaserate;
 
-alter table MOVESWorkerOutput add emissionQuantIM float null;
+alter table movesworkeroutput add emissionquantim float null;
 
--- Section Debug
--- Keep debug information by operating mode
-drop table if exists DebugTVVMOVESWorkerOutput;
+-- section debug
+-- keep debug information by operating mode
+drop table if exists debugtvvmovesworkeroutput;
 
-create table DebugTVVMOVESWorkerOutput like MOVESWorkerOutput;
-alter table DebugTVVMOVESWorkerOutput add column opModeID smallint(6) null;
+create table debugtvvmovesworkeroutput like movesworkeroutput;
+alter table debugtvvmovesworkeroutput add column opmodeid smallint(6) null;
 
-insert into DebugTVVMOVESWorkerOutput (yearID, monthID, dayID, hourID, stateID, countyID,
-	zoneID, linkID, pollutantID, processID, sourceTypeID, regClassID, fuelTypeID, modelYearID,
-	roadTypeID, SCC, emissionQuant, emissionQuantIM, opModeID)
-select ##context.year## as yearID, w.monthID, hd.dayID, hd.hourID,
-	##context.iterLocation.stateRecordID## as stateID,
-	##context.iterLocation.countyRecordID## as countyID,
-	##context.iterLocation.zoneRecordID## as zoneID,
-	##context.iterLocation.linkRecordID## as linkID,
-	ppa.pollutantID, ppa.processID, w.sourceTypeID, w.regClassID, w.fuelTypeID, w.modelYearID,
-	##context.iterLocation.roadTypeRecordID##, null as SCC,
-	(weightedMeanBaseRate*sourceHours*opModeFraction) as emissionQuant,
-	(weightedMeanBaseRateIM*sourceHours*opModeFraction) as emissionQuantIM,
-	omd.opModeID
-from WeightedMeanBaseRate w
-inner join SourceHours sh on (sh.hourDayID=w.hourDayID and sh.monthID=w.monthID
-	and sh.ageID=##context.year##-w.modelYearID
-	and sh.sourceTypeID=w.sourceTypeID)
-inner join OpModeDistribution omd on (omd.sourceTypeID=sh.sourceTypeID
-	and omd.hourDayID=w.hourDayID
-	and omd.polProcessID=w.polProcessID and omd.opModeID=w.opModeID)
-inner join PollutantProcessAssoc ppa on (ppa.polProcessID=omd.polProcessID)
-inner join HourDay hd on (hd.hourDayID=omd.hourDayID);
--- End Section Debug
+insert into debugtvvmovesworkeroutput (yearid, monthid, dayid, hourid, stateid, countyid,
+  zoneid, linkid, pollutantid, processid, sourcetypeid, regclassid, fueltypeid, modelyearid,
+  roadtypeid, scc, emissionquant, emissionquantim, opmodeid)
+select ##context.year## as yearid, w.monthid, hd.dayid, hd.hourid,
+  ##context.iterlocation.staterecordid## as stateid,
+  ##context.iterlocation.countyrecordid## as countyid,
+  ##context.iterlocation.zonerecordid## as zoneid,
+  ##context.iterlocation.linkrecordid## as linkid,
+  ppa.pollutantid, ppa.processid, w.sourcetypeid, w.regclassid, w.fueltypeid, w.modelyearid,
+  ##context.iterlocation.roadtyperecordid##, null as scc,
+  (weightedmeanbaserate*sourcehours*opmodefraction) as emissionquant,
+  (weightedmeanbaserateim*sourcehours*opmodefraction) as emissionquantim,
+  omd.opmodeid
+from weightedmeanbaserate w
+inner join sourcehours sh on (sh.hourdayid=w.hourdayid and sh.monthid=w.monthid
+  and sh.ageid=##context.year##-w.modelyearid
+  and sh.sourcetypeid=w.sourcetypeid)
+inner join opmodedistribution omd on (omd.sourcetypeid=sh.sourcetypeid
+  and omd.hourdayid=w.hourdayid
+  and omd.polprocessid=w.polprocessid and omd.opmodeid=w.opmodeid)
+inner join pollutantprocessassoc ppa on (ppa.polprocessid=omd.polprocessid)
+inner join hourday hd on (hd.hourdayid=omd.hourdayid);
+-- end section debug
 
-alter table WeightedMeanBaseRate add key speed1 (sourceTypeID, hourDayID, polProcessID, opModeID);
-analyze table WeightedMeanBaseRate;
+alter table weightedmeanbaserate add key speed1 (sourcetypeid, hourdayid, polprocessid, opmodeid);
+analyze table weightedmeanbaserate;
 
-alter table SourceHours add key speed1 (hourDayID, monthID, sourceTypeID, ageID);
-analyze table SourceHours;
+alter table sourcehours add key speed1 (hourdayid, monthid, sourcetypeid, ageid);
+analyze table sourcehours;
 
 -- 
--- TVV-9: Calculate MOVESWorkerOutput by Source Type
+-- tvv-9: calculate movesworkeroutput by source type
 --
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'TVV-9 without SCC';
+-- insert into eventlog (eventtime, eventname) select now(), 'TVV-9 WITHOUT SCC';
 
--- @algorithm Combine cold soaking (opModeID=151), hot soaking (150), and running (300) evaporative emissions.
--- THC=weightedMeanBaseRate*sourceHours*opModeFraction.
--- THC I/M=weightedMeanBaseRateIM*sourceHours*opModeFraction.
-insert into MOVESWorkerOutput (yearID, monthID, dayID, hourID, stateID, countyID,
-	zoneID, linkID, pollutantID, processID, sourceTypeID, regClassID, fuelTypeID, modelYearID,
-	roadTypeID, SCC, emissionQuant, emissionQuantIM)
-select ##context.year## as yearID, w.monthID, hd.dayID, hd.hourID,
-	##context.iterLocation.stateRecordID## as stateID,
-	##context.iterLocation.countyRecordID## as countyID,
-	##context.iterLocation.zoneRecordID## as zoneID,
-	##context.iterLocation.linkRecordID## as linkID,
-	ppa.pollutantID, ppa.processID, w.sourceTypeID, w.regClassID, w.fuelTypeID, w.modelYearID,
-	##context.iterLocation.roadTypeRecordID##, null as SCC,
-	(weightedMeanBaseRate*sourceHours*opModeFraction) as emissionQuant,
-	(weightedMeanBaseRateIM*sourceHours*opModeFraction) as emissionQuantIM
-from WeightedMeanBaseRate w
-inner join SourceHours sh on (sh.hourDayID=w.hourDayID and sh.monthID=w.monthID
-	and sh.ageID=##context.year##-w.modelYearID
-	and sh.sourceTypeID=w.sourceTypeID)
-inner join OpModeDistribution omd on (omd.sourceTypeID=sh.sourceTypeID
-	and omd.hourDayID=w.hourDayID
-	and omd.polProcessID=w.polProcessID and omd.opModeID=w.opModeID)
-inner join PollutantProcessAssoc ppa on (ppa.polProcessID=omd.polProcessID)
-inner join HourDay hd on (hd.hourDayID=omd.hourDayID);
+-- @algorithm combine cold soaking (opmodeid=151), hot soaking (150), and running (300) evaporative emissions.
+-- thc=weightedmeanbaserate*sourcehours*opmodefraction.
+-- thc i/m=weightedmeanbaserateim*sourcehours*opmodefraction.
+insert into movesworkeroutput (yearid, monthid, dayid, hourid, stateid, countyid,
+  zoneid, linkid, pollutantid, processid, sourcetypeid, regclassid, fueltypeid, modelyearid,
+  roadtypeid, scc, emissionquant, emissionquantim)
+select ##context.year## as yearid, w.monthid, hd.dayid, hd.hourid,
+  ##context.iterlocation.staterecordid## as stateid,
+  ##context.iterlocation.countyrecordid## as countyid,
+  ##context.iterlocation.zonerecordid## as zoneid,
+  ##context.iterlocation.linkrecordid## as linkid,
+  ppa.pollutantid, ppa.processid, w.sourcetypeid, w.regclassid, w.fueltypeid, w.modelyearid,
+  ##context.iterlocation.roadtyperecordid##, null as scc,
+  (weightedmeanbaserate*sourcehours*opmodefraction) as emissionquant,
+  (weightedmeanbaserateim*sourcehours*opmodefraction) as emissionquantim
+from weightedmeanbaserate w
+inner join sourcehours sh on (sh.hourdayid=w.hourdayid and sh.monthid=w.monthid
+  and sh.ageid=##context.year##-w.modelyearid
+  and sh.sourcetypeid=w.sourcetypeid)
+inner join opmodedistribution omd on (omd.sourcetypeid=sh.sourcetypeid
+  and omd.hourdayid=w.hourdayid
+  and omd.polprocessid=w.polprocessid and omd.opmodeid=w.opmodeid)
+inner join pollutantprocessassoc ppa on (ppa.polprocessid=omd.polprocessid)
+inner join hourday hd on (hd.hourdayid=omd.hourdayid);
 
--- @algorithm Apply I/M programs to the aggregat combination of cold soak, hot soaking, and running evap.
--- THC=THC I/M*IMAdjustFract + THC*(1-IMAdjustFract).
-update MOVESWorkerOutput, IMCoverageMergedUngrouped set emissionQuant=GREATEST(emissionQuantIM*IMAdjustFract + emissionQuant*(1.0-IMAdjustFract),0.0)
-where MOVESWorkerOutput.processID = IMCoverageMergedUngrouped.processID
-	and MOVESWorkerOutput.pollutantID = IMCoverageMergedUngrouped.pollutantID
-	and MOVESWorkerOutput.modelYearID = IMCoverageMergedUngrouped.modelYearID
-	and MOVESWorkerOutput.fuelTypeID = IMCoverageMergedUngrouped.fuelTypeID
-	and MOVESWorkerOutput.sourceTypeID = IMCoverageMergedUngrouped.sourceTypeID;
+-- @algorithm apply i/m programs to the aggregat combination of cold soak, hot soaking, and running evap.
+-- thc=thc i/m*imadjustfract + thc*(1-imadjustfract).
+update movesworkeroutput, imcoveragemergedungrouped set emissionquant=greatest(emissionquantim*imadjustfract + emissionquant*(1.0-imadjustfract),0.0)
+where movesworkeroutput.processid = imcoveragemergedungrouped.processid
+  and movesworkeroutput.pollutantid = imcoveragemergedungrouped.pollutantid
+  and movesworkeroutput.modelyearid = imcoveragemergedungrouped.modelyearid
+  and movesworkeroutput.fueltypeid = imcoveragemergedungrouped.fueltypeid
+  and movesworkeroutput.sourcetypeid = imcoveragemergedungrouped.sourcetypeid;
 
-alter table MOVESWorkerOutput drop emissionQuantIM;
+alter table movesworkeroutput drop emissionquantim;
 
--- End Section Processing
--- Section Cleanup
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'Section Cleanup';
+-- end section processing
+-- section cleanup
+-- insert into eventlog (eventtime, eventname) select now(), 'SECTION CLEANUP';
 
-drop table if exists PeakHourOfColdSoak;
-drop table if exists DebugTankVaporGenerated;
-drop table if exists TankVaporGeneratedHighAndLow;
-drop table if exists TankVaporGenerated;
-drop table if exists EthanolWeightedTVG;
-drop table if exists CummulativeTankVaporVented;
-drop table if exists UnWeightedHourlyTVV;
-drop table if exists HourlyTVV;
-drop table if exists WeightedMeanBaseRate;
-drop table if exists IMCoverageMergedUngrouped;
-drop table if exists CopyOfHourlyTVV;
-drop table if exists TVG;
-drop table if exists evapRVPTemperatureAdjustmentSummary;
-drop table if exists tempATG;
-drop table if exists HourlyTVVTemp;
+drop table if exists peakhourofcoldsoak;
+drop table if exists debugtankvaporgenerated;
+drop table if exists tankvaporgeneratedhighandlow;
+drop table if exists tankvaporgenerated;
+drop table if exists ethanolweightedtvg;
+drop table if exists cummulativetankvaporvented;
+drop table if exists unweightedhourlytvv;
+drop table if exists hourlytvv;
+drop table if exists weightedmeanbaserate;
+drop table if exists imcoveragemergedungrouped;
+drop table if exists copyofhourlytvv;
+drop table if exists tvg;
+drop table if exists evaprvptemperatureadjustmentsummary;
+drop table if exists tempatg;
+drop table if exists hourlytvvtemp;
 
-drop table if exists tvgSumIH;
-drop table if exists tvgSumI24;
-drop table if exists tvgSum1H;
-drop table if exists tvgSumH24;
+drop table if exists tvgsumih;
+drop table if exists tvgsumi24;
+drop table if exists tvgsum1h;
+drop table if exists tvgsumh24;
 
-drop table if exists DebugTVVMOVESWorkerOutput;
--- End Section Cleanup
+drop table if exists debugtvvmovesworkeroutput;
+-- end section cleanup

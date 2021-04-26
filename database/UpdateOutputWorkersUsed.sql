@@ -1,21 +1,21 @@
--- Version 2006-08-05
--- Updates pre-Task 220 output databases to be Task 220-compliant
+-- version 2006-08-05
+-- updates pre-task 220 output databases to be task 220-compliant
 
-ALTER TABLE MOVESRun
-	ADD COLUMN minutesDuration		FLOAT NOT NULL DEFAULT 0,
-	ADD COLUMN defaultDatabaseUsed	VARCHAR(200) NULL,
-	ADD COLUMN masterVersionDate	CHAR(10) NULL,
-	ADD COLUMN masterComputerID	 	VARCHAR(20) NULL
+alter table movesrun
+	add column minutesduration		float not null default 0,
+	add column defaultdatabaseused	varchar(200) null,
+	add column masterversiondate	char(10) null,
+	add column mastercomputerid	 	varchar(20) null
 ;
 
-CREATE TABLE MOVESWorkersUsed (
-	MOVESRunID			SMALLINT UNSIGNED NOT NULL,
-	workerVersion		CHAR(10) NOT NULL,
-	workerComputerID	VARCHAR(20) NOT NULL,
-	workerID			VARCHAR(10),
+create table movesworkersused (
+	movesrunid			smallint unsigned not null,
+	workerversion		char(10) not null,
+	workercomputerid	varchar(20) not null,
+	workerid			varchar(10),
 	
-	PRIMARY KEY (MOVESRunID, workerVersion, workerComputerID, workerID),
+	primary key (movesrunid, workerversion, workercomputerid, workerid),
 
-	bundleCount			INTEGER UNSIGNED NOT NULL DEFAULT 0,
-	failedBundleCount	INTEGER UNSIGNED NOT NULL DEFAULT 0
+	bundlecount			integer unsigned not null default 0,
+	failedbundlecount	integer unsigned not null default 0
 );

@@ -1,543 +1,543 @@
--- Version 2014-10-14
--- Author Wesley Faler
--- Supported special section names:
---		RefuelingDisplacementVaporLoss
---		RefuelingSpillageLoss
+-- version 2014-10-14
+-- author wesley faler
+-- supported special section names:
+--		refuelingdisplacementvaporloss
+--		refuelingspillageloss
 
 -- @algorithm
--- @owner Refueling Loss Calculator
+-- @owner refueling loss calculator
 -- @calculator
 
--- Supported special variable names:
---		##refuelingDisplacement.pollutantIDs##
---		##refuelingSpillage.pollutantIDs##
---		##refuelingProcessIDs##
+-- supported special variable names:
+--		##refuelingdisplacement.pollutantids##
+--		##refuelingspillage.pollutantids##
+--		##refuelingprocessids##
 
--- Section Create Remote Tables for Extracted Data
-##create.RefuelingFactors##;
-TRUNCATE TABLE RefuelingFactors;
+-- section create remote tables for extracted data
+##create.refuelingfactors##;
+truncate table refuelingfactors;
 
-##create.SourceTypeTechAdjustment##;
-TRUNCATE TABLE SourceTypeTechAdjustment;
+##create.sourcetypetechadjustment##;
+truncate table sourcetypetechadjustment;
 
-drop table if exists RefuelingFuelType;
-create table RefuelingFuelType (
-	fuelTypeID           SMALLINT NOT NULL,
-	defaultFormulationID SMALLINT NOT NULL,
-	fuelTypeDesc         CHAR(50) NULL,
-	humidityCorrectionCoeff FLOAT NULL,
-	humidityCorrectionCoeffCV FLOAT NULL,
-	energyContent			FLOAT	NULL,
-	fuelDensity				FLOAT	NULL,
-	monthID SMALLINT NOT NULL,
-	unique index XPKRefuelingFuelType (fuelTypeID, monthID),
-	key (monthID, fuelTypeID)
+drop table if exists refuelingfueltype;
+create table refuelingfueltype (
+	fueltypeid           smallint not null,
+	defaultformulationid smallint not null,
+	fueltypedesc         char(50) null,
+	humiditycorrectioncoeff float null,
+	humiditycorrectioncoeffcv float null,
+	energycontent			float	null,
+	fueldensity				float	null,
+	monthid smallint not null,
+	unique index xpkrefuelingfueltype (fueltypeid, monthid),
+	key (monthid, fueltypeid)
 );
-truncate table RefuelingFuelType;
+truncate table refuelingfueltype;
 
-drop table if exists RefuelingRunSpecHour;
-create table RefuelingRunSpecHour (
-	hourID smallint(6) not null,
-	unique index XPKRefuelingRunSpecHour ( hourID )
+drop table if exists refuelingrunspechour;
+create table refuelingrunspechour (
+	hourid smallint(6) not null,
+	unique index xpkrefuelingrunspechour ( hourid )
 );
-truncate table RefuelingRunSpecHour;
+truncate table refuelingrunspechour;
 
-drop table if exists RefuelingRunSpecMonth;
-create table RefuelingRunSpecMonth (
-	monthID smallint(6) not null,
-	unique index XPKRefuelingRunSpecMonth ( monthID )
+drop table if exists refuelingrunspecmonth;
+create table refuelingrunspecmonth (
+	monthid smallint(6) not null,
+	unique index xpkrefuelingrunspecmonth ( monthid )
 );
-truncate table RefuelingRunSpecMonth;
+truncate table refuelingrunspecmonth;
 
-drop table if exists RefuelingCountyYear;
-create table RefuelingCountyYear (
-	countyID             INTEGER NOT NULL,
-	yearID               SMALLINT NOT NULL,
-	refuelingVaporProgramAdjust FLOAT NOT NULL DEFAULT 0.0,
-	refuelingSpillProgramAdjust FLOAT NOT NULL DEFAULT 0.0
+drop table if exists refuelingcountyyear;
+create table refuelingcountyyear (
+	countyid             integer not null,
+	yearid               smallint not null,
+	refuelingvaporprogramadjust float not null default 0.0,
+	refuelingspillprogramadjust float not null default 0.0
 );
-truncate table RefuelingCountyYear;
+truncate table refuelingcountyyear;
 
--- Section RefuelingDisplacementVaporLoss
-drop table if exists RefuelingDisplacementPollutant;
-create table RefuelingDisplacementPollutant (
-	pollutantID smallint(6) not null,
-	unique index XPKRefuelingDisplacementPollutant (pollutantID)
+-- section refuelingdisplacementvaporloss
+drop table if exists refuelingdisplacementpollutant;
+create table refuelingdisplacementpollutant (
+	pollutantid smallint(6) not null,
+	unique index xpkrefuelingdisplacementpollutant (pollutantid)
 );
-truncate table RefuelingDisplacementPollutant;
--- End Section RefuelingDisplacementVaporLoss
+truncate table refuelingdisplacementpollutant;
+-- end section refuelingdisplacementvaporloss
 
--- Section RefuelingSpillageLoss
-drop table if exists RefuelingSpillagePollutant;
-create table RefuelingSpillagePollutant (
-	pollutantID smallint(6) not null,
-	unique index XPKRefuelingSpillagePollutant (pollutantID)
+-- section refuelingspillageloss
+drop table if exists refuelingspillagepollutant;
+create table refuelingspillagepollutant (
+	pollutantid smallint(6) not null,
+	unique index xpkrefuelingspillagepollutant (pollutantid)
 );
-truncate table RefuelingSpillagePollutant;
--- End Section RefuelingSpillageLoss
+truncate table refuelingspillagepollutant;
+-- end section refuelingspillageloss
 
-drop table if exists refuelingFuelFormulation;
-CREATE TABLE refuelingFuelFormulation (
-  fuelFormulationID smallint(6) NOT NULL DEFAULT '0',
-  fuelSubtypeID smallint(6) NOT NULL DEFAULT '0',
-  RVP float DEFAULT NULL,
-  sulfurLevel float NOT NULL DEFAULT '30',
-  ETOHVolume float DEFAULT NULL,
-  MTBEVolume float DEFAULT NULL,
-  ETBEVolume float DEFAULT NULL,
-  TAMEVolume float DEFAULT NULL,
-  aromaticContent float DEFAULT NULL,
-  olefinContent float DEFAULT NULL,
-  benzeneContent float DEFAULT NULL,
-  e200 float DEFAULT NULL,
-  e300 float DEFAULT NULL,
-  volToWtPercentOxy float DEFAULT NULL,
-  BioDieselEsterVolume float DEFAULT NULL,
-  CetaneIndex float DEFAULT NULL,
-  PAHContent float DEFAULT NULL,
-  T50 float DEFAULT NULL,
-  T90 float DEFAULT NULL,
-  PRIMARY KEY (fuelFormulationID)
+drop table if exists refuelingfuelformulation;
+create table refuelingfuelformulation (
+  fuelformulationid smallint(6) not null default '0',
+  fuelsubtypeid smallint(6) not null default '0',
+  rvp float default null,
+  sulfurlevel float not null default '30',
+  etohvolume float default null,
+  mtbevolume float default null,
+  etbevolume float default null,
+  tamevolume float default null,
+  aromaticcontent float default null,
+  olefincontent float default null,
+  benzenecontent float default null,
+  e200 float default null,
+  e300 float default null,
+  voltowtpercentoxy float default null,
+  biodieselestervolume float default null,
+  cetaneindex float default null,
+  pahcontent float default null,
+  t50 float default null,
+  t90 float default null,
+  primary key (fuelformulationid)
 );
-truncate table refuelingFuelFormulation;
+truncate table refuelingfuelformulation;
 
-drop table if exists refuelingFuelSubtype;
-CREATE TABLE refuelingFuelSubtype (
-  fuelSubtypeID smallint(6) NOT NULL DEFAULT '0',
-  fuelTypeID smallint(6) NOT NULL DEFAULT '0',
-  fuelSubtypeDesc char(50) DEFAULT NULL,
-  fuelSubtypePetroleumFraction float DEFAULT NULL,
-  fuelSubtypePetroleumFractionCV float DEFAULT NULL,
-  fuelSubtypeFossilFraction float DEFAULT NULL,
-  fuelSubtypeFossilFractionCV float DEFAULT NULL,
-  carbonContent float DEFAULT NULL,
-  oxidationFraction float DEFAULT NULL,
-  carbonContentCV float DEFAULT NULL,
-  oxidationFractionCV float DEFAULT NULL,
-  energyContent float DEFAULT NULL,
-  PRIMARY KEY (fuelSubtypeID),
-  KEY fuelTypeID (fuelTypeID,fuelSubtypeID)
+drop table if exists refuelingfuelsubtype;
+create table refuelingfuelsubtype (
+  fuelsubtypeid smallint(6) not null default '0',
+  fueltypeid smallint(6) not null default '0',
+  fuelsubtypedesc char(50) default null,
+  fuelsubtypepetroleumfraction float default null,
+  fuelsubtypepetroleumfractioncv float default null,
+  fuelsubtypefossilfraction float default null,
+  fuelsubtypefossilfractioncv float default null,
+  carboncontent float default null,
+  oxidationfraction float default null,
+  carboncontentcv float default null,
+  oxidationfractioncv float default null,
+  energycontent float default null,
+  primary key (fuelsubtypeid),
+  key fueltypeid (fueltypeid,fuelsubtypeid)
 );
-truncate table refuelingFuelSubtype;
+truncate table refuelingfuelsubtype;
 
-drop table if exists refuelingFuelSupply;
-CREATE TABLE refuelingFuelSupply (
-  fuelRegionID int(11) NOT NULL DEFAULT '0',
-  fuelYearID int(11) NOT NULL DEFAULT '0',
-  monthGroupID smallint(6) NOT NULL DEFAULT '0',
-  fuelFormulationID smallint(6) NOT NULL DEFAULT '0',
-  marketShare float DEFAULT NULL,
-  marketShareCV float DEFAULT NULL,
-  PRIMARY KEY (fuelRegionID,fuelFormulationID,monthGroupID,fuelYearID),
-  KEY countyID (fuelRegionID),
-  KEY yearID (fuelYearID),
-  KEY monthGroupID (monthGroupID),
-  KEY fuelSubtypeID (fuelFormulationID)
+drop table if exists refuelingfuelsupply;
+create table refuelingfuelsupply (
+  fuelregionid int(11) not null default '0',
+  fuelyearid int(11) not null default '0',
+  monthgroupid smallint(6) not null default '0',
+  fuelformulationid smallint(6) not null default '0',
+  marketshare float default null,
+  marketsharecv float default null,
+  primary key (fuelregionid,fuelformulationid,monthgroupid,fuelyearid),
+  key countyid (fuelregionid),
+  key yearid (fuelyearid),
+  key monthgroupid (monthgroupid),
+  key fuelsubtypeid (fuelformulationid)
 );
-truncate table refuelingFuelSupply;
+truncate table refuelingfuelsupply;
 
-drop table if exists refuelingMonthOfAnyYear;
-CREATE TABLE refuelingMonthOfAnyYear (
-  monthID smallint(6) NOT NULL DEFAULT '0',
-  monthName char(10) DEFAULT NULL,
-  noOfDays smallint(6) DEFAULT NULL,
-  monthGroupID smallint(6) NOT NULL DEFAULT '0',
-  PRIMARY KEY (monthID),
-  KEY monthGroupID (monthGroupID),
-  KEY monthGroupID_2 (monthGroupID,monthID),
-  KEY monthID (monthID,monthGroupID)
+drop table if exists refuelingmonthofanyyear;
+create table refuelingmonthofanyyear (
+  monthid smallint(6) not null default '0',
+  monthname char(10) default null,
+  noofdays smallint(6) default null,
+  monthgroupid smallint(6) not null default '0',
+  primary key (monthid),
+  key monthgroupid (monthgroupid),
+  key monthgroupid_2 (monthgroupid,monthid),
+  key monthid (monthid,monthgroupid)
 );
-truncate table refuelingMonthOfAnyYear;
+truncate table refuelingmonthofanyyear;
 
-drop table if exists refuelingZoneMonthHour;
-CREATE TABLE refuelingZoneMonthHour (
-  monthID smallint(6) NOT NULL DEFAULT '0',
-  zoneID int(11) NOT NULL DEFAULT '0',
-  hourID smallint(6) NOT NULL DEFAULT '0',
-  temperature float DEFAULT NULL,
-  temperatureCV float DEFAULT NULL,
-  relHumidity float DEFAULT NULL,
-  heatIndex float DEFAULT NULL,
-  specificHumidity float DEFAULT NULL,
-  relativeHumidityCV float DEFAULT NULL,
-  PRIMARY KEY (hourID,monthID,zoneID),
-  KEY monthID (monthID),
-  KEY zoneID (zoneID),
-  KEY hourID (hourID)
+drop table if exists refuelingzonemonthhour;
+create table refuelingzonemonthhour (
+  monthid smallint(6) not null default '0',
+  zoneid int(11) not null default '0',
+  hourid smallint(6) not null default '0',
+  temperature float default null,
+  temperaturecv float default null,
+  relhumidity float default null,
+  heatindex float default null,
+  specifichumidity float default null,
+  relativehumiditycv float default null,
+  primary key (hourid,monthid,zoneid),
+  key monthid (monthid),
+  key zoneid (zoneid),
+  key hourid (hourid)
 );
-truncate table refuelingZoneMonthHour;
+truncate table refuelingzonemonthhour;
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
-cache SELECT * INTO OUTFILE '##RefuelingFactors##'
-FROM RefuelingFactors;
+-- section extract data
+cache select * into outfile '##refuelingfactors##'
+from refuelingfactors;
 
--- @algorithm energyContent = sum(marketShare * energyContent) across all the fuel supply.
-cache SELECT ft.fuelTypeID, defaultFormulationID, fuelTypeDesc, humidityCorrectionCoeff, humidityCorrectionCoeffCV,
-	sum(marketShare*energyContent) as energyContent, fuelDensity, rsm.monthID
-INTO OUTFILE '##RefuelingFuelType##'
-FROM FuelType ft
-inner join fuelSubtype fst on (fst.fuelTypeID=ft.fuelTypeID)
-inner join fuelFormulation ff on (ff.fuelSubtypeID=fst.fuelSubtypeID)
-inner join fuelSupply fs on (
-	fs.fuelRegionID=##context.fuelRegionID##
-	and fs.fuelFormulationID=ff.fuelFormulationID)
+-- @algorithm energycontent = sum(marketshare * energycontent) across all the fuel supply.
+cache select ft.fueltypeid, defaultformulationid, fueltypedesc, humiditycorrectioncoeff, humiditycorrectioncoeffcv,
+	sum(marketshare*energycontent) as energycontent, fueldensity, rsm.monthid
+into outfile '##refuelingfueltype##'
+from fueltype ft
+inner join fuelsubtype fst on (fst.fueltypeid=ft.fueltypeid)
+inner join fuelformulation ff on (ff.fuelsubtypeid=fst.fuelsubtypeid)
+inner join fuelsupply fs on (
+	fs.fuelregionid=##context.fuelregionid##
+	and fs.fuelformulationid=ff.fuelformulationid)
 inner join year y on (
-	y.yearID=##context.year##
-	and y.fuelYearID=fs.fuelYearID)
-inner join monthOfAnyYear m on (m.monthGroupID=fs.monthGroupID)
-inner join runspecMonth rsm on (rsm.monthID=m.monthID)
-WHERE energyContent is not null
-AND energyContent > 0
-AND fuelDensity is not null
-AND fuelDensity > 0
-group by ft.fuelTypeID, rsm.monthID;
+	y.yearid=##context.year##
+	and y.fuelyearid=fs.fuelyearid)
+inner join monthofanyyear m on (m.monthgroupid=fs.monthgroupid)
+inner join runspecmonth rsm on (rsm.monthid=m.monthid)
+where energycontent is not null
+and energycontent > 0
+and fueldensity is not null
+and fueldensity > 0
+group by ft.fueltypeid, rsm.monthid;
 
-cache SELECT
-	processID, sourceTypeID, 
-	MYRMAP(modelYearID) as modelYearID, 
-	refuelingTechAdjustment
-INTO OUTFILE '##SourceTypeTechAdjustment##'
-FROM SourceTypeTechAdjustment
-WHERE processID IN (##refuelingProcessIDs##)
-AND modelYearID <= MYMAP(##context.year##)
-AND modelYearID >= MYMAP(##context.year## - 30);
+cache select
+	processid, sourcetypeid, 
+	myrmap(modelyearid) as modelyearid, 
+	refuelingtechadjustment
+into outfile '##sourcetypetechadjustment##'
+from sourcetypetechadjustment
+where processid in (##refuelingprocessids##)
+and modelyearid <= mymap(##context.year##)
+and modelyearid >= mymap(##context.year## - 30);
 
-cache SELECT * INTO OUTFILE '##RefuelingRunSpecHour##'
-FROM RunSpecHour;
+cache select * into outfile '##refuelingrunspechour##'
+from runspechour;
 
-cache SELECT * INTO OUTFILE '##RefuelingRunSpecMonth##'
-FROM RunSpecMonth;
+cache select * into outfile '##refuelingrunspecmonth##'
+from runspecmonth;
 
-cache SELECT * INTO OUTFILE '##RefuelingCountyYear##'
-FROM CountyYear
-WHERE countyID=##context.iterLocation.countyRecordID##
-AND yearID=##context.year##;
+cache select * into outfile '##refuelingcountyyear##'
+from countyyear
+where countyid=##context.iterlocation.countyrecordid##
+and yearid=##context.year##;
 
--- Section RefuelingDisplacementVaporLoss
-cache SELECT pollutantID INTO OUTFILE '##RefuelingDisplacementPollutant##'
-FROM Pollutant
-WHERE pollutantID in (##refuelingDisplacement.pollutantIDs##);
--- End Section RefuelingDisplacementVaporLoss
+-- section refuelingdisplacementvaporloss
+cache select pollutantid into outfile '##refuelingdisplacementpollutant##'
+from pollutant
+where pollutantid in (##refuelingdisplacement.pollutantids##);
+-- end section refuelingdisplacementvaporloss
 
--- Section RefuelingSpillageLoss
-cache SELECT pollutantID INTO OUTFILE '##RefuelingSpillagePollutant##'
-FROM Pollutant
-WHERE pollutantID in (##refuelingSpillage.pollutantIDs##);
--- End Section RefuelingSpillageLoss
+-- section refuelingspillageloss
+cache select pollutantid into outfile '##refuelingspillagepollutant##'
+from pollutant
+where pollutantid in (##refuelingspillage.pollutantids##);
+-- end section refuelingspillageloss
 
-cache SELECT ff.* INTO OUTFILE '##RefuelingFuelFormulation##'
-FROM FuelFormulation ff
-INNER JOIN FuelSupply fs ON fs.fuelFormulationID = ff.fuelFormulationID
-INNER JOIN Year y ON y.fuelYearID = fs.fuelYearID
-INNER JOIN RunSpecMonthGroup rsmg ON rsmg.monthGroupID = fs.monthGroupID
-WHERE fuelRegionID = ##context.fuelRegionID## AND
-yearID = ##context.year##
-GROUP BY ff.FuelFormulationID ORDER BY NULL;
+cache select ff.* into outfile '##refuelingfuelformulation##'
+from fuelformulation ff
+inner join fuelsupply fs on fs.fuelformulationid = ff.fuelformulationid
+inner join year y on y.fuelyearid = fs.fuelyearid
+inner join runspecmonthgroup rsmg on rsmg.monthgroupid = fs.monthgroupid
+where fuelregionid = ##context.fuelregionid## and
+yearid = ##context.year##
+group by ff.fuelformulationid order by null;
 
-cache SELECT * INTO OUTFILE '##RefuelingFuelSubtype##'
-FROM FuelSubtype;
+cache select * into outfile '##refuelingfuelsubtype##'
+from fuelsubtype;
 
-cache SELECT FuelSupply.* INTO OUTFILE '##RefuelingFuelSupply##'
-FROM FuelSupply
-INNER JOIN RunSpecMonthGroup ON (FuelSupply.monthGroupID = RunSpecMonthGroup.monthGroupID)
-INNER JOIN Year ON (FuelSupply.fuelYearID = Year.fuelYearID)
-WHERE fuelRegionID = ##context.fuelRegionID##
-AND yearID = ##context.year##;
+cache select fuelsupply.* into outfile '##refuelingfuelsupply##'
+from fuelsupply
+inner join runspecmonthgroup on (fuelsupply.monthgroupid = runspecmonthgroup.monthgroupid)
+inner join year on (fuelsupply.fuelyearid = year.fuelyearid)
+where fuelregionid = ##context.fuelregionid##
+and yearid = ##context.year##;
 
-cache SELECT MonthOfAnyYear.*
-INTO OUTFILE '##RefuelingMonthOfAnyYear##'
-FROM MonthOfAnyYear;
+cache select monthofanyyear.*
+into outfile '##refuelingmonthofanyyear##'
+from monthofanyyear;
 
-cache SELECT ZoneMonthHour.*
-INTO OUTFILE '##RefuelingZoneMonthHour##'
-FROM RunSpecMonth
-INNER JOIN RunSpecHour
-INNER JOIN ZoneMonthHour ON (ZoneMonthHour.monthID = RunSpecMonth.monthID AND ZoneMonthHour.hourID = RunSpecHour.hourID)
-WHERE zoneID = ##context.iterLocation.zoneRecordID##;
+cache select zonemonthhour.*
+into outfile '##refuelingzonemonthhour##'
+from runspecmonth
+inner join runspechour
+inner join zonemonthhour on (zonemonthhour.monthid = runspecmonth.monthid and zonemonthhour.hourid = runspechour.hourid)
+where zoneid = ##context.iterlocation.zonerecordid##;
 
--- End Section Extract Data
+-- end section extract data
 
--- Section Local Data Removal
---TRUNCATE XXXXXX;
--- Section RefuelingDisplacementVaporLoss
--- End Section RefuelingDisplacementVaporLoss
+-- section local data removal
+--truncate xxxxxx;
+-- section refuelingdisplacementvaporloss
+-- end section refuelingdisplacementvaporloss
 
--- Section RefuelingSpillageLoss
--- End Section RefuelingSpillageLoss
--- End Section Local Data Removal
+-- section refuelingspillageloss
+-- end section refuelingspillageloss
+-- end section local data removal
 
--- Section Processing
+-- section processing
 
--- Section RefuelingDisplacementVaporLoss
+-- section refuelingdisplacementvaporloss
 -- --------------------------------------------------------------
--- REFEC-1: Determine the refueling temperatures
+-- refec-1: determine the refueling temperatures
 -- --------------------------------------------------------------
 
--- @algorithm Determine the refueling temperatures
-drop table if exists RefuelingTemp;
+-- @algorithm determine the refueling temperatures
+drop table if exists refuelingtemp;
 
-create table RefuelingTemp (
-	monthID smallint(6) not null,
-	hourID smallint(6) not null,
-	fuelTypeID smallint(6) not null,
+create table refuelingtemp (
+	monthid smallint(6) not null,
+	hourid smallint(6) not null,
+	fueltypeid smallint(6) not null,
 
-	refuelingTemperature float not null default 0.0,
-	tankTemperatureDif float not null default 0.0,
-	displacedVaporRate float not null default 0.0,
+	refuelingtemperature float not null default 0.0,
+	tanktemperaturedif float not null default 0.0,
+	displacedvaporrate float not null default 0.0,
 
-	key(monthID),
-	key(hourID),
-	key(fuelTypeID),
-	unique index XPKRefuelingTemp (monthID,hourID,fuelTypeID)
+	key(monthid),
+	key(hourid),
+	key(fueltypeid),
+	unique index xpkrefuelingtemp (monthid,hourid,fueltypeid)
 );
 
--- @algorithm refuelingTemperature = temperature subject to lower bound of vaporLowLimit and upper bound of vaporHighLimit.
-insert into RefuelingTemp (monthID, hourID, fuelTypeID, refuelingTemperature)
-select monthID, hourID, fuelTypeID,
+-- @algorithm refuelingtemperature = temperature subject to lower bound of vaporlowlimit and upper bound of vaporhighlimit.
+insert into refuelingtemp (monthid, hourid, fueltypeid, refuelingtemperature)
+select monthid, hourid, fueltypeid,
 	case
-		when temperature <= vaporLowTLimit then vaporLowTLimit
-		when temperature >= vaporHighTLimit then vaporHighTLimit
+		when temperature <= vaporlowtlimit then vaporlowtlimit
+		when temperature >= vaporhightlimit then vaporhightlimit
 		else temperature
-	end as refuelingTemperature
-from RefuelingZoneMonthHour, RefuelingFactors;
+	end as refuelingtemperature
+from refuelingzonemonthhour, refuelingfactors;
 
-analyze table RefuelingTemp;
+analyze table refuelingtemp;
 
--- @algorithm tankTemperatureDif = ((vaporTermE*refuelingTemperature) + vaporTermF) subject to lower bound of 0 and upper bound of tankDiffLimit.
-update RefuelingTemp, RefuelingFactors
-set RefuelingTemp.tankTemperatureDif = 
+-- @algorithm tanktemperaturedif = ((vaporterme*refuelingtemperature) + vaportermf) subject to lower bound of 0 and upper bound of tankdifflimit.
+update refuelingtemp, refuelingfactors
+set refuelingtemp.tanktemperaturedif = 
 	case
-		when ((vaporTermE*refuelingTemperature) + vaporTermF) >= tankTDiffLimit then tankTDiffLimit
-		when ((vaporTermE*refuelingTemperature) + vaporTermF) <= 0.0 then 0.0
-		else ((vaporTermE*refuelingTemperature) + vaporTermF)
+		when ((vaporterme*refuelingtemperature) + vaportermf) >= tanktdifflimit then tanktdifflimit
+		when ((vaporterme*refuelingtemperature) + vaportermf) <= 0.0 then 0.0
+		else ((vaporterme*refuelingtemperature) + vaportermf)
 	end
-where RefuelingFactors.fuelTypeID=RefuelingTemp.fuelTypeID;
+where refuelingfactors.fueltypeid=refuelingtemp.fueltypeid;
 
 -- --------------------------------------------------------------
--- REFEC-2: Determine the unadjusted refueling displacement vapor loss rate
+-- refec-2: determine the unadjusted refueling displacement vapor loss rate
 -- --------------------------------------------------------------
 
--- @algorithm Determine the unadjusted refueling displacement vapor loss rate
-drop table if exists RefuelingAverageRVP;
+-- @algorithm determine the unadjusted refueling displacement vapor loss rate
+drop table if exists refuelingaveragervp;
 
-create table RefuelingAverageRVP (
-	monthID smallint(6) not null,
-	fuelTypeID smallint(6) not null,
-	averageRVP float not null,
-	key(monthID),
-	key(fuelTypeID),
-	unique index XPKRefuelingAverageRVP (monthID, fuelTypeID)
+create table refuelingaveragervp (
+	monthid smallint(6) not null,
+	fueltypeid smallint(6) not null,
+	averagervp float not null,
+	key(monthid),
+	key(fueltypeid),
+	unique index xpkrefuelingaveragervp (monthid, fueltypeid)
 );
 
--- @algorithm averageRVP = sum(RVP * marketShare) across fuel formulations.
-insert into RefuelingAverageRVP (monthID, fuelTypeID, averageRVP)
-select monthID, fuelTypeID, coalesce(sum(rvp*marketShare),0.0) as averageRVP
-from RefuelingFuelSupply
-inner join RefuelingFuelFormulation on RefuelingFuelFormulation.fuelFormulationID=RefuelingFuelSupply.fuelFormulationID
-inner join RefuelingMonthOfAnyYear on RefuelingMonthOfAnyYear.monthGroupID=RefuelingFuelSupply.monthGroupID
-inner join RefuelingFuelSubtype on RefuelingFuelSubtype.fuelSubtypeID=RefuelingFuelFormulation.fuelSubtypeID
-group by monthID, fuelTypeID;
+-- @algorithm averagervp = sum(rvp * marketshare) across fuel formulations.
+insert into refuelingaveragervp (monthid, fueltypeid, averagervp)
+select monthid, fueltypeid, coalesce(sum(rvp*marketshare),0.0) as averagervp
+from refuelingfuelsupply
+inner join refuelingfuelformulation on refuelingfuelformulation.fuelformulationid=refuelingfuelsupply.fuelformulationid
+inner join refuelingmonthofanyyear on refuelingmonthofanyyear.monthgroupid=refuelingfuelsupply.monthgroupid
+inner join refuelingfuelsubtype on refuelingfuelsubtype.fuelsubtypeid=refuelingfuelformulation.fuelsubtypeid
+group by monthid, fueltypeid;
 
-analyze table RefuelingAverageRVP;
+analyze table refuelingaveragervp;
 
--- @algorithm Provide default averageRVP of 0.
-insert ignore into RefuelingAverageRVP (monthID, fuelTypeID, averageRVP)
-select monthID, fuelTypeID, 0.0 as averageRVP
-from RefuelingFactors, RefuelingMonthOfAnyYear;
+-- @algorithm provide default averagervp of 0.
+insert ignore into refuelingaveragervp (monthid, fueltypeid, averagervp)
+select monthid, fueltypeid, 0.0 as averagervp
+from refuelingfactors, refuelingmonthofanyyear;
 
-analyze table RefuelingAverageRVP;
+analyze table refuelingaveragervp;
 
--- @algorithm displacedVaporRate = exp(vaporTermA + vaporTermB * tankTemperatureDif + vaporTermC * refuelingTemperature + vaporTermD * averageRVP)
-update RefuelingTemp, RefuelingFactors, RefuelingAverageRVP
-set displacedVaporRate = exp(vaporTermA
-	+ vaporTermB * tankTemperatureDif
-	+ vaporTermC * refuelingTemperature
-	+ vaporTermD * averageRVP)
-where RefuelingFactors.fuelTypeID=RefuelingTemp.fuelTypeID
-and RefuelingAverageRVP.fuelTypeID=RefuelingTemp.fuelTypeID
-and RefuelingAverageRVP.monthID=RefuelingTemp.monthID;
+-- @algorithm displacedvaporrate = exp(vaporterma + vaportermb * tanktemperaturedif + vaportermc * refuelingtemperature + vaportermd * averagervp)
+update refuelingtemp, refuelingfactors, refuelingaveragervp
+set displacedvaporrate = exp(vaporterma
+	+ vaportermb * tanktemperaturedif
+	+ vaportermc * refuelingtemperature
+	+ vaportermd * averagervp)
+where refuelingfactors.fueltypeid=refuelingtemp.fueltypeid
+and refuelingaveragervp.fueltypeid=refuelingtemp.fueltypeid
+and refuelingaveragervp.monthid=refuelingtemp.monthid;
 
--- @algorithm Limit displacedVaporRate to no less than minimumRefuelingVaporLoss.
-update RefuelingTemp, RefuelingFactors
-set displacedVaporRate = case when minimumRefuelingVaporLoss <= -1 then 0 else minimumRefuelingVaporLoss end
-where RefuelingFactors.fuelTypeID=RefuelingTemp.fuelTypeID
-and (displacedVaporRate < minimumRefuelingVaporLoss or minimumRefuelingVaporLoss <= -1);
+-- @algorithm limit displacedvaporrate to no less than minimumrefuelingvaporloss.
+update refuelingtemp, refuelingfactors
+set displacedvaporrate = case when minimumrefuelingvaporloss <= -1 then 0 else minimumrefuelingvaporloss end
+where refuelingfactors.fueltypeid=refuelingtemp.fueltypeid
+and (displacedvaporrate < minimumrefuelingvaporloss or minimumrefuelingvaporloss <= -1);
 
 -- --------------------------------------------------------------
--- REFEC-3: Technology adjustment of the refueling displacement vapor loss rate
--- REFEC-4: Program adjustment of the refueling displacement vapor loss rate
+-- refec-3: technology adjustment of the refueling displacement vapor loss rate
+-- refec-4: program adjustment of the refueling displacement vapor loss rate
 -- --------------------------------------------------------------
-drop table if exists RefuelingDisplacement;
-create table RefuelingDisplacement (
-	fuelTypeID smallint(6) not null,
-	sourceTypeID smallint(6) not null,
-	modelYearID smallint(6) not null,
-	monthID smallint(6) not null,
-	hourID smallint(6) not null,
+drop table if exists refuelingdisplacement;
+create table refuelingdisplacement (
+	fueltypeid smallint(6) not null,
+	sourcetypeid smallint(6) not null,
+	modelyearid smallint(6) not null,
+	monthid smallint(6) not null,
+	hourid smallint(6) not null,
 
-	adjustedVaporRate float not null default 0.0,
+	adjustedvaporrate float not null default 0.0,
 
-	key(fuelTypeID),
-	key(sourceTypeID),
-	key(modelYearID),
-	key(monthID),
-	key(hourID),
-	unique index XPKRefuelingDisplacement (fuelTypeID, sourceTypeID, modelYearID, monthID, hourID)
+	key(fueltypeid),
+	key(sourcetypeid),
+	key(modelyearid),
+	key(monthid),
+	key(hourid),
+	unique index xpkrefuelingdisplacement (fueltypeid, sourcetypeid, modelyearid, monthid, hourid)
 );
 
--- @algorithm Technology and Program adjustment of the refueling displacement vapor loss rate.
--- adjustedVaporRate = (1.0-refuelingVaporProgramAdjust)*((1.0-refuelingTechAdjustment)*displacedVaporRate).
--- @condition Refueling Displacement Vapor Loss (18).
-insert into RefuelingDisplacement (fuelTypeID, sourceTypeID, modelYearID, monthID, hourID, adjustedVaporRate)
-select fuelTypeID, sourceTypeID, modelYearID, monthID, hourID,
-	(1.0-refuelingVaporProgramAdjust)*((1.0-refuelingTechAdjustment)*displacedVaporRate) as adjustedVaporRate
-from RefuelingCountyYear, SourceTypeTechAdjustment, RefuelingTemp
-where SourceTypeTechAdjustment.processID=18;
+-- @algorithm technology and program adjustment of the refueling displacement vapor loss rate.
+-- adjustedvaporrate = (1.0-refuelingvaporprogramadjust)*((1.0-refuelingtechadjustment)*displacedvaporrate).
+-- @condition refueling displacement vapor loss (18).
+insert into refuelingdisplacement (fueltypeid, sourcetypeid, modelyearid, monthid, hourid, adjustedvaporrate)
+select fueltypeid, sourcetypeid, modelyearid, monthid, hourid,
+	(1.0-refuelingvaporprogramadjust)*((1.0-refuelingtechadjustment)*displacedvaporrate) as adjustedvaporrate
+from refuelingcountyyear, sourcetypetechadjustment, refuelingtemp
+where sourcetypetechadjustment.processid=18;
 
--- End Section RefuelingDisplacementVaporLoss
+-- end section refuelingdisplacementvaporloss
 
--- Section RefuelingSpillageLoss
+-- section refuelingspillageloss
 -- --------------------------------------------------------------
--- REFEC-5: Technology adjustment of the refueling spillage rate
--- REFEC-6: Program adjustment of the refueling spillage rate
+-- refec-5: technology adjustment of the refueling spillage rate
+-- refec-6: program adjustment of the refueling spillage rate
 -- --------------------------------------------------------------
-drop table if exists RefuelingSpillage;
-create table RefuelingSpillage (
-	fuelTypeID smallint(6) not null,
-	sourceTypeID smallint(6) not null,
-	modelYearID smallint(6) not null,
+drop table if exists refuelingspillage;
+create table refuelingspillage (
+	fueltypeid smallint(6) not null,
+	sourcetypeid smallint(6) not null,
+	modelyearid smallint(6) not null,
 
-	adjustedSpillRate float not null default 0.0,
+	adjustedspillrate float not null default 0.0,
 
-	key(fuelTypeID),
-	key(sourceTypeID),
-	key(modelYearID),
-	unique index XPKRefuelingSpillage (fuelTypeID, sourceTypeID, modelYearID)
+	key(fueltypeid),
+	key(sourcetypeid),
+	key(modelyearid),
+	unique index xpkrefuelingspillage (fueltypeid, sourcetypeid, modelyearid)
 );
 
--- @algorithm Technology and Program adjustment of the refueling spillage rate.
--- adjustedSpillRate = (1.0-refuelingSpillProgramAdjust)*((1.0-refuelingTechAdjustment)*refuelingSpillRate).
--- @condition Refueling Spillage Loss (19).
-insert into RefuelingSpillage (fuelTypeID, sourceTypeID, modelYearID, adjustedSpillRate)
-select fuelTypeID, sourceTypeID, modelYearID, 
-	(1.0-refuelingSpillProgramAdjust)*((1.0-refuelingTechAdjustment)*refuelingSpillRate) as adjustedSpillRate
-from RefuelingCountyYear, SourceTypeTechAdjustment, RefuelingFactors
-where SourceTypeTechAdjustment.processID=19;
+-- @algorithm technology and program adjustment of the refueling spillage rate.
+-- adjustedspillrate = (1.0-refuelingspillprogramadjust)*((1.0-refuelingtechadjustment)*refuelingspillrate).
+-- @condition refueling spillage loss (19).
+insert into refuelingspillage (fueltypeid, sourcetypeid, modelyearid, adjustedspillrate)
+select fueltypeid, sourcetypeid, modelyearid, 
+	(1.0-refuelingspillprogramadjust)*((1.0-refuelingtechadjustment)*refuelingspillrate) as adjustedspillrate
+from refuelingcountyyear, sourcetypetechadjustment, refuelingfactors
+where sourcetypetechadjustment.processid=19;
 
--- End Section RefuelingSpillageLoss
+-- end section refuelingspillageloss
 
 -- --------------------------------------------------------------
--- REFEC-7: Calculate total fuel consumption from Total Energy
--- REFEC-8: Refueling loss emission results
+-- refec-7: calculate total fuel consumption from total energy
+-- refec-8: refueling loss emission results
 -- --------------------------------------------------------------
-drop table if exists RefuelingWorkerOutputTemp;
-create table RefuelingWorkerOutputTemp (
-	yearID               SMALLINT UNSIGNED NULL,
-	monthID              SMALLINT UNSIGNED NULL,
-	dayID                SMALLINT UNSIGNED NULL,
-	hourID               SMALLINT UNSIGNED NULL,
-	stateID              SMALLINT UNSIGNED NULL,
-	countyID             INTEGER UNSIGNED NULL,
-	zoneID               INTEGER UNSIGNED NULL,
-	linkID               INTEGER UNSIGNED NULL,
-	pollutantID          SMALLINT UNSIGNED NULL,
-	processID            SMALLINT UNSIGNED NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL,
-	regClassID			 SMALLINT UNSIGNED NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL,
-	modelYearID          SMALLINT UNSIGNED NULL,
-	roadTypeID           SMALLINT UNSIGNED NULL,
-	SCC                  CHAR(10) NULL,
-	emissionQuant        DOUBLE NULL,
-	emissionRate		 DOUBLE NULL
+drop table if exists refuelingworkeroutputtemp;
+create table refuelingworkeroutputtemp (
+	yearid               smallint unsigned null,
+	monthid              smallint unsigned null,
+	dayid                smallint unsigned null,
+	hourid               smallint unsigned null,
+	stateid              smallint unsigned null,
+	countyid             integer unsigned null,
+	zoneid               integer unsigned null,
+	linkid               integer unsigned null,
+	pollutantid          smallint unsigned null,
+	processid            smallint unsigned null,
+	sourcetypeid         smallint unsigned null,
+	regclassid			 smallint unsigned null,
+	fueltypeid           smallint unsigned null,
+	modelyearid          smallint unsigned null,
+	roadtypeid           smallint unsigned null,
+	scc                  char(10) null,
+	emissionquant        double null,
+	emissionrate		 double null
 );
 
--- Section RefuelingDisplacementVaporLoss
-truncate RefuelingWorkerOutputTemp;
+-- section refuelingdisplacementvaporloss
+truncate refuelingworkeroutputtemp;
 
--- @algorithm emissions = (adjustedVaporRate * Total Energy Consumption (91)) / (energyContent * fuelDensity).
--- @condition Refueling Displacement Vapor Loss (18).
-insert into RefuelingWorkerOutputTemp (
-	yearID, monthID, dayID, hourID, stateID, countyID, zoneID, linkID, pollutantID, processID,
-	sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC, emissionQuant, emissionRate
+-- @algorithm emissions = (adjustedvaporrate * total energy consumption (91)) / (energycontent * fueldensity).
+-- @condition refueling displacement vapor loss (18).
+insert into refuelingworkeroutputtemp (
+	yearid, monthid, dayid, hourid, stateid, countyid, zoneid, linkid, pollutantid, processid,
+	sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc, emissionquant, emissionrate
 )
 select
-	mwo.yearID, mwo.monthID, mwo.dayID, mwo.hourID, mwo.stateID, mwo.countyID, mwo.zoneID, mwo.linkID, 0 as pollutantID, 18 as processID,
-	mwo.sourceTypeID, mwo.regClassID, mwo.fuelTypeID, mwo.modelYearID, mwo.roadTypeID, 
-	null as SCC,
-	(adjustedVaporRate * mwo.emissionQuant / (energyContent * fuelDensity)) as emissionQuant,
-	(adjustedVaporRate * mwo.emissionRate  / (energyContent * fuelDensity)) as emissionRate
-from MOVESWorkerOutput mwo
-inner join RefuelingFuelType rft on (rft.fuelTypeID=mwo.fuelTypeID and rft.monthID=mwo.monthID)
-inner join RefuelingDisplacement rd on (
-	rd.fuelTypeID=rft.fuelTypeID and rd.sourceTypeID=mwo.sourceTypeID and rd.modelYearID=mwo.modelYearID
-	and rd.monthID=mwo.monthID and rd.hourID=mwo.hourID)
-where mwo.processID in (1,2,90,91)
-and mwo.pollutantID=91;
+	mwo.yearid, mwo.monthid, mwo.dayid, mwo.hourid, mwo.stateid, mwo.countyid, mwo.zoneid, mwo.linkid, 0 as pollutantid, 18 as processid,
+	mwo.sourcetypeid, mwo.regclassid, mwo.fueltypeid, mwo.modelyearid, mwo.roadtypeid, 
+	null as scc,
+	(adjustedvaporrate * mwo.emissionquant / (energycontent * fueldensity)) as emissionquant,
+	(adjustedvaporrate * mwo.emissionrate  / (energycontent * fueldensity)) as emissionrate
+from movesworkeroutput mwo
+inner join refuelingfueltype rft on (rft.fueltypeid=mwo.fueltypeid and rft.monthid=mwo.monthid)
+inner join refuelingdisplacement rd on (
+	rd.fueltypeid=rft.fueltypeid and rd.sourcetypeid=mwo.sourcetypeid and rd.modelyearid=mwo.modelyearid
+	and rd.monthid=mwo.monthid and rd.hourid=mwo.hourid)
+where mwo.processid in (1,2,90,91)
+and mwo.pollutantid=91;
 
-insert into MOVESWorkerOutput (
-	yearID, monthID, dayID, hourID, stateID, countyID, zoneID, linkID, pollutantID, processID,
-	sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC, emissionQuant, emissionRate
+insert into movesworkeroutput (
+	yearid, monthid, dayid, hourid, stateid, countyid, zoneid, linkid, pollutantid, processid,
+	sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc, emissionquant, emissionrate
 )
 select
-	yearID, monthID, dayID, hourID, stateID, countyID, zoneID, linkID, rdp.pollutantID, processID,
-	sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC, emissionQuant, emissionRate
-from RefuelingWorkerOutputTemp, RefuelingDisplacementPollutant rdp;
--- End Section RefuelingDisplacementVaporLoss
+	yearid, monthid, dayid, hourid, stateid, countyid, zoneid, linkid, rdp.pollutantid, processid,
+	sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc, emissionquant, emissionrate
+from refuelingworkeroutputtemp, refuelingdisplacementpollutant rdp;
+-- end section refuelingdisplacementvaporloss
 
--- Section RefuelingSpillageLoss
-truncate RefuelingWorkerOutputTemp;
+-- section refuelingspillageloss
+truncate refuelingworkeroutputtemp;
 
--- @algorithm emissions = (adjustedSpillRate * Total Energy Consumption (91)) / (energyContent * fuelDensity).
--- @condition Refueling Spillage Loss (19).
-insert into RefuelingWorkerOutputTemp (
-	yearID, monthID, dayID, hourID, stateID, countyID, zoneID, linkID, pollutantID, processID,
-	sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC, emissionQuant, emissionRate
+-- @algorithm emissions = (adjustedspillrate * total energy consumption (91)) / (energycontent * fueldensity).
+-- @condition refueling spillage loss (19).
+insert into refuelingworkeroutputtemp (
+	yearid, monthid, dayid, hourid, stateid, countyid, zoneid, linkid, pollutantid, processid,
+	sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc, emissionquant, emissionrate
 )
 select
-	mwo.yearID, mwo.monthID, mwo.dayID, mwo.hourID, mwo.stateID, mwo.countyID, mwo.zoneID, mwo.linkID, 0 as pollutantID, 19 as processID,
-	mwo.sourceTypeID, mwo.regClassID, mwo.fuelTypeID, mwo.modelYearID, mwo.roadTypeID, 
-	null as SCC,
-	(adjustedSpillRate * mwo.emissionQuant / (energyContent * fuelDensity)) as emissionQuant,
-	(adjustedSpillRate * mwo.emissionRate  / (energyContent * fuelDensity)) as emissionRate
-from MOVESWorkerOutput mwo
-inner join RefuelingFuelType rft on (rft.fuelTypeID=mwo.fuelTypeID and rft.monthID=mwo.monthID)
-inner join RefuelingSpillage rs on (
-	rs.fuelTypeID=rft.fuelTypeID and rs.sourceTypeID=mwo.sourceTypeID and rs.modelYearID=mwo.modelYearID)
-where mwo.processID in (1,2,90,91)
-and mwo.pollutantID=91;
+	mwo.yearid, mwo.monthid, mwo.dayid, mwo.hourid, mwo.stateid, mwo.countyid, mwo.zoneid, mwo.linkid, 0 as pollutantid, 19 as processid,
+	mwo.sourcetypeid, mwo.regclassid, mwo.fueltypeid, mwo.modelyearid, mwo.roadtypeid, 
+	null as scc,
+	(adjustedspillrate * mwo.emissionquant / (energycontent * fueldensity)) as emissionquant,
+	(adjustedspillrate * mwo.emissionrate  / (energycontent * fueldensity)) as emissionrate
+from movesworkeroutput mwo
+inner join refuelingfueltype rft on (rft.fueltypeid=mwo.fueltypeid and rft.monthid=mwo.monthid)
+inner join refuelingspillage rs on (
+	rs.fueltypeid=rft.fueltypeid and rs.sourcetypeid=mwo.sourcetypeid and rs.modelyearid=mwo.modelyearid)
+where mwo.processid in (1,2,90,91)
+and mwo.pollutantid=91;
 
-insert into MOVESWorkerOutput (
-	yearID, monthID, dayID, hourID, stateID, countyID, zoneID, linkID, pollutantID, processID,
-	sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC, emissionQuant, emissionRate
+insert into movesworkeroutput (
+	yearid, monthid, dayid, hourid, stateid, countyid, zoneid, linkid, pollutantid, processid,
+	sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc, emissionquant, emissionrate
 )
 select
-	yearID, monthID, dayID, hourID, stateID, countyID, zoneID, linkID, rsp.pollutantID, processID,
-	sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC, emissionQuant, emissionRate
-from RefuelingWorkerOutputTemp, RefuelingSpillagePollutant rsp;
--- End Section RefuelingSpillageLoss
+	yearid, monthid, dayid, hourid, stateid, countyid, zoneid, linkid, rsp.pollutantid, processid,
+	sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc, emissionquant, emissionrate
+from refuelingworkeroutputtemp, refuelingspillagepollutant rsp;
+-- end section refuelingspillageloss
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
-drop table if exists RefuelingRunSpecHour;
-drop table if exists RefuelingRunSpecMonth;
-drop table if exists RefuelingCountyYear;
-drop table if exists RefuelingFuelType;
+-- section cleanup
+drop table if exists refuelingrunspechour;
+drop table if exists refuelingrunspecmonth;
+drop table if exists refuelingcountyyear;
+drop table if exists refuelingfueltype;
 
--- Section RefuelingDisplacementVaporLoss
-drop table if exists RefuelingTemp;
-drop table if exists RefuelingAverageRVP;
-drop table if exists RefuelingDisplacement;
-drop table if exists RefuelingDisplacementPollutant;
--- End Section RefuelingDisplacementVaporLoss
+-- section refuelingdisplacementvaporloss
+drop table if exists refuelingtemp;
+drop table if exists refuelingaveragervp;
+drop table if exists refuelingdisplacement;
+drop table if exists refuelingdisplacementpollutant;
+-- end section refuelingdisplacementvaporloss
 
--- Section RefuelingSpillageLoss
-drop table if exists RefuelingSpillage;
-drop table if exists RefuelingSpillagePollutant;
--- End Section RefuelingSpillageLoss
+-- section refuelingspillageloss
+drop table if exists refuelingspillage;
+drop table if exists refuelingspillagepollutant;
+-- end section refuelingspillageloss
 
-drop table if exists RefuelingWorkerOutputTemp;
--- End Section Cleanup
+drop table if exists refuelingworkeroutputtemp;
+-- end section cleanup

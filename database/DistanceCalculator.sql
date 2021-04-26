@@ -1,186 +1,186 @@
--- Version 2014-06-10
+-- version 2014-06-10
 
 -- @algorithm
--- @owner Distance Calculator
+-- @owner distance calculator
 
--- Section Create Remote Tables for Extracted Data
-##create.County##;
-TRUNCATE TABLE County;
+-- section create remote tables for extracted data
+##create.county##;
+truncate table county;
 
-##create.HourDay##;
-TRUNCATE TABLE HourDay;
+##create.hourday##;
+truncate table hourday;
 
-##create.Link##;
-TRUNCATE TABLE Link;
+##create.link##;
+truncate table link;
 
-##create.SourceBin##;
-TRUNCATE TABLE SourceBin;
+##create.sourcebin##;
+truncate table sourcebin;
 
-##create.SourceBinDistribution##;
-TRUNCATE TABLE SourceBinDistribution;
+##create.sourcebindistribution##;
+truncate table sourcebindistribution;
 
-##create.SourceTypeModelYear##;
-TRUNCATE TABLE SourceTypeModelYear;
+##create.sourcetypemodelyear##;
+truncate table sourcetypemodelyear;
 
-##create.EmissionProcess##;
-TRUNCATE TABLE EmissionProcess;
+##create.emissionprocess##;
+truncate table emissionprocess;
 
-##create.SHO##;
-TRUNCATE TABLE SHO;
+##create.sho##;
+truncate table sho;
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
-SELECT * INTO OUTFILE '##County##'
-FROM County
-WHERE countyID = ##context.iterLocation.countyRecordID##;
+-- section extract data
+select * into outfile '##county##'
+from county
+where countyid = ##context.iterlocation.countyrecordid##;
 
-SELECT Link.*
-INTO OUTFILE '##Link##'
-FROM Link
-WHERE linkID = ##context.iterLocation.linkRecordID##;
+select link.*
+into outfile '##link##'
+from link
+where linkid = ##context.iterlocation.linkrecordid##;
 
-SELECT * 
-INTO OUTFILE '##EmissionProcess##'
-FROM EmissionProcess
-WHERE processID=##context.iterProcess.databaseKey##;
+select * 
+into outfile '##emissionprocess##'
+from emissionprocess
+where processid=##context.iterprocess.databasekey##;
 
-cache SELECT DISTINCT SourceBinDistribution.* 
-INTO OUTFILE '##SourceBinDistribution##'
-FROM sourceBinDistributionFuelUsage_##context.iterProcess.databaseKey##_##context.iterLocation.countyRecordID##_##context.year## as SourceBinDistribution, 
-SourceTypeModelYear, SourceBin, RunSpecSourceFuelType
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
-AND SourceTypeModelYear.modelYearID <= ##context.year##
-AND SourceTypeModelYear.modelYearID >= ##context.year## - 30
-AND SourceTypeModelYear.sourceTypeID = RunSpecSourceFuelType.sourceTypeID
-AND SourceBinDistribution.SourceBinID = SourceBin.SourceBinID
-AND SourceBin.fuelTypeID = RunSpecSourceFuelType.fuelTypeID;
+cache select distinct sourcebindistribution.* 
+into outfile '##sourcebindistribution##'
+from sourcebindistributionfuelusage_##context.iterprocess.databasekey##_##context.iterlocation.countyrecordid##_##context.year## as sourcebindistribution, 
+sourcetypemodelyear, sourcebin, runspecsourcefueltype
+where polprocessid in (##pollutantprocessids##)
+and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+and sourcetypemodelyear.modelyearid <= ##context.year##
+and sourcetypemodelyear.modelyearid >= ##context.year## - 30
+and sourcetypemodelyear.sourcetypeid = runspecsourcefueltype.sourcetypeid
+and sourcebindistribution.sourcebinid = sourcebin.sourcebinid
+and sourcebin.fueltypeid = runspecsourcefueltype.fueltypeid;
 
-cache SELECT DISTINCT SourceBin.* 
-INTO OUTFILE '##SourceBin##'
-FROM SourceBinDistribution, SourceTypeModelYear, SourceBin, RunSpecSourceFuelType
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
-AND SourceTypeModelYear.modelYearID <= ##context.year##
-AND SourceTypeModelYear.modelYearID >= ##context.year## - 30
-AND SourceTypeModelYear.sourceTypeID = RunSpecSourceFuelType.sourceTypeID
-AND SourceBinDistribution.SourceBinID = SourceBin.SourceBinID
-AND SourceBin.fuelTypeID = RunSpecSourceFuelType.fuelTypeID;
+cache select distinct sourcebin.* 
+into outfile '##sourcebin##'
+from sourcebindistribution, sourcetypemodelyear, sourcebin, runspecsourcefueltype
+where polprocessid in (##pollutantprocessids##)
+and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+and sourcetypemodelyear.modelyearid <= ##context.year##
+and sourcetypemodelyear.modelyearid >= ##context.year## - 30
+and sourcetypemodelyear.sourcetypeid = runspecsourcefueltype.sourcetypeid
+and sourcebindistribution.sourcebinid = sourcebin.sourcebinid
+and sourcebin.fueltypeid = runspecsourcefueltype.fueltypeid;
 
-SELECT DISTINCT SHO.* 
-INTO OUTFILE '##SHO##'
-FROM SHO, RunSpecMonth, RunSpecDay, RunSpecHour, HourDay
-WHERE yearID = ##context.year##
-AND SHO.linkID = ##context.iterLocation.linkRecordID##
-AND SHO.monthID=RunSpecMonth.monthID
-AND SHO.hourDayID = HourDay.hourDayID
-AND HourDay.dayID = RunSpecDay.dayID
-AND HourDay.hourID = RunSpecHour.hourID;
+select distinct sho.* 
+into outfile '##sho##'
+from sho, runspecmonth, runspecday, runspechour, hourday
+where yearid = ##context.year##
+and sho.linkid = ##context.iterlocation.linkrecordid##
+and sho.monthid=runspecmonth.monthid
+and sho.hourdayid = hourday.hourdayid
+and hourday.dayid = runspecday.dayid
+and hourday.hourid = runspechour.hourid;
 
-cache SELECT SourceTypeModelYear.* 
-INTO OUTFILE '##SourceTypeModelYear##'
-FROM SourceTypeModelYear,RunSpecSourceType
-WHERE SourceTypeModelYear.sourceTypeID = RunSpecSourceType.sourceTypeID
-AND modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30;
+cache select sourcetypemodelyear.* 
+into outfile '##sourcetypemodelyear##'
+from sourcetypemodelyear,runspecsourcetype
+where sourcetypemodelyear.sourcetypeid = runspecsourcetype.sourcetypeid
+and modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30;
 
-cache SELECT DISTINCT HourDay.* 
-INTO OUTFILE '##HourDay##'
-FROM HourDay,RunSpecHour,RunSpecDay
-WHERE HourDay.dayID = RunSpecDay.dayID
-AND HourDay.hourID = RunSpecHour.hourID;
+cache select distinct hourday.* 
+into outfile '##hourday##'
+from hourday,runspechour,runspecday
+where hourday.dayid = runspecday.dayid
+and hourday.hourid = runspechour.hourid;
 
--- End Section Extract Data
+-- end section extract data
 --
--- Section Processing
+-- section processing
 --
 
-TRUNCATE MOVESWorkerActivityOutput;
+truncate movesworkeractivityoutput;
 --
--- Calculate the distance
+-- calculate the distance
 --
-DROP TABLE IF EXISTS SBD2;
-DROP TABLE IF EXISTS SVTD2;
-DROP TABLE IF EXISTS SVTD3;
-DROP TABLE IF EXISTS DistFracts;
-DROP TABLE IF EXISTS SHO2;
-DROP TABLE IF EXISTS Link2;
-DROP TABLE IF EXISTS SHO3;
+drop table if exists sbd2;
+drop table if exists svtd2;
+drop table if exists svtd3;
+drop table if exists distfracts;
+drop table if exists sho2;
+drop table if exists link2;
+drop table if exists sho3;
 
--- @algorithm fuelTypeActivityFraction[sourceTypeID,modelYearID,regClassID,fuelTypeID] = sum(sourceBinActivityFraction[processID=1,pollutantID=any,sourceBinID[fuelTypeID,engTechID,regClassID,modelYearGroupID,engSizeID]]).
-CREATE TABLE SBD2 (
-	sourceTypeModelYearID INTEGER,
-	regClassID SMALLINT,
-	fuelTypeID SMALLINT,
-	fuelTypeActivityFraction FLOAT);
-INSERT INTO SBD2 (
-	sourceTypeModelYearID,regClassID,fuelTypeID,fuelTypeActivityFraction )
-	SELECT sbd.sourceTypeModelYearID,sb.regClassID,sb.fuelTypeID,
-		sum(sbd.sourceBinActivityFraction)
-	FROM sourceBinDistribution AS sbd INNER JOIN SourceBin AS sb
-	USING (sourceBinID)
-	GROUP BY sourceTypeModelYearID, regClassID, fuelTypeID;
-CREATE INDEX index1 ON SBD2 (sourceTypeModelYearID, fuelTypeID);
+-- @algorithm fueltypeactivityfraction[sourcetypeid,modelyearid,regclassid,fueltypeid] = sum(sourcebinactivityfraction[processid=1,pollutantid=any,sourcebinid[fueltypeid,engtechid,regclassid,modelyeargroupid,engsizeid]]).
+create table sbd2 (
+	sourcetypemodelyearid integer,
+	regclassid smallint,
+	fueltypeid smallint,
+	fueltypeactivityfraction float);
+insert into sbd2 (
+	sourcetypemodelyearid,regclassid,fueltypeid,fueltypeactivityfraction )
+	select sbd.sourcetypemodelyearid,sb.regclassid,sb.fueltypeid,
+		sum(sbd.sourcebinactivityfraction)
+	from sourcebindistribution as sbd inner join sourcebin as sb
+	using (sourcebinid)
+	group by sourcetypemodelyearid, regclassid, fueltypeid;
+create index index1 on sbd2 (sourcetypemodelyearid, fueltypeid);
 
--- @algorithm Add sourceTypeModelYearID to fuelTypeActivityFraction's dimensions.
-CREATE TABLE DistFracts
-	SELECT stmy.sourceTypeModelYearID, stmy.sourceTypeID, sbd.regClassID, stmy.modelYearID, sbd.fuelTypeID,
-	sbd.fuelTypeActivityFraction
-	FROM SourceTypeModelYear AS stmy INNER JOIN SBD2 AS sbd USING (sourceTypeModelYearID);
+-- @algorithm add sourcetypemodelyearid to fueltypeactivityfraction's dimensions.
+create table distfracts
+	select stmy.sourcetypemodelyearid, stmy.sourcetypeid, sbd.regclassid, stmy.modelyearid, sbd.fueltypeid,
+	sbd.fueltypeactivityfraction
+	from sourcetypemodelyear as stmy inner join sbd2 as sbd using (sourcetypemodelyearid);
 
--- @algorithm Add modelYearID to SHO's dimensions.
-CREATE TABLE SHO2 (
-	yearID SMALLINT, 
-	monthID SMALLINT,
-	dayID SMALLINT,
-	hourID SMALLINT,
-	modelYearID SMALLINT,
-	linkID INTEGER,
-	sourceTypeID SMALLINT,
-	distance FLOAT);
-INSERT INTO SHO2
-	SELECT sho.yearID, sho.monthID, hd.dayID, hd.hourID, (sho.yearID - sho.ageID), 
-		sho.linkID, sho.sourceTypeID, sho.distance
-	FROM SHO AS sho INNER JOIN HourDay AS hd USING (hourDayID);
+-- @algorithm add modelyearid to sho's dimensions.
+create table sho2 (
+	yearid smallint, 
+	monthid smallint,
+	dayid smallint,
+	hourid smallint,
+	modelyearid smallint,
+	linkid integer,
+	sourcetypeid smallint,
+	distance float);
+insert into sho2
+	select sho.yearid, sho.monthid, hd.dayid, hd.hourid, (sho.yearid - sho.ageid), 
+		sho.linkid, sho.sourcetypeid, sho.distance
+	from sho as sho inner join hourday as hd using (hourdayid);
 	
-CREATE TABLE Link2
-	SELECT link.*, c.stateID
-	FROM Link AS link INNER JOIN County AS c USING (countyID);
+create table link2
+	select link.*, c.stateid
+	from link as link inner join county as c using (countyid);
 	
-CREATE INDEX index1 ON SHO2 (linkID);
-CREATE TABLE SHO3
-	SELECT sho.*, link.stateID, link.countyID, link.zoneID, link.roadTypeID 
-	FROM SHO2 AS sho INNER JOIN Link2 AS link USING (linkID);
+create index index1 on sho2 (linkid);
+create table sho3
+	select sho.*, link.stateid, link.countyid, link.zoneid, link.roadtypeid 
+	from sho2 as sho inner join link2 as link using (linkid);
 	
-CREATE INDEX index1 ON SHO3 (sourceTypeID, modelYearID, roadTypeID);
+create index index1 on sho3 (sourcetypeid, modelyearid, roadtypeid);
 
--- @algorithm distance = distance[sourceTypeID,yearID,monthID,hourDayID,ageID,linkID]*fuelTypeActivityFraction.
-INSERT INTO MOVESWorkerActivityOutput (
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	regClassID,sourceTypeID,fuelTypeID,modelYearID,
-	roadTypeID,
-	activityTypeID,
+-- @algorithm distance = distance[sourcetypeid,yearid,monthid,hourdayid,ageid,linkid]*fueltypeactivityfraction.
+insert into movesworkeractivityoutput (
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	regclassid,sourcetypeid,fueltypeid,modelyearid,
+	roadtypeid,
+	activitytypeid,
 	activity) 
-SELECT
-	sho.yearID,sho.monthID,sho.dayID,sho.hourID,
-	sho.stateID,sho.countyID,sho.zoneID,sho.linkID,
-	df.regClassID,sho.sourceTypeID,df.fuelTypeID,sho.modelYearID,
-	sho.roadTypeID,
+select
+	sho.yearid,sho.monthid,sho.dayid,sho.hourid,
+	sho.stateid,sho.countyid,sho.zoneid,sho.linkid,
+	df.regclassid,sho.sourcetypeid,df.fueltypeid,sho.modelyearid,
+	sho.roadtypeid,
 	1,
-	(sho.distance * df.fuelTypeActivityFraction) as activity
-FROM DistFracts AS df 
-INNER JOIN SHO3 AS sho USING (sourceTypeID, modelYearID);
+	(sho.distance * df.fueltypeactivityfraction) as activity
+from distfracts as df 
+inner join sho3 as sho using (sourcetypeid, modelyearid);
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
-DROP TABLE IF EXISTS SBD2;
-DROP TABLE IF EXISTS SVTD2;
-DROP TABLE IF EXISTS SVTD3;
-DROP TABLE IF EXISTS DistFracts;
-DROP TABLE IF EXISTS SHO2;
-DROP TABLE IF EXISTS Link2;
-DROP TABLE IF EXISTS SHO3;
--- End Section Cleanup
+-- section cleanup
+drop table if exists sbd2;
+drop table if exists svtd2;
+drop table if exists svtd3;
+drop table if exists distfracts;
+drop table if exists sho2;
+drop table if exists link2;
+drop table if exists sho3;
+-- end section cleanup

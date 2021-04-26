@@ -1,385 +1,385 @@
--- TOG Speciation calculator
--- Version 2015-07-15
--- Author Wes Faler
+-- tog speciation calculator
+-- version 2015-07-15
+-- author wes faler
 
 -- @algorithm
--- @owner TOG Speciation Calculator
+-- @owner tog speciation calculator
 
--- Section Create Remote Tables for Extracted Data
+-- section create remote tables for extracted data
 
-##create.integratedSpeciesSet##;
-TRUNCATE TABLE integratedSpeciesSet;
+##create.integratedspeciesset##;
+truncate table integratedspeciesset;
 
-##create.lumpedSpeciesName##;
-TRUNCATE TABLE lumpedSpeciesName;
+##create.lumpedspeciesname##;
+truncate table lumpedspeciesname;
 
-##create.togSpeciation##;
-TRUNCATE TABLE togSpeciation;
+##create.togspeciation##;
+truncate table togspeciation;
 
-##create.TOGSpeciationProfile##;
-TRUNCATE TABLE TOGSpeciationProfile;
+##create.togspeciationprofile##;
+truncate table togspeciationprofile;
 
-drop table if exists togSpeciationCountyYear;
-create table if not exists togSpeciationCountyYear (
-	mechanismID smallint not null default 0,
-	integratedSpeciesSetID smallint not null default 0,
-	countyID int not null default 0,
-	monthID smallint not null default 0,
-	yearID smallint not null default 0,
-	inProcessID smallint not null default 0,
-	inPollutantID smallint not null default 0,
-	fuelTypeID smallint not null default 0,
-	minModelYearID smallint not null default 0,
-	maxModelYearID smallint not null default 0,
-	regClassID smallint not null default 0,
-	outPollutantID smallint not null default 0,
+drop table if exists togspeciationcountyyear;
+create table if not exists togspeciationcountyyear (
+	mechanismid smallint not null default 0,
+	integratedspeciessetid smallint not null default 0,
+	countyid int not null default 0,
+	monthid smallint not null default 0,
+	yearid smallint not null default 0,
+	inprocessid smallint not null default 0,
+	inpollutantid smallint not null default 0,
+	fueltypeid smallint not null default 0,
+	minmodelyearid smallint not null default 0,
+	maxmodelyearid smallint not null default 0,
+	regclassid smallint not null default 0,
+	outpollutantid smallint not null default 0,
 	factor double not null default 0,
-	primary key (mechanismID, integratedSpeciesSetID,
-		countyID, monthID, yearID, inProcessID, inPollutantID,
-		fuelTypeID, minModelYearID, maxModelYearID, regClassID, outPollutantID)
+	primary key (mechanismid, integratedspeciessetid,
+		countyid, monthid, yearid, inprocessid, inpollutantid,
+		fueltypeid, minmodelyearid, maxmodelyearid, regclassid, outpollutantid)
 );
-TRUNCATE TABLE togSpeciationCountyYear;
+truncate table togspeciationcountyyear;
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
+-- section extract data
 
-cache select integratedSpeciesSet.*
-into outfile '##integratedSpeciesSet##'
-from integratedSpeciesSet
-where mechanismID in (##mechanismIDs##);
+cache select integratedspeciesset.*
+into outfile '##integratedspeciesset##'
+from integratedspeciesset
+where mechanismid in (##mechanismids##);
 
-cache select lumpedSpeciesName.*
-into outfile '##lumpedSpeciesName##'
-from lumpedSpeciesName;
+cache select lumpedspeciesname.*
+into outfile '##lumpedspeciesname##'
+from lumpedspeciesname;
 
-cache select togSpeciation.*
-into outfile '##togSpeciation##'
-from togSpeciation
-where processID in (##context.allCurrentProcesses##);
+cache select togspeciation.*
+into outfile '##togspeciation##'
+from togspeciation
+where processid in (##context.allcurrentprocesses##);
 
 cache select distinct tsp.*
-into outfile '##TOGSpeciationProfile##'
-from TOGSpeciationProfile tsp
-inner join togSpeciation ts on (
-	ts.togSpeciationProfileID = tsp.togSpeciationProfileID
- 	and ts.processID in (##context.allCurrentProcesses##))
-where mechanismID in (##mechanismIDs##)
-and (integratedSpeciesSetID = 0 or integratedSpeciesSetID in (
-	select distinct integratedSpeciesSetID
-	from integratedSpeciesSet
-	where mechanismID in (##mechanismIDs##)));
+into outfile '##togspeciationprofile##'
+from togspeciationprofile tsp
+inner join togspeciation ts on (
+	ts.togspeciationprofileid = tsp.togspeciationprofileid
+ 	and ts.processid in (##context.allcurrentprocesses##))
+where mechanismid in (##mechanismids##)
+and (integratedspeciessetid = 0 or integratedspeciessetid in (
+	select distinct integratedspeciessetid
+	from integratedspeciesset
+	where mechanismid in (##mechanismids##)));
 
-cache select mechanismID, integratedSpeciesSetID,
-		##context.iterLocation.countyRecordID## as countyID, monthID, yearID, 
-		ts.processID as inProcessID, tsp.pollutantID as inPollutantID,
-		fst.fuelTypeID,
-		ts.minModelYearID, ts.maxModelYearID,
-		ts.regClassID,
-		1000+(tsp.mechanismID-1)*500+lsn.lumpedSpeciesID as outPollutantID,
-		sum(fs.marketShare*tsp.TOGSpeciationMassFraction/tsp.TOGSpeciationDivisor) as factor
-into outfile '##togSpeciationCountyYear##'
-from togSpeciation ts
-inner join togSpeciationProfile tsp on (tsp.togSpeciationProfileID=ts.togSpeciationProfileID)
-inner join lumpedSpeciesName lsn on (lsn.lumpedSpeciesName=tsp.lumpedSpeciesName)
-inner join fuelFormulation ff on (ff.fuelSubtypeID=ts.fuelSubtypeID)
-inner join fuelSubtype fst on (fst.fuelSubtypeID=ff.fuelSubtypeID)
-inner join fuelSupply fs on (fs.fuelFormulationID=ff.fuelFormulationID)
-inner join monthOfAnyYear may on (may.monthGroupID=fs.monthGroupID)
-inner join year y on (y.fuelYearID=fs.fuelYearID)
-where tsp.mechanismID in (##mechanismIDs##)
-and y.yearID=##context.year##
-and fs.fuelRegionID=##context.fuelRegionID##
-and ts.minModelYearID <= ##context.year##
-and ts.maxModelYearID >= ##context.year##-30
-and ts.processID in (##context.allCurrentProcesses##)
+cache select mechanismid, integratedspeciessetid,
+		##context.iterlocation.countyrecordid## as countyid, monthid, yearid, 
+		ts.processid as inprocessid, tsp.pollutantid as inpollutantid,
+		fst.fueltypeid,
+		ts.minmodelyearid, ts.maxmodelyearid,
+		ts.regclassid,
+		1000+(tsp.mechanismid-1)*500+lsn.lumpedspeciesid as outpollutantid,
+		sum(fs.marketshare*tsp.togspeciationmassfraction/tsp.togspeciationdivisor) as factor
+into outfile '##togspeciationcountyyear##'
+from togspeciation ts
+inner join togspeciationprofile tsp on (tsp.togspeciationprofileid=ts.togspeciationprofileid)
+inner join lumpedspeciesname lsn on (lsn.lumpedspeciesname=tsp.lumpedspeciesname)
+inner join fuelformulation ff on (ff.fuelsubtypeid=ts.fuelsubtypeid)
+inner join fuelsubtype fst on (fst.fuelsubtypeid=ff.fuelsubtypeid)
+inner join fuelsupply fs on (fs.fuelformulationid=ff.fuelformulationid)
+inner join monthofanyyear may on (may.monthgroupid=fs.monthgroupid)
+inner join year y on (y.fuelyearid=fs.fuelyearid)
+where tsp.mechanismid in (##mechanismids##)
+and y.yearid=##context.year##
+and fs.fuelregionid=##context.fuelregionid##
+and ts.minmodelyearid <= ##context.year##
+and ts.maxmodelyearid >= ##context.year##-30
+and ts.processid in (##context.allcurrentprocesses##)
 group by
-	mechanismID, integratedSpeciesSetID,
-	monthID, yearID, 
-	ts.processID, tsp.pollutantID,
-	fst.fuelTypeID, ts.minModelYearID, ts.maxModelYearID, ts.regClassID,
-	lsn.lumpedSpeciesID;
+	mechanismid, integratedspeciessetid,
+	monthid, yearid, 
+	ts.processid, tsp.pollutantid,
+	fst.fueltypeid, ts.minmodelyearid, ts.maxmodelyearid, ts.regclassid,
+	lsn.lumpedspeciesid;
 
--- End Section Extract Data
+-- end section extract data
 
--- Section Processing
+-- section processing
 
 -- @algorithm
-drop table if exists TOGWorkerOutput;
-CREATE TABLE IF NOT EXISTS TOGWorkerOutput (
-	mechanismID		   SMALLINT NOT NULL DEFAULT 0,
-	integratedSpeciesSetID SMALLINT NOT NULL DEFAULT 0,
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL DEFAULT 0,
-	iterationID			 SMALLINT UNSIGNED DEFAULT 1,
-	yearID               SMALLINT UNSIGNED NULL,
-	monthID              SMALLINT UNSIGNED NULL,
-	dayID                SMALLINT UNSIGNED NULL,
-	hourID               SMALLINT UNSIGNED NULL,
-	stateID              SMALLINT UNSIGNED NULL,
-	countyID             INTEGER UNSIGNED NULL,
-	zoneID               INTEGER UNSIGNED NULL,
-	linkID               INTEGER UNSIGNED NULL,
-	pollutantID          SMALLINT UNSIGNED NULL,
-	processID            SMALLINT UNSIGNED NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL,
-	regClassID			 SMALLINT UNSIGNED NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL,
-	modelYearID          SMALLINT UNSIGNED NULL,
-	roadTypeID           SMALLINT UNSIGNED NULL,
-	SCC                  CHAR(10) NULL,
-	engTechID			 SMALLINT UNSIGNED NULL,
-	sectorID 			 SMALLINT UNSIGNED NULL,
-	hpID 				 SMALLINT UNSIGNED NULL,
-	emissionQuant        DOUBLE NULL,
-	emissionRate		 DOUBLE NULL
+drop table if exists togworkeroutput;
+create table if not exists togworkeroutput (
+	mechanismid		   smallint not null default 0,
+	integratedspeciessetid smallint not null default 0,
+	movesrunid           smallint unsigned not null default 0,
+	iterationid			 smallint unsigned default 1,
+	yearid               smallint unsigned null,
+	monthid              smallint unsigned null,
+	dayid                smallint unsigned null,
+	hourid               smallint unsigned null,
+	stateid              smallint unsigned null,
+	countyid             integer unsigned null,
+	zoneid               integer unsigned null,
+	linkid               integer unsigned null,
+	pollutantid          smallint unsigned null,
+	processid            smallint unsigned null,
+	sourcetypeid         smallint unsigned null,
+	regclassid			 smallint unsigned null,
+	fueltypeid           smallint unsigned null,
+	modelyearid          smallint unsigned null,
+	roadtypeid           smallint unsigned null,
+	scc                  char(10) null,
+	engtechid			 smallint unsigned null,
+	sectorid 			 smallint unsigned null,
+	hpid 				 smallint unsigned null,
+	emissionquant        double null,
+	emissionrate		 double null
 );
-truncate table TOGWorkerOutput;
+truncate table togworkeroutput;
 
--- @algorithm Add NMOG (80) to the set of chained input pollutants.
-insert ignore into integratedSpeciesSet (mechanismID, integratedSpeciesSetID, pollutantID, useISSyn)
-select distinct mechanismID, integratedSpeciesSetID, 80 as pollutantID, 'Y' as useISSyn
-from integratedSpeciesSet
-where pollutantID <> 80;
+-- @algorithm add nmog (80) to the set of chained input pollutants.
+insert ignore into integratedspeciesset (mechanismid, integratedspeciessetid, pollutantid, useissyn)
+select distinct mechanismid, integratedspeciessetid, 80 as pollutantid, 'Y' as useissyn
+from integratedspeciesset
+where pollutantid <> 80;
 
--- @algorithm Index integratedSpeciesSet by pollutantID to increase speed.
-alter table integratedSpeciesSet add key ISS_pollutantID (pollutantID);
+-- @algorithm index integratedspeciesset by pollutantid to increase speed.
+alter table integratedspeciesset add key iss_pollutantid (pollutantid);
 
--- @algorithm Find the subset of records that are actually needed.
--- These include NMOG (80) and anything listed in integratedSpeciesSet.
-insert into TOGWorkerOutput (
-	mechanismID,integratedSpeciesSetID,
-	MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	emissionQuant,emissionRate)
-select 0 as mechanismID, 0 as integratedSpeciesSetID,
-	MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	emissionQuant,emissionRate
-from MOVESWorkerOutput
-where pollutantID in (
-	select distinct pollutantID from integratedSpeciesSet
+-- @algorithm find the subset of records that are actually needed.
+-- these include nmog (80) and anything listed in integratedspeciesset.
+insert into togworkeroutput (
+	mechanismid,integratedspeciessetid,
+	movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	emissionquant,emissionrate)
+select 0 as mechanismid, 0 as integratedspeciessetid,
+	movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	emissionquant,emissionrate
+from movesworkeroutput
+where pollutantid in (
+	select distinct pollutantid from integratedspeciesset
 );
 
--- @algorithm Convert integrated species to negative NonHapTOG (88) entries
--- and NMOG (80) values to positive NonHAPTOG (88) entries. When summed, 
+-- @algorithm convert integrated species to negative nonhaptog (88) entries
+-- and nmog (80) values to positive nonhaptog (88) entries. when summed, 
 -- this will complete the integration.
-insert into TOGWorkerOutput (
-	mechanismID,integratedSpeciesSetID,
-	MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	emissionQuant,emissionRate)
-select iss.mechanismID, iss.integratedSpeciesSetID,
-	MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	88 as pollutantID,
-	processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
+insert into togworkeroutput (
+	mechanismid,integratedspeciessetid,
+	movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	emissionquant,emissionrate)
+select iss.mechanismid, iss.integratedspeciessetid,
+	movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	88 as pollutantid,
+	processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
 	case
-		when two.pollutantID=80 then emissionQuant
-		else -emissionQuant
-	end as emissionQuant,
+		when two.pollutantid=80 then emissionquant
+		else -emissionquant
+	end as emissionquant,
 	case
-		when two.pollutantID=80 then emissionRate
-		else -emissionRate
-	end as emissionRate
-from TOGWorkerOutput two
-inner join integratedSpeciesSet iss using (pollutantID)
-where two.mechanismID = 0 and two.integratedSpeciesSetID = 0;
+		when two.pollutantid=80 then emissionrate
+		else -emissionrate
+	end as emissionrate
+from togworkeroutput two
+inner join integratedspeciesset iss using (pollutantid)
+where two.mechanismid = 0 and two.integratedspeciessetid = 0;
 
 -- @algorithm
-drop table if exists TOGWorkerOutputIntegrated;
-CREATE TABLE IF NOT EXISTS TOGWorkerOutputIntegrated (
-	mechanismID		   SMALLINT NOT NULL DEFAULT 0,
-	integratedSpeciesSetID SMALLINT NOT NULL DEFAULT 0,
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL DEFAULT 0,
-	iterationID			 SMALLINT UNSIGNED DEFAULT 1,
-	yearID               SMALLINT UNSIGNED NULL,
-	monthID              SMALLINT UNSIGNED NULL,
-	dayID                SMALLINT UNSIGNED NULL,
-	hourID               SMALLINT UNSIGNED NULL,
-	stateID              SMALLINT UNSIGNED NULL,
-	countyID             INTEGER UNSIGNED NULL,
-	zoneID               INTEGER UNSIGNED NULL,
-	linkID               INTEGER UNSIGNED NULL,
-	pollutantID          SMALLINT UNSIGNED NULL,
-	processID            SMALLINT UNSIGNED NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL,
-	regClassID			 SMALLINT UNSIGNED NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL,
-	modelYearID          SMALLINT UNSIGNED NULL,
-	roadTypeID           SMALLINT UNSIGNED NULL,
-	SCC                  CHAR(10) NULL,
-	engTechID			 SMALLINT UNSIGNED NULL,
-	sectorID 			 SMALLINT UNSIGNED NULL,
-	hpID 				 SMALLINT UNSIGNED NULL,
-	emissionQuant        DOUBLE NULL,
-	emissionRate		 DOUBLE NULL,
+drop table if exists togworkeroutputintegrated;
+create table if not exists togworkeroutputintegrated (
+	mechanismid		   smallint not null default 0,
+	integratedspeciessetid smallint not null default 0,
+	movesrunid           smallint unsigned not null default 0,
+	iterationid			 smallint unsigned default 1,
+	yearid               smallint unsigned null,
+	monthid              smallint unsigned null,
+	dayid                smallint unsigned null,
+	hourid               smallint unsigned null,
+	stateid              smallint unsigned null,
+	countyid             integer unsigned null,
+	zoneid               integer unsigned null,
+	linkid               integer unsigned null,
+	pollutantid          smallint unsigned null,
+	processid            smallint unsigned null,
+	sourcetypeid         smallint unsigned null,
+	regclassid			 smallint unsigned null,
+	fueltypeid           smallint unsigned null,
+	modelyearid          smallint unsigned null,
+	roadtypeid           smallint unsigned null,
+	scc                  char(10) null,
+	engtechid			 smallint unsigned null,
+	sectorid 			 smallint unsigned null,
+	hpid 				 smallint unsigned null,
+	emissionquant        double null,
+	emissionrate		 double null,
 	
-	key (mechanismID, integratedSpeciesSetID, pollutantID)
+	key (mechanismid, integratedspeciessetid, pollutantid)
 );
-truncate table TOGWorkerOutputIntegrated;
+truncate table togworkeroutputintegrated;
 
--- @algorithm Sum the NonHAPTOG (88) records, reducing record count
+-- @algorithm sum the nonhaptog (88) records, reducing record count
 -- and completing the species integration.
-insert into TOGWorkerOutputIntegrated (mechanismID, integratedSpeciesSetID,
-	MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	emissionQuant,emissionRate)
-select mechanismID, integratedSpeciesSetID,
-	MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	greatest(sum(emissionQuant),0) as emissionQuant,
-	greatest(sum(emissionRate),0) as emissionRate
-from TOGWorkerOutput
-where mechanismID <> 0
-group by mechanismID, integratedSpeciesSetID,
-	MOVESRunID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC
+insert into togworkeroutputintegrated (mechanismid, integratedspeciessetid,
+	movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	emissionquant,emissionrate)
+select mechanismid, integratedspeciessetid,
+	movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	greatest(sum(emissionquant),0) as emissionquant,
+	greatest(sum(emissionrate),0) as emissionrate
+from togworkeroutput
+where mechanismid <> 0
+group by mechanismid, integratedspeciessetid,
+	movesrunid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc
 order by null;
 
---	engTechID,sectorID,hpID
+--	engtechid,sectorid,hpid
 
--- @algorithm Copy NonHAPTOG (88) entries into MOVESWorkerOutput.
-insert into MOVESWorkerOutput (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,regClassID,fuelTypeID,modelYearID,roadTypeID,SCC,emissionQuant,emissionRate,engTechID,sectorID,hpID
+-- @algorithm copy nonhaptog (88) entries into movesworkeroutput.
+insert into movesworkeroutput (
+	movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+	processid,sourcetypeid,regclassid,fueltypeid,modelyearid,roadtypeid,scc,emissionquant,emissionrate,engtechid,sectorid,hpid
 )
-select MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,regClassID,fuelTypeID,modelYearID,roadTypeID,SCC,emissionQuant,emissionRate,engTechID,sectorID,hpID
-from TOGWorkerOutputIntegrated
-where pollutantID=88 and integratedSpeciesSetID>0
-and mechanismID = (select min(mechanismID) from TOGWorkerOutputIntegrated where mechanismID>0);
+select movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+	processid,sourcetypeid,regclassid,fueltypeid,modelyearid,roadtypeid,scc,emissionquant,emissionrate,engtechid,sectorid,hpid
+from togworkeroutputintegrated
+where pollutantid=88 and integratedspeciessetid>0
+and mechanismid = (select min(mechanismid) from togworkeroutputintegrated where mechanismid>0);
 
--- @algorithm Index togSpeciationProfile by pollutantID to increase speed.
-alter table togSpeciationProfile add key TSP_pollutantID (pollutantID);
+-- @algorithm index togspeciationprofile by pollutantid to increase speed.
+alter table togspeciationprofile add key tsp_pollutantid (pollutantid);
 
 -- @algorithm
-drop table if exists togSpeciationPollutants;
+drop table if exists togspeciationpollutants;
 
-create table if not exists togSpeciationPollutants (
-	mechanismID smallint not null,
-	pollutantID smallint not null,
-	primary key (pollutantID, mechanismID)
+create table if not exists togspeciationpollutants (
+	mechanismid smallint not null,
+	pollutantid smallint not null,
+	primary key (pollutantid, mechanismid)
 );
 
--- @algorithm Get the set of distinct pollutants that are needed for speciation input.
-insert into togSpeciationPollutants (mechanismID, pollutantID)
-select distinct mechanismID, pollutantID from togSpeciationProfile;
+-- @algorithm get the set of distinct pollutants that are needed for speciation input.
+insert into togspeciationpollutants (mechanismid, pollutantid)
+select distinct mechanismid, pollutantid from togspeciationprofile;
 
--- @algorithm Find the subset of records that are needed for speciation input.
--- These are the pollutants listed in the togSpeciationProfile table.
-insert into TOGWorkerOutputIntegrated (
-	mechanismID,integratedSpeciesSetID,
-	MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	emissionQuant,emissionRate)
-select mechanismID, 0 as integratedSpeciesSetID,
-	MOVESRunID,iterationID,
-	yearID,monthID,dayID,hourID,
-	stateID,countyID,zoneID,linkID,
-	mwo.pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,
-	roadTypeID,SCC,
-	engTechID,sectorID,hpID,
-	emissionQuant,emissionRate
-from MOVESWorkerOutput mwo
-inner join togSpeciationPollutants tsp on (tsp.pollutantID = mwo.pollutantID);
+-- @algorithm find the subset of records that are needed for speciation input.
+-- these are the pollutants listed in the togspeciationprofile table.
+insert into togworkeroutputintegrated (
+	mechanismid,integratedspeciessetid,
+	movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	emissionquant,emissionrate)
+select mechanismid, 0 as integratedspeciessetid,
+	movesrunid,iterationid,
+	yearid,monthid,dayid,hourid,
+	stateid,countyid,zoneid,linkid,
+	mwo.pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,
+	roadtypeid,scc,
+	engtechid,sectorid,hpid,
+	emissionquant,emissionrate
+from movesworkeroutput mwo
+inner join togspeciationpollutants tsp on (tsp.pollutantid = mwo.pollutantid);
 
--- @algorithm Speciate NonHAPTOG (88) and anything else listed as an input in togSpeciationProfile.
+-- @algorithm speciate nonhaptog (88) and anything else listed as an input in togspeciationprofile.
 
-create table togTemp like MOVESWorkerOutput;
+create table togtemp like movesworkeroutput;
 
-alter table togTemp add key speed1 (
-	yearID,monthID,dayID,hourID,linkID,
-	pollutantID,
-	processID,sourceTypeID,regClassID,fuelTypeID,modelYearID,roadTypeID,SCC,
-	engTechID,sectorID,hpID
+alter table togtemp add key speed1 (
+	yearid,monthid,dayid,hourid,linkid,
+	pollutantid,
+	processid,sourcetypeid,regclassid,fueltypeid,modelyearid,roadtypeid,scc,
+	engtechid,sectorid,hpid
 );
 
-insert into togTemp (MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,regClassID,fuelTypeID,modelYearID,roadTypeID,SCC,emissionQuant,emissionRate,engTechID,sectorID,hpID)
-select a.MOVESRunID,a.iterationID,a.yearID,a.monthID,a.dayID,a.hourID,a.stateID,a.countyID,a.zoneID,a.linkID,
-	b.outPollutantID as pollutantID,
-	a.processID,a.sourceTypeID,a.regClassID,a.fuelTypeID,a.modelYearID,a.roadTypeID,a.SCC,
-	emissionQuant*factor as emissionQuant,
-	emissionRate*factor as emissionRate,
-	a.engTechID,a.sectorID,a.hpID
-from TOGWorkerOutputIntegrated a
-inner join togSpeciationCountyYear b on (
-	a.mechanismID = b.mechanismID
-	and a.integratedSpeciesSetID = b.integratedSpeciesSetID
-	and a.countyID = b.countyID
-	and a.monthID = b.monthID
-	and a.yearID = b.yearID
-	and a.processID = b.inProcessID
-	and a.pollutantID = b.inPollutantID
-	and a.fuelTypeID = b.fuelTypeID
-	and a.modelYearID >= b.minModelYearID
-	and a.modelYearID <= b.maxModelYearID
-	and (a.regClassID = b.regClassID or b.regClassID=0));
+insert into togtemp (movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+	processid,sourcetypeid,regclassid,fueltypeid,modelyearid,roadtypeid,scc,emissionquant,emissionrate,engtechid,sectorid,hpid)
+select a.movesrunid,a.iterationid,a.yearid,a.monthid,a.dayid,a.hourid,a.stateid,a.countyid,a.zoneid,a.linkid,
+	b.outpollutantid as pollutantid,
+	a.processid,a.sourcetypeid,a.regclassid,a.fueltypeid,a.modelyearid,a.roadtypeid,a.scc,
+	emissionquant*factor as emissionquant,
+	emissionrate*factor as emissionrate,
+	a.engtechid,a.sectorid,a.hpid
+from togworkeroutputintegrated a
+inner join togspeciationcountyyear b on (
+	a.mechanismid = b.mechanismid
+	and a.integratedspeciessetid = b.integratedspeciessetid
+	and a.countyid = b.countyid
+	and a.monthid = b.monthid
+	and a.yearid = b.yearid
+	and a.processid = b.inprocessid
+	and a.pollutantid = b.inpollutantid
+	and a.fueltypeid = b.fueltypeid
+	and a.modelyearid >= b.minmodelyearid
+	and a.modelyearid <= b.maxmodelyearid
+	and (a.regclassid = b.regclassid or b.regclassid=0));
 
-insert into MOVESWorkerOutput (
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,
-	processID,sourceTypeID,regClassID,fuelTypeID,modelYearID,roadTypeID,SCC,emissionQuant,emissionRate,engTechID,sectorID,hpID
+insert into movesworkeroutput (
+	movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,
+	processid,sourcetypeid,regclassid,fueltypeid,modelyearid,roadtypeid,scc,emissionquant,emissionrate,engtechid,sectorid,hpid
 )
-select a.MOVESRunID,a.iterationID,a.yearID,a.monthID,a.dayID,a.hourID,a.stateID,a.countyID,a.zoneID,a.linkID,
-	pollutantID,
-	a.processID,a.sourceTypeID,a.regClassID,a.fuelTypeID,a.modelYearID,a.roadTypeID,a.SCC,
-	sum(emissionQuant) as emissionQuant,
-	sum(emissionRate) as emissionRate,
-	a.engTechID,a.sectorID,a.hpID
-from togTemp a
-group by a.yearID,a.monthID,a.dayID,a.hourID,a.linkID,
-	pollutantID,
-	a.processID,a.sourceTypeID,a.regClassID,a.fuelTypeID,a.modelYearID,a.roadTypeID,a.SCC
+select a.movesrunid,a.iterationid,a.yearid,a.monthid,a.dayid,a.hourid,a.stateid,a.countyid,a.zoneid,a.linkid,
+	pollutantid,
+	a.processid,a.sourcetypeid,a.regclassid,a.fueltypeid,a.modelyearid,a.roadtypeid,a.scc,
+	sum(emissionquant) as emissionquant,
+	sum(emissionrate) as emissionrate,
+	a.engtechid,a.sectorid,a.hpid
+from togtemp a
+group by a.yearid,a.monthid,a.dayid,a.hourid,a.linkid,
+	pollutantid,
+	a.processid,a.sourcetypeid,a.regclassid,a.fueltypeid,a.modelyearid,a.roadtypeid,a.scc
 order by null;
 
---	a.engTechID,a.sectorID,a.hpID
+--	a.engtechid,a.sectorid,a.hpid
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
-drop table if exists TOGWorkerOutput;
-drop table if exists TOGWorkerOutputIntegrated;
-drop table if exists togSpeciationCountyYear;
--- End Section Cleanup
+-- section cleanup
+drop table if exists togworkeroutput;
+drop table if exists togworkeroutputintegrated;
+drop table if exists togspeciationcountyyear;
+-- end section cleanup
 
--- Section Final Cleanup
--- End Section Final Cleanup
+-- section final cleanup
+-- end section final cleanup

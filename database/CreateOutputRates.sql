@@ -15,9 +15,9 @@ create table if not exists baserateunits (
 	meanbaserateunitsdenominator varchar(50) null default '',
 	emissionbaserateunitsnumerator varchar(50) null default '',
 	emissionbaserateunitsdenominator varchar(50) null default ''
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
+) engine=myisam default charset=latin1 delay_key_write=1;
 
-CREATE TABLE if not exists baserateoutput (
+create table if not exists baserateoutput (
 	movesrunid           smallint unsigned not null,
 	iterationid          smallint unsigned null default 1,
 
@@ -38,4 +38,4 @@ CREATE TABLE if not exists baserateoutput (
 
 	meanbaserate		 float null,
 	emissionrate		 float null
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
+) engine=myisam default charset=latin1 delay_key_write=1;

@@ -7,23 +7,23 @@
 -- the MOVES RunSpec and importing the appropriate inputs
 --
 
-FLUSH TABLES;
-SELECT CURRENT_TIME;
+flush tables;
+select current_time;
 
-Drop   table if exists pm10_Grams_Per_Hour;
-Create table pm10_Grams_Per_Hour
-Select   movesRunId,
-         yearId,
-         monthId,
-         hourId,
-         linkId,
+drop   table if exists pm10_grams_per_hour;
+create table pm10_grams_per_hour
+select   movesrunid,
+         yearid,
+         monthid,
+         hourid,
+         linkid,
          'Total PM10' as pollutant,
-         sum(emissionQuant) as gramsPerHour
-From     movesOutput
-where    pollutantId in (100,106,107)
-Group by movesRunId,
-         yearId,
-         monthId,
-         hourId,
-         linkId;
+         sum(emissionquant) as gramsperhour
+from     movesoutput
+where    pollutantid in (100,106,107)
+group by movesrunid,
+         yearid,
+         monthid,
+         hourid,
+         linkid;
 

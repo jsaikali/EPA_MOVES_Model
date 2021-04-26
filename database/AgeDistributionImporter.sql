@@ -1,69 +1,69 @@
--- Author Wesley Faler
--- Version 2016-10-04
+-- author wesley faler
+-- version 2016-10-04
 
--- Mark any years in SourceTypeAgeDistribution as base years in the Year table
+-- mark any years in sourcetypeagedistribution as base years in the year table
 
-drop table if exists tempNewYear;
+drop table if exists tempnewyear;
 
-create table if not exists tempNewYear (
-  yearID smallint(6) not null default '0',
-  primary key  (yearID)
+create table if not exists tempnewyear (
+  yearid smallint(6) not null default '0',
+  primary key  (yearid)
 );
 
-insert into tempNewYear (yearID)
-select distinct yearID
-from SourceTypeAgeDistribution;
+insert into tempnewyear (yearid)
+select distinct yearid
+from sourcetypeagedistribution;
 
-drop table if exists tempYear;
+drop table if exists tempyear;
 
-create table if not exists tempYear (
-  yearID smallint(6) not null default '0',
-  isBaseYear char(1) default null,
-  fuelYearID smallint(6) not null default '0',
-  primary key  (yearID),
-  key isBaseYear (isBaseYear)
+create table if not exists tempyear (
+  yearid smallint(6) not null default '0',
+  isbaseyear char(1) default null,
+  fuelyearid smallint(6) not null default '0',
+  primary key  (yearid),
+  key isbaseyear (isbaseyear)
 );
 
 create table if not exists year (
-  yearID smallint(6) not null default '0',
-  isBaseYear char(1) default null,
-  fuelYearID smallint(6) not null default '0',
-  primary key  (yearID),
-  key isBaseYear (isBaseYear)
+  yearid smallint(6) not null default '0',
+  isbaseyear char(1) default null,
+  fuelyearid smallint(6) not null default '0',
+  primary key  (yearid),
+  key isbaseyear (isbaseyear)
 );
 
-insert into tempYear (yearID, isBaseYear, fuelYearID)
-select y.yearID, 'Y' as isBaseYear, y.fuelYearID
-from tempNewYear ny
-inner join ##defaultDatabase##.year y on (y.yearID=ny.yearID);
+insert into tempyear (yearid, isbaseyear, fuelyearid)
+select y.yearid, 'Y' as isbaseyear, y.fuelyearid
+from tempnewyear ny
+inner join ##defaultdatabase##.year y on (y.yearid=ny.yearid);
 
--- insert ignore into year (yearID, isBaseYear, fuelYearID)
--- select yearID, isBaseYear, fuelYearID
--- from tempYear
+-- insert ignore into year (yearid, isbaseyear, fuelyearid)
+-- select yearid, isbaseyear, fuelyearid
+-- from tempyear
 
-update year, tempNewYear set year.isBaseYear='Y'
-where year.yearID=tempNewYear.yearID;
+update year, tempnewyear set year.isbaseyear='Y'
+where year.yearid=tempnewyear.yearid;
 
-drop table if exists tempYear;
-drop table if exists tempNewYear;
+drop table if exists tempyear;
+drop table if exists tempnewyear;
 
--- Complain about any years outside of MOVES's range
-insert into importTempMessages (message)
-select distinct concat('ERROR: Year ',yearID,' is outside the range of 1990-2060 and cannot be used') as errorMessage
-from SourceTypeAgeDistribution
-where yearID < 1990 or yearID > 2060;
+-- complain about any years outside of moves's range
+insert into importtempmessages (message)
+select distinct concat('error: year ',yearid,' is outside the range of 1990-2060 and cannot be used') as errormessage
+from sourcetypeagedistribution
+where yearid < 1990 or yearid > 2060;
 
--- Ensure distributions sum to 1.0 for all sourceTypeID, yearID combinations.
-drop table if exists tempNotUnity;
+-- ensure distributions sum to 1.0 for all sourcetypeid, yearid combinations.
+drop table if exists tempnotunity;
 
-create table tempNotUnity
-select sourceTypeID, yearID, sum(ageFraction) as sumAgeFraction
-from SourceTypeAgeDistribution
-group by sourceTypeID, yearID
-having round(sum(ageFraction),4) <> 1.0000;
+create table tempnotunity
+select sourcetypeid, yearid, sum(agefraction) as sumagefraction
+from sourcetypeagedistribution
+group by sourcetypeid, yearid
+having round(sum(agefraction),4) <> 1.0000;
 
-insert into importTempMessages (message)
-select concat('ERROR: Source ',sourceTypeID,', year ',yearID,' ageFraction sum is not 1.0 but instead ',round(sumAgeFraction,4))
-from tempNotUnity;
+insert into importtempmessages (message)
+select concat('error: source ',sourcetypeid,', year ',yearid,' agefraction sum is not 1.0 but instead ',round(sumagefraction,4))
+from tempnotunity;
 
-drop table if exists tempNotUnity;
+drop table if exists tempnotunity;

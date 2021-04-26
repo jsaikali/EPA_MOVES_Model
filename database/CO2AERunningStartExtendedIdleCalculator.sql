@@ -1,212 +1,212 @@
--- Version 2014-05-31
--- Purpose: Calculate Atmospheric CO2 and CO2 Equivalent for 
---	    Running, Start, and Extended Idel Exhaust emissions
--- Gwo Shyu, EPA
--- Wesley Faler
+-- version 2014-05-31
+-- purpose: calculate atmospheric co2 and co2 equivalent for 
+--	    running, start, and extended idel exhaust emissions
+-- gwo shyu, epa
+-- wesley faler
 
--- Section Create Remote Tables for Extracted Data
-DROP TABLE IF EXISTS CO2EqPollutant;
-CREATE TABLE IF NOT EXISTS CO2EqPollutant(
-	pollutantID		SMALLINT NOT NULL,
-	pollutantName		CHAR(50) NULL,
-	energyOrMass		CHAR(6) NULL,
-	globalWarmingPotential	SMALLINT NULL, 
-	PRIMARY KEY (pollutantID)
+-- section create remote tables for extracted data
+drop table if exists co2eqpollutant;
+create table if not exists co2eqpollutant(
+	pollutantid		smallint not null,
+	pollutantname		char(50) null,
+	energyormass		char(6) null,
+	globalwarmingpotential	smallint null, 
+	primary key (pollutantid)
 );
-TRUNCATE TABLE CO2EqPollutant;
+truncate table co2eqpollutant;
 
-DROP TABLE IF EXISTS CO2MonthofAnyYear;
-CREATE TABLE IF NOT EXISTS CO2MonthofAnyYear (
-       	monthID              SMALLINT NOT NULL,
-       	monthName            CHAR(10) NULL,
-       	noOfDays             SMALLINT NULL,
-       	monthGroupID         SMALLINT NOT NULL,
-	PRIMARY KEY (monthID)
+drop table if exists co2monthofanyyear;
+create table if not exists co2monthofanyyear (
+       	monthid              smallint not null,
+       	monthname            char(10) null,
+       	noofdays             smallint null,
+       	monthgroupid         smallint not null,
+	primary key (monthid)
 );
-TRUNCATE TABLE CO2MonthofAnyYear;
+truncate table co2monthofanyyear;
 
--- DROP TABLE IF EXISTS GWTPCO2FactorByFuelType;
--- CREATE TABLE IF NOT EXISTS GWTPCO2FactorByFuelType ( 
--- 	countyID		INTEGER NOT NULL, 
--- 	yearID			SMALLINT NOT NULL, 
--- 	monthGroupID		SMALLINT NOT NULL, 
--- 	pollutantID		SMALLINT NOT NULL,
--- 	fuelTypeID		SMALLINT NOT NULL,
--- 	sumCO2EmissionRate	FLOAT,
--- 	PRIMARY KEY (countyID, yearID, monthGroupID, pollutantID, fuelTypeID)
+-- drop table if exists gwtpco2factorbyfueltype;
+-- create table if not exists gwtpco2factorbyfueltype ( 
+-- 	countyid		integer not null, 
+-- 	yearid			smallint not null, 
+-- 	monthgroupid		smallint not null, 
+-- 	pollutantid		smallint not null,
+-- 	fueltypeid		smallint not null,
+-- 	sumco2emissionrate	float,
+-- 	primary key (countyid, yearid, monthgroupid, pollutantid, fueltypeid)
 -- );
--- TRUNCATE TABLE GWTPCO2FactorByFuelType;
+-- truncate table gwtpco2factorbyfueltype;
 
-DROP TABLE IF EXISTS CarbonOxidationByFuelType;
-CREATE TABLE IF NOT EXISTS CarbonOxidationByFuelType ( 
-	countyID		INTEGER NOT NULL, 
-	yearID			SMALLINT NOT NULL, 
-	monthGroupID		SMALLINT NOT NULL, 
-	pollutantID		SMALLINT NOT NULL,
-	fuelTypeID		SMALLINT NOT NULL,
-	sumcarbonContent	FLOAT,
-	sumoxidationFraction	FLOAT,
-	PRIMARY KEY (countyID, yearID, monthGroupID, pollutantID, fuelTypeID)
+drop table if exists carbonoxidationbyfueltype;
+create table if not exists carbonoxidationbyfueltype ( 
+	countyid		integer not null, 
+	yearid			smallint not null, 
+	monthgroupid		smallint not null, 
+	pollutantid		smallint not null,
+	fueltypeid		smallint not null,
+	sumcarboncontent	float,
+	sumoxidationfraction	float,
+	primary key (countyid, yearid, monthgroupid, pollutantid, fueltypeid)
 );
-TRUNCATE TABLE CarbonOxidationByFuelType;
--- End Section Create Remote Tables for Extracted Data
+truncate table carbonoxidationbyfueltype;
+-- end section create remote tables for extracted data
 
--- Section Extract Data
+-- section extract data
 
--- DROP TABLE IF EXISTS GWTPCO2FactorByFuelType;
--- CREATE TABLE IF NOT EXISTS GWTPCO2FactorByFuelType ( 
--- 	countyID		INTEGER NOT NULL, 
--- 	yearID			SMALLINT NOT NULL, 
--- 	monthGroupID		SMALLINT NOT NULL, 
--- 	pollutantID		SMALLINT NOT NULL,
--- 	fuelTypeID		SMALLINT NOT NULL,
--- 	sumCO2EmissionRate	FLOAT,
--- 	PRIMARY KEY (countyID, yearID, monthGroupID, pollutantID, fuelTypeID)
+-- drop table if exists gwtpco2factorbyfueltype;
+-- create table if not exists gwtpco2factorbyfueltype ( 
+-- 	countyid		integer not null, 
+-- 	yearid			smallint not null, 
+-- 	monthgroupid		smallint not null, 
+-- 	pollutantid		smallint not null,
+-- 	fueltypeid		smallint not null,
+-- 	sumco2emissionrate	float,
+-- 	primary key (countyid, yearid, monthgroupid, pollutantid, fueltypeid)
 -- );
 
--- SubSection Task 122 step 1a: Calculate atmospheric CO2 from total energy for running exhaust
-DROP TABLE IF EXISTS CarbonOxidationByFuelType;
-CREATE TABLE IF NOT EXISTS CarbonOxidationByFuelType ( 
-	countyID		INTEGER NOT NULL, 
-	yearID			SMALLINT NOT NULL, 
-	monthGroupID		SMALLINT NOT NULL, 
-	pollutantID		SMALLINT NOT NULL,
-	fuelTypeID		SMALLINT NOT NULL,
-	sumcarbonContent	FLOAT,
-	sumoxidationFraction	FLOAT,
-	PRIMARY KEY (countyID, yearID, monthGroupID, pollutantID, fuelTypeID)
+-- subsection task 122 step 1a: calculate atmospheric co2 from total energy for running exhaust
+drop table if exists carbonoxidationbyfueltype;
+create table if not exists carbonoxidationbyfueltype ( 
+	countyid		integer not null, 
+	yearid			smallint not null, 
+	monthgroupid		smallint not null, 
+	pollutantid		smallint not null,
+	fueltypeid		smallint not null,
+	sumcarboncontent	float,
+	sumoxidationfraction	float,
+	primary key (countyid, yearid, monthgroupid, pollutantid, fueltypeid)
 );
 
--- @algorithm sumCarbonContent[countyID,yearID,monthGroupID,pollutantID,fuelTypeID]=sum(marketShare * carbonContent).
--- sumOxidationFraction[countyID,yearID,monthGroupID,pollutantID,fuelTypeID]=sum(marketShare * oxidationFraction).
-INSERT INTO CarbonOxidationByFuelType (
-	countyID, 
-	yearID, 
-	monthGroupID, 
-	pollutantID, 
-	fuelTypeID,
-	sumcarbonContent,
-	sumoxidationFraction)
-SELECT 
-	##context.iterLocation.countyRecordID## as countyID, y.yearID, fs.monthGroupID, 
-	##atmoshpericCO2pollutantID## AS pollutantID, fst.fuelTypeID,
-	Sum(fs.marketShare*fst.carbonContent) AS sumcarbonContent, 
-	Sum(fs.marketShare*fst.oxidationFraction) AS sumoxidationFraction
-FROM FuelSupply fs
-INNER JOIN FuelFormulation ff ON ff.fuelFormulationID = fs.fuelFormulationID
-INNER JOIN FuelSubtype fst ON fst.fuelSubtypeID = ff.fuelSubtypeID
-INNER JOIN Year y ON y.fuelYearID = fs.fuelYearID
-WHERE y.yearID = ##context.year##
-AND fs.fuelRegionID = ##context.fuelRegionID##
-GROUP BY fs.fuelRegionID, y.yearID, fs.monthGroupID, fst.fuelTypeID;
--- FLUSH TABLES;
+-- @algorithm sumcarboncontent[countyid,yearid,monthgroupid,pollutantid,fueltypeid]=sum(marketshare * carboncontent).
+-- sumoxidationfraction[countyid,yearid,monthgroupid,pollutantid,fueltypeid]=sum(marketshare * oxidationfraction).
+insert into carbonoxidationbyfueltype (
+	countyid, 
+	yearid, 
+	monthgroupid, 
+	pollutantid, 
+	fueltypeid,
+	sumcarboncontent,
+	sumoxidationfraction)
+select 
+	##context.iterlocation.countyrecordid## as countyid, y.yearid, fs.monthgroupid, 
+	##atmoshpericco2pollutantid## as pollutantid, fst.fueltypeid,
+	sum(fs.marketshare*fst.carboncontent) as sumcarboncontent, 
+	sum(fs.marketshare*fst.oxidationfraction) as sumoxidationfraction
+from fuelsupply fs
+inner join fuelformulation ff on ff.fuelformulationid = fs.fuelformulationid
+inner join fuelsubtype fst on fst.fuelsubtypeid = ff.fuelsubtypeid
+inner join year y on y.fuelyearid = fs.fuelyearid
+where y.yearid = ##context.year##
+and fs.fuelregionid = ##context.fuelregionid##
+group by fs.fuelregionid, y.yearid, fs.monthgroupid, fst.fueltypeid;
+-- flush tables;
 
-SELECT * INTO OUTFILE '##CarbonOxidationByFuelType##'
-FROM CarbonOxidationByFuelType;
--- FLUSH TABLES;
--- End SubSection Task 122 step 1a
+select * into outfile '##carbonoxidationbyfueltype##'
+from carbonoxidationbyfueltype;
+-- flush tables;
+-- end subsection task 122 step 1a
 
-SELECT pollutantID,pollutantName,energyOrMass,globalWarmingPotential
-INTO OUTFILE '##CO2EqPollutant##' FROM Pollutant where globalWarmingPotential is not null and globalWarmingPotential > 0;
+select pollutantid,pollutantname,energyormass,globalwarmingpotential
+into outfile '##co2eqpollutant##' from pollutant where globalwarmingpotential is not null and globalwarmingpotential > 0;
 
-SELECT * INTO OUTFILE '##CO2MonthofAnyYear##' FROM MonthOfAnyYear;
--- FLUSH TABLES;
--- End Section Extract Data
+select * into outfile '##co2monthofanyyear##' from monthofanyyear;
+-- flush tables;
+-- end section extract data
 
--- Section Local Data Removal
--- TRUNCATE GWTPCO2FactorByFuelType;
+-- section local data removal
+-- truncate gwtpco2factorbyfueltype;
 
--- TRUNCATE CarbonOxidationByFuelType;
+-- truncate carbonoxidationbyfueltype;
 
--- End Section Local Data Removal
+-- end section local data removal
 
--- Section Processing
+-- section processing
 
--- 	SubSection Task 122 step 1a: Calculate atmospheric CO2 from total energy from
--- 		running, start, and Extended Idle exhaust
-DROP TABLE IF EXISTS MOVESOutputCO2Temp1a;
--- 	7/31/2007 Gwo added "coft.monthgroupid=may.monthgroupid AND" in WHERE clause
+-- 	subsection task 122 step 1a: calculate atmospheric co2 from total energy from
+-- 		running, start, and extended idle exhaust
+drop table if exists movesoutputco2temp1a;
+-- 	7/31/2007 gwo added "coft.monthgroupid=may.monthgroupid and" in where clause
 
--- @algorithm Atmosphereic CO2 = sum(Total Energy Consumption * sumCarbonContent * sumOxidationFraction * (44/12)).
-CREATE TABLE MOVESOutputCO2Temp1a 
-SELECT 
-	mwo.MOVESRunID, mwo.yearID, mwo.monthID, mwo.dayID, 
-	mwo.hourID,mwo.stateID,mwo.countyID,mwo.zoneID, 
-	mwo.linkID,##atmoshpericCO2pollutantID## AS pollutantID,mwo.processID, 
-	mwo.sourceTypeID,mwo.regClassID,mwo.fuelTypeID,mwo.modelYearID, 
-	mwo.roadTypeID,mwo.SCC, 
-	SUM(mwo.emissionQuant * coft.sumcarbonContent * coft.sumoxidationFraction * (44/12)) AS emissionQuant,
-	SUM(mwo.emissionRate  * coft.sumcarbonContent * coft.sumoxidationFraction * (44/12)) AS emissionRate
-FROM 
-	MOVESWorkerOutput mwo, CarbonOxidationByFuelType coft, CO2MonthofAnyYear may 
-WHERE 
-	coft.countyID = mwo.countyID AND 
-	coft.yearID = mwo.yearID AND 
-	coft.monthgroupid=may.monthgroupid AND
-	may.monthID = mwo.monthID AND 
-	coft.fuelTypeID = mwo.fuelTypeID AND
-	mwo.pollutantID = ##totalEnergyConsumptionID## AND
-	##CO2Step1AprocessIDs## 
-GROUP BY 
-	mwo.MOVESRunID,mwo.yearID,mwo.monthID,mwo.dayID, mwo.hourID, 
-	mwo.stateID,mwo.countyID,mwo.zoneID,mwo.linkID, mwo.processID, 
-	mwo.sourceTypeID,mwo.regClassID,mwo.fuelTypeID,mwo.modelYearID,mwo.roadTypeID, 
-	mwo.SCC;
--- FLUSH TABLES;
--- 	End of SubSection Task 122 step 1a:
+-- @algorithm atmosphereic co2 = sum(total energy consumption * sumcarboncontent * sumoxidationfraction * (44/12)).
+create table movesoutputco2temp1a 
+select 
+	mwo.movesrunid, mwo.yearid, mwo.monthid, mwo.dayid, 
+	mwo.hourid,mwo.stateid,mwo.countyid,mwo.zoneid, 
+	mwo.linkid,##atmoshpericco2pollutantid## as pollutantid,mwo.processid, 
+	mwo.sourcetypeid,mwo.regclassid,mwo.fueltypeid,mwo.modelyearid, 
+	mwo.roadtypeid,mwo.scc, 
+	sum(mwo.emissionquant * coft.sumcarboncontent * coft.sumoxidationfraction * (44/12)) as emissionquant,
+	sum(mwo.emissionrate  * coft.sumcarboncontent * coft.sumoxidationfraction * (44/12)) as emissionrate
+from 
+	movesworkeroutput mwo, carbonoxidationbyfueltype coft, co2monthofanyyear may 
+where 
+	coft.countyid = mwo.countyid and 
+	coft.yearid = mwo.yearid and 
+	coft.monthgroupid=may.monthgroupid and
+	may.monthid = mwo.monthid and 
+	coft.fueltypeid = mwo.fueltypeid and
+	mwo.pollutantid = ##totalenergyconsumptionid## and
+	##co2step1aprocessids## 
+group by 
+	mwo.movesrunid,mwo.yearid,mwo.monthid,mwo.dayid, mwo.hourid, 
+	mwo.stateid,mwo.countyid,mwo.zoneid,mwo.linkid, mwo.processid, 
+	mwo.sourcetypeid,mwo.regclassid,mwo.fueltypeid,mwo.modelyearid,mwo.roadtypeid, 
+	mwo.scc;
+-- flush tables;
+-- 	end of subsection task 122 step 1a:
 
-INSERT INTO MOVESWorkerOutput ( 
-	MOVESRunID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID, 
-	linkID,pollutantID,processID,sourceTypeID,regClassID,fuelTypeID,modelYearID, 
-	roadTypeID,SCC,emissionQuant,emissionRate) 
-SELECT 
-	MOVESRunID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID, 
-	linkID,pollutantID,processID,sourceTypeID,regClassID,fuelTypeID,modelYearID, 
-	roadTypeID,SCC,emissionQuant,emissionRate
-FROM MOVESOutputCO2Temp1a;
-ANALYZE TABLE MOVESWorkerOutput;
--- FLUSH TABLES;
+insert into movesworkeroutput ( 
+	movesrunid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid, 
+	linkid,pollutantid,processid,sourcetypeid,regclassid,fueltypeid,modelyearid, 
+	roadtypeid,scc,emissionquant,emissionrate) 
+select 
+	movesrunid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid, 
+	linkid,pollutantid,processid,sourcetypeid,regclassid,fueltypeid,modelyearid, 
+	roadtypeid,scc,emissionquant,emissionrate
+from movesoutputco2temp1a;
+analyze table movesworkeroutput;
+-- flush tables;
 
--- 	SubSection Task 122 step 2: Calculate Equivalent CO2 from CO2, Methane, and N2O
-DROP TABLE IF EXISTS MOVESOutputCO2Temp2;
+-- 	subsection task 122 step 2: calculate equivalent co2 from co2, methane, and n2o
+drop table if exists movesoutputco2temp2;
 
--- @algorithm Equivalent CO2 = sum(emissions[polutant=CO2 or Methane or N2O] * globalWarmingPotential).
-CREATE TABLE MOVESOutputCO2Temp2 
-SELECT 
-	mwo.MOVESRunID, mwo.yearID, mwo.monthID, mwo.dayID, 
-	mwo.hourID,mwo.stateID,mwo.countyID,mwo.zoneID, 
-	mwo.linkID,##equivalentCO2pollutantID## AS pollutantID,mwo.processID, 
-	mwo.sourceTypeID,mwo.regClassID,mwo.fuelTypeID,mwo.modelYearID, 
-	mwo.roadTypeID,mwo.SCC, 
-	SUM(mwo.emissionQuant * pol.globalWarmingPotential) AS emissionQuant,
-	SUM(mwo.emissionRate  * pol.globalWarmingPotential) AS emissionRate
-FROM 
-	MOVESWorkerOutput mwo INNER JOIN CO2EqPollutant pol on mwo.pollutantID = pol.pollutantID 
-WHERE 	mwo.pollutantID IN (##CO2Step2pollutantIDs##) AND ##CO2Step2processIDs##  
-GROUP BY 
-	mwo.MOVESRunID,mwo.yearID,mwo.monthID,mwo.dayID, mwo.hourID, 
-	mwo.stateID,mwo.countyID,mwo.zoneID,mwo.linkID, mwo.processID, 
-	mwo.sourceTypeID,mwo.regClassID,mwo.fuelTypeID,mwo.modelYearID,mwo.roadTypeID, mwo.SCC;
--- FLUSH TABLES;
--- 	End of SubSection Task 122 step 2:
+-- @algorithm equivalent co2 = sum(emissions[polutant=co2 or methane or n2o] * globalwarmingpotential).
+create table movesoutputco2temp2 
+select 
+	mwo.movesrunid, mwo.yearid, mwo.monthid, mwo.dayid, 
+	mwo.hourid,mwo.stateid,mwo.countyid,mwo.zoneid, 
+	mwo.linkid,##equivalentco2pollutantid## as pollutantid,mwo.processid, 
+	mwo.sourcetypeid,mwo.regclassid,mwo.fueltypeid,mwo.modelyearid, 
+	mwo.roadtypeid,mwo.scc, 
+	sum(mwo.emissionquant * pol.globalwarmingpotential) as emissionquant,
+	sum(mwo.emissionrate  * pol.globalwarmingpotential) as emissionrate
+from 
+	movesworkeroutput mwo inner join co2eqpollutant pol on mwo.pollutantid = pol.pollutantid 
+where 	mwo.pollutantid in (##co2step2pollutantids##) and ##co2step2processids##  
+group by 
+	mwo.movesrunid,mwo.yearid,mwo.monthid,mwo.dayid, mwo.hourid, 
+	mwo.stateid,mwo.countyid,mwo.zoneid,mwo.linkid, mwo.processid, 
+	mwo.sourcetypeid,mwo.regclassid,mwo.fueltypeid,mwo.modelyearid,mwo.roadtypeid, mwo.scc;
+-- flush tables;
+-- 	end of subsection task 122 step 2:
 
-INSERT INTO MOVESWorkerOutput ( 
-	MOVESRunID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID, 
-	linkID,pollutantID,processID,sourceTypeID,regClassID,fuelTypeID,modelYearID, 
-	roadTypeID,SCC,emissionQuant,emissionRate) 
-SELECT 
-	MOVESRunID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID, 
-	linkID,pollutantID,processID,sourceTypeID,regClassID,fuelTypeID,modelYearID, 
-	roadTypeID,SCC,emissionQuant,emissionRate
-FROM MOVESOutputCO2Temp2;
-ANALYZE TABLE MOVESWorkerOutput;
--- FLUSH TABLES;
+insert into movesworkeroutput ( 
+	movesrunid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid, 
+	linkid,pollutantid,processid,sourcetypeid,regclassid,fueltypeid,modelyearid, 
+	roadtypeid,scc,emissionquant,emissionrate) 
+select 
+	movesrunid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid, 
+	linkid,pollutantid,processid,sourcetypeid,regclassid,fueltypeid,modelyearid, 
+	roadtypeid,scc,emissionquant,emissionrate
+from movesoutputco2temp2;
+analyze table movesworkeroutput;
+-- flush tables;
 
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
-DROP TABLE IF EXISTS MOVESOutputCO2Temp1a;
-DROP TABLE IF EXISTS MOVESOutputCO2Temp2;
+-- section cleanup
+drop table if exists movesoutputco2temp1a;
+drop table if exists movesoutputco2temp2;
 
--- End Section Cleanup
+-- end section cleanup

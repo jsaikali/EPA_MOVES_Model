@@ -1,6 +1,6 @@
-CREATE TABLE InputData3 (
-	VType INTEGER UNSIGNED NOT NULL,
-	PollutantID INTEGER UNSIGNED NOT NULL,
-	ProcessID INTEGER UNSIGNED NOT NULL,
-	AmountPerActivity FLOAT
+create table inputdata3 (
+	vtype integer unsigned not null,
+	pollutantid integer unsigned not null,
+	processid integer unsigned not null,
+	amountperactivity float
 );

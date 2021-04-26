@@ -1,229 +1,229 @@
--- Adjust the distribution within the HotellingHours table using
+-- adjust the distribution within the hotellinghours table using
 -- user-supplied adjustments.
--- Author Wesley Faler
--- Version 2017-09-19
+-- author wesley faler
+-- version 2017-09-19
 
-drop procedure if exists spAdjustHotelling;
+drop procedure if exists spadjusthotelling;
 
-BeginBlock
-create procedure spAdjustHotelling()
+beginblock
+create procedure spadjusthotelling()
 begin
-	declare targetZoneID int default ##zoneID##;
-	declare targetYearID int default ##yearID##;
-	declare activityZoneID int default ##activityZoneID##;
-	declare howMany int default 0;
+	declare targetzoneid int default ##zoneid##;
+	declare targetyearid int default ##yearid##;
+	declare activityzoneid int default ##activityzoneid##;
+	declare howmany int default 0;
 	
-	-- HotellingHoursPerDay
-	set howMany=0;
-	select count(*) into howMany from hotellingHoursPerDay where zoneID=targetZoneID;
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then
-		alter table HotellingHours add column dayID smallint not null default 0;
-		alter table HotellingHours add column hourID smallint not null default 0;
+	-- hotellinghoursperday
+	set howmany=0;
+	select count(*) into howmany from hotellinghoursperday where zoneid=targetzoneid;
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then
+		alter table hotellinghours add column dayid smallint not null default 0;
+		alter table hotellinghours add column hourid smallint not null default 0;
 
-		drop table if exists newHotellingHours_hhpd;
-		drop table if exists defaultHotellingHoursPerDay;
+		drop table if exists newhotellinghours_hhpd;
+		drop table if exists defaulthotellinghoursperday;
 
-		create table newHotellingHours_hhpd like hotellingHours;
-		create table defaultHotellingHoursPerDay (
-			yearID int,
-			zoneID int,
-			dayID smallint,
-			defaultHotellingHours double -- this is units of hotelling hours in a typical day
+		create table newhotellinghours_hhpd like hotellinghours;
+		create table defaulthotellinghoursperday (
+			yearid int,
+			zoneid int,
+			dayid smallint,
+			defaulthotellinghours double -- this is units of hotelling hours in a typical day
 		);
 
-		update HotellingHours set dayID=mod(hourDayID,10), hourID=floor(hourDayID/10)
-		where zoneID = targetZoneID and yearID = targetYearID;
+		update hotellinghours set dayid=mod(hourdayid,10), hourid=floor(hourdayid/10)
+		where zoneid = targetzoneid and yearid = targetyearid;
 		
 		-- calculate the defaults
-		insert into defaultHotellingHoursPerDay 
-		select yearID,zoneID,dayID,sum(hotellinghours / noOfRealDays) 
+		insert into defaulthotellinghoursperday 
+		select yearid,zoneid,dayid,sum(hotellinghours / noofrealdays) 
 		from hotellinghours
-		join dayOfAnyWeek using (dayID)
-		group by yearID,zoneID,dayID;
+		join dayofanyweek using (dayid)
+		group by yearid,zoneid,dayid;
 		
 		
-		-- we use the ratio between the defaults and user input to calculate the new HotellingHours
-		insert into newHotellingHours_hhpd (sourceTypeID,yearID,monthID,dayID,hourID,hourDayID,zoneID,ageID,hotellingHours)
-		-- units of hotellingHours : hours per portion of week
-		-- units of (hotellinghoursperday / defaultHotellingHours): hours per typical day / hours per typical day, month combination (implictly day*month)
+		-- we use the ratio between the defaults and user input to calculate the new hotellinghours
+		insert into newhotellinghours_hhpd (sourcetypeid,yearid,monthid,dayid,hourid,hourdayid,zoneid,ageid,hotellinghours)
+		-- units of hotellinghours : hours per portion of week
+		-- units of (hotellinghoursperday / defaulthotellinghours): hours per typical day / hours per typical day, month combination (implictly day*month)
 		-- expression below becomes hours per potion of week * (1/ typical month) * months
-		select sourceTypeID,yearID,monthID,dayID,hourID,hourID*10+dayID as hourDayID,zoneID,ageID,
-			(hotellingHoursPerDay / defaultHotellingHours) * hotellingHours * 12 as hotellingHours
-		from hotellingHours
-		join defaultHotellingHoursPerDay using (yearID,zoneID,dayID)
-		join hotellinghoursperday using (yearID,zoneID,dayID)
-		join dayofanyweek using (dayID)
-		join monthofanyyear using (monthID);
+		select sourcetypeid,yearid,monthid,dayid,hourid,hourid*10+dayid as hourdayid,zoneid,ageid,
+			(hotellinghoursperday / defaulthotellinghours) * hotellinghours * 12 as hotellinghours
+		from hotellinghours
+		join defaulthotellinghoursperday using (yearid,zoneid,dayid)
+		join hotellinghoursperday using (yearid,zoneid,dayid)
+		join dayofanyweek using (dayid)
+		join monthofanyyear using (monthid);
 		
 		-- replace into with the new data
-		replace into hotellingHours select * from newHotellingHours_hhpd;
+		replace into hotellinghours select * from newhotellinghours_hhpd;
 
-		drop table newHotellingHours_hhpd;
-		drop table defaultHotellingHoursPerDay;
+		drop table newhotellinghours_hhpd;
+		drop table defaulthotellinghoursperday;
 		
-		alter table HotellingHours drop column dayID;
-		alter table HotellingHours drop column hourID;
+		alter table hotellinghours drop column dayid;
+		alter table hotellinghours drop column hourid;
 	end if;
 
 
-	-- hotellingHourFraction
-	set howMany=0;
-	select count(*) into howMany from hotellingHourFraction where zoneID=targetZoneID;
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then
-		alter table HotellingHours add column dayID smallint not null default 0;
-		alter table HotellingHours add column hourID smallint not null default 0;
+	-- hotellinghourfraction
+	set howmany=0;
+	select count(*) into howmany from hotellinghourfraction where zoneid=targetzoneid;
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then
+		alter table hotellinghours add column dayid smallint not null default 0;
+		alter table hotellinghours add column hourid smallint not null default 0;
 
-		drop table if exists newHotellingHours_hhf;
-		drop table if exists defaultHotellingHourFraction;
+		drop table if exists newhotellinghours_hhf;
+		drop table if exists defaulthotellinghourfraction;
 
-		create table newHotellingHours_hhf like HotellingHours;
-		-- alter table hotellingTemp drop primary key;
+		create table newhotellinghours_hhf like hotellinghours;
+		-- alter table hotellingtemp drop primary key;
 
-		update HotellingHours set dayID=mod(hourDayID,10), hourID=floor(hourDayID/10);
+		update hotellinghours set dayid=mod(hourdayid,10), hourid=floor(hourdayid/10);
 		
 		-- calculate the default hour fractions
-		create table defaultHotellingHourFraction (
-			zoneID int,
-			dayID smallint,
-			hourID smallint,
-			defaultHourFraction double
+		create table defaulthotellinghourfraction (
+			zoneid int,
+			dayid smallint,
+			hourid smallint,
+			defaulthourfraction double
 		);
-		insert into defaultHotellingHourFraction
-		select zoneID,dayID,hourID,sum(hotellingHours) / total.total as defaultHourFraction
-		from hotellingHours
+		insert into defaulthotellinghourfraction
+		select zoneid,dayid,hourid,sum(hotellinghours) / total.total as defaulthourfraction
+		from hotellinghours
 		join (
-			select zoneID,dayID,sum(hotellingHours) as total from hotellingHours
-			group by zoneID,dayID
-		) as total using (zoneID,dayID)
-		group by zoneID,dayID,hourID;
+			select zoneid,dayid,sum(hotellinghours) as total from hotellinghours
+			group by zoneid,dayid
+		) as total using (zoneid,dayid)
+		group by zoneid,dayid,hourid;
 		
-		-- we use the ratio between the defaults and user input to calculate the new HotellingHours
-		insert into newHotellingHours_hhf (sourceTypeID,yearID,monthID,dayID,hourID,hourDayID,zoneID,ageID,hotellingHours)
+		-- we use the ratio between the defaults and user input to calculate the new hotellinghours
+		insert into newhotellinghours_hhf (sourcetypeid,yearid,monthid,dayid,hourid,hourdayid,zoneid,ageid,hotellinghours)
 		-- because we are just scaling by new fractions, the hotellinghours units are preserved
-		-- (hourFraction / defaultHourFraction) is unitless
-		select sourceTypeID,yearID,monthID,dayID,hourID,hourID*10+dayID as hourDayID,zoneID,ageID, 
-			hotellingHours * (hourFraction / defaultHourFraction) as hotellingHours
-		from hotellingHours
-		join defaultHotellingHourFraction using (zoneID,dayID,hourID)
-		join hotellingHourFraction using (zoneID,dayID,hourID);
+		-- (hourfraction / defaulthourfraction) is unitless
+		select sourcetypeid,yearid,monthid,dayid,hourid,hourid*10+dayid as hourdayid,zoneid,ageid, 
+			hotellinghours * (hourfraction / defaulthourfraction) as hotellinghours
+		from hotellinghours
+		join defaulthotellinghourfraction using (zoneid,dayid,hourid)
+		join hotellinghourfraction using (zoneid,dayid,hourid);
 
 		-- replace into with the new values
-		replace into hotellingHours select * from newHotellingHours_hhf;
+		replace into hotellinghours select * from newhotellinghours_hhf;
 
-		drop table newHotellingHours_hhf;
-		drop table defaultHotellingHourFraction;
+		drop table newhotellinghours_hhf;
+		drop table defaulthotellinghourfraction;
 
-		alter table HotellingHours drop column dayID;
-		alter table HotellingHours drop column hourID;
+		alter table hotellinghours drop column dayid;
+		alter table hotellinghours drop column hourid;
 	end if;
 
-	-- hotellingAgeFraction
-	set howMany=0;
-	select count(*) into howMany from hotellingAgeFraction where zoneID=targetZoneID;
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then
-		drop table if exists newHotellingHours_had;
-		drop table if exists defaultHotellingAgeFraction;
+	-- hotellingagefraction
+	set howmany=0;
+	select count(*) into howmany from hotellingagefraction where zoneid=targetzoneid;
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then
+		drop table if exists newhotellinghours_had;
+		drop table if exists defaulthotellingagefraction;
 		
-		alter table HotellingHours add column dayID smallint not null default 0;
-		alter table HotellingHours add column hourID smallint not null default 0;
-		update HotellingHours set dayID=mod(hourDayID,10), hourID=floor(hourDayID/10);
+		alter table hotellinghours add column dayid smallint not null default 0;
+		alter table hotellinghours add column hourid smallint not null default 0;
+		update hotellinghours set dayid=mod(hourdayid,10), hourid=floor(hourdayid/10);
 
-		create table newHotellingHours_had like HotellingHours;
-		create table defaultHotellingAgeFraction (
-			zoneID int,
-			ageID smallint,
-			defaultAgeFraction double
+		create table newhotellinghours_had like hotellinghours;
+		create table defaulthotellingagefraction (
+			zoneid int,
+			ageid smallint,
+			defaultagefraction double
 		);
 		
 		
 		-- calculate the default age fraction
-		insert into defaultHotellingAgeFraction
-		select zoneID,ageID,sum(hotellingHours) / total.total as defaultAgeFraction
-		from hotellingHours
+		insert into defaulthotellingagefraction
+		select zoneid,ageid,sum(hotellinghours) / total.total as defaultagefraction
+		from hotellinghours
 		join (
-			select zoneID,sum(hotellingHours) as total from hotellingHours
-			group by zoneID
-		) as total using (zoneID)
-		group by zoneID,ageID;
+			select zoneid,sum(hotellinghours) as total from hotellinghours
+			group by zoneid
+		) as total using (zoneid)
+		group by zoneid,ageid;
 		
 		-- use the ratio of the new age fractions to the defaults to scale the hotelling horus
-		insert into newHotellingHours_had (sourceTypeID,yearID,monthID,dayID,hourID,hourDayID,zoneID,ageID,hotellingHours)
+		insert into newhotellinghours_had (sourcetypeid,yearid,monthid,dayid,hourid,hourdayid,zoneid,ageid,hotellinghours)
 		-- because we are just scaling by new fractions, the hotellinghours units are preserved
-		-- (ageFraction / defaultAgeFraction) is unitless
-		select sourceTypeID,yearID,monthID,dayID,hourID,hourID*10+dayID as hourDayID,zoneID,ageID, 
-			hotellingHours * (ageFraction / defaultAgeFraction) as hotellingHours
-		from hotellingHours
-		join defaultHotellingAgeFraction using (zoneID,ageID)
-		join hotellingAgeFraction using (zoneID,ageID);
+		-- (agefraction / defaultagefraction) is unitless
+		select sourcetypeid,yearid,monthid,dayid,hourid,hourid*10+dayid as hourdayid,zoneid,ageid, 
+			hotellinghours * (agefraction / defaultagefraction) as hotellinghours
+		from hotellinghours
+		join defaulthotellingagefraction using (zoneid,ageid)
+		join hotellingagefraction using (zoneid,ageid);
 			
 			
 		-- replace into with the new data
-		replace into hotellingHours select * from newHotellingHours_had;
+		replace into hotellinghours select * from newhotellinghours_had;
 		
-		-- drop table newHotellingHours_had;
-		drop table defaultHotellingAgeFraction;
+		-- drop table newhotellinghours_had;
+		drop table defaulthotellingagefraction;
 		
-		alter table HotellingHours drop column dayID;
-		alter table HotellingHours drop column hourID;
+		alter table hotellinghours drop column dayid;
+		alter table hotellinghours drop column hourid;
 	end if;
 
 	
-	-- hotellingMonthAdjust
-	set howMany=0;
-	select count(*) into howMany from hotellingMonthAdjust where zoneID=targetZoneID;
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then
-		alter table HotellingHours add column dayID smallint not null default 0;
-		alter table HotellingHours add column hourID smallint not null default 0;
-		update HotellingHours set dayID=mod(hourDayID,10), hourID=floor(hourDayID/10);
+	-- hotellingmonthadjust
+	set howmany=0;
+	select count(*) into howmany from hotellingmonthadjust where zoneid=targetzoneid;
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then
+		alter table hotellinghours add column dayid smallint not null default 0;
+		alter table hotellinghours add column hourid smallint not null default 0;
+		update hotellinghours set dayid=mod(hourdayid,10), hourid=floor(hourdayid/10);
 		
-		drop table if exists newHotellingHours_hma;
-		drop table if exists defaultHotellingMonthAdjust;
+		drop table if exists newhotellinghours_hma;
+		drop table if exists defaulthotellingmonthadjust;
 
-		create table newHotellingHours_hma like HotellingHours;
-		create table defaultHotellingMonthAdjust (
-			zoneID int,
-			monthID smallint,
-			defaultMonthAdjustment double
+		create table newhotellinghours_hma like hotellinghours;
+		create table defaulthotellingmonthadjust (
+			zoneid int,
+			monthid smallint,
+			defaultmonthadjustment double
 		);
 		
 		-- calculate the default month adjustments
-		insert into defaultHotellingMonthAdjust
+		insert into defaulthotellingmonthadjust
 		-- the month adjustment is the ratio between the month's average hours and the average across all months (aka the full year)
-		select zoneID,monthID,avg(hotellingHours)/average.yearAverage as defaultMonthAdjustment
-		from hotellingHours
+		select zoneid,monthid,avg(hotellinghours)/average.yearaverage as defaultmonthadjustment
+		from hotellinghours
 		join (
-			select zoneID,avg(hotellinghours) as yearAverage 
-			from hotellingHours
-			group by zoneID
+			select zoneid,avg(hotellinghours) as yearaverage 
+			from hotellinghours
+			group by zoneid
 		) as average
-		using (zoneID)
-		group by zoneID,monthID;
+		using (zoneid)
+		group by zoneid,monthid;
 		
 		-- use the ratio of the new month adjustments to the old ones to calculate the new hotelling hours
-		insert into newHotellingHours_hma (sourceTypeID,yearID,monthID,dayID,hourID,hourDayID,zoneID,ageID,hotellingHours)
+		insert into newhotellinghours_hma (sourcetypeid,yearid,monthid,dayid,hourid,hourdayid,zoneid,ageid,hotellinghours)
 		-- because we are just scaling by new fractions, the hotellinghours units are preserved
-		-- (monthAdjustment / defaultMonthAdjustment) is unitless
-		select sourceTypeID,yearID,monthID,dayID,hourID,hourID*10+dayID as hourDayID,zoneID,ageID, 
-			hotellingHours * (monthAdjustment / defaultMonthAdjustment) as hotellingHours
-		from hotellingHours
-		join defaultHotellingMonthAdjust using (zoneID,monthid)
-		join hotellingmonthadjust using (zoneID,monthid);
+		-- (monthadjustment / defaultmonthadjustment) is unitless
+		select sourcetypeid,yearid,monthid,dayid,hourid,hourid*10+dayid as hourdayid,zoneid,ageid, 
+			hotellinghours * (monthadjustment / defaultmonthadjustment) as hotellinghours
+		from hotellinghours
+		join defaulthotellingmonthadjust using (zoneid,monthid)
+		join hotellingmonthadjust using (zoneid,monthid);
 		
 		-- replace into with the new data
-		replace into hotellingHours select * from newHotellingHours_hma;
+		replace into hotellinghours select * from newhotellinghours_hma;
 		
-		drop table newHotellingHours_hma;
-		drop table defaultHotellingMonthAdjust;
+		drop table newhotellinghours_hma;
+		drop table defaulthotellingmonthadjust;
 		
-		alter table HotellingHours drop column dayID;
-		alter table HotellingHours drop column hourID;
+		alter table hotellinghours drop column dayid;
+		alter table hotellinghours drop column hourid;
 	end if;
 end
-EndBlock
+endblock
 
-call spAdjustHotelling();
-drop procedure if exists spAdjustHotelling;
+call spadjusthotelling();
+drop procedure if exists spadjusthotelling;

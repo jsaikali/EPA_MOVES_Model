@@ -1,86 +1,86 @@
--- Author Wesley Faler
--- Version 2015-04-07
+-- author wesley faler
+-- version 2015-04-07
 
 -- @algorithm
--- @owner Nonroad Air toxics Calculator
+-- @owner nonroad air toxics calculator
 -- @calculator
 
--- Section Create Remote Tables for Extracted Data
+-- section create remote tables for extracted data
 
-##create.nrATRatio##;
-TRUNCATE nrATRatio;
+##create.nratratio##;
+truncate nratratio;
 
-##create.nrDioxinEmissionRate##;
-TRUNCATE nrDioxinEmissionRate;
+##create.nrdioxinemissionrate##;
+truncate nrdioxinemissionrate;
 
-##create.nrIntegratedSpecies##;
-TRUNCATE nrIntegratedSpecies;
+##create.nrintegratedspecies##;
+truncate nrintegratedspecies;
 
-##create.nrMetalEmissionRate##;
-TRUNCATE nrMetalEmissionRate;
+##create.nrmetalemissionrate##;
+truncate nrmetalemissionrate;
 
-##create.nrPAHGasRatio##;
-TRUNCATE nrPAHGasRatio;
+##create.nrpahgasratio##;
+truncate nrpahgasratio;
 
-##create.nrPAHParticleRatio##;
-TRUNCATE nrPAHParticleRatio;
+##create.nrpahparticleratio##;
+truncate nrpahparticleratio;
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
+-- section extract data
 
--- Section UsenrATRatio
-cache select pollutantID, processID, engTechID, fuelSubtypeID, nrHPCategory, atRatio
+-- section usenratratio
+cache select pollutantid, processid, engtechid, fuelsubtypeid, nrhpcategory, atratio
 into outfile '##nratratio##'
-from nrATRatio
-where (pollutantID*100+processID) in (##outputnrATRatio##);
--- End Section UsenrATRatio
+from nratratio
+where (pollutantid*100+processid) in (##outputnratratio##);
+-- end section usenratratio
 
--- Section UsenrDioxinEmissionRate
-cache select pollutantID, processID, fuelTypeID, engTechID, nrHPCategory, meanBaseRate
+-- section usenrdioxinemissionrate
+cache select pollutantid, processid, fueltypeid, engtechid, nrhpcategory, meanbaserate
 into outfile '##nrdioxinemissionrate##'
-from nrDioxinEmissionRate
-where (pollutantID*100+processID) in (##outputnrDioxinEmissionRate##);
--- End Section UsenrDioxinEmissionRate
+from nrdioxinemissionrate
+where (pollutantid*100+processid) in (##outputnrdioxinemissionrate##);
+-- end section usenrdioxinemissionrate
 
--- Section UseNonHAPTOG
-cache select pollutantID
+-- section usenonhaptog
+cache select pollutantid
 into outfile '##nrintegratedspecies##'
-from nrIntegratedSpecies;
--- End Section UseNonHAPTOG
+from nrintegratedspecies;
+-- end section usenonhaptog
 
--- Section UsenrMetalEmissionRate
-cache select pollutantID, processID, fuelTypeID, engTechID, nrHPCategory, meanBaseRate
+-- section usenrmetalemissionrate
+cache select pollutantid, processid, fueltypeid, engtechid, nrhpcategory, meanbaserate
 into outfile '##nrmetalemissionrate##'
-from nrMetalEmissionRate
-where (pollutantID*100+processID) in (##outputnrMetalEmissionRate##);
--- End Section UsenrMetalEmissionRate
+from nrmetalemissionrate
+where (pollutantid*100+processid) in (##outputnrmetalemissionrate##);
+-- end section usenrmetalemissionrate
 
--- Section UsenrPAHGasRatio
-cache select pollutantID, processID, fuelTypeID, engTechID, nrHPCategory, atratio
+-- section usenrpahgasratio
+cache select pollutantid, processid, fueltypeid, engtechid, nrhpcategory, atratio
 into outfile '##nrpahgasratio##'
-from nrPAHGasRatio
-where (pollutantID*100+processID) in (##outputnrPAHGasRatio##);
--- End Section UsenrPAHGasRatio
+from nrpahgasratio
+where (pollutantid*100+processid) in (##outputnrpahgasratio##);
+-- end section usenrpahgasratio
 
--- Section UsenrPAHParticleRatio
-cache select pollutantID, processID, fuelTypeID, engTechID, nrHPCategory, atratio
+-- section usenrpahparticleratio
+cache select pollutantid, processid, fueltypeid, engtechid, nrhpcategory, atratio
 into outfile '##nrpahparticleratio##'
-from nrPAHParticleRatio
-where (pollutantID*100+processID) in (##outputnrPAHParticleRatio##);
--- End Section UsenrPAHParticleRatio
+from nrpahparticleratio
+where (pollutantid*100+processid) in (##outputnrpahparticleratio##);
+-- end section usenrpahparticleratio
 
--- End Section Extract Data
+-- end section extract data
 
--- Section Processing
+-- section processing
 
--- All processing logic is done in the external calculator.
+-- all processing logic is done in the external calculator.
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
+-- section cleanup
 
--- End Section Cleanup
+-- end section cleanup
 
--- Section Final Cleanup
--- End Section Final Cleanup
+-- section final cleanup
+-- end section final cleanup

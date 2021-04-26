@@ -1,34 +1,34 @@
 /*
-   Version 2013-10-23
-   Author Wesley Faler
+   version 2013-10-23
+   author wesley faler
 */
-DROP TABLE IF EXISTS BaseRateOutput;
+drop table if exists baserateoutput;
 
-CREATE TABLE IF NOT EXISTS BaseRateOutput (
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
-	iterationID          SMALLINT UNSIGNED NULL DEFAULT 1,
+create table if not exists baserateoutput (
+	movesrunid           smallint unsigned not null,
+	iterationid          smallint unsigned null default 1,
 
-	zoneID				 INTEGER NOT NULL DEFAULT '0',
-	linkID				 INTEGER NOT NULL DEFAULT '0',
-	sourceTypeID         SMALLINT NOT NULL DEFAULT '0',
-    SCC                  CHAR(10) NOT NULL DEFAULT '',
-	roadTypeID           SMALLINT NOT NULL DEFAULT '0',
-	avgSpeedBinID        SMALLINT NOT NULL DEFAULT '0',
-	monthID              SMALLINT NOT NULL DEFAULT '0',
-	hourDayID            SMALLINT NOT NULL DEFAULT '0',
-	pollutantID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	processID            SMALLINT UNSIGNED NULL DEFAULT NULL,
-	modelYearID			 SMALLINT NOT NULL DEFAULT '0',
-	yearID               SMALLINT NOT NULL,
-	fuelTypeID			 SMALLINT NOT NULL DEFAULT '0',
-	regClassID			 SMALLINT NOT NULL DEFAULT '0',
+	zoneid				 integer not null default '0',
+	linkid				 integer not null default '0',
+	sourcetypeid         smallint not null default '0',
+    scc                  char(10) not null default '',
+	roadtypeid           smallint not null default '0',
+	avgspeedbinid        smallint not null default '0',
+	monthid              smallint not null default '0',
+	hourdayid            smallint not null default '0',
+	pollutantid          smallint unsigned null default null,
+	processid            smallint unsigned null default null,
+	modelyearid			 smallint not null default '0',
+	yearid               smallint not null,
+	fueltypeid			 smallint not null default '0',
+	regclassid			 smallint not null default '0',
 
-	-- Pollutant [mass,energy,moles,etc] in the time period and region.
-	-- Reflects mixture of I/M and non-I/M vehicles.
-	meanBaseRate		 FLOAT NULL,
+	-- pollutant [mass,energy,moles,etc] in the time period and region.
+	-- reflects mixture of i/m and non-i/m vehicles.
+	meanbaserate		 float null,
 
-	-- Pollutant [mass,energy,moles,etc] per activity unit such
+	-- pollutant [mass,energy,moles,etc] per activity unit such
 	-- as distance, start, and idle hour.
-	-- Reflects mixture of I/M and non-I/M vehicles.
-	emissionRate		 FLOAT NULL
+	-- reflects mixture of i/m and non-i/m vehicles.
+	emissionrate		 float null
 );

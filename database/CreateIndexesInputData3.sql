@@ -1,3 +1,3 @@
-ALTER TABLE InputData3 ADD (
-	PRIMARY KEY(VType, PollutantID, ProcessID)
+alter table inputdata3 add (
+	primary key(vtype, pollutantid, processid)
 );

@@ -1,9 +1,9 @@
--- Author Wesley Faler
--- Version 2016-03-14
+-- author wesley faler
+-- version 2016-03-14
 
 drop table if exists ratesopmodedistribution;
 
-CREATE TABLE IF NOT EXISTS ratesopmodedistribution (
+create table if not exists ratesopmodedistribution (
 	sourcetypeid         smallint not null,
 	roadtypeid           smallint not null,
 	avgspeedbinid        smallint not null default '0',
@@ -15,25 +15,25 @@ CREATE TABLE IF NOT EXISTS ratesopmodedistribution (
 	avgbinspeed			 float null,
 	avgspeedfraction 	 float not null default '0',
 
-	PRIMARY KEY (sourcetypeid, polprocessid, roadtypeid, hourdayid, opmodeid, avgspeedbinid)
+	primary key (sourcetypeid, polprocessid, roadtypeid, hourdayid, opmodeid, avgspeedbinid)
 );
 
--- Go-based	P RIMARY KEY (sourceTypeID, polProcessID, roadTypeID, hourDayID, opModeID, avgSpeedBinID)
+-- go-based	p rimary key (sourcetypeid, polprocessid, roadtypeid, hourdayid, opmodeid, avgspeedbinid)
 
--- Keys before Go-based speedup of SourceUseTypePhysics:
--- 	P RIMARY KEY (sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID, polProcessID, opModeID)
--- 	K EY (sourceTypeID)
--- 	K EY (roadTypeID)
--- 	K EY (avgSpeedBinID)
--- 	K EY (hourDayID)
--- 	K EY (polProcessID)
--- 	K EY (opModeID)
+-- keys before go-based speedup of sourceusetypephysics:
+-- 	p rimary key (sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, polprocessid, opmodeid)
+-- 	k ey (sourcetypeid)
+-- 	k ey (roadtypeid)
+-- 	k ey (avgspeedbinid)
+-- 	k ey (hourdayid)
+-- 	k ey (polprocessid)
+-- 	k ey (opmodeid)
 
-TRUNCATE TABLE ratesopmodedistribution;
+truncate table ratesopmodedistribution;
 
 drop table if exists sbweightedemissionratebyage;
 
-CREATE TABLE IF NOT EXISTS sbweightedemissionratebyage (
+create table if not exists sbweightedemissionratebyage (
 	sourcetypeid		smallint not null,
 	polprocessid		int not null,
 	opmodeid			smallint not null,
@@ -51,11 +51,11 @@ CREATE TABLE IF NOT EXISTS sbweightedemissionratebyage (
 	unique key (sourcetypeid, polprocessid, opmodeid, modelyearid, fueltypeid, agegroupid, regclassid)
 );
 
-TRUNCATE TABLE sbweightedemissionratebyage;
+truncate table sbweightedemissionratebyage;
 
 drop table if exists sbweightedemissionrate;
 
-CREATE TABLE IF NOT EXISTS sbweightedemissionrate (
+create table if not exists sbweightedemissionrate (
 	sourcetypeid		smallint not null,
 	polprocessid		int not null,
 	opmodeid			smallint not null,
@@ -72,11 +72,11 @@ CREATE TABLE IF NOT EXISTS sbweightedemissionrate (
 	unique key (sourcetypeid, polprocessid, opmodeid, modelyearid, fueltypeid, regclassid)
 );
 
-TRUNCATE TABLE sbweightedemissionrate;
+truncate table sbweightedemissionrate;
 
 drop table if exists sbweighteddistancerate;
 
-CREATE TABLE IF NOT EXISTS sbweighteddistancerate (
+create table if not exists sbweighteddistancerate (
 	sourcetypeid		smallint not null,
 	polprocessid		int not null,
 	modelyearid			smallint not null,
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS sbweighteddistancerate (
 	primary key (sourcetypeid, polprocessid, modelyearid, fueltypeid, regclassid, avgspeedbinid)
 );
 
-TRUNCATE TABLE sbweighteddistancerate;
+truncate table sbweighteddistancerate;
 
 drop table if exists distanceemissionrate;
 

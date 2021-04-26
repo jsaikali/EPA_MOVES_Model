@@ -1,749 +1,749 @@
--- Author Wesley Faler
--- Author Ed Campbell
--- Version 2015-04-07
+-- author wesley faler
+-- author ed campbell
+-- version 2015-04-07
 
 -- @algorithm
--- @owner Air toxics Calculator
+-- @owner air toxics calculator
 -- @calculator
 
--- Section Create Remote Tables for Extracted Data
+-- section create remote tables for extracted data
 
-drop table if exists ATMonthGroup;
-create table if not exists ATMonthGroup (
-	monthID smallint(6) NOT NULL DEFAULT '0',
-	monthGroupID smallint(6) NOT NULL DEFAULT '0',
-	key (monthID, monthGroupID),
-	key (monthGroupID, monthID)
-) Engine=MEMORY;
+drop table if exists atmonthgroup;
+create table if not exists atmonthgroup (
+	monthid smallint(6) not null default '0',
+	monthgroupid smallint(6) not null default '0',
+	key (monthid, monthgroupid),
+	key (monthgroupid, monthid)
+) engine=memory;
 
--- Section UseMinorHAPRatio
--- minorHAPRatio has fuelSubtypeID in the execution database, but the version
+-- section useminorhapratio
+-- minorhapratio has fuelsubtypeid in the execution database, but the version
 -- submitted to the calculator has been joined to the fuel supply and weighted
 -- by the fuel formulation market share.
 
-CREATE TABLE minorHAPRatio (
-  processID smallint(6) NOT NULL,
-  outputPollutantID smallint(6) NOT NULL,
-  fuelTypeID smallint(6) NOT NULL DEFAULT '0',
-  modelYearID smallint(6) NOT NULL,
-  monthID smallint(6) NOT NULL,
-  atRatio double DEFAULT NULL,
-  KEY (processID,fuelTypeID,modelYearID,monthID)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
+create table minorhapratio (
+  processid smallint(6) not null,
+  outputpollutantid smallint(6) not null,
+  fueltypeid smallint(6) not null default '0',
+  modelyearid smallint(6) not null,
+  monthid smallint(6) not null,
+  atratio double default null,
+  key (processid,fueltypeid,modelyearid,monthid)
+) engine=myisam default charset=latin1 delay_key_write=1;
 
-CREATE TABLE minorHAPRatioGo (
-  processID smallint(6) NOT NULL,
-  outputPollutantID smallint(6) NOT NULL,
-  fuelSubTypeID smallint(6) NOT NULL DEFAULT '0',
-  modelYearID smallint(6) NOT NULL,
-  atRatio double DEFAULT NULL,
-  KEY (processID,fuelSubTypeID,modelYearID)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
--- End Section UseMinorHAPRatio
+create table minorhapratiogo (
+  processid smallint(6) not null,
+  outputpollutantid smallint(6) not null,
+  fuelsubtypeid smallint(6) not null default '0',
+  modelyearid smallint(6) not null,
+  atratio double default null,
+  key (processid,fuelsubtypeid,modelyearid)
+) engine=myisam default charset=latin1 delay_key_write=1;
+-- end section useminorhapratio
 
--- Section UsePAHGasRatio
-CREATE TABLE pahGasRatio (
-  processID smallint(6) NOT NULL,
-  outputPollutantID smallint(6) NOT NULL,
-  fuelTypeID smallint(6) NOT NULL DEFAULT '0',
-  modelYearID smallint(6) NOT NULL DEFAULT '0',
-  atRatio double DEFAULT NULL,
-  KEY (processID,fuelTypeID,modelYearID)
+-- section usepahgasratio
+create table pahgasratio (
+  processid smallint(6) not null,
+  outputpollutantid smallint(6) not null,
+  fueltypeid smallint(6) not null default '0',
+  modelyearid smallint(6) not null default '0',
+  atratio double default null,
+  key (processid,fueltypeid,modelyearid)
 );
--- End Section UsePAHGasRatio
+-- end section usepahgasratio
 
--- Section UsePAHParticleRatio
-CREATE TABLE pahParticleRatio (
-  processID smallint(6) NOT NULL,
-  outputPollutantID smallint(6) NOT NULL,
-  fuelTypeID smallint(6) NOT NULL DEFAULT '0',
-  modelYearID smallint(6) NOT NULL DEFAULT '0',
-  atRatio double DEFAULT NULL,
-  KEY (processID,fuelTypeID,modelYearID)
+-- section usepahparticleratio
+create table pahparticleratio (
+  processid smallint(6) not null,
+  outputpollutantid smallint(6) not null,
+  fueltypeid smallint(6) not null default '0',
+  modelyearid smallint(6) not null default '0',
+  atratio double default null,
+  key (processid,fueltypeid,modelyearid)
 );
--- End Section UsePAHParticleRatio
+-- end section usepahparticleratio
 
--- Section UseATRatioGas1
-drop table if exists ATRatioGas1ChainedTo;
+-- section useatratiogas1
+drop table if exists atratiogas1chainedto;
 
-CREATE TABLE IF NOT EXISTS ATRatioGas1ChainedTo (
-	outputPolProcessID int not null,
-	outputPollutantID smallint not null,
-	outputProcessID smallint not null,
-	inputPolProcessID int not null,
-	inputPollutantID smallint not null,
-	inputProcessID smallint not null,
-	index InputChainedToIndex (
-		inputPollutantID,
-		inputProcessID
+create table if not exists atratiogas1chainedto (
+	outputpolprocessid int not null,
+	outputpollutantid smallint not null,
+	outputprocessid smallint not null,
+	inputpolprocessid int not null,
+	inputpollutantid smallint not null,
+	inputprocessid smallint not null,
+	index inputchainedtoindex (
+		inputpollutantid,
+		inputprocessid
 	),
-	index InputChainedToProcessIndex (
-		inputProcessID
+	index inputchainedtoprocessindex (
+		inputprocessid
 	),
-	index OutputChainedToPolProcessIndex (
-		outputPolProcessID
+	index outputchainedtopolprocessindex (
+		outputpolprocessid
 	),
-	index InputOutputChainedToIndex (
-		outputPolProcessID,
-		inputPolProcessID
+	index inputoutputchainedtoindex (
+		outputpolprocessid,
+		inputpolprocessid
 	),
-	index InputOutputChainedToIndex2 (
-		inputPolProcessID,
-		outputPolProcessID
+	index inputoutputchainedtoindex2 (
+		inputpolprocessid,
+		outputpolprocessid
 	),
 	key (
-		inputPollutantID,
-		inputProcessID,
-		inputPolProcessID,
-		outputPolProcessID
+		inputpollutantid,
+		inputprocessid,
+		inputpolprocessid,
+		outputpolprocessid
 	)
-) Engine=MEMORY;
+) engine=memory;
 
-CREATE TABLE IF NOT EXISTS ATRatio (
-  fuelTypeID smallint(6) NOT NULL,
-  fuelFormulationID smallint(6) NOT NULL,
-  polProcessID int NOT NULL,
-  minModelYearID smallint(6) NOT NULL,
-  maxModelYearID smallint(6) NOT NULL,
-  ageID smallint(6) NOT NULL,
-  monthID smallint(6) NOT NULL,
-  atRatio double DEFAULT NULL,
-  modelYearID smallint(6) NOT NULL,
-  PRIMARY KEY (fuelTypeID,fuelFormulationID,polProcessID,minModelYearID,maxModelYearID,ageID,monthID),
-  KEY atratio_key1 (fuelFormulationID,polProcessID,minModelYearID),
-  KEY atratio_key2 (polProcessID,fuelTypeID,monthID,minModelYearID,ageID,maxModelYearID,fuelFormulationID),
-  KEY atratio_key3 (polProcessID,fuelTypeID,monthID,modelYearID,minModelYearID,maxModelYearID,fuelFormulationID)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
+create table if not exists atratio (
+  fueltypeid smallint(6) not null,
+  fuelformulationid smallint(6) not null,
+  polprocessid int not null,
+  minmodelyearid smallint(6) not null,
+  maxmodelyearid smallint(6) not null,
+  ageid smallint(6) not null,
+  monthid smallint(6) not null,
+  atratio double default null,
+  modelyearid smallint(6) not null,
+  primary key (fueltypeid,fuelformulationid,polprocessid,minmodelyearid,maxmodelyearid,ageid,monthid),
+  key atratio_key1 (fuelformulationid,polprocessid,minmodelyearid),
+  key atratio_key2 (polprocessid,fueltypeid,monthid,minmodelyearid,ageid,maxmodelyearid,fuelformulationid),
+  key atratio_key3 (polprocessid,fueltypeid,monthid,modelyearid,minmodelyearid,maxmodelyearid,fuelformulationid)
+) engine=myisam default charset=latin1 delay_key_write=1;
 
-TRUNCATE TABLE ATRatio;
+truncate table atratio;
 
-CREATE TABLE IF NOT EXISTS AT1FuelSupply (
-  countyID int(11) NOT NULL,
-  monthID smallint(6) NOT NULL,
-  fuelFormulationID smallint(6) NOT NULL,
-  marketShare double default NULL,
-  yearID smallint(6) NOT NULL,
-  fuelTypeID smallint(6) NOT NULL,
-  KEY (monthID,fuelTypeID,fuelFormulationID,marketShare)
-) Engine=MEMORY;
+create table if not exists at1fuelsupply (
+  countyid int(11) not null,
+  monthid smallint(6) not null,
+  fuelformulationid smallint(6) not null,
+  marketshare double default null,
+  yearid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  key (monthid,fueltypeid,fuelformulationid,marketshare)
+) engine=memory;
 
-TRUNCATE TABLE AT1FuelSupply;
+truncate table at1fuelsupply;
 
-CREATE TABLE IF NOT EXISTS AT1PollutantProcessModelYear (
-  polProcessID int NOT NULL default '0',
-  modelYearID smallint(6) NOT NULL default '0',
-  fuelMYGroupID int(11) default NULL,
-  key (polProcessID),
-  key (modelYearID),
-  key (fuelMYGroupID),
-  key (polProcessID, modelYearID, fuelMYGroupID)
-) Engine=MEMORY;
+create table if not exists at1pollutantprocessmodelyear (
+  polprocessid int not null default '0',
+  modelyearid smallint(6) not null default '0',
+  fuelmygroupid int(11) default null,
+  key (polprocessid),
+  key (modelyearid),
+  key (fuelmygroupid),
+  key (polprocessid, modelyearid, fuelmygroupid)
+) engine=memory;
 
-TRUNCATE TABLE AT1PollutantProcessModelYear;
+truncate table at1pollutantprocessmodelyear;
 
--- End Section UseATRatioGas1
+-- end section useatratiogas1
 
--- Section UseATRatioGas2
-drop table if exists ATRatioGas2ChainedTo;
+-- section useatratiogas2
+drop table if exists atratiogas2chainedto;
 
-CREATE TABLE IF NOT EXISTS ATRatioGas2ChainedTo (
-	outputPolProcessID int not null,
-	outputPollutantID smallint not null,
-	outputProcessID smallint not null,
-	inputPolProcessID int not null,
-	inputPollutantID smallint not null,
-	inputProcessID smallint not null,
-	index InputChainedToIndex (
-		inputPollutantID,
-		inputProcessID
+create table if not exists atratiogas2chainedto (
+	outputpolprocessid int not null,
+	outputpollutantid smallint not null,
+	outputprocessid smallint not null,
+	inputpolprocessid int not null,
+	inputpollutantid smallint not null,
+	inputprocessid smallint not null,
+	index inputchainedtoindex (
+		inputpollutantid,
+		inputprocessid
 	),
-	index InputChainedToProcessIndex (
-		inputProcessID
+	index inputchainedtoprocessindex (
+		inputprocessid
 	),
-	index OutputChainedToPolProcessIndex (
-		outputPolProcessID
+	index outputchainedtopolprocessindex (
+		outputpolprocessid
 	),
-	index InputOutputChainedToIndex (
-		outputPolProcessID,
-		inputPolProcessID
+	index inputoutputchainedtoindex (
+		outputpolprocessid,
+		inputpolprocessid
 	),
-	index InputOutputChainedToIndex2 (
-		inputPolProcessID,
-		outputPolProcessID
+	index inputoutputchainedtoindex2 (
+		inputpolprocessid,
+		outputpolprocessid
 	),
 	key (
-		inputPollutantID,
-		inputProcessID,
-		inputPolProcessID,
-		outputPolProcessID
+		inputpollutantid,
+		inputprocessid,
+		inputpolprocessid,
+		outputpolprocessid
 	)
-) Engine=MEMORY;
+) engine=memory;
 
-##create.ATRatioGas2##;
-TRUNCATE TABLE ATRatioGas2;
+##create.atratiogas2##;
+truncate table atratiogas2;
 
-CREATE TABLE IF NOT EXISTS AT2FuelSupply (
-  fuelRegionID int(11) NOT NULL,
-  monthID smallint(6) NOT NULL,
-  fuelSubtypeID smallint(6) NOT NULL,
-  marketShare float default NULL,
-  yearID smallint(6) NOT NULL,
-  fuelTypeID smallint(6) NOT NULL,
-  KEY (countyID,yearID,monthID,fuelTypeID,fuelSubtypeID),
-  KEY (countyID,yearID,monthID,fuelSubtypeID)
-) Engine=MEMORY;
+create table if not exists at2fuelsupply (
+  fuelregionid int(11) not null,
+  monthid smallint(6) not null,
+  fuelsubtypeid smallint(6) not null,
+  marketshare float default null,
+  yearid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  key (countyid,yearid,monthid,fueltypeid,fuelsubtypeid),
+  key (countyid,yearid,monthid,fuelsubtypeid)
+) engine=memory;
 
-TRUNCATE TABLE AT2FuelSupply;
--- End Section UseATRatioGas2
+truncate table at2fuelsupply;
+-- end section useatratiogas2
 
--- Section UseATRatioNonGas
-drop table if exists ATRatioNonGasChainedTo;
+-- section useatrationongas
+drop table if exists atrationongaschainedto;
 
-CREATE TABLE IF NOT EXISTS ATRatioNonGasChainedTo (
-	outputPolProcessID int not null,
-	outputPollutantID smallint not null,
-	outputProcessID smallint not null,
-	inputPolProcessID int not null,
-	inputPollutantID smallint not null,
-	inputProcessID smallint not null,
-	index InputChainedToIndex (
-		inputPollutantID,
-		inputProcessID
+create table if not exists atrationongaschainedto (
+	outputpolprocessid int not null,
+	outputpollutantid smallint not null,
+	outputprocessid smallint not null,
+	inputpolprocessid int not null,
+	inputpollutantid smallint not null,
+	inputprocessid smallint not null,
+	index inputchainedtoindex (
+		inputpollutantid,
+		inputprocessid
 	),
-	index InputChainedToProcessIndex (
-		inputProcessID
+	index inputchainedtoprocessindex (
+		inputprocessid
 	),
-	index OutputChainedToPolProcessIndex (
-		outputPolProcessID
+	index outputchainedtopolprocessindex (
+		outputpolprocessid
 	),
-	index InputOutputChainedToIndex (
-		outputPolProcessID,
-		inputPolProcessID
+	index inputoutputchainedtoindex (
+		outputpolprocessid,
+		inputpolprocessid
 	),
-	index InputOutputChainedToIndex2 (
-		inputPolProcessID,
-		outputPolProcessID
+	index inputoutputchainedtoindex2 (
+		inputpolprocessid,
+		outputpolprocessid
 	),
 	key (
-		inputPollutantID,
-		inputProcessID,
-		inputPolProcessID,
-		outputPolProcessID
+		inputpollutantid,
+		inputprocessid,
+		inputpolprocessid,
+		outputpolprocessid
 	)
-) Engine=MEMORY;
+) engine=memory;
 
-CREATE TABLE ATRatioNonGas (
-  polProcessID int NOT NULL DEFAULT '0',
-  sourceTypeID smallint(6) NOT NULL DEFAULT '0',
-  fuelSubtypeID smallint(6) NOT NULL DEFAULT '0',
-  modelYearID smallint(6) NOT NULL DEFAULT '0',
-  ATRatio double DEFAULT NULL,
-  PRIMARY KEY (polProcessID,sourceTypeID,fuelSubtypeID,modelYearID),
-  KEY (polProcessID,sourceTypeID,modelYearID,fuelSubtypeID)
+create table atrationongas (
+  polprocessid int not null default '0',
+  sourcetypeid smallint(6) not null default '0',
+  fuelsubtypeid smallint(6) not null default '0',
+  modelyearid smallint(6) not null default '0',
+  atratio double default null,
+  primary key (polprocessid,sourcetypeid,fuelsubtypeid,modelyearid),
+  key (polprocessid,sourcetypeid,modelyearid,fuelsubtypeid)
 );
 
-TRUNCATE TABLE ATRatioNonGas;
+truncate table atrationongas;
 
-CREATE TABLE IF NOT EXISTS ATNonGasFuelSupply (
-  countyID int(11) NOT NULL,
-  monthID smallint(6) NOT NULL,
-  fuelFormulationID smallint(6) NOT NULL,
-  marketShare float default NULL,
-  yearID smallint(6) NOT NULL,
-  fuelTypeID smallint(6) NOT NULL,
-  fuelSubtypeID smallint(6) NOT NULL,
-  KEY (countyID,yearID,monthID,fuelTypeID,fuelSubtypeID),
-  KEY (countyID,yearID,monthID,fuelSubtypeID)
+create table if not exists atnongasfuelsupply (
+  countyid int(11) not null,
+  monthid smallint(6) not null,
+  fuelformulationid smallint(6) not null,
+  marketshare float default null,
+  yearid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  fuelsubtypeid smallint(6) not null,
+  key (countyid,yearid,monthid,fueltypeid,fuelsubtypeid),
+  key (countyid,yearid,monthid,fuelsubtypeid)
 );
 
-TRUNCATE TABLE ATNonGasFuelSupply;
--- End Section UseATRatioNonGas
+truncate table atnongasfuelsupply;
+-- end section useatrationongas
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
+-- section extract data
 
-cache SELECT monthID, monthGroupID
-INTO OUTFILE '##ATMonthGroup##'
-FROM monthOfAnyYear
-WHERE (##context.monthID## <= 0 OR monthID = ##context.monthID##);
+cache select monthid, monthgroupid
+into outfile '##atmonthgroup##'
+from monthofanyyear
+where (##context.monthid## <= 0 or monthid = ##context.monthid##);
 
--- Section UseMinorHAPRatio
+-- section useminorhapratio
 
--- minorHAPRatio has fuelSubtypeID in the execution database, but the version
+-- minorhapratio has fuelsubtypeid in the execution database, but the version
 -- submitted to the calculator has been joined to the fuel supply and weighted
 -- by the fuel formulation market share.
 
-cache select ppa.processID, ppa.pollutantID as outputPollutantID, fuelTypeID, modelYearID, monthID, sum(atRatio*marketShare) as atRatio
-into outfile '##minorHAPRatio##'
-from minorHAPRatio r
-inner join pollutantProcessAssoc ppa using (polProcessID)
-inner join modelYear my on (
-	MYMAP(modelYearID) >= round(modelYearGroupID/10000,0)
-	and MYMAP(modelYearID) <= mod(modelYearGroupID,10000)
-	and modelYearID <= ##context.year##
-	and modelYearID >= ##context.year## - 30
+cache select ppa.processid, ppa.pollutantid as outputpollutantid, fueltypeid, modelyearid, monthid, sum(atratio*marketshare) as atratio
+into outfile '##minorhapratio##'
+from minorhapratio r
+inner join pollutantprocessassoc ppa using (polprocessid)
+inner join modelyear my on (
+	mymap(modelyearid) >= round(modelyeargroupid/10000,0)
+	and mymap(modelyearid) <= mod(modelyeargroupid,10000)
+	and modelyearid <= ##context.year##
+	and modelyearid >= ##context.year## - 30
 )
-inner join fuelFormulation ff using (fuelSubtypeID)
-inner join fuelSupply fs on (
-	fs.fuelRegionID=##context.fuelRegionID##
-	and fuelYearID=(select fuelYearID from year where yearID=##context.year##)
-	and fs.fuelFormulationID=ff.fuelFormulationID
+inner join fuelformulation ff using (fuelsubtypeid)
+inner join fuelsupply fs on (
+	fs.fuelregionid=##context.fuelregionid##
+	and fuelyearid=(select fuelyearid from year where yearid=##context.year##)
+	and fs.fuelformulationid=ff.fuelformulationid
 )
-inner join monthOfAnyYear m on (
-	m.monthGroupID=fs.monthGroupID
-	and (##context.monthID## <= 0 OR monthID = ##context.monthID##)
+inner join monthofanyyear m on (
+	m.monthgroupid=fs.monthgroupid
+	and (##context.monthid## <= 0 or monthid = ##context.monthid##)
 )
-where polProcessID in (##outputMinorHAPRatio##)
-group by ppa.polProcessID, fuelTypeID, modelYearID, monthID;
+where polprocessid in (##outputminorhapratio##)
+group by ppa.polprocessid, fueltypeid, modelyearid, monthid;
 
-cache select ppa.processID, ppa.pollutantID as outputPollutantID, fuelSubTypeID, modelYearID, atRatio
-into outfile '##minorHAPRatioGo##'
-from minorHAPRatio r
-inner join pollutantProcessAssoc ppa using (polProcessID)
-inner join modelYear my on (
-	MYMAP(modelYearID) >= round(modelYearGroupID/10000,0)
-	and MYMAP(modelYearID) <= mod(modelYearGroupID,10000)
-	and modelYearID <= ##context.year##
-	and modelYearID >= ##context.year## - 30
+cache select ppa.processid, ppa.pollutantid as outputpollutantid, fuelsubtypeid, modelyearid, atratio
+into outfile '##minorhapratiogo##'
+from minorhapratio r
+inner join pollutantprocessassoc ppa using (polprocessid)
+inner join modelyear my on (
+	mymap(modelyearid) >= round(modelyeargroupid/10000,0)
+	and mymap(modelyearid) <= mod(modelyeargroupid,10000)
+	and modelyearid <= ##context.year##
+	and modelyearid >= ##context.year## - 30
 )
-where polProcessID in (##outputMinorHAPRatio##);
--- End Section UseMinorHAPRatio
+where polprocessid in (##outputminorhapratio##);
+-- end section useminorhapratio
 
--- Section UsePAHGasRatio
-cache select ppa.processID, ppa.pollutantID as outputPollutantID, fuelTypeID, modelYearID, atRatio
-into outfile '##pahGasRatio##'
-from pahGasRatio r
-inner join pollutantProcessAssoc ppa using (polProcessID)
-inner join modelYear my on (
-	MYMAP(modelYearID) >= round(modelYearGroupID/10000,0)
-	and MYMAP(modelYearID) <= mod(modelYearGroupID,10000)
-	and modelYearID <= ##context.year##
-	and modelYearID >= ##context.year## - 30
+-- section usepahgasratio
+cache select ppa.processid, ppa.pollutantid as outputpollutantid, fueltypeid, modelyearid, atratio
+into outfile '##pahgasratio##'
+from pahgasratio r
+inner join pollutantprocessassoc ppa using (polprocessid)
+inner join modelyear my on (
+	mymap(modelyearid) >= round(modelyeargroupid/10000,0)
+	and mymap(modelyearid) <= mod(modelyeargroupid,10000)
+	and modelyearid <= ##context.year##
+	and modelyearid >= ##context.year## - 30
 )
-where polProcessID in (##outputPAHGasRatio##);
--- End Section UsePAHGasRatio
+where polprocessid in (##outputpahgasratio##);
+-- end section usepahgasratio
 
--- Section UsePAHParticleRatio
-cache select ppa.processID, ppa.pollutantID as outputPollutantID, fuelTypeID, modelYearID, atRatio
-into outfile '##pahParticleRatio##'
-from pahParticleRatio r
-inner join pollutantProcessAssoc ppa using (polProcessID)
-inner join modelYear my on (
-	MYMAP(modelYearID) >= round(modelYearGroupID/10000,0)
-	and MYMAP(modelYearID) <= mod(modelYearGroupID,10000)
-	and modelYearID <= ##context.year##
-	and modelYearID >= ##context.year## - 30
+-- section usepahparticleratio
+cache select ppa.processid, ppa.pollutantid as outputpollutantid, fueltypeid, modelyearid, atratio
+into outfile '##pahparticleratio##'
+from pahparticleratio r
+inner join pollutantprocessassoc ppa using (polprocessid)
+inner join modelyear my on (
+	mymap(modelyearid) >= round(modelyeargroupid/10000,0)
+	and mymap(modelyearid) <= mod(modelyeargroupid,10000)
+	and modelyearid <= ##context.year##
+	and modelyearid >= ##context.year## - 30
 )
-where polProcessID in (##outputPAHParticleRatio##);
--- End Section UsePAHParticleRatio
+where polprocessid in (##outputpahparticleratio##);
+-- end section usepahparticleratio
 
--- Section UseATRatioGas1
-cache SELECT DISTINCT
-	ATRatio.fuelTypeID,
-	ATRatio.fuelFormulationID,
-	ATRatio.polProcessID,
-	MYRMAP(ATRatio.minModelYearID) as minModelYearID,
-	MYRMAP(ATRatio.maxModelYearID) as maxModelYearID,
-	ATRatio.ageID,
-	MonthOfAnyYear.monthID,
-	ATRatio.atRatio,
-	(##context.year## - ATRatio.ageID) as modelYearID
-INTO OUTFILE '##ATRatio##'
-FROM ATRatio
-INNER JOIN FuelSupply ON (FuelSupply.fuelFormulationID = ATRatio.fuelFormulationID)
-INNER JOIN Year ON (FuelSupply.fuelYearID = Year.fuelYearID)
-INNER JOIN RunSpecMonthGroup ON (RunSpecMonthGroup.monthGroupID = FuelSupply.monthGroupID)
-INNER JOIN MonthOfAnyYear ON (MonthOfAnyYear.monthGroupID = RunSpecMonthGroup.monthGroupID)
-WHERE polProcessID in (##outputATRatioGas1##)
-AND fuelRegionID = ##context.fuelRegionID##
-AND yearID = ##context.year##
-AND minModelYearID <= MYMAP(##context.year## - ATRatio.ageID)
-AND maxModelYearID >= MYMAP(##context.year## - ATRatio.ageID);
+-- section useatratiogas1
+cache select distinct
+	atratio.fueltypeid,
+	atratio.fuelformulationid,
+	atratio.polprocessid,
+	myrmap(atratio.minmodelyearid) as minmodelyearid,
+	myrmap(atratio.maxmodelyearid) as maxmodelyearid,
+	atratio.ageid,
+	monthofanyyear.monthid,
+	atratio.atratio,
+	(##context.year## - atratio.ageid) as modelyearid
+into outfile '##atratio##'
+from atratio
+inner join fuelsupply on (fuelsupply.fuelformulationid = atratio.fuelformulationid)
+inner join year on (fuelsupply.fuelyearid = year.fuelyearid)
+inner join runspecmonthgroup on (runspecmonthgroup.monthgroupid = fuelsupply.monthgroupid)
+inner join monthofanyyear on (monthofanyyear.monthgroupid = runspecmonthgroup.monthgroupid)
+where polprocessid in (##outputatratiogas1##)
+and fuelregionid = ##context.fuelregionid##
+and yearid = ##context.year##
+and minmodelyearid <= mymap(##context.year## - atratio.ageid)
+and maxmodelyearid >= mymap(##context.year## - atratio.ageid);
 
-cache SELECT *
-INTO OUTFILE '##ATRatioGas1ChainedTo##'
-FROM RunSpecChainedTo
-WHERE outputPolProcessID in (##outputATRatioGas1##);
+cache select *
+into outfile '##atratiogas1chainedto##'
+from runspecchainedto
+where outputpolprocessid in (##outputatratiogas1##);
 
-cache SELECT ##context.iterLocation.countyRecordID## as countyID, MonthOfAnyYear.monthID, FuelSupply.fuelFormulationID, FuelSupply.marketShare, Year.yearID, FuelSubtype.fuelTypeID
-INTO OUTFILE '##AT1FuelSupply##'
-FROM FuelSupply
-INNER JOIN RunSpecMonthGroup ON (FuelSupply.monthGroupID = RunSpecMonthGroup.monthGroupID)
-INNER JOIN Year ON (FuelSupply.fuelYearID = Year.fuelYearID)
-INNER JOIN FuelFormulation ON (FuelFormulation.fuelFormulationID = FuelSupply.fuelFormulationID)
-INNER JOIN FuelSubtype ON (FuelSubtype.fuelSubtypeID = FuelFormulation.fuelSubtypeID)
-INNER JOIN MonthOfAnyYear ON (MonthOfAnyYear.monthGroupID = FuelSupply.monthGroupID)
-INNER JOIN RunSpecMonth ON (RunSpecMonth.monthID = MonthOfAnyYear.monthID)
-WHERE fuelRegionID = ##context.fuelRegionID##
-AND yearID = ##context.year##
-AND (##context.monthID## <= 0 OR RunSpecMonth.monthID = ##context.monthID##);
+cache select ##context.iterlocation.countyrecordid## as countyid, monthofanyyear.monthid, fuelsupply.fuelformulationid, fuelsupply.marketshare, year.yearid, fuelsubtype.fueltypeid
+into outfile '##at1fuelsupply##'
+from fuelsupply
+inner join runspecmonthgroup on (fuelsupply.monthgroupid = runspecmonthgroup.monthgroupid)
+inner join year on (fuelsupply.fuelyearid = year.fuelyearid)
+inner join fuelformulation on (fuelformulation.fuelformulationid = fuelsupply.fuelformulationid)
+inner join fuelsubtype on (fuelsubtype.fuelsubtypeid = fuelformulation.fuelsubtypeid)
+inner join monthofanyyear on (monthofanyyear.monthgroupid = fuelsupply.monthgroupid)
+inner join runspecmonth on (runspecmonth.monthid = monthofanyyear.monthid)
+where fuelregionid = ##context.fuelregionid##
+and yearid = ##context.year##
+and (##context.monthid## <= 0 or runspecmonth.monthid = ##context.monthid##);
 
-cache SELECT polProcessID, modelYearID, fuelMYGroupID INTO OUTFILE '##AT1PollutantProcessModelYear##'
-FROM PollutantProcessModelYear
-WHERE modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND polProcessID IN (##inputATRatioGas1##);
+cache select polprocessid, modelyearid, fuelmygroupid into outfile '##at1pollutantprocessmodelyear##'
+from pollutantprocessmodelyear
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and polprocessid in (##inputatratiogas1##);
 
--- End Section UseATRatioGas1
+-- end section useatratiogas1
 
--- Section UseATRatioGas2
-cache SELECT *
-INTO OUTFILE '##ATRatioGas2##'
-FROM ATRatioGas2
-WHERE polProcessID in (##outputATRatioGas2##);
+-- section useatratiogas2
+cache select *
+into outfile '##atratiogas2##'
+from atratiogas2
+where polprocessid in (##outputatratiogas2##);
 
-cache SELECT *
-INTO OUTFILE '##ATRatioGas2ChainedTo##'
-FROM RunSpecChainedTo
-WHERE outputPolProcessID in (##outputATRatioGas2##);
+cache select *
+into outfile '##atratiogas2chainedto##'
+from runspecchainedto
+where outputpolprocessid in (##outputatratiogas2##);
 
-cache SELECT ##context.iterLocation.countyRecordID## as countyID, MonthOfAnyYear.monthID, FuelSubtype.fuelSubtypeID, FuelSupply.marketShare, Year.yearID, FuelSubtype.fuelTypeID
-INTO OUTFILE '##AT2FuelSupply##'
-FROM FuelSupply
-INNER JOIN RunSpecMonthGroup ON (FuelSupply.monthGroupID = RunSpecMonthGroup.monthGroupID)
-INNER JOIN Year ON (FuelSupply.fuelYearID = Year.fuelYearID)
-INNER JOIN FuelFormulation ON (FuelFormulation.fuelFormulationID = FuelSupply.fuelFormulationID)
-INNER JOIN FuelSubtype ON (FuelSubtype.fuelSubtypeID = FuelFormulation.fuelSubtypeID)
-INNER JOIN MonthOfAnyYear ON (MonthOfAnyYear.monthGroupID = FuelSupply.monthGroupID)
-INNER JOIN RunSpecMonth ON (RunSpecMonth.monthID = MonthOfAnyYear.monthID)
-WHERE fuelRegionID = ##context.fuelRegionID##
-AND yearID = ##context.year##
-AND (##context.monthID## <= 0 OR RunSpecMonth.monthID = ##context.monthID##);
--- End Section UseATRatioGas2
+cache select ##context.iterlocation.countyrecordid## as countyid, monthofanyyear.monthid, fuelsubtype.fuelsubtypeid, fuelsupply.marketshare, year.yearid, fuelsubtype.fueltypeid
+into outfile '##at2fuelsupply##'
+from fuelsupply
+inner join runspecmonthgroup on (fuelsupply.monthgroupid = runspecmonthgroup.monthgroupid)
+inner join year on (fuelsupply.fuelyearid = year.fuelyearid)
+inner join fuelformulation on (fuelformulation.fuelformulationid = fuelsupply.fuelformulationid)
+inner join fuelsubtype on (fuelsubtype.fuelsubtypeid = fuelformulation.fuelsubtypeid)
+inner join monthofanyyear on (monthofanyyear.monthgroupid = fuelsupply.monthgroupid)
+inner join runspecmonth on (runspecmonth.monthid = monthofanyyear.monthid)
+where fuelregionid = ##context.fuelregionid##
+and yearid = ##context.year##
+and (##context.monthid## <= 0 or runspecmonth.monthid = ##context.monthid##);
+-- end section useatratiogas2
 
--- Section UseATRatioNonGas
-cache SELECT r.polProcessID, r.sourceTypeID, r.fuelSubtypeID, my.modelYearID, r.ATRatio
-INTO OUTFILE '##ATRatioNonGas##'
-FROM ATRatioNonGas r
-inner join modelYear my on (
-	MYMAP(modelYearID) >= round(modelYearGroupID/10000,0)
-	and MYMAP(modelYearID) <= mod(modelYearGroupID,10000)
-	and modelYearID <= ##context.year##
-	and modelYearID >= ##context.year## - 30
+-- section useatrationongas
+cache select r.polprocessid, r.sourcetypeid, r.fuelsubtypeid, my.modelyearid, r.atratio
+into outfile '##atrationongas##'
+from atrationongas r
+inner join modelyear my on (
+	mymap(modelyearid) >= round(modelyeargroupid/10000,0)
+	and mymap(modelyearid) <= mod(modelyeargroupid,10000)
+	and modelyearid <= ##context.year##
+	and modelyearid >= ##context.year## - 30
 )
-WHERE polProcessID in (##outputATRatioNonGas##);
+where polprocessid in (##outputatrationongas##);
 
-cache SELECT *
-INTO OUTFILE '##ATRatioNonGasChainedTo##'
-FROM RunSpecChainedTo
-WHERE outputPolProcessID in (##outputATRatioNonGas##);
+cache select *
+into outfile '##atrationongaschainedto##'
+from runspecchainedto
+where outputpolprocessid in (##outputatrationongas##);
 
-cache SELECT ##context.iterLocation.countyRecordID## as countyID, MonthOfAnyYear.monthID, FuelSupply.fuelFormulationID, FuelSupply.marketShare, Year.yearID, FuelSubtype.fuelTypeID, FuelSubtype.fuelSubtypeID
-INTO OUTFILE '##ATNonGasFuelSupply##'
-FROM FuelSupply
-INNER JOIN RunSpecMonthGroup ON (FuelSupply.monthGroupID = RunSpecMonthGroup.monthGroupID)
-INNER JOIN Year ON (FuelSupply.fuelYearID = Year.fuelYearID)
-INNER JOIN FuelFormulation ON (FuelFormulation.fuelFormulationID = FuelSupply.fuelFormulationID)
-INNER JOIN FuelSubtype ON (FuelSubtype.fuelSubtypeID = FuelFormulation.fuelSubtypeID)
-INNER JOIN MonthOfAnyYear ON (MonthOfAnyYear.monthGroupID = FuelSupply.monthGroupID)
-INNER JOIN RunSpecMonth ON (RunSpecMonth.monthID = MonthOfAnyYear.monthID)
-WHERE fuelRegionID = ##context.fuelRegionID##
-AND yearID = ##context.year##
-AND (##context.monthID## <= 0 OR RunSpecMonth.monthID = ##context.monthID##);
--- End Section UseATRatioNonGas
+cache select ##context.iterlocation.countyrecordid## as countyid, monthofanyyear.monthid, fuelsupply.fuelformulationid, fuelsupply.marketshare, year.yearid, fuelsubtype.fueltypeid, fuelsubtype.fuelsubtypeid
+into outfile '##atnongasfuelsupply##'
+from fuelsupply
+inner join runspecmonthgroup on (fuelsupply.monthgroupid = runspecmonthgroup.monthgroupid)
+inner join year on (fuelsupply.fuelyearid = year.fuelyearid)
+inner join fuelformulation on (fuelformulation.fuelformulationid = fuelsupply.fuelformulationid)
+inner join fuelsubtype on (fuelsubtype.fuelsubtypeid = fuelformulation.fuelsubtypeid)
+inner join monthofanyyear on (monthofanyyear.monthgroupid = fuelsupply.monthgroupid)
+inner join runspecmonth on (runspecmonth.monthid = monthofanyyear.monthid)
+where fuelregionid = ##context.fuelregionid##
+and yearid = ##context.year##
+and (##context.monthid## <= 0 or runspecmonth.monthid = ##context.monthid##);
+-- end section useatrationongas
 
--- End Section Extract Data
+-- end section extract data
 
--- Section Processing
+-- section processing
 
--- @algorithm create AirToxicsMOVESWorkerOutputTemp table
-drop table if exists AirToxicsMOVESWorkerOutputTemp;
-create table if not exists AirToxicsMOVESWorkerOutputTemp (
-	yearID               SMALLINT UNSIGNED NULL,
-	monthID              SMALLINT UNSIGNED NULL,
-	dayID                SMALLINT UNSIGNED NULL,
-	hourID               SMALLINT UNSIGNED NULL,
-	stateID              SMALLINT UNSIGNED NULL,
-	countyID             INTEGER UNSIGNED NULL,
-	zoneID               INTEGER UNSIGNED NULL,
-	linkID               INTEGER UNSIGNED NULL,
-	pollutantID          SMALLINT UNSIGNED NULL,
-	processID            SMALLINT UNSIGNED NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL,
-	regClassID			 SMALLINT UNSIGNED NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL,
-	modelYearID          SMALLINT UNSIGNED NULL,
-	roadTypeID           SMALLINT UNSIGNED NULL,
-	SCC                  CHAR(10) NULL,
-	emissionQuant        double NULL,
-	emissionRate		 double NULL,
-	key (yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,processID,sourceTypeID,fuelTypeID,modelYearID,roadTypeID,SCC)
+-- @algorithm create airtoxicsmovesworkeroutputtemp table
+drop table if exists airtoxicsmovesworkeroutputtemp;
+create table if not exists airtoxicsmovesworkeroutputtemp (
+	yearid               smallint unsigned null,
+	monthid              smallint unsigned null,
+	dayid                smallint unsigned null,
+	hourid               smallint unsigned null,
+	stateid              smallint unsigned null,
+	countyid             integer unsigned null,
+	zoneid               integer unsigned null,
+	linkid               integer unsigned null,
+	pollutantid          smallint unsigned null,
+	processid            smallint unsigned null,
+	sourcetypeid         smallint unsigned null,
+	regclassid			 smallint unsigned null,
+	fueltypeid           smallint unsigned null,
+	modelyearid          smallint unsigned null,
+	roadtypeid           smallint unsigned null,
+	scc                  char(10) null,
+	emissionquant        double null,
+	emissionrate		 double null,
+	key (yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,processid,sourcetypeid,fueltypeid,modelyearid,roadtypeid,scc)
 );
 
-CREATE INDEX MOVESWorkerOutput_A3 ON MOVESWorkerOutput (
-	pollutantID asc,
-	processID asc,
-	sourceTypeID asc,
-	yearID asc,
-	monthID asc,
-	fuelTypeID asc
+create index movesworkeroutput_a3 on movesworkeroutput (
+	pollutantid asc,
+	processid asc,
+	sourcetypeid asc,
+	yearid asc,
+	monthid asc,
+	fueltypeid asc
 );
 
--- Section UseMinorHAPRatio
+-- section useminorhapratio
 
--- @algorithm minor HAP emissions[outputPollutantID] = VOC (87) * ATRatio
-insert into AirToxicsMOVESWorkerOutputTemp (
-	monthID, modelYearID, yearID, fuelTypeID, dayID, hourID, stateID, countyID, 
-	zoneID, linkID, pollutantID, processID, sourceTypeID, regClassID, roadTypeID, SCC, 
-	emissionQuant, emissionRate)
+-- @algorithm minor hap emissions[outputpollutantid] = voc (87) * atratio
+insert into airtoxicsmovesworkeroutputtemp (
+	monthid, modelyearid, yearid, fueltypeid, dayid, hourid, stateid, countyid, 
+	zoneid, linkid, pollutantid, processid, sourcetypeid, regclassid, roadtypeid, scc, 
+	emissionquant, emissionrate)
 select
-   	mwo.monthID, mwo.modelYearID, mwo.yearID, mwo.fuelTypeID, mwo.dayID, mwo.hourID, mwo.stateID, mwo.countyID, 
-	mwo.zoneID, mwo.linkID,	r.outputPollutantID, mwo.processID, mwo.sourceTypeID, mwo.regClassID, mwo.roadTypeID, mwo.SCC,
-	r.atRatio*emissionQuant, r.atRatio*emissionRate
-from MOVESWorkerOutput mwo
-inner join minorHAPRatio r on (
-	r.processID = mwo.processID
-	and mwo.pollutantID = 87
-	and r.fuelTypeID = mwo.fuelTypeID
-	and r.modelYearID = mwo.modelYearID
-	and r.monthID = mwo.monthID
+   	mwo.monthid, mwo.modelyearid, mwo.yearid, mwo.fueltypeid, mwo.dayid, mwo.hourid, mwo.stateid, mwo.countyid, 
+	mwo.zoneid, mwo.linkid,	r.outputpollutantid, mwo.processid, mwo.sourcetypeid, mwo.regclassid, mwo.roadtypeid, mwo.scc,
+	r.atratio*emissionquant, r.atratio*emissionrate
+from movesworkeroutput mwo
+inner join minorhapratio r on (
+	r.processid = mwo.processid
+	and mwo.pollutantid = 87
+	and r.fueltypeid = mwo.fueltypeid
+	and r.modelyearid = mwo.modelyearid
+	and r.monthid = mwo.monthid
 );
 
--- End Section UseMinorHAPRatio
+-- end section useminorhapratio
 
--- Section UsePAHGasRatio
+-- section usepahgasratio
 
--- @algorithm PAH gas emissions[outputPollutantID] = VOC (87) * ATRatio
-insert into AirToxicsMOVESWorkerOutputTemp (
-	monthID, modelYearID, yearID, fuelTypeID, dayID, hourID, stateID, countyID, 
-	zoneID, linkID, pollutantID, processID, sourceTypeID, regClassID, roadTypeID, SCC, 
-	emissionQuant, emissionRate)
+-- @algorithm pah gas emissions[outputpollutantid] = voc (87) * atratio
+insert into airtoxicsmovesworkeroutputtemp (
+	monthid, modelyearid, yearid, fueltypeid, dayid, hourid, stateid, countyid, 
+	zoneid, linkid, pollutantid, processid, sourcetypeid, regclassid, roadtypeid, scc, 
+	emissionquant, emissionrate)
 select
-   	mwo.monthID, mwo.modelYearID, mwo.yearID, mwo.fuelTypeID, mwo.dayID, mwo.hourID, mwo.stateID, mwo.countyID, 
-	mwo.zoneID, mwo.linkID,	r.outputPollutantID, mwo.processID, mwo.sourceTypeID, mwo.regClassID, mwo.roadTypeID, mwo.SCC,
-	r.atRatio*emissionQuant, r.atRatio*emissionRate
-from MOVESWorkerOutput mwo
-inner join pahGasRatio r on (
-	r.processID = mwo.processID
-	and mwo.pollutantID = 87
-	and r.fuelTypeID = mwo.fuelTypeID
-	and r.modelYearID = mwo.modelYearID
+   	mwo.monthid, mwo.modelyearid, mwo.yearid, mwo.fueltypeid, mwo.dayid, mwo.hourid, mwo.stateid, mwo.countyid, 
+	mwo.zoneid, mwo.linkid,	r.outputpollutantid, mwo.processid, mwo.sourcetypeid, mwo.regclassid, mwo.roadtypeid, mwo.scc,
+	r.atratio*emissionquant, r.atratio*emissionrate
+from movesworkeroutput mwo
+inner join pahgasratio r on (
+	r.processid = mwo.processid
+	and mwo.pollutantid = 87
+	and r.fueltypeid = mwo.fueltypeid
+	and r.modelyearid = mwo.modelyearid
 );
 
--- End Section UsePAHGasRatio
+-- end section usepahgasratio
 
--- Section UsePAHParticleRatio
+-- section usepahparticleratio
 
--- @algorithm PAH particle emissions[outputPollutantID] = Organic Carbon (111) * ATRatio
-insert into AirToxicsMOVESWorkerOutputTemp (
-	monthID, modelYearID, yearID, fuelTypeID, dayID, hourID, stateID, countyID, 
-	zoneID, linkID, pollutantID, processID, sourceTypeID, regClassID, roadTypeID, SCC, 
-	emissionQuant, emissionRate)
+-- @algorithm pah particle emissions[outputpollutantid] = organic carbon (111) * atratio
+insert into airtoxicsmovesworkeroutputtemp (
+	monthid, modelyearid, yearid, fueltypeid, dayid, hourid, stateid, countyid, 
+	zoneid, linkid, pollutantid, processid, sourcetypeid, regclassid, roadtypeid, scc, 
+	emissionquant, emissionrate)
 select
-   	mwo.monthID, mwo.modelYearID, mwo.yearID, mwo.fuelTypeID, mwo.dayID, mwo.hourID, mwo.stateID, mwo.countyID, 
-	mwo.zoneID, mwo.linkID,	r.outputPollutantID, mwo.processID, mwo.sourceTypeID, mwo.regClassID, mwo.roadTypeID, mwo.SCC,
-	r.atRatio*emissionQuant, r.atRatio*emissionRate
-from MOVESWorkerOutput mwo
-inner join pahParticleRatio r on (
-	r.processID = mwo.processID
-	and mwo.pollutantID = 111
-	and r.fuelTypeID = mwo.fuelTypeID
-	and r.modelYearID = mwo.modelYearID
+   	mwo.monthid, mwo.modelyearid, mwo.yearid, mwo.fueltypeid, mwo.dayid, mwo.hourid, mwo.stateid, mwo.countyid, 
+	mwo.zoneid, mwo.linkid,	r.outputpollutantid, mwo.processid, mwo.sourcetypeid, mwo.regclassid, mwo.roadtypeid, mwo.scc,
+	r.atratio*emissionquant, r.atratio*emissionrate
+from movesworkeroutput mwo
+inner join pahparticleratio r on (
+	r.processid = mwo.processid
+	and mwo.pollutantid = 111
+	and r.fueltypeid = mwo.fueltypeid
+	and r.modelyearid = mwo.modelyearid
 );
 
--- End Section UsePAHParticleRatio
+-- end section usepahparticleratio
 
--- Section UseATRatioGas1
+-- section useatratiogas1
 
--- @algorithm emissions[outputPollutantID] = emissions[inputPollutantID] * marketShare * ATRatio
--- @input FuelSupply
--- @input PollutantProcessAssoc
-insert into AirToxicsMOVESWorkerOutputTemp (
-	monthID, modelYearID, yearID, fuelTypeID, dayID, hourID, stateID, countyID, 
-	zoneID, linkID, pollutantID, processID, sourceTypeID, regClassID, roadTypeID, SCC, 
-	emissionQuant, emissionRate)
+-- @algorithm emissions[outputpollutantid] = emissions[inputpollutantid] * marketshare * atratio
+-- @input fuelsupply
+-- @input pollutantprocessassoc
+insert into airtoxicsmovesworkeroutputtemp (
+	monthid, modelyearid, yearid, fueltypeid, dayid, hourid, stateid, countyid, 
+	zoneid, linkid, pollutantid, processid, sourcetypeid, regclassid, roadtypeid, scc, 
+	emissionquant, emissionrate)
 select
-   	mwo.monthID, mwo.modelYearID, mwo.yearID, mwo.fuelTypeID, mwo.dayID, mwo.hourID, mwo.stateID, mwo.countyID, 
-	mwo.zoneID, mwo.linkID,	ct.outputPollutantID, ct.outputProcessID, mwo.sourceTypeID, mwo.regClassID, mwo.roadTypeID, mwo.SCC,
-	r.ATRatio*fs.marketShare*emissionQuant, r.ATRatio*fs.marketShare*emissionRate
-from MOVESWorkerOutput mwo
-inner join ATRatioGas1ChainedTo ct on (
-	ct.inputPollutantID=mwo.pollutantID
-	and ct.inputProcessID=mwo.processID)
-inner join ATRatio r on (
-	r.minModelYearID <= mwo.modelYearID and r.maxModelYearID >= mwo.modelYearID
-	and r.modelYearID = mwo.modelYearID
-	and r.fuelTypeID=mwo.fuelTypeID
-	and r.polProcessID=ct.outputPolProcessID
-	and r.monthID = mwo.monthID
+   	mwo.monthid, mwo.modelyearid, mwo.yearid, mwo.fueltypeid, mwo.dayid, mwo.hourid, mwo.stateid, mwo.countyid, 
+	mwo.zoneid, mwo.linkid,	ct.outputpollutantid, ct.outputprocessid, mwo.sourcetypeid, mwo.regclassid, mwo.roadtypeid, mwo.scc,
+	r.atratio*fs.marketshare*emissionquant, r.atratio*fs.marketshare*emissionrate
+from movesworkeroutput mwo
+inner join atratiogas1chainedto ct on (
+	ct.inputpollutantid=mwo.pollutantid
+	and ct.inputprocessid=mwo.processid)
+inner join atratio r on (
+	r.minmodelyearid <= mwo.modelyearid and r.maxmodelyearid >= mwo.modelyearid
+	and r.modelyearid = mwo.modelyearid
+	and r.fueltypeid=mwo.fueltypeid
+	and r.polprocessid=ct.outputpolprocessid
+	and r.monthid = mwo.monthid
 	)
-inner join AT1FuelSupply fs on (
-	fs.monthID = mwo.monthID
-	and fs.fuelTypeID = mwo.fuelTypeID
-	and fs.fuelFormulationID = r.fuelFormulationID
+inner join at1fuelsupply fs on (
+	fs.monthid = mwo.monthid
+	and fs.fueltypeid = mwo.fueltypeid
+	and fs.fuelformulationid = r.fuelformulationid
 );
 
--- End Section UseATRatioGas1
+-- end section useatratiogas1
 
--- Section UseATRatioGas2
-create index ATRatioGas2ChainedTo_A1 on ATRatioGas2ChainedTo (
-	inputPollutantID asc,
-	inputProcessID asc,
-	outputPolProcessID asc
+-- section useatratiogas2
+create index atratiogas2chainedto_a1 on atratiogas2chainedto (
+	inputpollutantid asc,
+	inputprocessid asc,
+	outputpolprocessid asc
 );
 
--- create index AT2FuelSupply_A1 on AT2FuelSupply (
--- 	yearID asc,
--- 	monthID asc,
--- 	fuelSubtypeID asc,
--- 	countyID asc,
--- 	fuelTypeID asc
+-- create index at2fuelsupply_a1 on at2fuelsupply (
+-- 	yearid asc,
+-- 	monthid asc,
+-- 	fuelsubtypeid asc,
+-- 	countyid asc,
+-- 	fueltypeid asc
 -- );
 
--- insert into AirToxicsMOVESWorkerOutputTemp (
--- yearID, monthID, dayID, hourID, stateID, countyID, zoneID, linkID, pollutantID, processID,
--- sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC, emissionQuant, emissionRate)
+-- insert into airtoxicsmovesworkeroutputtemp (
+-- yearid, monthid, dayid, hourid, stateid, countyid, zoneid, linkid, pollutantid, processid,
+-- sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc, emissionquant, emissionrate)
 -- select
---     mwo.yearID, mwo.monthID, mwo.dayID, mwo.hourID, mwo.stateID, mwo.countyID, mwo.zoneID, mwo.linkID,
--- 	ct.outputPollutantID,
--- 	ct.outputProcessID,
--- 	mwo.sourceTypeID, mwo.regClassID, mwo.fuelTypeID, mwo.modelYearID, mwo.roadTypeID, mwo.SCC,
--- 	r.ATRatio*fs.marketShare*emissionQuant, r.ATRatio*fs.marketShare*emissionRate
--- from MOVESWorkerOutput mwo
--- inner join ATRatioGas2ChainedTo ct on (
--- 	ct.inputPollutantID=mwo.pollutantID
--- 	and ct.inputProcessID=mwo.processID)
--- inner join ATRatioGas2 r on (
--- 	r.polProcessID=ct.outputPolProcessID
--- 	and r.sourceTypeID=mwo.sourceTypeID)
--- inner join AT2FuelSupply fs on (
--- 	fs.yearID = mwo.yearID
--- 	and fs.monthID = mwo.monthID
--- 	and fs.fuelSubtypeID = r.fuelSubtypeID
--- 	and fs.countyID = # # context.iterLocation . countyRecordID # #
--- 	and fs.fuelTypeID = mwo.fuelTypeID);
+--     mwo.yearid, mwo.monthid, mwo.dayid, mwo.hourid, mwo.stateid, mwo.countyid, mwo.zoneid, mwo.linkid,
+-- 	ct.outputpollutantid,
+-- 	ct.outputprocessid,
+-- 	mwo.sourcetypeid, mwo.regclassid, mwo.fueltypeid, mwo.modelyearid, mwo.roadtypeid, mwo.scc,
+-- 	r.atratio*fs.marketshare*emissionquant, r.atratio*fs.marketshare*emissionrate
+-- from movesworkeroutput mwo
+-- inner join atratiogas2chainedto ct on (
+-- 	ct.inputpollutantid=mwo.pollutantid
+-- 	and ct.inputprocessid=mwo.processid)
+-- inner join atratiogas2 r on (
+-- 	r.polprocessid=ct.outputpolprocessid
+-- 	and r.sourcetypeid=mwo.sourcetypeid)
+-- inner join at2fuelsupply fs on (
+-- 	fs.yearid = mwo.yearid
+-- 	and fs.monthid = mwo.monthid
+-- 	and fs.fuelsubtypeid = r.fuelsubtypeid
+-- 	and fs.countyid = # # context.iterlocation . countyrecordid # #
+-- 	and fs.fueltypeid = mwo.fueltypeid);
 
-alter table ATRatioGas2ChainedTo add key (inputPollutantID, inputProcessID, outputPolProcessID, outputPollutantID, outputProcessID);
-analyze table ATRatioGas2ChainedTo;
+alter table atratiogas2chainedto add key (inputpollutantid, inputprocessid, outputpolprocessid, outputpollutantid, outputprocessid);
+analyze table atratiogas2chainedto;
 
-alter table ATRatioGas2 add key (polProcessID, sourceTypeID, fuelSubtypeID, ATRatio);
-alter table ATRatioGas2 add key (sourceTypeID, fuelSubtypeID, polProcessID, ATRatio);
-alter table ATRatioGas2 add key (fuelSubtypeID, polProcessID, sourceTypeID, ATRatio);
-alter table ATRatioGas2 add key (polProcessID, fuelSubtypeID, sourceTypeID, ATRatio);
-alter table ATRatioGas2 add key (sourceTypeID, polProcessID, fuelSubtypeID, ATRatio);
-alter table ATRatioGas2 add key (fuelSubtypeID, sourceTypeID, polProcessID, ATRatio);
-analyze table ATRatioGas2;
+alter table atratiogas2 add key (polprocessid, sourcetypeid, fuelsubtypeid, atratio);
+alter table atratiogas2 add key (sourcetypeid, fuelsubtypeid, polprocessid, atratio);
+alter table atratiogas2 add key (fuelsubtypeid, polprocessid, sourcetypeid, atratio);
+alter table atratiogas2 add key (polprocessid, fuelsubtypeid, sourcetypeid, atratio);
+alter table atratiogas2 add key (sourcetypeid, polprocessid, fuelsubtypeid, atratio);
+alter table atratiogas2 add key (fuelsubtypeid, sourcetypeid, polprocessid, atratio);
+analyze table atratiogas2;
 
-alter table AT2FuelSupply drop key countyID;
-alter table AT2FuelSupply drop key countyID_2;
-alter table AT2FuelSupply add key (yearID,monthID,countyID,fuelTypeID,fuelSubtypeID, marketShare);
-analyze table AT2FuelSupply;
+alter table at2fuelsupply drop key countyid;
+alter table at2fuelsupply drop key countyid_2;
+alter table at2fuelsupply add key (yearid,monthid,countyid,fueltypeid,fuelsubtypeid, marketshare);
+analyze table at2fuelsupply;
 
-drop table if exists AT2FuelSupplyRatioGas2;
+drop table if exists at2fuelsupplyratiogas2;
 
--- @algorithm marketShareATRatio[outputPollutantID] = marketShare * ATRatio
--- @input FuelSupply
--- @input PollutantProcessAssoc
-create table AT2FuelSupplyRatioGas2
-select ct.inputPollutantID, ct.inputProcessID, r.polProcessID, r.sourceTypeID,
-	fs.yearID, fs.monthID, fs.fuelTypeID, fs.marketShare*r.ATRatio as marketShareATRatio,
-	ct.outputPollutantID,
-	ct.outputProcessID
-from ATRatioGas2 r
-inner join AT2FuelSupply fs on (
-	fs.countyID = ##context.iterLocation.countyRecordID##
-	and fs.fuelSubtypeID = r.fuelSubtypeID)
-inner join ATRatioGas2ChainedTo ct on (
-	r.polProcessID=ct.outputPolProcessID);
+-- @algorithm marketshareatratio[outputpollutantid] = marketshare * atratio
+-- @input fuelsupply
+-- @input pollutantprocessassoc
+create table at2fuelsupplyratiogas2
+select ct.inputpollutantid, ct.inputprocessid, r.polprocessid, r.sourcetypeid,
+	fs.yearid, fs.monthid, fs.fueltypeid, fs.marketshare*r.atratio as marketshareatratio,
+	ct.outputpollutantid,
+	ct.outputprocessid
+from atratiogas2 r
+inner join at2fuelsupply fs on (
+	fs.countyid = ##context.iterlocation.countyrecordid##
+	and fs.fuelsubtypeid = r.fuelsubtypeid)
+inner join atratiogas2chainedto ct on (
+	r.polprocessid=ct.outputpolprocessid);
 
-alter table AT2FuelSupplyRatioGas2 add key (inputPollutantID, inputProcessID, fuelTypeID, sourceTypeID, yearID, monthID, outputPollutantID, outputProcessID, marketShareATRatio);
-analyze table AT2FuelSupplyRatioGas2;
+alter table at2fuelsupplyratiogas2 add key (inputpollutantid, inputprocessid, fueltypeid, sourcetypeid, yearid, monthid, outputpollutantid, outputprocessid, marketshareatratio);
+analyze table at2fuelsupplyratiogas2;
 
--- @algorithm emissions[outputPollutantID] = emissions[inputPollutantID] * marketShareATRatio[outputPollutantID]
-insert into AirToxicsMOVESWorkerOutputTemp (
-	yearID, monthID, dayID, hourID, stateID, countyID, zoneID, linkID, pollutantID, processID,
-	sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC, emissionQuant, emissionRate)
+-- @algorithm emissions[outputpollutantid] = emissions[inputpollutantid] * marketshareatratio[outputpollutantid]
+insert into airtoxicsmovesworkeroutputtemp (
+	yearid, monthid, dayid, hourid, stateid, countyid, zoneid, linkid, pollutantid, processid,
+	sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc, emissionquant, emissionrate)
 select
-    mwo.yearID, mwo.monthID, mwo.dayID, mwo.hourID, mwo.stateID, mwo.countyID, mwo.zoneID, mwo.linkID,
-	r.outputPollutantID,
-	r.outputProcessID,
-	mwo.sourceTypeID, mwo.regClassID, mwo.fuelTypeID, mwo.modelYearID, mwo.roadTypeID, mwo.SCC,
-	r.marketShareATRatio*emissionQuant, r.marketShareATRatio*emissionRate
-from MOVESWorkerOutput mwo
-inner join AT2FuelSupplyRatioGas2 r on (
-	r.inputPollutantID=mwo.pollutantID
-	and r.inputProcessID=mwo.processID
-	and r.sourceTypeID=mwo.sourceTypeID
-	and r.yearID = mwo.yearID
-	and r.monthID = mwo.monthID
-	and r.fuelTypeID = mwo.fuelTypeID);
--- End Section UseATRatioGas2
+    mwo.yearid, mwo.monthid, mwo.dayid, mwo.hourid, mwo.stateid, mwo.countyid, mwo.zoneid, mwo.linkid,
+	r.outputpollutantid,
+	r.outputprocessid,
+	mwo.sourcetypeid, mwo.regclassid, mwo.fueltypeid, mwo.modelyearid, mwo.roadtypeid, mwo.scc,
+	r.marketshareatratio*emissionquant, r.marketshareatratio*emissionrate
+from movesworkeroutput mwo
+inner join at2fuelsupplyratiogas2 r on (
+	r.inputpollutantid=mwo.pollutantid
+	and r.inputprocessid=mwo.processid
+	and r.sourcetypeid=mwo.sourcetypeid
+	and r.yearid = mwo.yearid
+	and r.monthid = mwo.monthid
+	and r.fueltypeid = mwo.fueltypeid);
+-- end section useatratiogas2
 
--- Section UseATRatioNonGas
-CREATE INDEX ATRatioNonGasChainedTo_A1 ON ATRatioNonGasChainedTo (
-	inputPollutantID asc,
-	inputProcessID asc,
-	outputPolProcessID asc
+-- section useatrationongas
+create index atrationongaschainedto_a1 on atrationongaschainedto (
+	inputpollutantid asc,
+	inputprocessid asc,
+	outputpolprocessid asc
 );
 
-CREATE INDEX ATNonGasFuelSupply_A1 ON ATNonGasFuelSupply (
-	yearID asc,
-	monthID asc,
-	fuelSubtypeID asc,
-	countyID asc, 
-	fuelTypeID asc 
+create index atnongasfuelsupply_a1 on atnongasfuelsupply (
+	yearid asc,
+	monthid asc,
+	fuelsubtypeid asc,
+	countyid asc, 
+	fueltypeid asc 
 );
 
--- @algorithm emissions[outputPollutantID] = emissions[inputPollutantID] * marketShare * ATRatio
--- @input FuelSupply
--- @input PollutantProcessAssoc
-insert into AirToxicsMOVESWorkerOutputTemp (
-	yearID, monthID, dayID, hourID, stateID, countyID, zoneID, linkID, pollutantID, processID,
-	sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC, emissionQuant, emissionRate)
+-- @algorithm emissions[outputpollutantid] = emissions[inputpollutantid] * marketshare * atratio
+-- @input fuelsupply
+-- @input pollutantprocessassoc
+insert into airtoxicsmovesworkeroutputtemp (
+	yearid, monthid, dayid, hourid, stateid, countyid, zoneid, linkid, pollutantid, processid,
+	sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc, emissionquant, emissionrate)
 select
-    mwo.yearID, mwo.monthID, mwo.dayID, mwo.hourID, mwo.stateID, mwo.countyID, mwo.zoneID, mwo.linkID,
-	ct.outputPollutantID,
-	ct.outputProcessID,
-	mwo.sourceTypeID, mwo.regClassID, mwo.fuelTypeID, mwo.modelYearID, mwo.roadTypeID, mwo.SCC,
-	r.ATRatio*fs.marketShare*emissionQuant, r.ATRatio*fs.marketShare*emissionRate
-from MOVESWorkerOutput mwo
-inner join ATRatioNonGasChainedTo ct on (
-	ct.inputPollutantID=mwo.pollutantID
-	and ct.inputProcessID=mwo.processID)
-inner join ATRatioNonGas r on (
-	r.polProcessID=ct.outputPolProcessID
-	and r.sourceTypeID=mwo.sourceTypeID
-	and r.modelYearID=mwo.modelYearID)
-inner join ATNonGasFuelSupply fs on (
-	fs.yearID = mwo.yearID
-	and fs.monthID = mwo.monthID
-	and fs.fuelSubtypeID = r.fuelSubtypeID
-	and fs.countyID = ##context.iterLocation.countyRecordID##
-	and fs.fuelTypeID = mwo.fuelTypeID);
+    mwo.yearid, mwo.monthid, mwo.dayid, mwo.hourid, mwo.stateid, mwo.countyid, mwo.zoneid, mwo.linkid,
+	ct.outputpollutantid,
+	ct.outputprocessid,
+	mwo.sourcetypeid, mwo.regclassid, mwo.fueltypeid, mwo.modelyearid, mwo.roadtypeid, mwo.scc,
+	r.atratio*fs.marketshare*emissionquant, r.atratio*fs.marketshare*emissionrate
+from movesworkeroutput mwo
+inner join atrationongaschainedto ct on (
+	ct.inputpollutantid=mwo.pollutantid
+	and ct.inputprocessid=mwo.processid)
+inner join atrationongas r on (
+	r.polprocessid=ct.outputpolprocessid
+	and r.sourcetypeid=mwo.sourcetypeid
+	and r.modelyearid=mwo.modelyearid)
+inner join atnongasfuelsupply fs on (
+	fs.yearid = mwo.yearid
+	and fs.monthid = mwo.monthid
+	and fs.fuelsubtypeid = r.fuelsubtypeid
+	and fs.countyid = ##context.iterlocation.countyrecordid##
+	and fs.fueltypeid = mwo.fueltypeid);
 
--- End Section UseATRatioNonGas
+-- end section useatrationongas
 
--- insert into MOVESWorkerOutput (
--- yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,processID,
--- sourceTypeID,regClassID,fuelTypeID,modelYearID,roadTypeID,SCC,emissionQuant,emissionRate)
+-- insert into movesworkeroutput (
+-- yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,processid,
+-- sourcetypeid,regclassid,fueltypeid,modelyearid,roadtypeid,scc,emissionquant,emissionrate)
 -- select
--- yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,processID,
--- sourceTypeID,regClassID,fuelTypeID,modelYearID,roadTypeID,SCC,
--- sum(emissionQuant) as emissionQuant, sum(emissionRate) as emissionRate
--- from AirToxicsMOVESWorkerOutputTemp
--- group by yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,processID,sourceTypeID,regClassID,fuelTypeID,modelYearID,roadTypeID,SCC
+-- yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,processid,
+-- sourcetypeid,regclassid,fueltypeid,modelyearid,roadtypeid,scc,
+-- sum(emissionquant) as emissionquant, sum(emissionrate) as emissionrate
+-- from airtoxicsmovesworkeroutputtemp
+-- group by yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,processid,sourcetypeid,regclassid,fueltypeid,modelyearid,roadtypeid,scc
 -- order by null
 
--- @algorithm Add emisions in AirToxicsMOVESWorkerOutputTemp to MOVESWorkerOutput
-insert into MOVESWorkerOutput (
-	yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,roadTypeID,SCC,emissionQuant,emissionRate)
+-- @algorithm add emisions in airtoxicsmovesworkeroutputtemp to movesworkeroutput
+insert into movesworkeroutput (
+	yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,roadtypeid,scc,emissionquant,emissionrate)
 select
-	yearID,monthID,dayID,hourID,stateID,countyID,zoneID,linkID,pollutantID,processID,
-	sourceTypeID,regClassID,fuelTypeID,modelYearID,roadTypeID,SCC,
-	emissionQuant,emissionRate
-from AirToxicsMOVESWorkerOutputTemp;
+	yearid,monthid,dayid,hourid,stateid,countyid,zoneid,linkid,pollutantid,processid,
+	sourcetypeid,regclassid,fueltypeid,modelyearid,roadtypeid,scc,
+	emissionquant,emissionrate
+from airtoxicsmovesworkeroutputtemp;
 
-alter table MOVESWorkerOutput drop index MOVESWorkerOutput_A3;
+alter table movesworkeroutput drop index movesworkeroutput_a3;
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
-drop table if exists AirToxicsMOVESWorkerOutputTemp;
-drop table if exists ATRatioGas1ChainedTo;
-drop table if exists ATRatioGas2ChainedTo;
-drop table if exists ATRatioNonGasChainedTo;
-drop table if exists ATMonthGroup;
-drop table if exists AT2FuelSupplyRatioGas2;
--- End Section Cleanup
+-- section cleanup
+drop table if exists airtoxicsmovesworkeroutputtemp;
+drop table if exists atratiogas1chainedto;
+drop table if exists atratiogas2chainedto;
+drop table if exists atrationongaschainedto;
+drop table if exists atmonthgroup;
+drop table if exists at2fuelsupplyratiogas2;
+-- end section cleanup

@@ -1,45 +1,45 @@
--- Author Wesley Faler
--- Version 2015-02-07
+-- author wesley faler
+-- version 2015-02-07
 
 -- @algorithm
--- @owner Nonroad HC Speciation Calculator
+-- @owner nonroad hc speciation calculator
 -- @calculator
 
--- Section Create Remote Tables for Extracted Data
+-- section create remote tables for extracted data
 
-##create.nrHCSpeciation##;
-TRUNCATE TABLE nrHCSpeciation;
+##create.nrhcspeciation##;
+truncate table nrhcspeciation;
 
-##create.nrMethaneTHCRatio##;
-TRUNCATE TABLE nrMethaneTHCRatio;
+##create.nrmethanethcratio##;
+truncate table nrmethanethcratio;
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
+-- section extract data
 
-cache select pollutantID,processID,engTechID,fuelSubtypeID,nrHPCategory,speciationConstant
+cache select pollutantid,processid,engtechid,fuelsubtypeid,nrhpcategory,speciationconstant
 into outfile '##nrhcspeciation##'
-from nrHCSpeciation
-where (pollutantID*100+processID) in (##hcPolProcessIDs##);
+from nrhcspeciation
+where (pollutantid*100+processid) in (##hcpolprocessids##);
 
-cache select processID,engTechID,fuelSubtypeID,nrHPCategory,CH4THCRatio
-into outfile '##nrMethaneTHCRatio##'
-from nrMethaneTHCRatio
-where processID in (##hcProcessIDs##)
-and fuelSubTypeID in (##macro.csv.all.nrFuelSubTypeID##);
+cache select processid,engtechid,fuelsubtypeid,nrhpcategory,ch4thcratio
+into outfile '##nrmethanethcratio##'
+from nrmethanethcratio
+where processid in (##hcprocessids##)
+and fuelsubtypeid in (##macro.csv.all.nrfuelsubtypeid##);
 
--- End Section Extract Data
+-- end section extract data
 
--- Section Processing
+-- section processing
 
--- All processing logic is done in the external calculator.
+-- all processing logic is done in the external calculator.
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
-drop table if exists HCETOHBin;
-drop table if exists nrHCSpeciation;
--- End Section Cleanup
+-- section cleanup
+drop table if exists hcetohbin;
+drop table if exists nrhcspeciation;
+-- end section cleanup
 
--- Section Final Cleanup
--- End Section Final Cleanup
+-- section final cleanup
+-- end section final cleanup

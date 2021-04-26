@@ -1,571 +1,571 @@
--- Remove effects of the Clean Air Act by propagating 1993 emission rates into the future.
--- Most rates are left untouched, instead population information is altered future vehicles
+-- remove effects of the clean air act by propagating 1993 emission rates into the future.
+-- most rates are left untouched, instead population information is altered future vehicles
 -- use the model year groups that include 1993, thus tieing them to 1993 emissions.
 --
--- Author Wesley Faler
--- Version 2016-10-04
+-- author wesley faler
+-- version 2016-10-04
 
-drop procedure if exists spDoRateOfProgress;
+drop procedure if exists spdorateofprogress;
 
-BeginBlock
-create procedure spDoRateOfProgress()
+beginblock
+create procedure spdorateofprogress()
 begin
-	-- Mode 0 is run after importing
-	-- Mode 1 is run to check overall success/failure
+	-- mode 0 is run after importing
+	-- mode 1 is run to check overall success/failure
 	declare mode int default ##mode##;
-	declare isOk int default 1;
-	declare howMany int default 0;
-	declare cutPoint int default 1993;
-	declare cutPointFuelYear int default 1990;
-	declare fuelYearToReplace int default 1990;
+	declare isok int default 1;
+	declare howmany int default 0;
+	declare cutpoint int default 1993;
+	declare cutpointfuelyear int default 1990;
+	declare fuelyeartoreplace int default 1990;
 
-	select modelYearID into cutPoint
-	from modelYearCutPoints
-	where cutPointName='RateOfProgress';
+	select modelyearid into cutpoint
+	from modelyearcutpoints
+	where cutpointname='RateOfProgress';
 
-	set cutPoint=ifnull(cutPoint,1993);
+	set cutpoint=ifnull(cutpoint,1993);
 
-	select fuelYearID into cutPointFuelYear
+	select fuelyearid into cutpointfuelyear
 	from year
-	where yearID=(select max(yearID) from year where yearID <= cutPoint);
+	where yearid=(select max(yearid) from year where yearid <= cutpoint);
 
-	set cutPointFuelYear=ifnull(cutPointFuelYear,1990);
+	set cutpointfuelyear=ifnull(cutpointfuelyear,1990);
 
-	-- Update the calendar year's fuel year. This has a required ripple effect
-	-- upon the FuelSupply and FuelUsageFraction tables.
-	update year set fuelYearID=cutPointFuelYear where yearID > cutPoint;
+	-- update the calendar year's fuel year. this has a required ripple effect
+	-- upon the fuelsupply and fuelusagefraction tables.
+	update year set fuelyearid=cutpointfuelyear where yearid > cutpoint;
 
-	drop table if exists tempModelYear;
-	create table if not exists tempModelYear (
-		modelYearID smallint not null primary key
+	drop table if exists tempmodelyear;
+	create table if not exists tempmodelyear (
+		modelyearid smallint not null primary key
 	);
 
-	insert into tempModelYear(modelYearID) values(1960),(1961),(1962),(1963),(1964),(1965),(1966),(1967)
+	insert into tempmodelyear(modelyearid) values(1960),(1961),(1962),(1963),(1964),(1965),(1966),(1967)
 		,(1968),(1969),(1970),(1971),(1972),(1973),(1974),(1975),(1976),(1977),(1978),(1979),(1980),(1981),(1982),(1983),(1984),(1985),(1986),(1987)
 		,(1988),(1989),(1990),(1991),(1992),(1993),(1994),(1995),(1996),(1997),(1998),(1999),(2000),(2001),(2002),(2003),(2004),(2005),(2006),(2007)
 		,(2008),(2009),(2010),(2011),(2012),(2013),(2014),(2015),(2016),(2017),(2018),(2019),(2020),(2021),(2022),(2023),(2024),(2025),(2026),(2027)
 		,(2028),(2029),(2030),(2031),(2032),(2033),(2034),(2035),(2036),(2037),(2038),(2039),(2040),(2041),(2042),(2043),(2044),(2045),(2046),(2047)
 		,(2048),(2049),(2050),(2051),(2052),(2053),(2054),(2055),(2056),(2057),(2058),(2059),(2060);
 
-	-- Decode model year groups
+	-- decode model year groups
 	-- single years represent single years, unless it is 1972 which represents 1960-1972
 	-- 0 represents 1960-2060
-	drop table if exists tempModelYearGroupDecode;
-	create table tempModelYearGroupDecode (
-		modelYearGroupID int(11) not null primary key,
-		modelYearGroupName char(50) default null,
-		minModelYearID smallint(6) default null,
-		maxModelYearID smallint(6) default null,
-		cutoffFlag smallint(6) default null
+	drop table if exists tempmodelyeargroupdecode;
+	create table tempmodelyeargroupdecode (
+		modelyeargroupid int(11) not null primary key,
+		modelyeargroupname char(50) default null,
+		minmodelyearid smallint(6) default null,
+		maxmodelyearid smallint(6) default null,
+		cutoffflag smallint(6) default null
 	);
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select modelYearGroupID, modelYearGroupName from modelYearGroup;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select modelyeargroupid, modelyeargroupname from modelyeargroup;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'baseFuel' from baseFuel;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'basefuel' from basefuel;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'cumTVVCoeffs' from cumTVVCoeffs;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'cumtvvcoeffs' from cumtvvcoeffs;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'fuelModelWtFactor' from fuelModelWtFactor;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'fuelmodelwtfactor' from fuelmodelwtfactor;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'meanFuelParameters' from meanFuelParameters;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'meanfuelparameters' from meanfuelparameters;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'noNO2Ratio' from noNO2Ratio;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'nono2ratio' from nono2ratio;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'pollutantProcessModelYear' from pollutantProcessModelYear;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'pollutantprocessmodelyear' from pollutantprocessmodelyear;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'sourceBin' from sourceBin;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'sourcebin' from sourcebin;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'sourceTypeModelYearGroup' from sourceTypeModelYearGroup;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'sourcetypemodelyeargroup' from sourcetypemodelyeargroup;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'startTempAdjustment' from startTempAdjustment;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'starttempadjustment' from starttempadjustment;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'sulfateEmissionRate' from sulfateEmissionRate;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'sulfateemissionrate' from sulfateemissionrate;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'sulfurBase' from sulfurBase;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'sulfurbase' from sulfurbase;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct fuelMYGroupID, 'sulfurModelCoeff' from sulfurModelCoeff;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct fuelmygroupid, 'sulfurmodelcoeff' from sulfurmodelcoeff;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct fuelMYGroupID, 'hcPermeationCoeff' from hcPermeationCoeff;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct fuelmygroupid, 'hcpermeationcoeff' from hcpermeationcoeff;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct fuelMYGroupID, 'hcSpeciation' from hcSpeciation;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct fuelmygroupid, 'hcspeciation' from hcspeciation;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'dioxinemissionrate' from dioxinemissionrate;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'dioxinemissionrate' from dioxinemissionrate;
 	
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'metalemissionrate' from metalemissionrate;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'metalemissionrate' from metalemissionrate;
 	
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'methanethcratio' from methanethcratio;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'methanethcratio' from methanethcratio;
 	
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'minorhapratio' from minorhapratio;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'minorhapratio' from minorhapratio;
 	
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'pahgasratio' from pahgasratio;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'pahgasratio' from pahgasratio;
 	
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'pahparticleratio' from pahparticleratio;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'pahparticleratio' from pahparticleratio;
 
-	insert ignore into tempModelYearGroupDecode (modelYearGroupID, modelYearGroupName)
-	select distinct modelYearGroupID, 'atrationongas' from atrationongas;
+	insert ignore into tempmodelyeargroupdecode (modelyeargroupid, modelyeargroupname)
+	select distinct modelyeargroupid, 'atrationongas' from atrationongas;
 
 
-	update tempModelYearGroupDecode set minModelYearID=1960, maxModelYearID=2060
-	where minModelYearID is null and maxModelYearID is null
-	and modelYearGroupID=0;
+	update tempmodelyeargroupdecode set minmodelyearid=1960, maxmodelyearid=2060
+	where minmodelyearid is null and maxmodelyearid is null
+	and modelyeargroupid=0;
 
-	update tempModelYearGroupDecode set minModelYearID=1960, maxModelYearID=1972
-	where minModelYearID is null and maxModelYearID is null
-	and modelYearGroupID=1972;
+	update tempmodelyeargroupdecode set minmodelyearid=1960, maxmodelyearid=1972
+	where minmodelyearid is null and maxmodelyearid is null
+	and modelyeargroupid=1972;
 
-	update tempModelYearGroupDecode set minModelYearID=modelYearGroupID, maxModelYearID=modelYearGroupID
-	where minModelYearID is null and maxModelYearID is null
-	and modelYearGroupID < 9999 and modelYearGroupID > 1960;
+	update tempmodelyeargroupdecode set minmodelyearid=modelyeargroupid, maxmodelyearid=modelyeargroupid
+	where minmodelyearid is null and maxmodelyearid is null
+	and modelyeargroupid < 9999 and modelyeargroupid > 1960;
 
-	update tempModelYearGroupDecode set minModelYearID=round(modelYearGroupID/10000,0), maxModelYearID=mod(modelYearGroupID,10000)
-	where minModelYearID is null and maxModelYearID is null
-	and modelYearGroupID > 9999;
+	update tempmodelyeargroupdecode set minmodelyearid=round(modelyeargroupid/10000,0), maxmodelyearid=mod(modelyeargroupid,10000)
+	where minmodelyearid is null and maxmodelyearid is null
+	and modelyeargroupid > 9999;
 
-	update tempModelYearGroupDecode set cutoffFlag=0 where cutoffFlag is null and minModelYearID <= cutPoint and maxModelYearID >= cutPoint;
-	update tempModelYearGroupDecode set cutoffFlag= -1 where cutoffFlag is null and maxModelYearID < cutPoint;
-	update tempModelYearGroupDecode set cutoffFlag= +1 where cutoffFlag is null and minModelYearID > cutPoint;
+	update tempmodelyeargroupdecode set cutoffflag=0 where cutoffflag is null and minmodelyearid <= cutpoint and maxmodelyearid >= cutpoint;
+	update tempmodelyeargroupdecode set cutoffflag= -1 where cutoffflag is null and maxmodelyearid < cutpoint;
+	update tempmodelyeargroupdecode set cutoffflag= +1 where cutoffflag is null and minmodelyearid > cutpoint;
 
-	-- baseFuel
-	drop table if exists tempBaseFuel;
-	create table tempBaseFuel
-	select b.calculationEngine, b.fuelTypeID, b.fuelFormulationID, b.description, b.dataSourceID
-	from baseFuel b
-		inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	-- basefuel
+	drop table if exists tempbasefuel;
+	create table tempbasefuel
+	select b.calculationengine, b.fueltypeid, b.fuelformulationid, b.description, b.datasourceid
+	from basefuel b
+		inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 
-	update baseFuel, tempBaseFuel, tempModelYearGroupDecode
-	set baseFuel.fuelFormulationID = tempBaseFuel.fuelFormulationID, baseFuel.description = tempBaseFuel.description, baseFuel.dataSourceID = tempBaseFuel.dataSourceID
-	where baseFuel.calculationEngine = tempBaseFuel.calculationEngine
-		and baseFuel.fuelTypeID = tempBaseFuel.fuelTypeID
-		and tempModelYearGroupDecode.modelYearGroupID = baseFuel.modelYearGroupID
-		and tempModelYearGroupDecode.cutoffFlag = 1;
-	drop table if exists tempBaseFuel;
-	insert into tempMessages (message) values ('Updated baseFuel table');
+	update basefuel, tempbasefuel, tempmodelyeargroupdecode
+	set basefuel.fuelformulationid = tempbasefuel.fuelformulationid, basefuel.description = tempbasefuel.description, basefuel.datasourceid = tempbasefuel.datasourceid
+	where basefuel.calculationengine = tempbasefuel.calculationengine
+		and basefuel.fueltypeid = tempbasefuel.fueltypeid
+		and tempmodelyeargroupdecode.modelyeargroupid = basefuel.modelyeargroupid
+		and tempmodelyeargroupdecode.cutoffflag = 1;
+	drop table if exists tempbasefuel;
+	insert into tempmessages (message) values ('updated basefuel table');
 
-	-- crankcaseEmissionRatio
-	drop table if exists tempCrankcaseEmissionRatio;
-	create table tempCrankcaseEmissionRatio
-	select b.polProcessID, b.sourceTypeID, b.fuelTypeID, b.crankcaseRatio, b.crankcaseRatioCV
-	from crankcaseEmissionRatio b
-	where minModelYearID <= cutPoint
-	and maxModelYearID >= cutPoint;
+	-- crankcaseemissionratio
+	drop table if exists tempcrankcaseemissionratio;
+	create table tempcrankcaseemissionratio
+	select b.polprocessid, b.sourcetypeid, b.fueltypeid, b.crankcaseratio, b.crankcaseratiocv
+	from crankcaseemissionratio b
+	where minmodelyearid <= cutpoint
+	and maxmodelyearid >= cutpoint;
 	
-	update crankcaseEmissionRatio, tempCrankcaseEmissionRatio
-	set crankcaseEmissionRatio.crankcaseRatio=tempCrankcaseEmissionRatio.crankcaseRatio, crankcaseEmissionRatio.crankcaseRatioCV=tempCrankcaseEmissionRatio.crankcaseRatioCV
-	where crankcaseEmissionRatio.polProcessID=tempCrankcaseEmissionRatio.polProcessID and crankcaseEmissionRatio.sourceTypeID=tempCrankcaseEmissionRatio.sourceTypeID and crankcaseEmissionRatio.fuelTypeID=tempCrankcaseEmissionRatio.fuelTypeID
-	and crankcaseEmissionRatio.minModelYearID > cutPoint;
-	drop table if exists tempCrankcaseEmissionRatio;
-	insert into tempMessages (message) values ('Updated crankcaseEmissionRatio table');
+	update crankcaseemissionratio, tempcrankcaseemissionratio
+	set crankcaseemissionratio.crankcaseratio=tempcrankcaseemissionratio.crankcaseratio, crankcaseemissionratio.crankcaseratiocv=tempcrankcaseemissionratio.crankcaseratiocv
+	where crankcaseemissionratio.polprocessid=tempcrankcaseemissionratio.polprocessid and crankcaseemissionratio.sourcetypeid=tempcrankcaseemissionratio.sourcetypeid and crankcaseemissionratio.fueltypeid=tempcrankcaseemissionratio.fueltypeid
+	and crankcaseemissionratio.minmodelyearid > cutpoint;
+	drop table if exists tempcrankcaseemissionratio;
+	insert into tempmessages (message) values ('updated crankcaseemissionratio table');
 
-	-- cumTVVCoeffs
+	-- cumtvvcoeffs
 	drop table if exists tempcumtvvcoeffs;
 	create table tempcumtvvcoeffs
-	select b.regClassID, b.ageGroupID, b.polProcessID, b.tvvTermA, b.tvvTermB, b.tvvTermC, b.tvvTermACV, b.tvvTermBCV, b.tvvTermCCV, b.tvvTermAIM, b.tvvTermBIM, b.tvvTermCIM, b.tvvTermAIMCV, b.tvvTermBIMCV, b.tvvTermCIMCV, b.backPurgeFactor, b.averageCanisterCapacity, b.tvvEquation, b.leakEquation, b.leakFraction, b.tankSize, b.tankFillFraction
+	select b.regclassid, b.agegroupid, b.polprocessid, b.tvvterma, b.tvvtermb, b.tvvtermc, b.tvvtermacv, b.tvvtermbcv, b.tvvtermccv, b.tvvtermaim, b.tvvtermbim, b.tvvtermcim, b.tvvtermaimcv, b.tvvtermbimcv, b.tvvtermcimcv, b.backpurgefactor, b.averagecanistercapacity, b.tvvequation, b.leakequation, b.leakfraction, b.tanksize, b.tankfillfraction
 	from cumtvvcoeffs b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 	
-	update cumtvvcoeffs, tempcumtvvcoeffs, tempModelYearGroupDecode
-	set cumtvvcoeffs.tvvTermA=tempcumtvvcoeffs.tvvTermA, cumtvvcoeffs.tvvTermB=tempcumtvvcoeffs.tvvTermB, cumtvvcoeffs.tvvTermC=tempcumtvvcoeffs.tvvTermC, cumtvvcoeffs.tvvTermACV=tempcumtvvcoeffs.tvvTermACV, cumtvvcoeffs.tvvTermBCV=tempcumtvvcoeffs.tvvTermBCV, cumtvvcoeffs.tvvTermCCV=tempcumtvvcoeffs.tvvTermCCV, cumtvvcoeffs.tvvTermAIM=tempcumtvvcoeffs.tvvTermAIM, cumtvvcoeffs.tvvTermBIM=tempcumtvvcoeffs.tvvTermBIM, cumtvvcoeffs.tvvTermCIM=tempcumtvvcoeffs.tvvTermCIM, cumtvvcoeffs.tvvTermAIMCV=tempcumtvvcoeffs.tvvTermAIMCV, cumtvvcoeffs.tvvTermBIMCV=tempcumtvvcoeffs.tvvTermBIMCV, cumtvvcoeffs.tvvTermCIMCV=tempcumtvvcoeffs.tvvTermCIMCV, cumtvvcoeffs.backPurgeFactor=tempcumtvvcoeffs.backPurgeFactor, cumtvvcoeffs.averageCanisterCapacity=tempcumtvvcoeffs.averageCanisterCapacity, cumtvvcoeffs.tvvEquation=tempcumtvvcoeffs.tvvEquation, cumtvvcoeffs.leakEquation=tempcumtvvcoeffs.leakEquation, cumtvvcoeffs.leakFraction=tempcumtvvcoeffs.leakFraction, cumtvvcoeffs.tankSize=tempcumtvvcoeffs.tankSize, cumtvvcoeffs.tankFillFraction=tempcumtvvcoeffs.tankFillFraction
-	where cumtvvcoeffs.regClassID=tempcumtvvcoeffs.regClassID
-	and cumtvvcoeffs.ageGroupID=tempcumtvvcoeffs.ageGroupID
-	and cumtvvcoeffs.polProcessID=tempcumtvvcoeffs.polProcessID
-	and tempModelYearGroupDecode.modelYearGroupID = cumtvvcoeffs.modelYearGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
+	update cumtvvcoeffs, tempcumtvvcoeffs, tempmodelyeargroupdecode
+	set cumtvvcoeffs.tvvterma=tempcumtvvcoeffs.tvvterma, cumtvvcoeffs.tvvtermb=tempcumtvvcoeffs.tvvtermb, cumtvvcoeffs.tvvtermc=tempcumtvvcoeffs.tvvtermc, cumtvvcoeffs.tvvtermacv=tempcumtvvcoeffs.tvvtermacv, cumtvvcoeffs.tvvtermbcv=tempcumtvvcoeffs.tvvtermbcv, cumtvvcoeffs.tvvtermccv=tempcumtvvcoeffs.tvvtermccv, cumtvvcoeffs.tvvtermaim=tempcumtvvcoeffs.tvvtermaim, cumtvvcoeffs.tvvtermbim=tempcumtvvcoeffs.tvvtermbim, cumtvvcoeffs.tvvtermcim=tempcumtvvcoeffs.tvvtermcim, cumtvvcoeffs.tvvtermaimcv=tempcumtvvcoeffs.tvvtermaimcv, cumtvvcoeffs.tvvtermbimcv=tempcumtvvcoeffs.tvvtermbimcv, cumtvvcoeffs.tvvtermcimcv=tempcumtvvcoeffs.tvvtermcimcv, cumtvvcoeffs.backpurgefactor=tempcumtvvcoeffs.backpurgefactor, cumtvvcoeffs.averagecanistercapacity=tempcumtvvcoeffs.averagecanistercapacity, cumtvvcoeffs.tvvequation=tempcumtvvcoeffs.tvvequation, cumtvvcoeffs.leakequation=tempcumtvvcoeffs.leakequation, cumtvvcoeffs.leakfraction=tempcumtvvcoeffs.leakfraction, cumtvvcoeffs.tanksize=tempcumtvvcoeffs.tanksize, cumtvvcoeffs.tankfillfraction=tempcumtvvcoeffs.tankfillfraction
+	where cumtvvcoeffs.regclassid=tempcumtvvcoeffs.regclassid
+	and cumtvvcoeffs.agegroupid=tempcumtvvcoeffs.agegroupid
+	and cumtvvcoeffs.polprocessid=tempcumtvvcoeffs.polprocessid
+	and tempmodelyeargroupdecode.modelyeargroupid = cumtvvcoeffs.modelyeargroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
 	drop table if exists tempcumtvvcoeffs;
-	insert into tempMessages (message) values ('Updated cumTVVCoeffs table');
+	insert into tempmessages (message) values ('updated cumtvvcoeffs table');
 
-	-- fuelModelWtFactor
-	drop table if exists tempFuelModelWtFactor;
-	create table tempFuelModelWtFactor
-	select b.fuelModelID, b.ageID, b.fuelModelWtFactor, b.dataSourceID
-	from fuelModelWtFactor b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	-- fuelmodelwtfactor
+	drop table if exists tempfuelmodelwtfactor;
+	create table tempfuelmodelwtfactor
+	select b.fuelmodelid, b.ageid, b.fuelmodelwtfactor, b.datasourceid
+	from fuelmodelwtfactor b
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 
-	update fuelModelWtFactor, tempFuelModelWtFactor, tempModelYearGroupDecode
-	set fuelModelWtFactor.fuelModelWtFactor = tempFuelModelWtFactor.fuelModelWtFactor, fuelModelWtFactor.dataSourceID = tempFuelModelWtFactor.dataSourceID
-	where fuelModelWtFactor.fuelModelID = tempFuelModelWtFactor.fuelModelID
-		and fuelModelWtFactor.ageID = tempFuelModelWtFactor.ageID
-		and tempModelYearGroupDecode.modelYearGroupID = fuelModelWtFactor.modelYearGroupID
-		and tempModelYearGroupDecode.cutoffFlag = 1;
-	drop table if exists tempFuelModelWtFactor;
-	insert into tempMessages (message) values ('Updated fuelModelWtFactor table');
+	update fuelmodelwtfactor, tempfuelmodelwtfactor, tempmodelyeargroupdecode
+	set fuelmodelwtfactor.fuelmodelwtfactor = tempfuelmodelwtfactor.fuelmodelwtfactor, fuelmodelwtfactor.datasourceid = tempfuelmodelwtfactor.datasourceid
+	where fuelmodelwtfactor.fuelmodelid = tempfuelmodelwtfactor.fuelmodelid
+		and fuelmodelwtfactor.ageid = tempfuelmodelwtfactor.ageid
+		and tempmodelyeargroupdecode.modelyeargroupid = fuelmodelwtfactor.modelyeargroupid
+		and tempmodelyeargroupdecode.cutoffflag = 1;
+	drop table if exists tempfuelmodelwtfactor;
+	insert into tempmessages (message) values ('updated fuelmodelwtfactor table');
 
-	-- fuelSupply
-	select min(fuelYearID) into fuelYearToReplace from fuelSupply where fuelYearID >= cutPointFuelYear;
-	set fuelYearToReplace=ifnull(fuelYearToReplace,1990);
-	delete from fuelSupply where fuelYearID > fuelYearToReplace;
-	update fuelSupply set fuelYearID=cutPointFuelYear where fuelYearID=fuelYearToReplace;
+	-- fuelsupply
+	select min(fuelyearid) into fuelyeartoreplace from fuelsupply where fuelyearid >= cutpointfuelyear;
+	set fuelyeartoreplace=ifnull(fuelyeartoreplace,1990);
+	delete from fuelsupply where fuelyearid > fuelyeartoreplace;
+	update fuelsupply set fuelyearid=cutpointfuelyear where fuelyearid=fuelyeartoreplace;
 
-	-- fuelUsageFraction
-	select min(fuelYearID) into fuelYearToReplace from fuelUsageFraction where fuelYearID >= cutPointFuelYear;
-	set fuelYearToReplace=ifnull(fuelYearToReplace,1990);
-	delete from fuelUsageFraction where fuelYearID > fuelYearToReplace;
-	update fuelUsageFraction set fuelYearID=cutPointFuelYear where fuelYearID=fuelYearToReplace;
+	-- fuelusagefraction
+	select min(fuelyearid) into fuelyeartoreplace from fuelusagefraction where fuelyearid >= cutpointfuelyear;
+	set fuelyeartoreplace=ifnull(fuelyeartoreplace,1990);
+	delete from fuelusagefraction where fuelyearid > fuelyeartoreplace;
+	update fuelusagefraction set fuelyearid=cutpointfuelyear where fuelyearid=fuelyeartoreplace;
 
-	-- generalFuelRatioExpression
-	-- Delete anything that starts after cutPoint.
-	delete from generalFuelRatioExpression where minModelYearID > cutPoint;
+	-- generalfuelratioexpression
+	-- delete anything that starts after cutpoint.
+	delete from generalfuelratioexpression where minmodelyearid > cutpoint;
 
-	-- Anything that applies prior to cutPoint should go unchanged.
-	-- Anything that applies to cutPoint should apply to all years afterwards.  This is safe
-	-- to do as any equation that used to begin after cutPoint was deleted above.
-	update generalFuelRatioExpression set maxModelYearID=2060
-	where minModelYearID <= cutPoint and maxModelYearID >= cutPoint and maxModelYearID < 2060;
+	-- anything that applies prior to cutpoint should go unchanged.
+	-- anything that applies to cutpoint should apply to all years afterwards.  this is safe
+	-- to do as any equation that used to begin after cutpoint was deleted above.
+	update generalfuelratioexpression set maxmodelyearid=2060
+	where minmodelyearid <= cutpoint and maxmodelyearid >= cutpoint and maxmodelyearid < 2060;
 
-	insert into tempMessages (message) values ('Updated generalFuelRatioExpression table');
+	insert into tempmessages (message) values ('updated generalfuelratioexpression table');
 
-	-- meanFuelParameters
-	drop table if exists tempMeanFuelParameters;
-	create table tempMeanFuelParameters
-	select b.polProcessID, b.fuelTypeID, b.fuelParameterID, b.baseValue, b.centeringValue, b.stdDevValue, b.dataSourceID
-	from meanFuelParameters b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	-- meanfuelparameters
+	drop table if exists tempmeanfuelparameters;
+	create table tempmeanfuelparameters
+	select b.polprocessid, b.fueltypeid, b.fuelparameterid, b.basevalue, b.centeringvalue, b.stddevvalue, b.datasourceid
+	from meanfuelparameters b
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 	
-	update meanFuelParameters, tempMeanFuelParameters, tempModelYearGroupDecode
-	set meanFuelParameters.baseValue=tempMeanFuelParameters.baseValue, meanFuelParameters.centeringValue=tempMeanFuelParameters.centeringValue, meanFuelParameters.stdDevValue=tempMeanFuelParameters.stdDevValue, meanFuelParameters.dataSourceID=tempMeanFuelParameters.dataSourceID
-	where meanFuelParameters.polProcessID=tempMeanFuelParameters.polProcessID and meanFuelParameters.fuelTypeID=tempMeanFuelParameters.fuelTypeID and meanFuelParameters.fuelParameterID=tempMeanFuelParameters.fuelParameterID
-	and tempModelYearGroupDecode.modelYearGroupID = meanFuelParameters.modelYearGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
-	drop table if exists tempMeanFuelParameters;
-	insert into tempMessages (message) values ('Updated meanFuelParameters table');
+	update meanfuelparameters, tempmeanfuelparameters, tempmodelyeargroupdecode
+	set meanfuelparameters.basevalue=tempmeanfuelparameters.basevalue, meanfuelparameters.centeringvalue=tempmeanfuelparameters.centeringvalue, meanfuelparameters.stddevvalue=tempmeanfuelparameters.stddevvalue, meanfuelparameters.datasourceid=tempmeanfuelparameters.datasourceid
+	where meanfuelparameters.polprocessid=tempmeanfuelparameters.polprocessid and meanfuelparameters.fueltypeid=tempmeanfuelparameters.fueltypeid and meanfuelparameters.fuelparameterid=tempmeanfuelparameters.fuelparameterid
+	and tempmodelyeargroupdecode.modelyeargroupid = meanfuelparameters.modelyeargroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
+	drop table if exists tempmeanfuelparameters;
+	insert into tempmessages (message) values ('updated meanfuelparameters table');
 
-	-- noNO2Ratio
-	drop table if exists tempNoNO2Ratio;
-	create table tempNoNO2Ratio
-	select b.polProcessID, b.sourceTypeID, b.fuelTypeID, b.NOxRatio, b.NOxRatioCV, b.dataSourceID
-	from noNO2Ratio b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	-- nono2ratio
+	drop table if exists tempnono2ratio;
+	create table tempnono2ratio
+	select b.polprocessid, b.sourcetypeid, b.fueltypeid, b.noxratio, b.noxratiocv, b.datasourceid
+	from nono2ratio b
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 	
-	update noNO2Ratio, tempNoNO2Ratio, tempModelYearGroupDecode
-	set noNO2Ratio.NOxRatio=tempNoNO2Ratio.NOxRatio, noNO2Ratio.NOxRatioCV=tempNoNO2Ratio.NOxRatioCV, noNO2Ratio.dataSourceID=tempNoNO2Ratio.dataSourceID
-	where noNO2Ratio.polProcessID=tempNoNO2Ratio.polProcessID and noNO2Ratio.sourceTypeID=tempNoNO2Ratio.sourceTypeID and noNO2Ratio.fuelTypeID=tempNoNO2Ratio.fuelTypeID
-	and tempModelYearGroupDecode.modelYearGroupID = noNO2Ratio.modelYearGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
-	drop table if exists tempNoNO2Ratio;
-	insert into tempMessages (message) values ('Updated noNO2Ratio table');
+	update nono2ratio, tempnono2ratio, tempmodelyeargroupdecode
+	set nono2ratio.noxratio=tempnono2ratio.noxratio, nono2ratio.noxratiocv=tempnono2ratio.noxratiocv, nono2ratio.datasourceid=tempnono2ratio.datasourceid
+	where nono2ratio.polprocessid=tempnono2ratio.polprocessid and nono2ratio.sourcetypeid=tempnono2ratio.sourcetypeid and nono2ratio.fueltypeid=tempnono2ratio.fueltypeid
+	and tempmodelyeargroupdecode.modelyeargroupid = nono2ratio.modelyeargroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
+	drop table if exists tempnono2ratio;
+	insert into tempmessages (message) values ('updated nono2ratio table');
 
-	-- PollutantProcessModelYear
-	drop table if exists tempPollutantProcessModelYear;
-	create table tempPollutantProcessModelYear
-	select polProcessID, modelYearGroupID, fuelMYGroupID, IMModelYearGroupID
-	from pollutantProcessModelYear
-	where modelYearID = cutPoint;
+	-- pollutantprocessmodelyear
+	drop table if exists temppollutantprocessmodelyear;
+	create table temppollutantprocessmodelyear
+	select polprocessid, modelyeargroupid, fuelmygroupid, immodelyeargroupid
+	from pollutantprocessmodelyear
+	where modelyearid = cutpoint;
 
-	update pollutantProcessModelYear, tempPollutantProcessModelYear
-	set pollutantProcessModelYear.modelYearGroupID = tempPollutantProcessModelYear.modelYearGroupID,
-		pollutantProcessModelYear.fuelMYGroupID = tempPollutantProcessModelYear.fuelMYGroupID,
-		pollutantProcessModelYear.IMModelYearGroupID = tempPollutantProcessModelYear.IMModelYearGroupID
-	where pollutantProcessModelYear.polProcessID = tempPollutantProcessModelYear.polProcessID
-		and pollutantProcessModelYear.modelYearID > cutPoint;
-	drop table if exists tempPollutantProcessModelYear;
-	insert into tempMessages (message) values ('Updated pollutantProcessModelYear table');
+	update pollutantprocessmodelyear, temppollutantprocessmodelyear
+	set pollutantprocessmodelyear.modelyeargroupid = temppollutantprocessmodelyear.modelyeargroupid,
+		pollutantprocessmodelyear.fuelmygroupid = temppollutantprocessmodelyear.fuelmygroupid,
+		pollutantprocessmodelyear.immodelyeargroupid = temppollutantprocessmodelyear.immodelyeargroupid
+	where pollutantprocessmodelyear.polprocessid = temppollutantprocessmodelyear.polprocessid
+		and pollutantprocessmodelyear.modelyearid > cutpoint;
+	drop table if exists temppollutantprocessmodelyear;
+	insert into tempmessages (message) values ('updated pollutantprocessmodelyear table');
 
-	-- sourceTypeModelYear
-	drop table if exists tempSourceTypeModelYear;
-	create table tempSourceTypeModelYear
-	select b.sourceTypeID, b.ACPenetrationFraction, b.ACPenetrationFractionCV
-	from sourceTypeModelYear b
-	where modelYearID=cutPoint;
+	-- sourcetypemodelyear
+	drop table if exists tempsourcetypemodelyear;
+	create table tempsourcetypemodelyear
+	select b.sourcetypeid, b.acpenetrationfraction, b.acpenetrationfractioncv
+	from sourcetypemodelyear b
+	where modelyearid=cutpoint;
 	
-	update sourceTypeModelYear, tempSourceTypeModelYear
-	set sourceTypeModelYear.ACPenetrationFraction=tempSourceTypeModelYear.ACPenetrationFraction, sourceTypeModelYear.ACPenetrationFractionCV=tempSourceTypeModelYear.ACPenetrationFractionCV
-	where sourceTypeModelYear.sourceTypeID=tempSourceTypeModelYear.sourceTypeID
-	and sourceTypeModelYear.modelYearID > cutPoint;
-	drop table if exists tempSourceTypeModelYear;
-	insert into tempMessages (message) values ('Updated sourceTypeModelYear table');
+	update sourcetypemodelyear, tempsourcetypemodelyear
+	set sourcetypemodelyear.acpenetrationfraction=tempsourcetypemodelyear.acpenetrationfraction, sourcetypemodelyear.acpenetrationfractioncv=tempsourcetypemodelyear.acpenetrationfractioncv
+	where sourcetypemodelyear.sourcetypeid=tempsourcetypemodelyear.sourcetypeid
+	and sourcetypemodelyear.modelyearid > cutpoint;
+	drop table if exists tempsourcetypemodelyear;
+	insert into tempmessages (message) values ('updated sourcetypemodelyear table');
 
-	-- sourceTypeModelYearGroup
-	drop table if exists tempSourceTypeModelYearGroup;
-	create table tempSourceTypeModelYearGroup
-	select b.sourceTypeID, b.tankTemperatureGroupID
-	from sourceTypeModelYearGroup b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	-- sourcetypemodelyeargroup
+	drop table if exists tempsourcetypemodelyeargroup;
+	create table tempsourcetypemodelyeargroup
+	select b.sourcetypeid, b.tanktemperaturegroupid
+	from sourcetypemodelyeargroup b
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 	
-	update sourceTypeModelYearGroup, tempSourceTypeModelYearGroup, tempModelYearGroupDecode
-	set sourceTypeModelYearGroup.tankTemperatureGroupID=tempSourceTypeModelYearGroup.tankTemperatureGroupID
-	where sourceTypeModelYearGroup.sourceTypeID=tempSourceTypeModelYearGroup.sourceTypeID
-	and tempModelYearGroupDecode.modelYearGroupID = sourceTypeModelYearGroup.modelYearGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
-	drop table if exists tempSourceTypeModelYearGroup;
-	insert into tempMessages (message) values ('Updated sourceTypeModelYearGroup table');
+	update sourcetypemodelyeargroup, tempsourcetypemodelyeargroup, tempmodelyeargroupdecode
+	set sourcetypemodelyeargroup.tanktemperaturegroupid=tempsourcetypemodelyeargroup.tanktemperaturegroupid
+	where sourcetypemodelyeargroup.sourcetypeid=tempsourcetypemodelyeargroup.sourcetypeid
+	and tempmodelyeargroupdecode.modelyeargroupid = sourcetypemodelyeargroup.modelyeargroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
+	drop table if exists tempsourcetypemodelyeargroup;
+	insert into tempmessages (message) values ('updated sourcetypemodelyeargroup table');
 
-	-- SourceTypeTechAdjustment
-	drop table if exists tempSourceTypeTechAdjustment;
-	create table tempSourceTypeTechAdjustment
-	select processID, sourceTypeID, refuelingTechAdjustment
-	from sourceTypeTechAdjustment
-	where modelYearID=cutPoint;
+	-- sourcetypetechadjustment
+	drop table if exists tempsourcetypetechadjustment;
+	create table tempsourcetypetechadjustment
+	select processid, sourcetypeid, refuelingtechadjustment
+	from sourcetypetechadjustment
+	where modelyearid=cutpoint;
 
-	update sourceTypeTechAdjustment, tempSourceTypeTechAdjustment
-	set sourceTypeTechAdjustment.refuelingTechAdjustment = tempSourceTypeTechAdjustment.refuelingTechAdjustment
-	where sourceTypeTechAdjustment.processID = tempSourceTypeTechAdjustment.processID
-		and sourceTypeTechAdjustment.sourceTypeID = tempSourceTypeTechAdjustment.sourceTypeID
-		and sourceTypeTechAdjustment.modelYearID > cutPoint;
-	drop table if exists tempSourceTypeTechAdjustment;
-	insert into tempMessages (message) values ('Updated sourceTypeTechAdjustment table');
+	update sourcetypetechadjustment, tempsourcetypetechadjustment
+	set sourcetypetechadjustment.refuelingtechadjustment = tempsourcetypetechadjustment.refuelingtechadjustment
+	where sourcetypetechadjustment.processid = tempsourcetypetechadjustment.processid
+		and sourcetypetechadjustment.sourcetypeid = tempsourcetypetechadjustment.sourcetypeid
+		and sourcetypetechadjustment.modelyearid > cutpoint;
+	drop table if exists tempsourcetypetechadjustment;
+	insert into tempmessages (message) values ('updated sourcetypetechadjustment table');
 
-	-- startTempAdjustment
-	drop table if exists tempStartTempAdjustment;
-	create table tempStartTempAdjustment
-	select b.fuelTypeID, b.polProcessID, b.opModeID, b.tempAdjustTermA, b.tempAdjustTermACV, b.tempAdjustTermB, b.tempAdjustTermBCV, b.tempAdjustTermC, b.tempAdjustTermCCV
-	from startTempAdjustment b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	-- starttempadjustment
+	drop table if exists tempstarttempadjustment;
+	create table tempstarttempadjustment
+	select b.fueltypeid, b.polprocessid, b.opmodeid, b.tempadjustterma, b.tempadjusttermacv, b.tempadjusttermb, b.tempadjusttermbcv, b.tempadjusttermc, b.tempadjusttermccv
+	from starttempadjustment b
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 	
-	update startTempAdjustment, tempStartTempAdjustment, tempModelYearGroupDecode
-	set startTempAdjustment.tempAdjustTermA=tempStartTempAdjustment.tempAdjustTermA, startTempAdjustment.tempAdjustTermACV=tempStartTempAdjustment.tempAdjustTermACV, startTempAdjustment.tempAdjustTermB=tempStartTempAdjustment.tempAdjustTermB, startTempAdjustment.tempAdjustTermBCV=tempStartTempAdjustment.tempAdjustTermBCV, startTempAdjustment.tempAdjustTermC=tempStartTempAdjustment.tempAdjustTermC, startTempAdjustment.tempAdjustTermCCV=tempStartTempAdjustment.tempAdjustTermCCV
-	where startTempAdjustment.fuelTypeID=tempStartTempAdjustment.fuelTypeID and startTempAdjustment.polProcessID=tempStartTempAdjustment.polProcessID and startTempAdjustment.opModeID=tempStartTempAdjustment.opModeID
-	and tempModelYearGroupDecode.modelYearGroupID = startTempAdjustment.modelYearGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
-	drop table if exists tempStartTempAdjustment;
-	insert into tempMessages (message) values ('Updated startTempAdjustment table');
+	update starttempadjustment, tempstarttempadjustment, tempmodelyeargroupdecode
+	set starttempadjustment.tempadjustterma=tempstarttempadjustment.tempadjustterma, starttempadjustment.tempadjusttermacv=tempstarttempadjustment.tempadjusttermacv, starttempadjustment.tempadjusttermb=tempstarttempadjustment.tempadjusttermb, starttempadjustment.tempadjusttermbcv=tempstarttempadjustment.tempadjusttermbcv, starttempadjustment.tempadjusttermc=tempstarttempadjustment.tempadjusttermc, starttempadjustment.tempadjusttermccv=tempstarttempadjustment.tempadjusttermccv
+	where starttempadjustment.fueltypeid=tempstarttempadjustment.fueltypeid and starttempadjustment.polprocessid=tempstarttempadjustment.polprocessid and starttempadjustment.opmodeid=tempstarttempadjustment.opmodeid
+	and tempmodelyeargroupdecode.modelyeargroupid = starttempadjustment.modelyeargroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
+	drop table if exists tempstarttempadjustment;
+	insert into tempmessages (message) values ('updated starttempadjustment table');
 
-	-- sulfateEmissionRate
-	drop table if exists tempSulfateEmissionRate;
-	create table tempSulfateEmissionRate
-	select b.polProcessID, b.fuelTypeID, b.meanBaseRate, b.meanBaseRateCV, b.dataSourceID
-	from sulfateEmissionRate b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	-- sulfateemissionrate
+	drop table if exists tempsulfateemissionrate;
+	create table tempsulfateemissionrate
+	select b.polprocessid, b.fueltypeid, b.meanbaserate, b.meanbaseratecv, b.datasourceid
+	from sulfateemissionrate b
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 	
-	update sulfateEmissionRate, tempSulfateEmissionRate, tempModelYearGroupDecode
-	set sulfateEmissionRate.meanBaseRate=tempSulfateEmissionRate.meanBaseRate, sulfateEmissionRate.meanBaseRateCV=tempSulfateEmissionRate.meanBaseRateCV, sulfateEmissionRate.dataSourceID=tempSulfateEmissionRate.dataSourceID
-	where sulfateEmissionRate.polProcessID=tempSulfateEmissionRate.polProcessID and sulfateEmissionRate.fuelTypeID=tempSulfateEmissionRate.fuelTypeID
-	and tempModelYearGroupDecode.modelYearGroupID = sulfateEmissionRate.modelYearGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
-	drop table if exists tempSulfateEmissionRate;
-	insert into tempMessages (message) values ('Updated sulfateEmissionRate table');
+	update sulfateemissionrate, tempsulfateemissionrate, tempmodelyeargroupdecode
+	set sulfateemissionrate.meanbaserate=tempsulfateemissionrate.meanbaserate, sulfateemissionrate.meanbaseratecv=tempsulfateemissionrate.meanbaseratecv, sulfateemissionrate.datasourceid=tempsulfateemissionrate.datasourceid
+	where sulfateemissionrate.polprocessid=tempsulfateemissionrate.polprocessid and sulfateemissionrate.fueltypeid=tempsulfateemissionrate.fueltypeid
+	and tempmodelyeargroupdecode.modelyeargroupid = sulfateemissionrate.modelyeargroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
+	drop table if exists tempsulfateemissionrate;
+	insert into tempmessages (message) values ('updated sulfateemissionrate table');
 
-	-- sulfurBase
-	drop table if exists tempSulfurBase;
-	create table tempSulfurBase
-	select b.sulfurBase, b.sulfurBasis, b.sulfurGPAMax
-	from sulfurBase b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	-- sulfurbase
+	drop table if exists tempsulfurbase;
+	create table tempsulfurbase
+	select b.sulfurbase, b.sulfurbasis, b.sulfurgpamax
+	from sulfurbase b
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 	
-	update sulfurBase, tempSulfurBase, tempModelYearGroupDecode
-	set sulfurBase.sulfurBase=tempSulfurBase.sulfurBase, sulfurBase.sulfurBasis=tempSulfurBase.sulfurBasis, sulfurBase.sulfurGPAMax=tempSulfurBase.sulfurGPAMax
+	update sulfurbase, tempsulfurbase, tempmodelyeargroupdecode
+	set sulfurbase.sulfurbase=tempsulfurbase.sulfurbase, sulfurbase.sulfurbasis=tempsulfurbase.sulfurbasis, sulfurbase.sulfurgpamax=tempsulfurbase.sulfurgpamax
 	where 
-	tempModelYearGroupDecode.modelYearGroupID = sulfurBase.modelYearGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
-	drop table if exists tempSulfurBase;
-	insert into tempMessages (message) values ('Updated sulfurBase table');
+	tempmodelyeargroupdecode.modelyeargroupid = sulfurbase.modelyeargroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
+	drop table if exists tempsulfurbase;
+	insert into tempmessages (message) values ('updated sulfurbase table');
 
-	-- sulfurModelCoeff
-	drop table if exists tempSulfurModelCoeff;
-	create table tempSulfurModelCoeff
-	select b.processID, b.pollutantID, b.M6emitterID, b.sourceTypeID, b.sulfurFunctionID, b.sulfurCoeff, b.lowSulfurCoeff
-	from sulfurModelCoeff b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.fuelMYGroupID and d.cutoffFlag=0);
+	-- sulfurmodelcoeff
+	drop table if exists tempsulfurmodelcoeff;
+	create table tempsulfurmodelcoeff
+	select b.processid, b.pollutantid, b.m6emitterid, b.sourcetypeid, b.sulfurfunctionid, b.sulfurcoeff, b.lowsulfurcoeff
+	from sulfurmodelcoeff b
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.fuelmygroupid and d.cutoffflag=0);
 	
-	update sulfurModelCoeff, tempSulfurModelCoeff, tempModelYearGroupDecode
-	set sulfurModelCoeff.sulfurCoeff=tempSulfurModelCoeff.sulfurCoeff, sulfurModelCoeff.lowSulfurCoeff=tempSulfurModelCoeff.lowSulfurCoeff, sulfurModelCoeff.sulfurFunctionID=tempSulfurModelCoeff.sulfurFunctionID
-	where sulfurModelCoeff.processID=tempSulfurModelCoeff.processID 
-	and sulfurModelCoeff.pollutantID=tempSulfurModelCoeff.pollutantID 
-	and sulfurModelCoeff.M6emitterID=tempSulfurModelCoeff.M6emitterID 
-	and sulfurModelCoeff.sourceTypeID=tempSulfurModelCoeff.sourceTypeID 
-	and tempModelYearGroupDecode.modelYearGroupID = sulfurModelCoeff.fuelMYGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
-	drop table if exists tempSulfurModelCoeff;
-	insert into tempMessages (message) values ('Updated sulfurModelCoeff table');
+	update sulfurmodelcoeff, tempsulfurmodelcoeff, tempmodelyeargroupdecode
+	set sulfurmodelcoeff.sulfurcoeff=tempsulfurmodelcoeff.sulfurcoeff, sulfurmodelcoeff.lowsulfurcoeff=tempsulfurmodelcoeff.lowsulfurcoeff, sulfurmodelcoeff.sulfurfunctionid=tempsulfurmodelcoeff.sulfurfunctionid
+	where sulfurmodelcoeff.processid=tempsulfurmodelcoeff.processid 
+	and sulfurmodelcoeff.pollutantid=tempsulfurmodelcoeff.pollutantid 
+	and sulfurmodelcoeff.m6emitterid=tempsulfurmodelcoeff.m6emitterid 
+	and sulfurmodelcoeff.sourcetypeid=tempsulfurmodelcoeff.sourcetypeid 
+	and tempmodelyeargroupdecode.modelyeargroupid = sulfurmodelcoeff.fuelmygroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
+	drop table if exists tempsulfurmodelcoeff;
+	insert into tempmessages (message) values ('updated sulfurmodelcoeff table');
 
-	-- hcPermeationCoeff
-	drop table if exists temphcPermeationCoeff;
-	create table temphcPermeationCoeff
-	select polProcessID, etohThreshID, fuelAdjustment, fuelAdjustmentGPA, dataSourceID
-	from hcPermeationCoeff b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.fuelMYGroupID and d.cutoffFlag=0);
+	-- hcpermeationcoeff
+	drop table if exists temphcpermeationcoeff;
+	create table temphcpermeationcoeff
+	select polprocessid, etohthreshid, fueladjustment, fueladjustmentgpa, datasourceid
+	from hcpermeationcoeff b
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.fuelmygroupid and d.cutoffflag=0);
 
-	update hcPermeationCoeff, temphcPermeationCoeff, tempModelYearGroupDecode
-	set hcPermeationCoeff.fuelAdjustment=temphcPermeationCoeff.fuelAdjustment, 
-		hcPermeationCoeff.fuelAdjustmentGPA=temphcPermeationCoeff.fuelAdjustmentGPA, 
-		hcPermeationCoeff.dataSourceID=temphcPermeationCoeff.dataSourceID
-	where hcPermeationCoeff.polProcessID=temphcPermeationCoeff.polProcessID 
-	and hcPermeationCoeff.etohThreshID=temphcPermeationCoeff.etohThreshID 
-	and tempModelYearGroupDecode.modelYearGroupID = hcPermeationCoeff.fuelMYGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
-	drop table if exists temphcPermeationCoeff;
-	insert into tempMessages (message) values ('Updated hcPermeationCoeff table');
+	update hcpermeationcoeff, temphcpermeationcoeff, tempmodelyeargroupdecode
+	set hcpermeationcoeff.fueladjustment=temphcpermeationcoeff.fueladjustment, 
+		hcpermeationcoeff.fueladjustmentgpa=temphcpermeationcoeff.fueladjustmentgpa, 
+		hcpermeationcoeff.datasourceid=temphcpermeationcoeff.datasourceid
+	where hcpermeationcoeff.polprocessid=temphcpermeationcoeff.polprocessid 
+	and hcpermeationcoeff.etohthreshid=temphcpermeationcoeff.etohthreshid 
+	and tempmodelyeargroupdecode.modelyeargroupid = hcpermeationcoeff.fuelmygroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
+	drop table if exists temphcpermeationcoeff;
+	insert into tempmessages (message) values ('updated hcpermeationcoeff table');
 
-	-- hcSpeciation
-	drop table if exists temphcSpeciation;
-	create table temphcSpeciation
-	select polProcessID, fuelSubtypeID, etohThreshID, oxyThreshID, speciationConstant, oxySpeciation
-	from hcSpeciation b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.fuelMYGroupID and d.cutoffFlag=0);
+	-- hcspeciation
+	drop table if exists temphcspeciation;
+	create table temphcspeciation
+	select polprocessid, fuelsubtypeid, etohthreshid, oxythreshid, speciationconstant, oxyspeciation
+	from hcspeciation b
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.fuelmygroupid and d.cutoffflag=0);
 
-	update hcSpeciation, temphcSpeciation, tempModelYearGroupDecode
-	set hcSpeciation.speciationConstant=temphcSpeciation.speciationConstant, 
-		hcSpeciation.oxySpeciation=temphcSpeciation.oxySpeciation
-	where hcSpeciation.polProcessID=temphcSpeciation.polProcessID 
-	and hcSpeciation.fuelSubtypeID=temphcSpeciation.fuelSubtypeID
-	and hcSpeciation.etohThreshID=temphcSpeciation.etohThreshID 
-	and hcSpeciation.oxyThreshID=temphcSpeciation.oxyThreshID 
-	and tempModelYearGroupDecode.modelYearGroupID = hcSpeciation.fuelMYGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
-	drop table if exists temphcSpeciation;
-	insert into tempMessages (message) values ('Updated hcSpeciation table');
+	update hcspeciation, temphcspeciation, tempmodelyeargroupdecode
+	set hcspeciation.speciationconstant=temphcspeciation.speciationconstant, 
+		hcspeciation.oxyspeciation=temphcspeciation.oxyspeciation
+	where hcspeciation.polprocessid=temphcspeciation.polprocessid 
+	and hcspeciation.fuelsubtypeid=temphcspeciation.fuelsubtypeid
+	and hcspeciation.etohthreshid=temphcspeciation.etohthreshid 
+	and hcspeciation.oxythreshid=temphcspeciation.oxythreshid 
+	and tempmodelyeargroupdecode.modelyeargroupid = hcspeciation.fuelmygroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
+	drop table if exists temphcspeciation;
+	insert into tempmessages (message) values ('updated hcspeciation table');
 
 	-- dioxinemissionrate
 	drop table if exists tempdioxinemissionrate;
 	create table tempdioxinemissionrate
-	select b.polProcessID, b.fuelTypeID, b.units, b.meanBaseRate, b.meanBaseRateCV, b.dataSourceId
+	select b.polprocessid, b.fueltypeid, b.units, b.meanbaserate, b.meanbaseratecv, b.datasourceid
 	from dioxinemissionrate b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 	
-	update dioxinemissionrate, tempdioxinemissionrate, tempModelYearGroupDecode
-	set dioxinemissionrate.units=tempdioxinemissionrate.units, dioxinemissionrate.meanBaseRate=tempdioxinemissionrate.meanBaseRate, dioxinemissionrate.meanBaseRateCV=tempdioxinemissionrate.meanBaseRateCV, dioxinemissionrate.dataSourceId=tempdioxinemissionrate.dataSourceId
-	where dioxinemissionrate.polProcessID=tempdioxinemissionrate.polProcessID
-	and dioxinemissionrate.fuelTypeID=tempdioxinemissionrate.fuelTypeID
-	and tempModelYearGroupDecode.modelYearGroupID = dioxinemissionrate.modelYearGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
+	update dioxinemissionrate, tempdioxinemissionrate, tempmodelyeargroupdecode
+	set dioxinemissionrate.units=tempdioxinemissionrate.units, dioxinemissionrate.meanbaserate=tempdioxinemissionrate.meanbaserate, dioxinemissionrate.meanbaseratecv=tempdioxinemissionrate.meanbaseratecv, dioxinemissionrate.datasourceid=tempdioxinemissionrate.datasourceid
+	where dioxinemissionrate.polprocessid=tempdioxinemissionrate.polprocessid
+	and dioxinemissionrate.fueltypeid=tempdioxinemissionrate.fueltypeid
+	and tempmodelyeargroupdecode.modelyeargroupid = dioxinemissionrate.modelyeargroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
 	drop table if exists tempdioxinemissionrate;
-	insert into tempMessages (message) values ('Updated dioxinemissionrate table');
+	insert into tempmessages (message) values ('updated dioxinemissionrate table');
 	
 	-- metalemissionrate
 	drop table if exists tempmetalemissionrate;
 	create table tempmetalemissionrate
-	select b.polProcessID, b.fuelTypeID, b.sourceTypeID, b.units, b.meanBaseRate, b.meanBaseRateCV, b.dataSourceId
+	select b.polprocessid, b.fueltypeid, b.sourcetypeid, b.units, b.meanbaserate, b.meanbaseratecv, b.datasourceid
 	from metalemissionrate b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 	
-	update metalemissionrate, tempmetalemissionrate, tempModelYearGroupDecode
-	set metalemissionrate.units=tempmetalemissionrate.units, metalemissionrate.meanBaseRate=tempmetalemissionrate.meanBaseRate, metalemissionrate.meanBaseRateCV=tempmetalemissionrate.meanBaseRateCV, metalemissionrate.dataSourceId=tempmetalemissionrate.dataSourceId
-	where metalemissionrate.polProcessID=tempmetalemissionrate.polProcessID
-	and metalemissionrate.fuelTypeID=tempmetalemissionrate.fuelTypeID
-	and metalemissionrate.sourceTypeID=tempmetalemissionrate.sourceTypeID
-	and tempModelYearGroupDecode.modelYearGroupID = metalemissionrate.modelYearGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
+	update metalemissionrate, tempmetalemissionrate, tempmodelyeargroupdecode
+	set metalemissionrate.units=tempmetalemissionrate.units, metalemissionrate.meanbaserate=tempmetalemissionrate.meanbaserate, metalemissionrate.meanbaseratecv=tempmetalemissionrate.meanbaseratecv, metalemissionrate.datasourceid=tempmetalemissionrate.datasourceid
+	where metalemissionrate.polprocessid=tempmetalemissionrate.polprocessid
+	and metalemissionrate.fueltypeid=tempmetalemissionrate.fueltypeid
+	and metalemissionrate.sourcetypeid=tempmetalemissionrate.sourcetypeid
+	and tempmodelyeargroupdecode.modelyeargroupid = metalemissionrate.modelyeargroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
 	drop table if exists tempmetalemissionrate;
-	insert into tempMessages (message) values ('Updated metalemissionrate table');
+	insert into tempmessages (message) values ('updated metalemissionrate table');
 	
 	-- methanethcratio
 	drop table if exists tempmethanethcratio;
 	create table tempmethanethcratio
-	select b.processID, b.fuelTypeID, b.sourceTypeID, b.ageGroupID, b.CH4THCRatio, b.CH4THCRatioCV
+	select b.processid, b.fueltypeid, b.sourcetypeid, b.agegroupid, b.ch4thcratio, b.ch4thcratiocv
 	from methanethcratio b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 	
-	update methanethcratio, tempmethanethcratio, tempModelYearGroupDecode
-	set methanethcratio.CH4THCRatio=tempmethanethcratio.CH4THCRatio, methanethcratio.CH4THCRatioCV=tempmethanethcratio.CH4THCRatioCV
-	where methanethcratio.processID=tempmethanethcratio.processID
-	and methanethcratio.fuelTypeID=tempmethanethcratio.fuelTypeID
-	and methanethcratio.sourceTypeID=tempmethanethcratio.sourceTypeID
-	and methanethcratio.ageGroupID=tempmethanethcratio.ageGroupID
-	and tempModelYearGroupDecode.modelYearGroupID = methanethcratio.modelYearGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
+	update methanethcratio, tempmethanethcratio, tempmodelyeargroupdecode
+	set methanethcratio.ch4thcratio=tempmethanethcratio.ch4thcratio, methanethcratio.ch4thcratiocv=tempmethanethcratio.ch4thcratiocv
+	where methanethcratio.processid=tempmethanethcratio.processid
+	and methanethcratio.fueltypeid=tempmethanethcratio.fueltypeid
+	and methanethcratio.sourcetypeid=tempmethanethcratio.sourcetypeid
+	and methanethcratio.agegroupid=tempmethanethcratio.agegroupid
+	and tempmodelyeargroupdecode.modelyeargroupid = methanethcratio.modelyeargroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
 	drop table if exists tempmethanethcratio;
-	insert into tempMessages (message) values ('Updated methanethcratio table');
+	insert into tempmessages (message) values ('updated methanethcratio table');
 	
 	-- minorhapratio
 	drop table if exists tempminorhapratio;
 	create table tempminorhapratio
-	select b.polProcessID, b.fuelTypeID, b.fuelSubtypeID, b.atRatio, b.atRatioCV, b.dataSourceId
+	select b.polprocessid, b.fueltypeid, b.fuelsubtypeid, b.atratio, b.atratiocv, b.datasourceid
 	from minorhapratio b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 	
-	update minorhapratio, tempminorhapratio, tempModelYearGroupDecode
-	set minorhapratio.atRatio=tempminorhapratio.atRatio, minorhapratio.atRatioCV=tempminorhapratio.atRatioCV, minorhapratio.dataSourceId=tempminorhapratio.dataSourceId
-	where minorhapratio.polProcessID=tempminorhapratio.polProcessID
-	and minorhapratio.fuelTypeID=tempminorhapratio.fuelTypeID
-	and minorhapratio.fuelSubtypeID=tempminorhapratio.fuelSubtypeID
-	and tempModelYearGroupDecode.modelYearGroupID = minorhapratio.modelYearGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
+	update minorhapratio, tempminorhapratio, tempmodelyeargroupdecode
+	set minorhapratio.atratio=tempminorhapratio.atratio, minorhapratio.atratiocv=tempminorhapratio.atratiocv, minorhapratio.datasourceid=tempminorhapratio.datasourceid
+	where minorhapratio.polprocessid=tempminorhapratio.polprocessid
+	and minorhapratio.fueltypeid=tempminorhapratio.fueltypeid
+	and minorhapratio.fuelsubtypeid=tempminorhapratio.fuelsubtypeid
+	and tempmodelyeargroupdecode.modelyeargroupid = minorhapratio.modelyeargroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
 	drop table if exists tempminorhapratio;
-	insert into tempMessages (message) values ('Updated minorhapratio table');
+	insert into tempmessages (message) values ('updated minorhapratio table');
 	
 	-- pahgasratio
 	drop table if exists temppahgasratio;
 	create table temppahgasratio
-	select b.polProcessID, b.fuelTypeID, b.atRatio, b.atRatioCV, b.dataSourceId
+	select b.polprocessid, b.fueltypeid, b.atratio, b.atratiocv, b.datasourceid
 	from pahgasratio b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 	
-	update pahgasratio, temppahgasratio, tempModelYearGroupDecode
-	set pahgasratio.atRatio=temppahgasratio.atRatio, pahgasratio.atRatioCV=temppahgasratio.atRatioCV, pahgasratio.dataSourceId=temppahgasratio.dataSourceId
-	where pahgasratio.polProcessID=temppahgasratio.polProcessID
-	and pahgasratio.fuelTypeID=temppahgasratio.fuelTypeID
-	and tempModelYearGroupDecode.modelYearGroupID = pahgasratio.modelYearGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
+	update pahgasratio, temppahgasratio, tempmodelyeargroupdecode
+	set pahgasratio.atratio=temppahgasratio.atratio, pahgasratio.atratiocv=temppahgasratio.atratiocv, pahgasratio.datasourceid=temppahgasratio.datasourceid
+	where pahgasratio.polprocessid=temppahgasratio.polprocessid
+	and pahgasratio.fueltypeid=temppahgasratio.fueltypeid
+	and tempmodelyeargroupdecode.modelyeargroupid = pahgasratio.modelyeargroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
 	drop table if exists temppahgasratio;
-	insert into tempMessages (message) values ('Updated pahgasratio table');
+	insert into tempmessages (message) values ('updated pahgasratio table');
 	
 	-- pahparticleratio
 	drop table if exists temppahparticleratio;
 	create table temppahparticleratio
-	select b.polProcessID, b.fuelTypeID, b.atRatio, b.atRatioCV, b.dataSourceId
+	select b.polprocessid, b.fueltypeid, b.atratio, b.atratiocv, b.datasourceid
 	from pahparticleratio b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 	
-	update pahparticleratio, temppahparticleratio, tempModelYearGroupDecode
-	set pahparticleratio.atRatio=temppahparticleratio.atRatio, pahparticleratio.atRatioCV=temppahparticleratio.atRatioCV, pahparticleratio.dataSourceId=temppahparticleratio.dataSourceId
-	where pahparticleratio.polProcessID=temppahparticleratio.polProcessID
-	and pahparticleratio.fuelTypeID=temppahparticleratio.fuelTypeID
-	and tempModelYearGroupDecode.modelYearGroupID = pahparticleratio.modelYearGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
+	update pahparticleratio, temppahparticleratio, tempmodelyeargroupdecode
+	set pahparticleratio.atratio=temppahparticleratio.atratio, pahparticleratio.atratiocv=temppahparticleratio.atratiocv, pahparticleratio.datasourceid=temppahparticleratio.datasourceid
+	where pahparticleratio.polprocessid=temppahparticleratio.polprocessid
+	and pahparticleratio.fueltypeid=temppahparticleratio.fueltypeid
+	and tempmodelyeargroupdecode.modelyeargroupid = pahparticleratio.modelyeargroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
 	drop table if exists temppahparticleratio;
-	insert into tempMessages (message) values ('Updated pahparticleratio table');
+	insert into tempmessages (message) values ('updated pahparticleratio table');
 
 	-- atrationongas
 	drop table if exists tempatrationongas;
 	create table tempatrationongas
-	select b.polProcessID, b.sourceTypeID, b.fuelSubtypeID, b.ATRatio, b.ATRatioCV, b.dataSourceId
+	select b.polprocessid, b.sourcetypeid, b.fuelsubtypeid, b.atratio, b.atratiocv, b.datasourceid
 	from atrationongas b
-	inner join tempModelYearGroupDecode d on (d.modelYearGroupID=b.modelYearGroupID and d.cutoffFlag=0);
+	inner join tempmodelyeargroupdecode d on (d.modelyeargroupid=b.modelyeargroupid and d.cutoffflag=0);
 	
-	update atrationongas, tempatrationongas, tempModelYearGroupDecode
-	set atrationongas.atRatio=tempatrationongas.atRatio, atrationongas.atRatioCV=tempatrationongas.atRatioCV, atrationongas.dataSourceId=tempatrationongas.dataSourceId
-	where atrationongas.polProcessID=tempatrationongas.polProcessID
-	and atrationongas.sourceTypeID=tempatrationongas.sourceTypeID
-	and atrationongas.fuelSubtypeID=tempatrationongas.fuelSubtypeID
-	and tempModelYearGroupDecode.modelYearGroupID = atrationongas.modelYearGroupID
-	and tempModelYearGroupDecode.cutoffFlag = 1;
+	update atrationongas, tempatrationongas, tempmodelyeargroupdecode
+	set atrationongas.atratio=tempatrationongas.atratio, atrationongas.atratiocv=tempatrationongas.atratiocv, atrationongas.datasourceid=tempatrationongas.datasourceid
+	where atrationongas.polprocessid=tempatrationongas.polprocessid
+	and atrationongas.sourcetypeid=tempatrationongas.sourcetypeid
+	and atrationongas.fuelsubtypeid=tempatrationongas.fuelsubtypeid
+	and tempmodelyeargroupdecode.modelyeargroupid = atrationongas.modelyeargroupid
+	and tempmodelyeargroupdecode.cutoffflag = 1;
 	drop table if exists tempatrationongas;
-	insert into tempMessages (message) values ('Updated atrationongas table');
+	insert into tempmessages (message) values ('updated atrationongas table');
 
 
 
 
-	drop table if exists tempModelYear;
-	-- drop table if exists tempModelYearGroupDecode;
+	drop table if exists tempmodelyear;
+	-- drop table if exists tempmodelyeargroupdecode;
 end
-EndBlock
+endblock
 
-drop procedure if exists spCheckRateOfProgressIMPrograms;
+drop procedure if exists spcheckrateofprogressimprograms;
 
-BeginBlock
-create procedure spCheckRateOfProgressIMPrograms()
+beginblock
+create procedure spcheckrateofprogressimprograms()
 begin
-	-- Insert messages beginning with WARNING: or ERROR: to notify the user
-	-- of IM programs that do not make sense if the Clean Air Act had not
+	-- insert messages beginning with warning: or error: to notify the user
+	-- of im programs that do not make sense if the clean air act had not
 	-- been enacted.
-	-- insert into tempMessages (message) values ('WARNING: This is a test RoP warning');
-	-- insert into tempMessages (message) values ('ERROR: This is a test RoP error');
+	-- insert into tempmessages (message) values ('warning: this is a test rop warning');
+	-- insert into tempmessages (message) values ('error: this is a test rop error');
 
-	insert into tempMessages (message) values ('Checked IM programs for Rate of Progress suitability');
+	insert into tempmessages (message) values ('checked im programs for rate of progress suitability');
 end
-EndBlock
+endblock
 
-call spDoRateOfProgress();
-drop procedure if exists spDoRateOfProgress;
+call spdorateofprogress();
+drop procedure if exists spdorateofprogress;
 
-call spCheckRateOfProgressIMPrograms();
-drop procedure if exists spCheckRateOfProgressIMPrograms;
+call spcheckrateofprogressimprograms();
+drop procedure if exists spcheckrateofprogressimprograms;

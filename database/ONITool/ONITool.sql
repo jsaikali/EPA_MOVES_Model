@@ -1,672 +1,672 @@
 -- --------------------------------------------------------------------------------------
--- This script is run by the MOVES GUI to calculate default hours of Off-Network Idling
---     (ONI) activity for use with a Rates Mode run. It must be run with a fully populated
---     County Input Database.
--- The results are temporarily stored in a table called ONIToolOutput in the input database.
---     This table is managed by the MOVES GUI and deleted after the results are saved elsewhere.
--- The MOVES GUI replaces:
+-- this script is run by the moves gui to calculate default hours of off-network idling
+--     (oni) activity for use with a rates mode run. it must be run with a fully populated
+--     county input database.
+-- the results are temporarily stored in a table called onitooloutput in the input database.
+--     this table is managed by the moves gui and deleted after the results are saved elsewhere.
+-- the moves gui replaces:
 --     ##defaultdb## with the name of the default database
---     ##inputdb## with the name of the County Input Database
+--     ##inputdb## with the name of the county input database
 --     ##tempdb## with a temporary database name for all intermediate calculations
--- Messages to be displayed to the user are inserted into the oniTempMessages table, which
---     has one VARCHAR(1000) column. This table is managed by the MOVES GUI.
+-- messages to be displayed to the user are inserted into the onitempmessages table, which
+--     has one varchar(1000) column. this table is managed by the moves gui.
 -- --------------------------------------------------------------------------------------
 
-drop procedure if exists ONITool;
+drop procedure if exists onitool;
 
-BeginBlock
-create procedure ONITool()
-ONITOOL_PROCEDURE: begin
-	DECLARE howMany int default 0;
+beginblock
+create procedure onitool()
+onitool_procedure: begin
+	declare howmany int default 0;
 
 	-- ------------------------------
-	-- START Ready to Calculate Block
+	-- start ready to calculate block
 	-- ------------------------------
-	set howMany=0;
-	select count(*) into howMany from ##inputdb##.RoadTypeDistribution;
-	set howMany=ifnull(howMany,0);
-	if(howMany = 0) then
-		insert into ##tempdb##.oniTempMessages (message) values ('ERROR: RoadTypeDistribution must be provided.');
+	set howmany=0;
+	select count(*) into howmany from ##inputdb##.roadtypedistribution;
+	set howmany=ifnull(howmany,0);
+	if(howmany = 0) then
+		insert into ##tempdb##.onitempmessages (message) values ('error: roadtypedistribution must be provided.');
 	end if;
 
-	set howMany=0;
-	select count(*) into howMany from ##inputdb##.County;
-	set howMany=ifnull(howMany,0);
-	if(howMany = 0) then
-		insert into ##tempdb##.oniTempMessages (message) values ('ERROR: County table must be provided.');
+	set howmany=0;
+	select count(*) into howmany from ##inputdb##.county;
+	set howmany=ifnull(howmany,0);
+	if(howmany = 0) then
+		insert into ##tempdb##.onitempmessages (message) values ('error: county table must be provided.');
 	end if;
 
-	set howMany=0;
-	select count(*) into howMany from ##inputdb##.State;
-	set howMany=ifnull(howMany,0);
-	if(howMany = 0) then
-		insert into ##tempdb##.oniTempMessages (message) values ('ERROR: State table must be provided.');
+	set howmany=0;
+	select count(*) into howmany from ##inputdb##.state;
+	set howmany=ifnull(howmany,0);
+	if(howmany = 0) then
+		insert into ##tempdb##.onitempmessages (message) values ('error: state table must be provided.');
 	end if;
 
-	set howMany=0;
-	select count(*) into howMany from ##inputdb##.avgspeeddistribution;
-	set howMany=ifnull(howMany,0);
-	if(howMany = 0) then
-		insert into ##tempdb##.oniTempMessages (message) values ('ERROR: avgspeeddistribution must be provided.');
+	set howmany=0;
+	select count(*) into howmany from ##inputdb##.avgspeeddistribution;
+	set howmany=ifnull(howmany,0);
+	if(howmany = 0) then
+		insert into ##tempdb##.onitempmessages (message) values ('error: avgspeeddistribution must be provided.');
 	end if;
 
-	set howMany=0;
-	select count(*) into howMany from ##inputdb##.sourcetypeyear;
-	set howMany=ifnull(howMany,0);
-	if(howMany = 0) then
-		insert into ##tempdb##.oniTempMessages (message) values ('ERROR: sourcetypeyear must be provided.');
+	set howmany=0;
+	select count(*) into howmany from ##inputdb##.sourcetypeyear;
+	set howmany=ifnull(howmany,0);
+	if(howmany = 0) then
+		insert into ##tempdb##.onitempmessages (message) values ('error: sourcetypeyear must be provided.');
 	end if;
 
-	set howMany=0;
-	select count(*) into howMany from ##inputdb##.sourcetypeagedistribution;
-	set howMany=ifnull(howMany,0);
-	if(howMany = 0) then
-		insert into ##tempdb##.oniTempMessages (message) values ('ERROR: sourcetypeagedistribution must be provided.');
+	set howmany=0;
+	select count(*) into howmany from ##inputdb##.sourcetypeagedistribution;
+	set howmany=ifnull(howmany,0);
+	if(howmany = 0) then
+		insert into ##tempdb##.onitempmessages (message) values ('error: sourcetypeagedistribution must be provided.');
 	end if;
 
-	set howMany=0;
-	select count(*) into howMany from ##inputdb##.hourvmtfraction;
-	set howMany=ifnull(howMany,0);
-	if(howMany = 0) then
-		insert into ##tempdb##.oniTempMessages (message) values ('ERROR: hourvmtfraction must be provided.');
+	set howmany=0;
+	select count(*) into howmany from ##inputdb##.hourvmtfraction;
+	set howmany=ifnull(howmany,0);
+	if(howmany = 0) then
+		insert into ##tempdb##.onitempmessages (message) values ('error: hourvmtfraction must be provided.');
 	end if;
 
-	set howMany=0;
-	SELECT SUM(c) into howMany FROM (select COUNT(*) AS c from ##inputdb##.sourcetypedayvmt
-											  UNION select COUNT(*) AS c from ##inputdb##.sourcetypeyearvmt
-										   UNION select COUNT(*) AS c from ##inputdb##.hpmsvtypeday
-										   UNION select COUNT(*) AS c from ##inputdb##.hpmsvtypeyear) AS t1;
-	set howMany=ifnull(howMany,0);
-	if(howMany = 0) then
-		insert into ##tempdb##.oniTempMessages (message) values ('ERROR: VMT input must be provided via sourcetypedayvmt, sourcetypeyearvmt, hpmsvtypeday, or hpmsvtypeyear.');
+	set howmany=0;
+	select sum(c) into howmany from (select count(*) as c from ##inputdb##.sourcetypedayvmt
+											  union select count(*) as c from ##inputdb##.sourcetypeyearvmt
+										   union select count(*) as c from ##inputdb##.hpmsvtypeday
+										   union select count(*) as c from ##inputdb##.hpmsvtypeyear) as t1;
+	set howmany=ifnull(howmany,0);
+	if(howmany = 0) then
+		insert into ##tempdb##.onitempmessages (message) values ('error: vmt input must be provided via sourcetypedayvmt, sourcetypeyearvmt, hpmsvtypeday, or hpmsvtypeyear.');
 	end if;
 
-	set howMany=0;
-	select count(*) into howMany from ##inputdb##.sourcetypeyearvmt;
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then
-		set howMany=0;
-		select count(*) into howMany from ##inputdb##.monthvmtfraction;
-		set howMany=ifnull(howMany,0);
-		if(howMany = 0) then
-			insert into ##tempdb##.oniTempMessages (message) values ('ERROR: monthvmtfraction must be provided when using sourcetypeyearvmt.');
+	set howmany=0;
+	select count(*) into howmany from ##inputdb##.sourcetypeyearvmt;
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then
+		set howmany=0;
+		select count(*) into howmany from ##inputdb##.monthvmtfraction;
+		set howmany=ifnull(howmany,0);
+		if(howmany = 0) then
+			insert into ##tempdb##.onitempmessages (message) values ('error: monthvmtfraction must be provided when using sourcetypeyearvmt.');
 		end if;
-		set howMany=0;
-		select count(*) into howMany from ##inputdb##.dayvmtfraction;
-		set howMany=ifnull(howMany,0);
-		if(howMany = 0) then
-			insert into ##tempdb##.oniTempMessages (message) values ('ERROR: dayvmtfraction must be provided when using sourcetypeyearvmt.');
-		end if;
-	end if;
-
-	set howMany=0;
-	select count(*) into howMany from ##inputdb##.hpmsvtypeyear;
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then
-		set howMany=0;
-		select count(*) into howMany from ##inputdb##.monthvmtfraction;
-		set howMany=ifnull(howMany,0);
-		if(howMany = 0) then
-			insert into ##tempdb##.oniTempMessages (message) values ('ERROR: monthvmtfraction must be provided when using hpmsvtypeyear.');
-		end if;
-		set howMany=0;
-		select count(*) into howMany from ##inputdb##.dayvmtfraction;
-		set howMany=ifnull(howMany,0);
-		if(howMany = 0) then
-			insert into ##tempdb##.oniTempMessages (message) values ('ERROR: dayvmtfraction must be provided when using hpmsvtypeyear.');
+		set howmany=0;
+		select count(*) into howmany from ##inputdb##.dayvmtfraction;
+		set howmany=ifnull(howmany,0);
+		if(howmany = 0) then
+			insert into ##tempdb##.onitempmessages (message) values ('error: dayvmtfraction must be provided when using sourcetypeyearvmt.');
 		end if;
 	end if;
 
-	set howMany=0;
-	select count(*) into howMany from ##inputdb##.idlemodelyeargrouping;
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then
-		set howMany=0;
-		select count(*) into howMany from ##inputdb##.totalidlefraction;
-		set howMany=ifnull(howMany,0);
-		if(howMany > 0) then
-			insert into ##tempdb##.oniTempMessages (message) values ('ERROR: cannot use both totalidlefraction and idlemodelyeargrouping (choose one or the other).');
+	set howmany=0;
+	select count(*) into howmany from ##inputdb##.hpmsvtypeyear;
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then
+		set howmany=0;
+		select count(*) into howmany from ##inputdb##.monthvmtfraction;
+		set howmany=ifnull(howmany,0);
+		if(howmany = 0) then
+			insert into ##tempdb##.onitempmessages (message) values ('error: monthvmtfraction must be provided when using hpmsvtypeyear.');
+		end if;
+		set howmany=0;
+		select count(*) into howmany from ##inputdb##.dayvmtfraction;
+		set howmany=ifnull(howmany,0);
+		if(howmany = 0) then
+			insert into ##tempdb##.onitempmessages (message) values ('error: dayvmtfraction must be provided when using hpmsvtypeyear.');
+		end if;
+	end if;
+
+	set howmany=0;
+	select count(*) into howmany from ##inputdb##.idlemodelyeargrouping;
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then
+		set howmany=0;
+		select count(*) into howmany from ##inputdb##.totalidlefraction;
+		set howmany=ifnull(howmany,0);
+		if(howmany > 0) then
+			insert into ##tempdb##.onitempmessages (message) values ('error: cannot use both totalidlefraction and idlemodelyeargrouping (choose one or the other).');
 		end if;
 	end if;
 	
-	-- Exit this stored procedure if there are any error messages at this point
-	set howMany=0;
-	select count(*) into howMany from ##tempdb##.oniTempMessages WHERE message like '%ERROR%';
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then
-		LEAVE ONITOOL_PROCEDURE;
+	-- exit this stored procedure if there are any error messages at this point
+	set howmany=0;
+	select count(*) into howmany from ##tempdb##.onitempmessages where message like '%error%';
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then
+		leave onitool_procedure;
 	end if;
 	-- ----------------------------
-	-- END Ready to Calculate Block
+	-- end ready to calculate block
 	-- ----------------------------
 
 	-- ---------------------------------
-	-- START Get TotalIdleFraction block (from /database/AdjustTotalIdleFraction.sql)
+	-- start get totalidlefraction block (from /database/adjusttotalidlefraction.sql)
 	-- ---------------------------------
 	
-	-- Start with user TotalIdleFractions
-	CREATE TABLE IF NOT EXISTS ##tempdb##.totalidlefraction like ##inputdb##.totalidlefraction;
-	INSERT INTO ##tempdb##.totalidlefraction SELECT * from ##inputdb##.totalidlefraction;
+	-- start with user totalidlefractions
+	create table if not exists ##tempdb##.totalidlefraction like ##inputdb##.totalidlefraction;
+	insert into ##tempdb##.totalidlefraction select * from ##inputdb##.totalidlefraction;
 	
-	-- Grab the default TotalIdleFractions if the user did not enter their own
-	set howMany=0;
-	select count(*) into howMany from ##tempdb##.totalidlefraction;
-	set howMany=ifnull(howMany,0);
-	if(howMany = 0) then
-		INSERT INTO ##tempdb##.totalidlefraction (sourceTypeID, minModelYearID, maxModelYearID, monthID, dayID, idleRegionID, countyTypeID, totalidlefraction)
-			SELECT sourceTypeID, minModelYearID, maxModelYearID, monthID, dayID, idleRegionID, countyTypeID, totalIdleFraction
-			FROM ##inputdb##.county
-			JOIN ##inputdb##.state
-			JOIN ##defaultdb##.totalidlefraction USING (countyTypeID, idleRegionID);
-	END if;
+	-- grab the default totalidlefractions if the user did not enter their own
+	set howmany=0;
+	select count(*) into howmany from ##tempdb##.totalidlefraction;
+	set howmany=ifnull(howmany,0);
+	if(howmany = 0) then
+		insert into ##tempdb##.totalidlefraction (sourcetypeid, minmodelyearid, maxmodelyearid, monthid, dayid, idleregionid, countytypeid, totalidlefraction)
+			select sourcetypeid, minmodelyearid, maxmodelyearid, monthid, dayid, idleregionid, countytypeid, totalidlefraction
+			from ##inputdb##.county
+			join ##inputdb##.state
+			join ##defaultdb##.totalidlefraction using (countytypeid, idleregionid);
+	end if;
 	
-	-- Apply shaping tables if the user supplied them
-	set howMany=0;
-	select count(*) into howMany from ##inputdb##.idleModelYearGrouping;
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then		
+	-- apply shaping tables if the user supplied them
+	set howmany=0;
+	select count(*) into howmany from ##inputdb##.idlemodelyeargrouping;
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then		
 		-- eliminate the default data
 		truncate table ##tempdb##.totalidlefraction;
 		
-		-- Populate totalIdleFraction from idleModelYearGrouping
-		insert into ##tempdb##.totalIdleFraction (idleRegionID,countyTypeID,sourceTypeID,monthID,dayID,minModelYearID,maxModelYearID, totalIdleFraction)
-		select distinct st.idleRegionID,c.countyTypeID,imyg.sourceTypeID, m.monthID, d.dayID, imyg.minModelYearID, imyg.maxModelYearID, imyg.totalIdleFraction
-		from ##inputdb##.idleModelYearGrouping imyg
+		-- populate totalidlefraction from idlemodelyeargrouping
+		insert into ##tempdb##.totalidlefraction (idleregionid,countytypeid,sourcetypeid,monthid,dayid,minmodelyearid,maxmodelyearid, totalidlefraction)
+		select distinct st.idleregionid,c.countytypeid,imyg.sourcetypeid, m.monthid, d.dayid, imyg.minmodelyearid, imyg.maxmodelyearid, imyg.totalidlefraction
+		from ##inputdb##.idlemodelyeargrouping imyg
 		join ##inputdb##.county c
 		join ##inputdb##.state st
 		join ##defaultdb##.monthofanyyear m
 		join ##defaultdb##.dayofanyweek d;
 		
-		-- apply idleMonthAdjust
-		update ##tempdb##.totalIdleFraction
-		inner join ##inputdb##.idleMonthAdjust using (sourceTypeID, monthID)
-		set totalIdleFraction = totalIdleFraction * idleMonthAdjust;
+		-- apply idlemonthadjust
+		update ##tempdb##.totalidlefraction
+		inner join ##inputdb##.idlemonthadjust using (sourcetypeid, monthid)
+		set totalidlefraction = totalidlefraction * idlemonthadjust;
 
-		-- apply idleDayAdjust
-		update ##tempdb##.totalIdleFraction
-		inner join ##inputdb##.idleDayAdjust using (sourceTypeID, dayID)
-		set totalIdleFraction = totalIdleFraction * idleDayAdjust;
+		-- apply idledayadjust
+		update ##tempdb##.totalidlefraction
+		inner join ##inputdb##.idledayadjust using (sourcetypeid, dayid)
+		set totalidlefraction = totalidlefraction * idledayadjust;
 	end if;
 	-- ---------------------------------
-	-- END Get TotalIdleFraction block
+	-- end get totalidlefraction block
 	-- ---------------------------------
 
 	-- -----------------------------------------
-	-- START TotalActivityGenerator Calculations (from /gov/otaq/moves/master/implementation/ghg/TotalActivityGenerator.java)
+	-- start totalactivitygenerator calculations (from /gov/otaq/moves/master/implementation/ghg/totalactivitygenerator.java)
 	-- -----------------------------------------
 
-	-- Create all intermediate tables
-	CREATE TABLE IF NOT EXISTS ##tempdb##.SHOByAgeRoadwayHour (
-		yearID         SMALLINT NOT NULL,
-		roadTypeID     SMALLINT NOT NULL,
-		sourceTypeID   SMALLINT NOT NULL,
-		ageID          SMALLINT NOT NULL,
-		monthID        SMALLINT NOT NULL,
-		dayID          SMALLINT NOT NULL,
-		hourID         SMALLINT NOT NULL,
-		hourDayID      SMALLINT NOT NULL DEFAULT 0,
-		SHO            DOUBLE NOT NULL,
-		VMT            DOUBLE NOT NULL,
-		UNIQUE INDEX XPKSHOByAgeRoadwayHour (yearID, roadTypeID, sourceTypeID, ageID, monthID, dayID, hourID));
-	TRUNCATE ##tempdb##.SHOByAgeRoadwayHour;
+	-- create all intermediate tables
+	create table if not exists ##tempdb##.shobyageroadwayhour (
+		yearid         smallint not null,
+		roadtypeid     smallint not null,
+		sourcetypeid   smallint not null,
+		ageid          smallint not null,
+		monthid        smallint not null,
+		dayid          smallint not null,
+		hourid         smallint not null,
+		hourdayid      smallint not null default 0,
+		sho            double not null,
+		vmt            double not null,
+		unique index xpkshobyageroadwayhour (yearid, roadtypeid, sourcetypeid, ageid, monthid, dayid, hourid));
+	truncate ##tempdb##.shobyageroadwayhour;
 
-	CREATE TABLE IF NOT EXISTS ##tempdb##.StartsByAgeHour (
-		yearID         SMALLINT NOT NULL,
-		sourceTypeID   SMALLINT NOT NULL,
-		ageID          SMALLINT NOT NULL,
-		monthID        SMALLINT NOT NULL,
-		dayID          SMALLINT NOT NULL,
-		hourID         SMALLINT NOT NULL,
-		starts         DOUBLE NOT NULL,
-		UNIQUE INDEX XPKStartsByAgeHour (yearID, sourceTypeID, ageID, monthID, dayID, hourID));
-	TRUNCATE ##tempdb##.StartsByAgeHour;
+	create table if not exists ##tempdb##.startsbyagehour (
+		yearid         smallint not null,
+		sourcetypeid   smallint not null,
+		ageid          smallint not null,
+		monthid        smallint not null,
+		dayid          smallint not null,
+		hourid         smallint not null,
+		starts         double not null,
+		unique index xpkstartsbyagehour (yearid, sourcetypeid, ageid, monthid, dayid, hourid));
+	truncate ##tempdb##.startsbyagehour;
 
-	CREATE TABLE IF NOT EXISTS ##tempdb##.VMTByAgeRoadwayHour (
-		yearID        SMALLINT NOT NULL,
-		roadTypeID    SMALLINT NOT NULL,
-		sourceTypeID  SMALLINT NOT NULL,
-		ageID         SMALLINT NOT NULL,
-		monthID       SMALLINT NOT NULL,
-		dayID         SMALLINT NOT NULL,
-		hourID        SMALLINT NOT NULL,
-		VMT           DOUBLE NOT NULL,
-		hourDayID     SMALLINT NOT NULL DEFAULT 0,
-		UNIQUE INDEX XPKVMTByAgeRoadwayHour(yearID, roadTypeID, sourceTypeID, ageID, monthID, dayID, hourID));
-	TRUNCATE ##tempdb##.VMTByAgeRoadwayHour;
+	create table if not exists ##tempdb##.vmtbyageroadwayhour (
+		yearid        smallint not null,
+		roadtypeid    smallint not null,
+		sourcetypeid  smallint not null,
+		ageid         smallint not null,
+		monthid       smallint not null,
+		dayid         smallint not null,
+		hourid        smallint not null,
+		vmt           double not null,
+		hourdayid     smallint not null default 0,
+		unique index xpkvmtbyageroadwayhour(yearid, roadtypeid, sourcetypeid, ageid, monthid, dayid, hourid));
+	truncate ##tempdb##.vmtbyageroadwayhour;
 
-	create table if not exists ##tempdb##.vmtByMYRoadHourFraction (
-		yearID smallint not null,
-		roadTypeID smallint not null,
-		sourceTypeID smallint not null,
-		modelYearID smallint not null,
-		monthID smallint not null,
-		dayID smallint not null,
-		hourID smallint not null,
-		hourDayID smallint not null,
-		vmtFraction double,
-		unique key (yearID, roadTypeID, sourceTypeID, modelYearID, monthID, hourID, dayID),
-		unique key (yearID, roadTypeID, sourceTypeID, modelYearID, monthID, hourDayID));
-	TRUNCATE ##tempdb##.vmtByMYRoadHourFraction;
+	create table if not exists ##tempdb##.vmtbymyroadhourfraction (
+		yearid smallint not null,
+		roadtypeid smallint not null,
+		sourcetypeid smallint not null,
+		modelyearid smallint not null,
+		monthid smallint not null,
+		dayid smallint not null,
+		hourid smallint not null,
+		hourdayid smallint not null,
+		vmtfraction double,
+		unique key (yearid, roadtypeid, sourcetypeid, modelyearid, monthid, hourid, dayid),
+		unique key (yearid, roadtypeid, sourcetypeid, modelyearid, monthid, hourdayid));
+	truncate ##tempdb##.vmtbymyroadhourfraction;
 
-	CREATE TABLE IF NOT EXISTS ##tempdb##.HPMSVTypePopulation (
-		yearID       SMALLINT NOT NULL,
-		HPMSVTypeID  SMALLINT NOT NULL,
-		population   FLOAT NOT NULL,
-		UNIQUE INDEX XPKHPMSVTypePopulation(yearID, HPMSVTypeID));
-	TRUNCATE ##tempdb##.HPMSVTypePopulation;
+	create table if not exists ##tempdb##.hpmsvtypepopulation (
+		yearid       smallint not null,
+		hpmsvtypeid  smallint not null,
+		population   float not null,
+		unique index xpkhpmsvtypepopulation(yearid, hpmsvtypeid));
+	truncate ##tempdb##.hpmsvtypepopulation;
 
-	CREATE TABLE IF NOT EXISTS ##tempdb##.FractionWithinHPMSVType (
-		yearID       SMALLINT NOT NULL,
-		sourceTypeID SMALLINT NOT NULL,
-		ageID        SMALLINT NOT NULL,
-		fraction     FLOAT NOT NULL,
-		UNIQUE INDEX XPKFractionWithinHPMSVType (yearID, sourceTypeID, ageID));
-	TRUNCATE ##tempdb##.FractionWithinHPMSVType;
+	create table if not exists ##tempdb##.fractionwithinhpmsvtype (
+		yearid       smallint not null,
+		sourcetypeid smallint not null,
+		ageid        smallint not null,
+		fraction     float not null,
+		unique index xpkfractionwithinhpmsvtype (yearid, sourcetypeid, ageid));
+	truncate ##tempdb##.fractionwithinhpmsvtype;
 
-	CREATE TABLE IF NOT EXISTS ##tempdb##.HPMSTravelFraction (
-		yearID      SMALLINT NOT NULL,
-		HPMSVTypeID SMALLINT NOT NULL,
-		fraction    FLOAT NOT NULL,
-		UNIQUE INDEX XPKHPMSTravelFraction (yearID, HPMSVTypeID));
-	TRUNCATE ##tempdb##.HPMSTravelFraction;
+	create table if not exists ##tempdb##.hpmstravelfraction (
+		yearid      smallint not null,
+		hpmsvtypeid smallint not null,
+		fraction    float not null,
+		unique index xpkhpmstravelfraction (yearid, hpmsvtypeid));
+	truncate ##tempdb##.hpmstravelfraction;
 
-	CREATE TABLE IF NOT EXISTS ##tempdb##.TravelFraction (
-		yearID        SMALLINT NOT NULL,
-		sourceTypeID  SMALLINT NOT NULL,
-		ageID         SMALLINT NOT NULL,
-		fraction      FLOAT NOT NULL,
-		UNIQUE INDEX XPKTravelFraction(yearID, sourceTypeID, ageID));
-	TRUNCATE ##tempdb##.TravelFraction;
+	create table if not exists ##tempdb##.travelfraction (
+		yearid        smallint not null,
+		sourcetypeid  smallint not null,
+		ageid         smallint not null,
+		fraction      float not null,
+		unique index xpktravelfraction(yearid, sourcetypeid, ageid));
+	truncate ##tempdb##.travelfraction;
 
-	CREATE TABLE IF NOT EXISTS ##tempdb##.AnnualVMTByAgeRoadway (
-		yearID        SMALLINT NOT NULL,
-		roadTypeID    SMALLINT NOT NULL,
-		sourceTypeID  SMALLINT NOT NULL,
-		ageID         SMALLINT NOT NULL,
-		VMT           FLOAT NOT NULL,
-		UNIQUE INDEX XPKAnnualVMTByAgeRoadway(yearID, roadTypeID, sourceTypeID, ageID));
-	TRUNCATE ##tempdb##.AnnualVMTByAgeRoadway;
+	create table if not exists ##tempdb##.annualvmtbyageroadway (
+		yearid        smallint not null,
+		roadtypeid    smallint not null,
+		sourcetypeid  smallint not null,
+		ageid         smallint not null,
+		vmt           float not null,
+		unique index xpkannualvmtbyageroadway(yearid, roadtypeid, sourcetypeid, ageid));
+	truncate ##tempdb##.annualvmtbyageroadway;
 
-	CREATE TABLE IF NOT EXISTS ##tempdb##.AverageSpeed (
-		roadTypeID    SMALLINT NOT NULL,
-		sourceTypeID  SMALLINT NOT NULL,
-		dayID         SMALLINT NOT NULL,
-		hourID        SMALLINT NOT NULL,
-		averageSpeed  FLOAT NOT NULL,
-		UNIQUE INDEX XPKAverageSpeed (roadTypeID, sourceTypeID, dayID, hourID));
-	TRUNCATE ##tempdb##.AverageSpeed;
+	create table if not exists ##tempdb##.averagespeed (
+		roadtypeid    smallint not null,
+		sourcetypeid  smallint not null,
+		dayid         smallint not null,
+		hourid        smallint not null,
+		averagespeed  float not null,
+		unique index xpkaveragespeed (roadtypeid, sourcetypeid, dayid, hourid));
+	truncate ##tempdb##.averagespeed;
 
-	CREATE TABLE IF NOT EXISTS ##tempdb##.SHOByAgeDay (
-		yearID         SMALLINT NOT NULL,
-		sourceTypeID   SMALLINT NOT NULL,
-		ageID          SMALLINT NOT NULL,
-		monthID        SMALLINT NOT NULL,
-		dayID          SMALLINT NOT NULL,
-		SHO            DOUBLE NOT NULL,
-		VMT            DOUBLE NOT NULL,
-		UNIQUE INDEX XPKSHOByAgeDay(yearID, sourceTypeID, ageID, monthID, dayID));
-	TRUNCATE ##tempdb##.SHOByAgeDay;
+	create table if not exists ##tempdb##.shobyageday (
+		yearid         smallint not null,
+		sourcetypeid   smallint not null,
+		ageid          smallint not null,
+		monthid        smallint not null,
+		dayid          smallint not null,
+		sho            double not null,
+		vmt            double not null,
+		unique index xpkshobyageday(yearid, sourcetypeid, ageid, monthid, dayid));
+	truncate ##tempdb##.shobyageday;
 		
-	CREATE TABLE IF NOT EXISTS ##tempdb##.AnalysisYearVMT (
-		yearID      SMALLINT NOT NULL,
-		HPMSVTypeID SMALLINT NOT NULL,
-		VMT         FLOAT NOT NULL,
-		UNIQUE INDEX XPKAnalysisYearVMT (yearID, HPMSVTypeID));
-	TRUNCATE ##tempdb##.AnalysisYearVMT;
+	create table if not exists ##tempdb##.analysisyearvmt (
+		yearid      smallint not null,
+		hpmsvtypeid smallint not null,
+		vmt         float not null,
+		unique index xpkanalysisyearvmt (yearid, hpmsvtypeid));
+	truncate ##tempdb##.analysisyearvmt;
 
-	CREATE TABLE IF NOT EXISTS ##tempdb##.SourceTypeAgePopulation (
-		yearID         SMALLINT NOT NULL,
-		sourceTypeID   SMALLINT NOT NULL,
-		ageID          SMALLINT NOT NULL,
-		population     FLOAT NOT NULL,
-		UNIQUE INDEX XPKSourceTypeAgePopulation (yearID, sourceTypeID, ageID));
-	TRUNCATE ##tempdb##.SourceTypeAgePopulation;
+	create table if not exists ##tempdb##.sourcetypeagepopulation (
+		yearid         smallint not null,
+		sourcetypeid   smallint not null,
+		ageid          smallint not null,
+		population     float not null,
+		unique index xpksourcetypeagepopulation (yearid, sourcetypeid, ageid));
+	truncate ##tempdb##.sourcetypeagepopulation;
 
-	create table if not exists ##tempdb##.vmtByMYRoadHourSummary (
-		yearID smallint not null,
-		roadTypeID smallint not null,
-		sourceTypeID smallint not null,
-		monthID smallint not null,
-		dayID smallint not null,
-		hourID smallint not null,
-		hourDayID smallint not null,
-		totalVMT double,
-		unique key (yearID, roadTypeID, sourceTypeID, monthID, hourID, dayID),
-		unique key (yearID, roadTypeID, sourceTypeID, monthID, hourDayID));
-	TRUNCATE ##tempdb##.vmtByMYRoadHourSummary;
+	create table if not exists ##tempdb##.vmtbymyroadhoursummary (
+		yearid smallint not null,
+		roadtypeid smallint not null,
+		sourcetypeid smallint not null,
+		monthid smallint not null,
+		dayid smallint not null,
+		hourid smallint not null,
+		hourdayid smallint not null,
+		totalvmt double,
+		unique key (yearid, roadtypeid, sourcetypeid, monthid, hourid, dayid),
+		unique key (yearid, roadtypeid, sourcetypeid, monthid, hourdayid));
+	truncate ##tempdb##.vmtbymyroadhoursummary;
 
-	create table IF NOT EXISTS ##tempdb##.ZoneRoadTypeLinkTemp (
-		roadTypeID smallint not null,
-		linkID int(11) not null,
-		SHOAllocFactor double,
-		unique index XPKZoneRoadTypeLinkTemp (roadTypeID, linkID));
-	TRUNCATE ##tempdb##.ZoneRoadTypeLinkTemp;
+	create table if not exists ##tempdb##.zoneroadtypelinktemp (
+		roadtypeid smallint not null,
+		linkid int(11) not null,
+		shoallocfactor double,
+		unique index xpkzoneroadtypelinktemp (roadtypeid, linkid));
+	truncate ##tempdb##.zoneroadtypelinktemp;
 	
-	create table if not exists ##tempdb##.drivingIdleFraction (
-		hourDayID smallint(6),
-		yearID smallint(6),
-		roadTypeID smallint(6),
-		sourceTypeID smallint(6),
-		drivingIdleFraction double,
-		primary key (hourDayID,yearID,roadTypeID,sourceTypeID));
-	TRUNCATE ##tempdb##.drivingIdleFraction;
+	create table if not exists ##tempdb##.drivingidlefraction (
+		hourdayid smallint(6),
+		yearid smallint(6),
+		roadtypeid smallint(6),
+		sourcetypeid smallint(6),
+		drivingidlefraction double,
+		primary key (hourdayid,yearid,roadtypeid,sourcetypeid));
+	truncate ##tempdb##.drivingidlefraction;
 	
 	create table if not exists ##tempdb##.link like ##defaultdb##.link;
-	TRUNCATE ##tempdb##.link;
+	truncate ##tempdb##.link;
 	
-	CREATE TABLE IF NOT EXISTS ##tempdb##.sho like ##defaultdb##.sho;
-	TRUNCATE ##tempdb##.sho;
+	create table if not exists ##tempdb##.sho like ##defaultdb##.sho;
+	truncate ##tempdb##.sho;
 
 	-- perform intermediate calculations
-	INSERT INTO ##tempdb##.SourceTypeAgePopulation (yearID,sourceTypeID,ageID,population) 
-		SELECT sty.YearID, sty.SourceTypeID, stad.AgeID, sty.SourceTypePopulation * stad.AgeFraction 
-		FROM ##inputdb##.SourceTypeYear sty,
-			 ##inputdb##.SourceTypeAgeDistribution stad 
-		WHERE sty.sourceTypeID = stad.sourceTypeID AND 
-			  sty.yearID = stad.yearID;
+	insert into ##tempdb##.sourcetypeagepopulation (yearid,sourcetypeid,ageid,population) 
+		select sty.yearid, sty.sourcetypeid, stad.ageid, sty.sourcetypepopulation * stad.agefraction 
+		from ##inputdb##.sourcetypeyear sty,
+			 ##inputdb##.sourcetypeagedistribution stad 
+		where sty.sourcetypeid = stad.sourcetypeid and 
+			  sty.yearid = stad.yearid;
 						
-	INSERT INTO ##tempdb##.HPMSVTypePopulation (yearID,HPMSVTypeID,population) 
-		SELECT stap.yearID, sut.HPMSVTypeID, sum(stap.population) 
-		FROM ##tempdb##.SourceTypeAgePopulation stap,
+	insert into ##tempdb##.hpmsvtypepopulation (yearid,hpmsvtypeid,population) 
+		select stap.yearid, sut.hpmsvtypeid, sum(stap.population) 
+		from ##tempdb##.sourcetypeagepopulation stap,
 			 ##defaultdb##.sourceusetype sut 
-		WHERE stap.sourceTypeID = sut.sourceTypeID
-		GROUP BY stap.yearID, sut.HPMSVTypeID;
+		where stap.sourcetypeid = sut.sourcetypeid
+		group by stap.yearid, sut.hpmsvtypeid;
 			
-	INSERT INTO ##tempdb##.FractionWithinHPMSVType (yearID,sourceTypeID,ageID,fraction) 
-		SELECT stap.yearID, stap.sourceTypeID, stap.ageID, stap.population / hvtp.population 
-		FROM ##tempdb##.SourceTypeAgePopulation stap,
-			 ##defaultdb##.SourceUseType sut,
-			 ##tempdb##.HPMSVTypePopulation hvtp 
-		WHERE stap.sourceTypeID = sut.sourceTypeID AND 
-			  sut.HPMSVTypeID = hvtp.HPMSVTypeID AND 
-			  stap.yearID = hvtp.yearID AND 
+	insert into ##tempdb##.fractionwithinhpmsvtype (yearid,sourcetypeid,ageid,fraction) 
+		select stap.yearid, stap.sourcetypeid, stap.ageid, stap.population / hvtp.population 
+		from ##tempdb##.sourcetypeagepopulation stap,
+			 ##defaultdb##.sourceusetype sut,
+			 ##tempdb##.hpmsvtypepopulation hvtp 
+		where stap.sourcetypeid = sut.sourcetypeid and 
+			  sut.hpmsvtypeid = hvtp.hpmsvtypeid and 
+			  stap.yearid = hvtp.yearid and 
 			  hvtp.population <> 0;
 						
-	INSERT INTO ##tempdb##.HPMSTravelFraction (yearID,HPMSVTypeID,fraction) 
-		SELECT fwhvt.yearID, sut.HPMSVTypeID, sum(fwhvt.fraction * sta.relativeMAR) 
-		FROM ##tempdb##.FractionWithinHPMSVType fwhvt,
-			 ##defaultdb##.SourceUseType sut,
-			 ##defaultdb##.SourceTypeAge sta 
-		WHERE sta.sourceTypeID = fwhvt.sourceTypeID AND 
-			  sta.ageID = fwhvt.ageID AND 
-			  fwhvt.sourceTypeID = sut.sourceTypeID 
-		GROUP BY fwhvt.yearID, sut.HPMSVTypeID;	
+	insert into ##tempdb##.hpmstravelfraction (yearid,hpmsvtypeid,fraction) 
+		select fwhvt.yearid, sut.hpmsvtypeid, sum(fwhvt.fraction * sta.relativemar) 
+		from ##tempdb##.fractionwithinhpmsvtype fwhvt,
+			 ##defaultdb##.sourceusetype sut,
+			 ##defaultdb##.sourcetypeage sta 
+		where sta.sourcetypeid = fwhvt.sourcetypeid and 
+			  sta.ageid = fwhvt.ageid and 
+			  fwhvt.sourcetypeid = sut.sourcetypeid 
+		group by fwhvt.yearid, sut.hpmsvtypeid;	
 						
-	INSERT INTO ##tempdb##.TravelFraction (yearID,sourceTypeID,ageID,fraction) 
-		SELECT fwhvt.yearID, fwhvt.sourceTypeID, fwhvt.ageID, (fwhvt.fraction*sta.relativeMAR)/hpmstf.fraction 
-		FROM ##tempdb##.FractionWithinHPMSVType fwhvt,
-			 ##defaultdb##.SourceUseType sut,
-			 ##defaultdb##.SourceTypeAge sta,
-			 ##tempdb##.HPMSTravelFraction hpmstf 
-		WHERE sta.sourceTypeID = fwhvt.sourceTypeID AND 
-			  sta.ageID = fwhvt.ageID AND 
-			  fwhvt.sourceTypeID = sut.sourceTypeID AND 
-			  hpmstf.yearID = fwhvt.yearID AND 
-			  hpmstf.HPMSVTypeID = sut.HPMSVTypeID AND 
+	insert into ##tempdb##.travelfraction (yearid,sourcetypeid,ageid,fraction) 
+		select fwhvt.yearid, fwhvt.sourcetypeid, fwhvt.ageid, (fwhvt.fraction*sta.relativemar)/hpmstf.fraction 
+		from ##tempdb##.fractionwithinhpmsvtype fwhvt,
+			 ##defaultdb##.sourceusetype sut,
+			 ##defaultdb##.sourcetypeage sta,
+			 ##tempdb##.hpmstravelfraction hpmstf 
+		where sta.sourcetypeid = fwhvt.sourcetypeid and 
+			  sta.ageid = fwhvt.ageid and 
+			  fwhvt.sourcetypeid = sut.sourcetypeid and 
+			  hpmstf.yearid = fwhvt.yearid and 
+			  hpmstf.hpmsvtypeid = sut.hpmsvtypeid and 
 			  hpmstf.fraction <> 0;
 
-	-- If VMT by source type has been provided, instead of by HPMSVType, then
-	-- normalize TravelFraction by year and sourcetype.
-	set howMany=0;
-	select sum(nrows) into howMany from (select count(*) as nrows from ##inputdb##.SourceTypeDayVMT UNION select count(*) as nrows from ##inputdb##.SourceTypeYearVMT) as t1;
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then
-		drop table if exists ##tempdb##.TravelFractionSourceTypeSum;
+	-- if vmt by source type has been provided, instead of by hpmsvtype, then
+	-- normalize travelfraction by year and sourcetype.
+	set howmany=0;
+	select sum(nrows) into howmany from (select count(*) as nrows from ##inputdb##.sourcetypedayvmt union select count(*) as nrows from ##inputdb##.sourcetypeyearvmt) as t1;
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then
+		drop table if exists ##tempdb##.travelfractionsourcetypesum;
 
-		create table ##tempdb##.TravelFractionSourceTypeSum
-			select yearID, sourceTypeID, sum(fraction) as totalTravelFraction
-			from ##tempdb##.TravelFraction
-			group by yearID, sourceTypeID
+		create table ##tempdb##.travelfractionsourcetypesum
+			select yearid, sourcetypeid, sum(fraction) as totaltravelfraction
+			from ##tempdb##.travelfraction
+			group by yearid, sourcetypeid
 			order by null;
 		
-		update ##tempdb##.TravelFraction, ##tempdb##.TravelFractionSourceTypeSum
-			set fraction = case when totalTravelFraction > 0 then fraction / totalTravelFraction else 0 end
-			where ##tempdb##.TravelFraction.yearID = ##tempdb##.TravelFractionSourceTypeSum.yearID
-			and ##tempdb##.TravelFraction.sourceTypeID = ##tempdb##.TravelFractionSourceTypeSum.sourceTypeID;
+		update ##tempdb##.travelfraction, ##tempdb##.travelfractionsourcetypesum
+			set fraction = case when totaltravelfraction > 0 then fraction / totaltravelfraction else 0 end
+			where ##tempdb##.travelfraction.yearid = ##tempdb##.travelfractionsourcetypesum.yearid
+			and ##tempdb##.travelfraction.sourcetypeid = ##tempdb##.travelfractionsourcetypesum.sourcetypeid;
 	end if;
 	
-	-- if user VMT option is HPMS by Year (otherwise, this does nothing)
-	INSERT IGNORE INTO ##tempdb##.AnalysisYearVMT (yearID,HPMSVTypeID,VMT) 
-		SELECT hvty.yearID, hvty.HPMSVTypeID, hvty.HPMSBaseYearVMT 
-		FROM ##defaultdb##.SourceUseType sut,
-			 ##inputdb##.HPMSVTypeYear hvty 
-		WHERE sut.HPMSVTypeID = hvty.HPMSVTypeID;
+	-- if user vmt option is hpms by year (otherwise, this does nothing)
+	insert ignore into ##tempdb##.analysisyearvmt (yearid,hpmsvtypeid,vmt) 
+		select hvty.yearid, hvty.hpmsvtypeid, hvty.hpmsbaseyearvmt 
+		from ##defaultdb##.sourceusetype sut,
+			 ##inputdb##.hpmsvtypeyear hvty 
+		where sut.hpmsvtypeid = hvty.hpmsvtypeid;
 								
-	INSERT INTO ##tempdb##.AnnualVMTByAgeRoadway (yearID,roadTypeID,sourceTypeID,ageID,VMT) 
-		SELECT tf.yearID, rtd.roadTypeID, tf.sourceTypeID, tf.ageID, ayv.vmt*rtd.roadTypeVMTFraction*tf.fraction 
-		FROM ##defaultdb##.RoadType rsrt,
-			##tempdb##.TravelFraction tf,
-			##tempdb##.AnalysisYearVMT ayv,
-			##inputdb##.RoadTypeDistribution rtd,
-			##defaultdb##.SourceUseType sut 
-		WHERE rsrt.roadTypeID = rtd.roadTypeID AND 
-			  ayv.yearID = tf.yearID AND 
-			  tf.sourceTypeID = sut.sourceTypeID AND 
-			  sut.HPMSVTypeID = ayv.HPMSVTypeID AND 
-			  rtd.sourceTypeID = tf.sourceTypeID;
+	insert into ##tempdb##.annualvmtbyageroadway (yearid,roadtypeid,sourcetypeid,ageid,vmt) 
+		select tf.yearid, rtd.roadtypeid, tf.sourcetypeid, tf.ageid, ayv.vmt*rtd.roadtypevmtfraction*tf.fraction 
+		from ##defaultdb##.roadtype rsrt,
+			##tempdb##.travelfraction tf,
+			##tempdb##.analysisyearvmt ayv,
+			##inputdb##.roadtypedistribution rtd,
+			##defaultdb##.sourceusetype sut 
+		where rsrt.roadtypeid = rtd.roadtypeid and 
+			  ayv.yearid = tf.yearid and 
+			  tf.sourcetypeid = sut.sourcetypeid and 
+			  sut.hpmsvtypeid = ayv.hpmsvtypeid and 
+			  rtd.sourcetypeid = tf.sourcetypeid;
 	
-	-- if user VMT option is SourceType by Year otherwise, this does nothing)
-	INSERT INTO ##tempdb##.AnnualVMTByAgeRoadway (yearID, roadTypeID, sourceTypeID, ageID, VMT)
-		SELECT tf.yearID, rtd.roadTypeID, tf.sourceTypeID, tf.ageID, v.vmt*rtd.roadTypeVMTFraction*tf.fraction
-		FROM ##defaultdb##.RoadType rsrt,
-			 ##tempdb##.TravelFraction tf,
-			 ##inputdb##.SourceTypeYearVMT v,
-			 ##inputdb##.RoadTypeDistribution rtd
-		WHERE rsrt.roadTypeID = rtd.roadTypeID AND
-			  v.yearID = tf.yearID AND
-			  tf.sourceTypeID = v.sourceTypeID AND
-			  rtd.sourceTypeID = tf.sourceTypeID;
+	-- if user vmt option is sourcetype by year otherwise, this does nothing)
+	insert into ##tempdb##.annualvmtbyageroadway (yearid, roadtypeid, sourcetypeid, ageid, vmt)
+		select tf.yearid, rtd.roadtypeid, tf.sourcetypeid, tf.ageid, v.vmt*rtd.roadtypevmtfraction*tf.fraction
+		from ##defaultdb##.roadtype rsrt,
+			 ##tempdb##.travelfraction tf,
+			 ##inputdb##.sourcetypeyearvmt v,
+			 ##inputdb##.roadtypedistribution rtd
+		where rsrt.roadtypeid = rtd.roadtypeid and
+			  v.yearid = tf.yearid and
+			  tf.sourcetypeid = v.sourcetypeid and
+			  rtd.sourcetypeid = tf.sourcetypeid;
 
-	DROP TABLE IF EXISTS ##tempdb##.AvarMonth;
-	CREATE TABLE ##tempdb##.AvarMonth
-		SELECT avar.*, monthID, monthVMTFraction
-		FROM ##tempdb##.AnnualVMTByAgeRoadway avar
-		INNER JOIN ##inputdb##.MonthVMTFraction mvf USING (sourceTypeID);
+	drop table if exists ##tempdb##.avarmonth;
+	create table ##tempdb##.avarmonth
+		select avar.*, monthid, monthvmtfraction
+		from ##tempdb##.annualvmtbyageroadway avar
+		inner join ##inputdb##.monthvmtfraction mvf using (sourcetypeid);
 
-	DROP TABLE IF EXISTS ##tempdb##.AvarMonthDay;
-	CREATE TABLE ##tempdb##.AvarMonthDay
-		SELECT avarm.*, dayID, dayVMTFraction, monthVMTFraction*dayVMTFraction as monthDayFraction
-		FROM ##tempdb##.AvarMonth avarm
-		INNER JOIN ##inputdb##.DayVMTFraction dvf USING (sourceTypeID, monthID, roadTypeID);
+	drop table if exists ##tempdb##.avarmonthday;
+	create table ##tempdb##.avarmonthday
+		select avarm.*, dayid, dayvmtfraction, monthvmtfraction*dayvmtfraction as monthdayfraction
+		from ##tempdb##.avarmonth avarm
+		inner join ##inputdb##.dayvmtfraction dvf using (sourcetypeid, monthid, roadtypeid);
 
-	INSERT INTO ##tempdb##.VMTByAgeRoadwayHour (yearID, roadTypeID, sourceTypeID, ageID, monthID, dayID, hourID, VMT, hourDayID)
-		SELECT avar.yearID, avar.roadTypeID, avar.sourceTypeID, avar.ageID, avar.monthID, avar.dayID, hvf.hourID,
-			   avar.VMT*avar.monthDayFraction*hvf.hourVMTFraction / (noOfDays / 7), -- replaced weeksPerMonthClause in TAG with "(noOfDays / 7)", added moay join
-			   hd.hourDayID
-		FROM ##tempdb##.AvarMonthDay avar
-		INNER JOIN ##inputdb##.HourVMTFraction hvf USING(sourceTypeID, roadTypeID, dayID)
-		INNER JOIN ##defaultdb##.HourDay hd ON (hd.hourID=hvf.hourID and hd.dayID=avar.dayID)
-		INNER JOIN ##defaultdb##.MonthOfAnyYear moay USING (monthID);
+	insert into ##tempdb##.vmtbyageroadwayhour (yearid, roadtypeid, sourcetypeid, ageid, monthid, dayid, hourid, vmt, hourdayid)
+		select avar.yearid, avar.roadtypeid, avar.sourcetypeid, avar.ageid, avar.monthid, avar.dayid, hvf.hourid,
+			   avar.vmt*avar.monthdayfraction*hvf.hourvmtfraction / (noofdays / 7), -- replaced weekspermonthclause in tag with "(noofdays / 7)", added moay join
+			   hd.hourdayid
+		from ##tempdb##.avarmonthday avar
+		inner join ##inputdb##.hourvmtfraction hvf using(sourcetypeid, roadtypeid, dayid)
+		inner join ##defaultdb##.hourday hd on (hd.hourid=hvf.hourid and hd.dayid=avar.dayid)
+		inner join ##defaultdb##.monthofanyyear moay using (monthid);
 
-	-- if user VMT option is SourceType by Day (otherwise, this does nothing)
-	insert ignore into ##tempdb##.VMTByAgeRoadwayHour (yearID, roadTypeID, sourceTypeID, ageID, monthID, dayID, hourID, VMT, hourDayID)
-		select vmt.yearID, rtd.roadTypeID, vmt.sourceTypeID, tf.ageID, vmt.monthID, vmt.dayID, h.hourID,
-			   vmt.VMT*h.hourVMTFraction*rtd.roadTypeVMTFraction*tf.fraction*dow.noOfRealDays as VMT,
-			   hd.hourDayID
-		from ##inputdb##.SourceTypeDayVMT vmt
-		inner join ##inputdb##.RoadTypeDistribution rtd on (rtd.sourceTypeID=vmt.sourceTypeID)
-		inner join ##defaultdb##.HourDay hd on (hd.dayID=vmt.dayID)
-		inner join ##inputdb##.hourVMTFraction h on (h.hourID=hd.hourID and h.roadTypeID=rtd.roadTypeID and h.sourceTypeID=rtd.sourceTypeID)
-		inner join ##tempdb##.TravelFraction tf on (tf.yearID=vmt.yearID and tf.sourceTypeID=rtd.sourceTypeID)
-		inner join ##defaultdb##.DayOfAnyWeek dow on (dow.dayID=vmt.dayID);
+	-- if user vmt option is sourcetype by day (otherwise, this does nothing)
+	insert ignore into ##tempdb##.vmtbyageroadwayhour (yearid, roadtypeid, sourcetypeid, ageid, monthid, dayid, hourid, vmt, hourdayid)
+		select vmt.yearid, rtd.roadtypeid, vmt.sourcetypeid, tf.ageid, vmt.monthid, vmt.dayid, h.hourid,
+			   vmt.vmt*h.hourvmtfraction*rtd.roadtypevmtfraction*tf.fraction*dow.noofrealdays as vmt,
+			   hd.hourdayid
+		from ##inputdb##.sourcetypedayvmt vmt
+		inner join ##inputdb##.roadtypedistribution rtd on (rtd.sourcetypeid=vmt.sourcetypeid)
+		inner join ##defaultdb##.hourday hd on (hd.dayid=vmt.dayid)
+		inner join ##inputdb##.hourvmtfraction h on (h.hourid=hd.hourid and h.roadtypeid=rtd.roadtypeid and h.sourcetypeid=rtd.sourcetypeid)
+		inner join ##tempdb##.travelfraction tf on (tf.yearid=vmt.yearid and tf.sourcetypeid=rtd.sourcetypeid)
+		inner join ##defaultdb##.dayofanyweek dow on (dow.dayid=vmt.dayid);
 
-	-- if user VMT option is HPMS by Day (otherwise, this does nothing)
-	insert ignore into ##tempdb##.VMTByAgeRoadwayHour (yearID, roadTypeID, sourceTypeID, ageID, monthID, dayID, hourID, VMT, hourDayID)
-		select vmt.yearID, rtd.roadTypeID, sut.sourceTypeID, tf.ageID, vmt.monthID, vmt.dayID, h.hourID,
-			   vmt.VMT*h.hourVMTFraction*rtd.roadTypeVMTFraction*tf.fraction*dow.noOfRealDays as VMT,
-			   hd.hourDayID
-		from ##inputdb##.HPMSVTypeDay vmt
-		inner join ##defaultdb##.SourceUseType sut on (sut.HPMSVTypeID=vmt.HPMSVTypeID)
-		inner join ##inputdb##.RoadTypeDistribution rtd on (rtd.sourceTypeID=sut.sourceTypeID)
-		inner join ##defaultdb##.HourDay hd on (hd.dayID=vmt.dayID)
-		inner join ##inputdb##.hourVMTFraction h on (h.hourID=hd.hourID and h.roadTypeID=rtd.roadTypeID and h.sourceTypeID=rtd.sourceTypeID)
-		inner join ##tempdb##.TravelFraction tf on (tf.yearID=vmt.yearID and tf.sourceTypeID=rtd.sourceTypeID)
-		inner join ##defaultdb##.DayOfAnyWeek dow on (dow.dayID=vmt.dayID);
+	-- if user vmt option is hpms by day (otherwise, this does nothing)
+	insert ignore into ##tempdb##.vmtbyageroadwayhour (yearid, roadtypeid, sourcetypeid, ageid, monthid, dayid, hourid, vmt, hourdayid)
+		select vmt.yearid, rtd.roadtypeid, sut.sourcetypeid, tf.ageid, vmt.monthid, vmt.dayid, h.hourid,
+			   vmt.vmt*h.hourvmtfraction*rtd.roadtypevmtfraction*tf.fraction*dow.noofrealdays as vmt,
+			   hd.hourdayid
+		from ##inputdb##.hpmsvtypeday vmt
+		inner join ##defaultdb##.sourceusetype sut on (sut.hpmsvtypeid=vmt.hpmsvtypeid)
+		inner join ##inputdb##.roadtypedistribution rtd on (rtd.sourcetypeid=sut.sourcetypeid)
+		inner join ##defaultdb##.hourday hd on (hd.dayid=vmt.dayid)
+		inner join ##inputdb##.hourvmtfraction h on (h.hourid=hd.hourid and h.roadtypeid=rtd.roadtypeid and h.sourcetypeid=rtd.sourcetypeid)
+		inner join ##tempdb##.travelfraction tf on (tf.yearid=vmt.yearid and tf.sourcetypeid=rtd.sourcetypeid)
+		inner join ##defaultdb##.dayofanyweek dow on (dow.dayid=vmt.dayid);
 	
-	-- regardless of how we got here, group over ageID for the summary table
-	insert into ##tempdb##.vmtByMYRoadHourSummary (yearID, roadTypeID, sourceTypeID, monthID, hourID, dayID, hourDayID, totalVMT)
-		select yearID, roadTypeID, sourceTypeID, monthID, hourID, dayID, hourDayID, sum(VMT) as totalVMT
-		from ##tempdb##.VMTByAgeRoadwayHour
-		group by yearID, roadTypeID, sourceTypeID, monthID, hourID, dayID
-		having sum(VMT) > 0;
+	-- regardless of how we got here, group over ageid for the summary table
+	insert into ##tempdb##.vmtbymyroadhoursummary (yearid, roadtypeid, sourcetypeid, monthid, hourid, dayid, hourdayid, totalvmt)
+		select yearid, roadtypeid, sourcetypeid, monthid, hourid, dayid, hourdayid, sum(vmt) as totalvmt
+		from ##tempdb##.vmtbyageroadwayhour
+		group by yearid, roadtypeid, sourcetypeid, monthid, hourid, dayid
+		having sum(vmt) > 0;
 					
-	insert into ##tempdb##.vmtByMYRoadHourFraction (yearID, roadTypeID, sourceTypeID, modelYearID, monthID, hourID, dayID, hourDayID, vmtFraction)
-		select s.yearID, s.roadTypeID, s.sourceTypeID, (v.yearID-v.ageID) as modelYearID, s.monthID, s.hourID, s.dayID, s.hourDayID,  (VMT/totalVMT) as vmtFraction
-		from ##tempdb##.vmtByMYRoadHourSummary s
-		inner join ##tempdb##.VMTByAgeRoadwayHour v using (yearID, roadTypeID, sourceTypeID, monthID, dayID, hourID);
+	insert into ##tempdb##.vmtbymyroadhourfraction (yearid, roadtypeid, sourcetypeid, modelyearid, monthid, hourid, dayid, hourdayid, vmtfraction)
+		select s.yearid, s.roadtypeid, s.sourcetypeid, (v.yearid-v.ageid) as modelyearid, s.monthid, s.hourid, s.dayid, s.hourdayid,  (vmt/totalvmt) as vmtfraction
+		from ##tempdb##.vmtbymyroadhoursummary s
+		inner join ##tempdb##.vmtbyageroadwayhour v using (yearid, roadtypeid, sourcetypeid, monthid, dayid, hourid);
 
-	INSERT INTO ##tempdb##.AverageSpeed (roadTypeID,sourceTypeID,dayID,hourID,averageSpeed) 
-		SELECT asd.roadTypeID, asd.sourceTypeID, hd.dayID, hd.hourID, sum(asb.avgBinSpeed*asd.avgSpeedFraction) 
-		FROM ##defaultdb##.RoadType rsrt,
-			 ##defaultdb##.HourOfAnyDay hoad,
-			 ##defaultdb##.AvgSpeedBin asb,
-			 ##inputdb##.AvgSpeedDistribution asd,
-			 ##defaultdb##.HourDay hd 
-		WHERE rsrt.roadTypeID = asd.roadTypeID AND 
-			  hd.hourID = hoad.hourID AND 
-			  asb.avgSpeedBinID = asd.avgSpeedBinID AND 
-			  asd.hourDayID = hd.hourDayID 
-		GROUP BY asd.roadTypeID, asd.sourceTypeID, hd.dayID, hd.hourID;
+	insert into ##tempdb##.averagespeed (roadtypeid,sourcetypeid,dayid,hourid,averagespeed) 
+		select asd.roadtypeid, asd.sourcetypeid, hd.dayid, hd.hourid, sum(asb.avgbinspeed*asd.avgspeedfraction) 
+		from ##defaultdb##.roadtype rsrt,
+			 ##defaultdb##.hourofanyday hoad,
+			 ##defaultdb##.avgspeedbin asb,
+			 ##inputdb##.avgspeeddistribution asd,
+			 ##defaultdb##.hourday hd 
+		where rsrt.roadtypeid = asd.roadtypeid and 
+			  hd.hourid = hoad.hourid and 
+			  asb.avgspeedbinid = asd.avgspeedbinid and 
+			  asd.hourdayid = hd.hourdayid 
+		group by asd.roadtypeid, asd.sourcetypeid, hd.dayid, hd.hourid;
 
-	INSERT INTO ##tempdb##.SHOByAgeRoadwayHour (yearID,roadTypeID,sourceTypeID,ageID,monthID,dayID,hourID,hourDayID,SHO,VMT)
-		SELECT varh.yearID, varh.roadTypeID, varh.sourceTypeID, varh.ageID, varh.monthID, varh.dayID, varh.hourID, varh.hourDayID,
-			   IF(asp.averageSpeed<>0,
-				  COALESCE(varh.VMT/asp.averageSpeed,0.0),
+	insert into ##tempdb##.shobyageroadwayhour (yearid,roadtypeid,sourcetypeid,ageid,monthid,dayid,hourid,hourdayid,sho,vmt)
+		select varh.yearid, varh.roadtypeid, varh.sourcetypeid, varh.ageid, varh.monthid, varh.dayid, varh.hourid, varh.hourdayid,
+			   if(asp.averagespeed<>0,
+				  coalesce(varh.vmt/asp.averagespeed,0.0),
 				  0.0),
-			   varh.VMT 
-		FROM ##tempdb##.VMTByAgeRoadwayHour varh 
-		LEFT JOIN ##tempdb##.AverageSpeed asp ON (asp.roadTypeID = varh.roadTypeID AND 
-												  asp.sourceTypeID = varh.sourceTypeID AND 
-												  asp.dayID = varh.dayID AND 
-												  asp.hourID = varh.hourID);
+			   varh.vmt 
+		from ##tempdb##.vmtbyageroadwayhour varh 
+		left join ##tempdb##.averagespeed asp on (asp.roadtypeid = varh.roadtypeid and 
+												  asp.sourcetypeid = varh.sourcetypeid and 
+												  asp.dayid = varh.dayid and 
+												  asp.hourid = varh.hourid);
 	
-	INSERT INTO ##tempdb##.drivingIdleFraction
-		select hourDayID,yearID,roadTypeID,sourceTypeID,sum(roadIdleFraction*avgSpeedFraction) as drivingIdleFraction
+	insert into ##tempdb##.drivingidlefraction
+		select hourdayid,yearid,roadtypeid,sourcetypeid,sum(roadidlefraction*avgspeedfraction) as drivingidlefraction
 		from ##defaultdb##.roadidlefraction
-		join ##defaultdb##.hourDay using (dayID)
-		join ##inputdb##.avgSpeedDistribution using (hourDayID,avgSpeedBinID,sourceTypeID,roadTYpeID)
+		join ##defaultdb##.hourday using (dayid)
+		join ##inputdb##.avgspeeddistribution using (hourdayid,avgspeedbinid,sourcetypeid,roadtypeid)
 		join ##inputdb##.year
-		group by hourDayID,yearID,roadTypeID,sourceTypeID
-		order by yearID,sourceTypeID,roadTypeID,hourDayID;
+		group by hourdayid,yearid,roadtypeid,sourcetypeid
+		order by yearid,sourcetypeid,roadtypeid,hourdayid;
 		
-	insert into ##tempdb##.link (linkID,countyID,zoneID,roadTypeID)
-		select zoneID*10 + roadTypeID as linkID,countyID,zoneID,roadTypeID from ##inputdb##.zone
+	insert into ##tempdb##.link (linkid,countyid,zoneid,roadtypeid)
+		select zoneid*10 + roadtypeid as linkid,countyid,zoneid,roadtypeid from ##inputdb##.zone
 		join ##defaultdb##.roadtype
-		where roadTypeID < 100;
+		where roadtypeid < 100;
 		
 	insert into ##tempdb##.sho	
-		select hourDayID,monthID,yearID,ageID,linkID,sourceTypeID,SHO as SHO, NULL as SHOCV, VMT as distance, 'N' as isUserInput
+		select hourdayid,monthid,yearid,ageid,linkid,sourcetypeid,sho as sho, null as shocv, vmt as distance, 'N' as isuserinput
 		from ##tempdb##.shobyageroadwayhour
-		join ##tempdb##.link using (roadTypeID)
-        where SHO > 0 or VMT > 0
-        order by sourceTypeID,linkID,ageID,monthID,hourDayID;
+		join ##tempdb##.link using (roadtypeid)
+        where sho > 0 or vmt > 0
+        order by sourcetypeid,linkid,ageid,monthid,hourdayid;
 		
 	
 		
 	-- ---------------------------------------
-	-- END TotalActivityGenerator Calculations
+	-- end totalactivitygenerator calculations
 	-- ---------------------------------------
 
 	-- ---------------------------
-	-- START ONI Calculation Block
+	-- start oni calculation block
 	-- ---------------------------
 
-	-- ONI Calculation is slightly different than TAG because we don't have drivingIdleFraction (that is calculated at run time)
-    -- Instead, join with the pre-calculated roadIdleFraction and weight the calculation by the avgSpeedFraction 
-    -- 		(roadIdleFraction is by avgSpeedBin, which drivingIdleFraction does not have)
-    -- Also need to divide by number of days, because the ##tempdb##.SHOByAgeRoadwayHour table is by portion of week, whereas
-    --      the MOVES output is by typical day
-    DROP TABLE IF EXISTS ##tempdb##.onitooloutput_temp;
+	-- oni calculation is slightly different than tag because we don't have drivingidlefraction (that is calculated at run time)
+    -- instead, join with the pre-calculated roadidlefraction and weight the calculation by the avgspeedfraction 
+    -- 		(roadidlefraction is by avgspeedbin, which drivingidlefraction does not have)
+    -- also need to divide by number of days, because the ##tempdb##.shobyageroadwayhour table is by portion of week, whereas
+    --      the moves output is by typical day
+    drop table if exists ##tempdb##.onitooloutput_temp;
 	
-	CREATE TABLE IF NOT EXISTS ##tempdb##.onitooloutput_temp
-	select s.yearID,s.monthID,hd.hourID,hd.dayID,s.sourceTypeID,s.ageID,tif.minModelYearID,tif.maxModelYearID,
-	sum(s.sho) / doaw.noOfRealDays as onroadSHO,
-    sum(s.sho * avgs.averageSpeed) / doaw.noOfRealDays as VMT,
-	(case when totalIdleFraction <> 1 then 
+	create table if not exists ##tempdb##.onitooloutput_temp
+	select s.yearid,s.monthid,hd.hourid,hd.dayid,s.sourcetypeid,s.ageid,tif.minmodelyearid,tif.maxmodelyearid,
+	sum(s.sho) / doaw.noofrealdays as onroadsho,
+    sum(s.sho * avgs.averagespeed) / doaw.noofrealdays as vmt,
+	(case when totalidlefraction <> 1 then 
 				greatest(
 					sum((s.sho))*
-					(totalIdleFraction-sum(s.sho*drivingIdleFraction) /sum((s.sho)))
-					/(1-totalIdleFraction),0) 
+					(totalidlefraction-sum(s.sho*drivingidlefraction) /sum((s.sho)))
+					/(1-totalidlefraction),0) 
 			else 0 
 			end 
-		) / doaw.noOfRealDays as ONI
+		) / doaw.noofrealdays as oni
 		from ##tempdb##.sho s 
 		inner join ##tempdb##.link l on ( 
-			l.linkID = s.linkID 
-			and l.roadTypeID <> 1) 
+			l.linkid = s.linkid 
+			and l.roadtypeid <> 1) 
 		inner join ##tempdb##.link lo on ( 
-			l.zoneID = lo.zoneID 
-			and lo.roadTypeID = 1) 
-		inner join ##inputdb##.county c on (lo.countyID = c.countyID) 
-		inner join ##inputdb##.state st using (stateID) 
-		inner join ##defaultdb##.hourDay hd on (s.hourDayID = hd.hourDayID) 
-		inner join ##tempdb##.totalIdleFraction tif on ( 
-			tif.idleRegionID = st.idleRegionID 
-			and tif.countyTypeID = c.countyTypeID 
-			and tif.sourceTypeID = s.sourceTypeID 
-			and tif.monthID = s.monthID 
-			and tif.dayID = hd.dayID 
-			and tif.minModelYearID <= s.yearID - s.ageID 
-			and tif.maxModelYearID >= s.yearID - s.ageID) 
-		inner join ##tempdb##.drivingIdleFraction dif on ( 
-			dif.hourDayID = s.hourDayID 
-			and dif.yearID = s.yearID 
-			and dif.roadTypeID = l.roadTypeID 
-			and dif.sourceTypeID = s.sourceTypeID) 
+			l.zoneid = lo.zoneid 
+			and lo.roadtypeid = 1) 
+		inner join ##inputdb##.county c on (lo.countyid = c.countyid) 
+		inner join ##inputdb##.state st using (stateid) 
+		inner join ##defaultdb##.hourday hd on (s.hourdayid = hd.hourdayid) 
+		inner join ##tempdb##.totalidlefraction tif on ( 
+			tif.idleregionid = st.idleregionid 
+			and tif.countytypeid = c.countytypeid 
+			and tif.sourcetypeid = s.sourcetypeid 
+			and tif.monthid = s.monthid 
+			and tif.dayid = hd.dayid 
+			and tif.minmodelyearid <= s.yearid - s.ageid 
+			and tif.maxmodelyearid >= s.yearid - s.ageid) 
+		inner join ##tempdb##.drivingidlefraction dif on ( 
+			dif.hourdayid = s.hourdayid 
+			and dif.yearid = s.yearid 
+			and dif.roadtypeid = l.roadtypeid 
+			and dif.sourcetypeid = s.sourcetypeid) 
 		inner join ##tempdb##.averagespeed avgs on (
-			avgs.roadTypeID = l.roadTypeID 
-            and avgs.dayID = hd.dayID
-            and avgs.hourID = hd.hourID
-            and avgs.sourceTypeID = s.sourceTypeID)
-		inner join ##inputdb##.year y on (s.yearID = y.yearID)
-		inner join ##inputdb##.zone z on (s.linkID DIV 10 = z.zoneID)
-		inner join ##defaultdb##.dayofanyweek doaw on (doaw.dayID = hd.dayID)
-		group by s.yearID,s.monthID,hd.hourID,hd.dayID,s.sourceTypeID,s.ageID,tif.minModelYearID,tif.maxModelYearID
-        order by s.yearID,s.monthID,hd.hourID,hd.dayID,s.sourceTypeID,s.ageID,tif.minModelYearID,tif.maxModelYearID;
+			avgs.roadtypeid = l.roadtypeid 
+            and avgs.dayid = hd.dayid
+            and avgs.hourid = hd.hourid
+            and avgs.sourcetypeid = s.sourcetypeid)
+		inner join ##inputdb##.year y on (s.yearid = y.yearid)
+		inner join ##inputdb##.zone z on (s.linkid div 10 = z.zoneid)
+		inner join ##defaultdb##.dayofanyweek doaw on (doaw.dayid = hd.dayid)
+		group by s.yearid,s.monthid,hd.hourid,hd.dayid,s.sourcetypeid,s.ageid,tif.minmodelyearid,tif.maxmodelyearid
+        order by s.yearid,s.monthid,hd.hourid,hd.dayid,s.sourcetypeid,s.ageid,tif.minmodelyearid,tif.maxmodelyearid;
 	
-    -- Sum over ageID and calculate ONI per VMT and per SHO	
-    insert into ##tempdb##.oniToolOutput (yearID, monthID, dayID, hourID, sourceTypeID, minModelYearID, maxModelYearID, 
-										  `onroadSHO (hr)`, `VMT (mi)`, `ONI (hr)`,
-										  `ONI per VMT (hr idle/mi)`, `ONI per SHO (hr idle/hr operating)`)
-		SELECT yearID, monthID, dayID, hourID, sourceTypeID, minModelYearID, maxModelYearID,
-			   sum(onroadSHO), sum(VMT), sum(ONI),
-			   sum(ONI) / sum(VMT), sum(ONI) / sum(onroadSHO)
-		FROM ##tempdb##.oniToolOutput_temp
-        GROUP BY yearID, monthID, dayID, hourID, sourceTypeID, minModelYearID, maxModelYearID;
+    -- sum over ageid and calculate oni per vmt and per sho	
+    insert into ##tempdb##.onitooloutput (yearid, monthid, dayid, hourid, sourcetypeid, minmodelyearid, maxmodelyearid, 
+										  `onroadsho (hr)`, `vmt (mi)`, `oni (hr)`,
+										  `oni per vmt (hr idle/mi)`, `oni per sho (hr idle/hr operating)`)
+		select yearid, monthid, dayid, hourid, sourcetypeid, minmodelyearid, maxmodelyearid,
+			   sum(onroadsho), sum(vmt), sum(oni),
+			   sum(oni) / sum(vmt), sum(oni) / sum(onroadsho)
+		from ##tempdb##.onitooloutput_temp
+        group by yearid, monthid, dayid, hourid, sourcetypeid, minmodelyearid, maxmodelyearid;
     
-	insert into ##tempdb##.oniTempMessages (message) values ('INFO: Successfully calculated default ONI hours from tables in ##inputdb##');
+	insert into ##tempdb##.onitempmessages (message) values ('info: successfully calculated default oni hours from tables in ##inputdb##');
 	
 	-- -------------------------
-	-- END ONI Calculation Block
+	-- end oni calculation block
 	-- -------------------------	
 
 
 	-- ----------------------------------------
-	-- Final Clean Up (currently commented out because ##tempdb## is dropped by MOVES GUI)
+	-- final clean up (currently commented out because ##tempdb## is dropped by moves gui)
 	-- ----------------------------------------
-	-- drop table IF EXISTS ##tempdb##.totalidlefraction;
-	-- drop table if exists ##tempdb##.SHOByAgeRoadwayHour;
-	-- drop table if exists ##tempdb##.StartsByAgeHour;
-	-- drop table if exists ##tempdb##.VMTByAgeRoadwayHour;
-	-- drop table if exists ##tempdb##.vmtByMYRoadHourFraction;
-	-- drop table if exists ##tempdb##.HPMSVTypePopulation;
-	-- drop table if exists ##tempdb##.FractionWithinHPMSVType;
-	-- drop table if exists ##tempdb##.HPMSTravelFraction;
-	-- drop table if exists ##tempdb##.TravelFraction;
-	-- drop table if exists ##tempdb##.AnnualVMTByAgeRoadway;
-	-- drop table if exists ##tempdb##.AverageSpeed;
-	-- drop table if exists ##tempdb##.SHOByAgeDay;
-	-- drop table if exists ##tempdb##.AnalysisYearVMT;
-	-- drop table if exists ##tempdb##.SourceTypeAgePopulation;
-	-- drop table if exists ##tempdb##.vmtByMYRoadHourSummary;
-	-- drop table if exists ##tempdb##.ZoneRoadTypeLinkTemp;
-	-- drop table if exists ##tempdb##.TravelFractionSourceTypeSum;
-	-- DROP TABLE IF EXISTS ##tempdb##.AvarMonth;
-	-- DROP TABLE IF EXISTS ##tempdb##.AvarMonthDay;
-	-- DROP TABLE IF EXISTS ##tempdb##.onitooloutput_temp;
+	-- drop table if exists ##tempdb##.totalidlefraction;
+	-- drop table if exists ##tempdb##.shobyageroadwayhour;
+	-- drop table if exists ##tempdb##.startsbyagehour;
+	-- drop table if exists ##tempdb##.vmtbyageroadwayhour;
+	-- drop table if exists ##tempdb##.vmtbymyroadhourfraction;
+	-- drop table if exists ##tempdb##.hpmsvtypepopulation;
+	-- drop table if exists ##tempdb##.fractionwithinhpmsvtype;
+	-- drop table if exists ##tempdb##.hpmstravelfraction;
+	-- drop table if exists ##tempdb##.travelfraction;
+	-- drop table if exists ##tempdb##.annualvmtbyageroadway;
+	-- drop table if exists ##tempdb##.averagespeed;
+	-- drop table if exists ##tempdb##.shobyageday;
+	-- drop table if exists ##tempdb##.analysisyearvmt;
+	-- drop table if exists ##tempdb##.sourcetypeagepopulation;
+	-- drop table if exists ##tempdb##.vmtbymyroadhoursummary;
+	-- drop table if exists ##tempdb##.zoneroadtypelinktemp;
+	-- drop table if exists ##tempdb##.travelfractionsourcetypesum;
+	-- drop table if exists ##tempdb##.avarmonth;
+	-- drop table if exists ##tempdb##.avarmonthday;
+	-- drop table if exists ##tempdb##.onitooloutput_temp;
 	
-end ONITOOL_PROCEDURE
-EndBlock
+end onitool_procedure
+endblock
 
-call ONITool();
-drop procedure if exists ONITool;
+call onitool();
+drop procedure if exists onitool;

@@ -1,352 +1,352 @@
--- Author Wesley Faler
--- Version 2013-09-23
+-- author wesley faler
+-- version 2013-09-23
 
 -- @algorithm
--- @owner Crankcase Emission Calculator
+-- @owner crankcase emission calculator
 -- @calculator
 
--- Section Create Remote Tables for Extracted Data
-CREATE TABLE IF NOT EXISTS ##prefix##CrankcaseEmissionRatio (
-  polProcessID int NOT NULL,
-  minModelYearID smallint(6) NOT NULL,
-  maxModelYearID smallint(6) NOT NULL,
-  sourceTypeID smallint(6) NOT NULL,
-  fuelTypeID smallint(6) NOT NULL,
-  crankcaseRatio float NOT NULL,
-  crankcaseRatioCV float DEFAULT NULL,
-  primary key (polProcessID, minModelYearID, maxModelYearID, sourceTypeID, fuelTypeID)
+-- section create remote tables for extracted data
+create table if not exists ##prefix##crankcaseemissionratio (
+  polprocessid int not null,
+  minmodelyearid smallint(6) not null,
+  maxmodelyearid smallint(6) not null,
+  sourcetypeid smallint(6) not null,
+  fueltypeid smallint(6) not null,
+  crankcaseratio float not null,
+  crankcaseratiocv float default null,
+  primary key (polprocessid, minmodelyearid, maxmodelyearid, sourcetypeid, fueltypeid)
 );
-TRUNCATE TABLE ##prefix##CrankcaseEmissionRatio;
+truncate table ##prefix##crankcaseemissionratio;
 
-CREATE TABLE IF NOT EXISTS ##prefix##CrankcasePollutantProcessAssoc (
-       polProcessID         int NOT NULL,
-       processID            SMALLINT NOT NULL,
-       pollutantID          SMALLINT NOT NULL,
-	   isAffectedByExhaustIM CHAR(1) NOT NULL DEFAULT "N",
-       isAffectedByEvapIM CHAR(1) NOT NULL DEFAULT "N",
-       PRIMARY KEY (polProcessID),
-       KEY (processID),
-       KEY (pollutantID)
+create table if not exists ##prefix##crankcasepollutantprocessassoc (
+       polprocessid         int not null,
+       processid            smallint not null,
+       pollutantid          smallint not null,
+       isaffectedbyexhaustim char(1) not null default "N",
+       isaffectedbyevapim char(1) not null default "N",
+       primary key (polprocessid),
+       key (processid),
+       key (pollutantid)
 );
-TRUNCATE TABLE ##prefix##CrankcasePollutantProcessAssoc;
+truncate table ##prefix##crankcasepollutantprocessassoc;
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
+-- section extract data
 
--- Section PM
-cache select c.polProcessID,
-	MYRMAP(c.minModelYearID) as minModelYearID,
-	MYRMAP(c.maxModelYearID) as maxModelYearID,
-	c.sourceTypeID,
-	c.fuelTypeID,
-	c.crankcaseRatio,
-	c.crankcaseRatioCV
-into outfile '##PMCrankcaseEmissionRatio##'
-from PollutantProcessAssoc ppa
-inner join CrankcaseEmissionRatio c on (c.polProcessID=ppa.polProcessID)
-inner join RunSpecSourceFuelType r on (r.sourceTypeID=c.sourceTypeID and r.fuelTypeID=c.fuelTypeID)
-where ppa.pollutantID in (##pollutantIDs##)
-and ppa.processID = ##outputProcessID##
+-- section pm
+cache select c.polprocessid,
+    myrmap(c.minmodelyearid) as minmodelyearid,
+    myrmap(c.maxmodelyearid) as maxmodelyearid,
+    c.sourcetypeid,
+    c.fueltypeid,
+    c.crankcaseratio,
+    c.crankcaseratiocv
+into outfile '##pmcrankcaseemissionratio##'
+from pollutantprocessassoc ppa
+inner join crankcaseemissionratio c on (c.polprocessid=ppa.polprocessid)
+inner join runspecsourcefueltype r on (r.sourcetypeid=c.sourcetypeid and r.fueltypeid=c.fueltypeid)
+where ppa.pollutantid in (##pollutantids##)
+and ppa.processid = ##outputprocessid##
 and (
-	(c.minModelYearID >= MYMAP(##context.year## - 30) and c.minModelYearID <= MYMAP(##context.year##))
-	or
-	(c.maxModelYearID >= MYMAP(##context.year## - 30) and c.maxModelYearID <= MYMAP(##context.year##))
-	or
-	(c.minModelYearID < MYMAP(##context.year## - 30) and c.maxModelYearID > MYMAP(##context.year##))
+    (c.minmodelyearid >= mymap(##context.year## - 30) and c.minmodelyearid <= mymap(##context.year##))
+    or
+    (c.maxmodelyearid >= mymap(##context.year## - 30) and c.maxmodelyearid <= mymap(##context.year##))
+    or
+    (c.minmodelyearid < mymap(##context.year## - 30) and c.maxmodelyearid > mymap(##context.year##))
 );
 
-cache select distinct ppa.polProcessID, ppa.processID, ppa.pollutantID, ppa.isAffectedByExhaustIM, ppa.isAffectedByEvapIM
-into outfile '##PMCrankcasePollutantProcessAssoc##'
-from PollutantProcessAssoc ppa
-inner join CrankcaseEmissionRatio c on (c.polProcessID=ppa.polProcessID)
-inner join RunSpecSourceFuelType r on (r.sourceTypeID=c.sourceTypeID and r.fuelTypeID=c.fuelTypeID)
-where ppa.pollutantID in (##pollutantIDs##)
-and ppa.processID = ##outputProcessID##
+cache select distinct ppa.polprocessid, ppa.processid, ppa.pollutantid, ppa.isaffectedbyexhaustim, ppa.isaffectedbyevapim
+into outfile '##pmcrankcasepollutantprocessassoc##'
+from pollutantprocessassoc ppa
+inner join crankcaseemissionratio c on (c.polprocessid=ppa.polprocessid)
+inner join runspecsourcefueltype r on (r.sourcetypeid=c.sourcetypeid and r.fueltypeid=c.fueltypeid)
+where ppa.pollutantid in (##pollutantids##)
+and ppa.processid = ##outputprocessid##
 and (
-	(c.minModelYearID >= MYMAP(##context.year## - 30) and c.minModelYearID <= MYMAP(##context.year##))
-	or
-	(c.maxModelYearID >= MYMAP(##context.year## - 30) and c.maxModelYearID <= MYMAP(##context.year##))
-	or
-	(c.minModelYearID < MYMAP(##context.year## - 30) and c.maxModelYearID > MYMAP(##context.year##))
+    (c.minmodelyearid >= mymap(##context.year## - 30) and c.minmodelyearid <= mymap(##context.year##))
+    or
+    (c.maxmodelyearid >= mymap(##context.year## - 30) and c.maxmodelyearid <= mymap(##context.year##))
+    or
+    (c.minmodelyearid < mymap(##context.year## - 30) and c.maxmodelyearid > mymap(##context.year##))
 );
--- End Section PM
+-- end section pm
 
--- Section NonPM
-cache select c.polProcessID,
-	MYRMAP(c.minModelYearID) as minModelYearID,
-	MYRMAP(c.maxModelYearID) as maxModelYearID,
-	c.sourceTypeID,
-	c.fuelTypeID,
-	c.crankcaseRatio,
-	c.crankcaseRatioCV
-into outfile '##NonPMCrankcaseEmissionRatio##'
-from PollutantProcessAssoc ppa
-inner join CrankcaseEmissionRatio c on (c.polProcessID=ppa.polProcessID)
-inner join RunSpecSourceFuelType r on (r.sourceTypeID=c.sourceTypeID and r.fuelTypeID=c.fuelTypeID)
-where ppa.pollutantID in (##pollutantIDs##)
-and ppa.processID = ##outputProcessID##
+-- section nonpm
+cache select c.polprocessid,
+    myrmap(c.minmodelyearid) as minmodelyearid,
+    myrmap(c.maxmodelyearid) as maxmodelyearid,
+    c.sourcetypeid,
+    c.fueltypeid,
+    c.crankcaseratio,
+    c.crankcaseratiocv
+into outfile '##nonpmcrankcaseemissionratio##'
+from pollutantprocessassoc ppa
+inner join crankcaseemissionratio c on (c.polprocessid=ppa.polprocessid)
+inner join runspecsourcefueltype r on (r.sourcetypeid=c.sourcetypeid and r.fueltypeid=c.fueltypeid)
+where ppa.pollutantid in (##pollutantids##)
+and ppa.processid = ##outputprocessid##
 and (
-	(c.minModelYearID >= MYMAP(##context.year## - 30) and c.minModelYearID <= MYMAP(##context.year##))
-	or
-	(c.maxModelYearID >= MYMAP(##context.year## - 30) and c.maxModelYearID <= MYMAP(##context.year##))
-	or
-	(c.minModelYearID < MYMAP(##context.year## - 30) and c.maxModelYearID > MYMAP(##context.year##))
+    (c.minmodelyearid >= mymap(##context.year## - 30) and c.minmodelyearid <= mymap(##context.year##))
+    or
+    (c.maxmodelyearid >= mymap(##context.year## - 30) and c.maxmodelyearid <= mymap(##context.year##))
+    or
+    (c.minmodelyearid < mymap(##context.year## - 30) and c.maxmodelyearid > mymap(##context.year##))
 );
 
-cache select distinct ppa.polProcessID, ppa.processID, ppa.pollutantID, ppa.isAffectedByExhaustIM, ppa.isAffectedByEvapIM
-into outfile '##NonPMCrankcasePollutantProcessAssoc##'
-from PollutantProcessAssoc ppa
-inner join CrankcaseEmissionRatio c on (c.polProcessID=ppa.polProcessID)
-inner join RunSpecSourceFuelType r on (r.sourceTypeID=c.sourceTypeID and r.fuelTypeID=c.fuelTypeID)
-where ppa.pollutantID in (##pollutantIDs##)
-and ppa.processID = ##outputProcessID##
+cache select distinct ppa.polprocessid, ppa.processid, ppa.pollutantid, ppa.isaffectedbyexhaustim, ppa.isaffectedbyevapim
+into outfile '##nonpmcrankcasepollutantprocessassoc##'
+from pollutantprocessassoc ppa
+inner join crankcaseemissionratio c on (c.polprocessid=ppa.polprocessid)
+inner join runspecsourcefueltype r on (r.sourcetypeid=c.sourcetypeid and r.fueltypeid=c.fueltypeid)
+where ppa.pollutantid in (##pollutantids##)
+and ppa.processid = ##outputprocessid##
 and (
-	(c.minModelYearID >= MYMAP(##context.year## - 30) and c.minModelYearID <= MYMAP(##context.year##))
-	or
-	(c.maxModelYearID >= MYMAP(##context.year## - 30) and c.maxModelYearID <= MYMAP(##context.year##))
-	or
-	(c.minModelYearID < MYMAP(##context.year## - 30) and c.maxModelYearID > MYMAP(##context.year##))
+    (c.minmodelyearid >= mymap(##context.year## - 30) and c.minmodelyearid <= mymap(##context.year##))
+    or
+    (c.maxmodelyearid >= mymap(##context.year## - 30) and c.maxmodelyearid <= mymap(##context.year##))
+    or
+    (c.minmodelyearid < mymap(##context.year## - 30) and c.maxmodelyearid > mymap(##context.year##))
 );
--- End Section NonPM
+-- end section nonpm
 
--- End Section Extract Data
+-- end section extract data
 
--- Section Processing
+-- section processing
 
-drop table if exists ##prefix##CrankcaseMOVESWorkerOutputTemp;
-create table if not exists ##prefix##CrankcaseMOVESWorkerOutputTemp (
-	yearID               SMALLINT UNSIGNED NULL,
-	monthID              SMALLINT UNSIGNED NULL,
-	dayID                SMALLINT UNSIGNED NULL,
-	hourID               SMALLINT UNSIGNED NULL,
-	stateID              SMALLINT UNSIGNED NULL,
-	countyID             INTEGER UNSIGNED NULL,
-	zoneID               INTEGER UNSIGNED NULL,
-	linkID               INTEGER UNSIGNED NULL,
-	pollutantID          SMALLINT UNSIGNED NULL,
-	processID            SMALLINT UNSIGNED NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL,
-	regClassID			 SMALLINT UNSIGNED NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL,
-	modelYearID          SMALLINT UNSIGNED NULL,
-	roadTypeID           SMALLINT UNSIGNED NULL,
-	SCC                  CHAR(10) NULL,
-	emissionQuant        DOUBLE NULL,
-	emissionRate		 DOUBLE NULL,
-	
-	index (fuelTypeID),
-	index (sourceTypeID),
-	index (roadTypeID),
-	index (zoneID)
-);
-
-CREATE INDEX ##prefix##MOVESWorkerOutput_New2 ON MOVESWorkerOutput (
-	pollutantID ASC,
-	sourceTypeID ASC,
-	fuelTypeID ASC,
-	modelYearID ASC,
-	processID ASC
-);
-CREATE INDEX ##prefix##CrankcasePollutantProcessAssoc_New1 ON ##prefix##CrankcasePollutantProcessAssoc (
-	pollutantID ASC,
-	polProcessID ASC,
-	processID ASC
-);
-CREATE INDEX ##prefix##CrankcaseEmissionRatio_New1 ON ##prefix##CrankcaseEmissionRatio (
-	polProcessID ASC,
-	sourceTypeID ASC,
-	fuelTypeID ASC,
-	minModelYearID ASC,
-	maxModelYearID ASC
+drop table if exists ##prefix##crankcasemovesworkeroutputtemp;
+create table if not exists ##prefix##crankcasemovesworkeroutputtemp (
+    yearid               smallint unsigned null,
+    monthid              smallint unsigned null,
+    dayid                smallint unsigned null,
+    hourid               smallint unsigned null,
+    stateid              smallint unsigned null,
+    countyid             integer unsigned null,
+    zoneid               integer unsigned null,
+    linkid               integer unsigned null,
+    pollutantid          smallint unsigned null,
+    processid            smallint unsigned null,
+    sourcetypeid         smallint unsigned null,
+    regclassid           smallint unsigned null,
+    fueltypeid           smallint unsigned null,
+    modelyearid          smallint unsigned null,
+    roadtypeid           smallint unsigned null,
+    scc                  char(10) null,
+    emissionquant        double null,
+    emissionrate         double null,
+    
+    index (fueltypeid),
+    index (sourcetypeid),
+    index (roadtypeid),
+    index (zoneid)
 );
 
--- @algorithm crankcase emissions[output pollutantID,processID,modelYearID,sourceTypeID,fuelTypeID] = emissions[input pollutantID,processID,modelYearID,sourceTypeID,fuelTypeID] *
--- crankcaseRatio[output pollutantID,input polluantID,processID,modelYearID,sourceTypeID,fuelTypeID]
-insert into ##prefix##CrankcaseMOVESWorkerOutputTemp (
-    yearID,
-    monthID,
-    dayID,
-    hourID,
-    stateID,
-    countyID,
-    zoneID,
-    linkID,
-    pollutantID,
-    processID,
-    sourceTypeID,
-    regClassID,
-    fuelTypeID,
-    modelYearID,
-    roadTypeID,
-    SCC,
-    emissionQuant,
-    emissionRate)
+create index ##prefix##movesworkeroutput_new2 on movesworkeroutput (
+    pollutantid asc,
+    sourcetypeid asc,
+    fueltypeid asc,
+    modelyearid asc,
+    processid asc
+);
+create index ##prefix##crankcasepollutantprocessassoc_new1 on ##prefix##crankcasepollutantprocessassoc (
+    pollutantid asc,
+    polprocessid asc,
+    processid asc
+);
+create index ##prefix##crankcaseemissionratio_new1 on ##prefix##crankcaseemissionratio (
+    polprocessid asc,
+    sourcetypeid asc,
+    fueltypeid asc,
+    minmodelyearid asc,
+    maxmodelyearid asc
+);
+
+-- @algorithm crankcase emissions[output pollutantid,processid,modelyearid,sourcetypeid,fueltypeid] = emissions[input pollutantid,processid,modelyearid,sourcetypeid,fueltypeid] *
+-- crankcaseratio[output pollutantid,input polluantid,processid,modelyearid,sourcetypeid,fueltypeid]
+insert into ##prefix##crankcasemovesworkeroutputtemp (
+    yearid,
+    monthid,
+    dayid,
+    hourid,
+    stateid,
+    countyid,
+    zoneid,
+    linkid,
+    pollutantid,
+    processid,
+    sourcetypeid,
+    regclassid,
+    fueltypeid,
+    modelyearid,
+    roadtypeid,
+    scc,
+    emissionquant,
+    emissionrate)
 select
-    yearID,
-    monthID,
-    dayID,
-    hourID,
-    stateID,
-    countyID,
-    zoneID,
-    linkID,
-    ppa.pollutantID,
-    ppa.processID,
-    r.sourceTypeID,
-    mwo.regClassID,
-    r.fuelTypeID,
-    mwo.modelYearID,
-    roadTypeID,
-    SCC,
-    (emissionQuant * crankcaseRatio) as emissionQuant,
-    (emissionRate * crankcaseRatio) as emissionRate
-from MOVESWorkerOutput mwo
-inner join ##prefix##CrankcasePollutantProcessAssoc ppa on (ppa.pollutantID=mwo.pollutantID)
-inner join ##prefix##CrankcaseEmissionRatio r on (
-	r.polProcessID=ppa.polProcessID
-	and r.sourceTypeID=mwo.sourceTypeID
-	and r.fuelTypeID=mwo.fuelTypeID
-	and r.minModelYearID <= mwo.modelYearID
-	and r.maxModelYearID >= mwo.modelYearID
-	)
-where ((mwo.processID=1 and ppa.processID=15)
-	or (mwo.processID=2 and ppa.processID=16)
-	or (mwo.processID=90 and ppa.processID=17))
-	and mwo.pollutantID in (##pollutantIDs##);
+    yearid,
+    monthid,
+    dayid,
+    hourid,
+    stateid,
+    countyid,
+    zoneid,
+    linkid,
+    ppa.pollutantid,
+    ppa.processid,
+    r.sourcetypeid,
+    mwo.regclassid,
+    r.fueltypeid,
+    mwo.modelyearid,
+    roadtypeid,
+    scc,
+    (emissionquant * crankcaseratio) as emissionquant,
+    (emissionrate * crankcaseratio) as emissionrate
+from movesworkeroutput mwo
+inner join ##prefix##crankcasepollutantprocessassoc ppa on (ppa.pollutantid=mwo.pollutantid)
+inner join ##prefix##crankcaseemissionratio r on (
+    r.polprocessid=ppa.polprocessid
+    and r.sourcetypeid=mwo.sourcetypeid
+    and r.fueltypeid=mwo.fueltypeid
+    and r.minmodelyearid <= mwo.modelyearid
+    and r.maxmodelyearid >= mwo.modelyearid
+    )
+where ((mwo.processid=1 and ppa.processid=15)
+    or (mwo.processid=2 and ppa.processid=16)
+    or (mwo.processid=90 and ppa.processid=17))
+    and mwo.pollutantid in (##pollutantids##);
 
-insert into MOVESWorkerOutput (
-    yearID,
-    monthID,
-    dayID,
-    hourID,
-    stateID,
-    countyID,
-    zoneID,
-    linkID,
-    pollutantID,
-    processID,
-    sourceTypeID,
-    regClassID,
-    fuelTypeID,
-    modelYearID,
-    roadTypeID,
-    SCC,
-    emissionQuant,
-    emissionRate)
+insert into movesworkeroutput (
+    yearid,
+    monthid,
+    dayid,
+    hourid,
+    stateid,
+    countyid,
+    zoneid,
+    linkid,
+    pollutantid,
+    processid,
+    sourcetypeid,
+    regclassid,
+    fueltypeid,
+    modelyearid,
+    roadtypeid,
+    scc,
+    emissionquant,
+    emissionrate)
 select
-    yearID,
-    monthID,
-    dayID,
-    hourID,
-    stateID,
-    countyID,
-    zoneID,
-    linkID,
-    pollutantID,
-    processID,
-    sourceTypeID,
-    regClassID,
-    fuelTypeID,
-    modelYearID,
-    roadTypeID,
-    SCC,
-    emissionQuant,
-    emissionRate
-from ##prefix##CrankcaseMOVESWorkerOutputTemp;
+    yearid,
+    monthid,
+    dayid,
+    hourid,
+    stateid,
+    countyid,
+    zoneid,
+    linkid,
+    pollutantid,
+    processid,
+    sourcetypeid,
+    regclassid,
+    fueltypeid,
+    modelyearid,
+    roadtypeid,
+    scc,
+    emissionquant,
+    emissionrate
+from ##prefix##crankcasemovesworkeroutputtemp;
 
--- Section SulfatePM10
-truncate table ##prefix##CrankcaseMOVESWorkerOutputTemp;
-insert into ##prefix##CrankcaseMOVESWorkerOutputTemp (
-    yearID,
-    monthID,
-    dayID,
-    hourID,
-    stateID,
-    countyID,
-    zoneID,
-    linkID,
-    pollutantID,
-    processID,
-    sourceTypeID,
-    regClassID,
-    fuelTypeID,
-    modelYearID,
-    roadTypeID,
-    SCC,
-    emissionQuant,
-    emissionRate)
+-- section sulfatepm10
+truncate table ##prefix##crankcasemovesworkeroutputtemp;
+insert into ##prefix##crankcasemovesworkeroutputtemp (
+    yearid,
+    monthid,
+    dayid,
+    hourid,
+    stateid,
+    countyid,
+    zoneid,
+    linkid,
+    pollutantid,
+    processid,
+    sourcetypeid,
+    regclassid,
+    fueltypeid,
+    modelyearid,
+    roadtypeid,
+    scc,
+    emissionquant,
+    emissionrate)
 select
-    yearID,
-    monthID,
-    dayID,
-    hourID,
-    stateID,
-    countyID,
-    zoneID,
-    linkID,
-    105 as pollutantID,
-    processID,
-    sourceTypeID,
-    regClassID,
-    fuelTypeID,
-    modelYearID,
-    roadTypeID,
-    SCC,
-    emissionQuant,
-    emissionRate
-from MOVESWorkerOutput
-where pollutantID=115
-and processID in (15,16,17);
+    yearid,
+    monthid,
+    dayid,
+    hourid,
+    stateid,
+    countyid,
+    zoneid,
+    linkid,
+    105 as pollutantid,
+    processid,
+    sourcetypeid,
+    regclassid,
+    fueltypeid,
+    modelyearid,
+    roadtypeid,
+    scc,
+    emissionquant,
+    emissionrate
+from movesworkeroutput
+where pollutantid=115
+and processid in (15,16,17);
 
-insert into MOVESWorkerOutput (
-    yearID,
-    monthID,
-    dayID,
-    hourID,
-    stateID,
-    countyID,
-    zoneID,
-    linkID,
-    pollutantID,
-    processID,
-    sourceTypeID,
-    regClassID,
-    fuelTypeID,
-    modelYearID,
-    roadTypeID,
-    SCC,
-    emissionQuant,
-    emissionRate)
+insert into movesworkeroutput (
+    yearid,
+    monthid,
+    dayid,
+    hourid,
+    stateid,
+    countyid,
+    zoneid,
+    linkid,
+    pollutantid,
+    processid,
+    sourcetypeid,
+    regclassid,
+    fueltypeid,
+    modelyearid,
+    roadtypeid,
+    scc,
+    emissionquant,
+    emissionrate)
 select
-    yearID,
-    monthID,
-    dayID,
-    hourID,
-    stateID,
-    countyID,
-    zoneID,
-    linkID,
-    pollutantID,
-    processID,
-    sourceTypeID,
-    regClassID,
-    fuelTypeID,
-    modelYearID,
-    roadTypeID,
-    SCC,
-    emissionQuant,
-    emissionRate
-from ##prefix##CrankcaseMOVESWorkerOutputTemp;
--- End Section SulfatePM10
+    yearid,
+    monthid,
+    dayid,
+    hourid,
+    stateid,
+    countyid,
+    zoneid,
+    linkid,
+    pollutantid,
+    processid,
+    sourcetypeid,
+    regclassid,
+    fueltypeid,
+    modelyearid,
+    roadtypeid,
+    scc,
+    emissionquant,
+    emissionrate
+from ##prefix##crankcasemovesworkeroutputtemp;
+-- end section sulfatepm10
 
-alter table MOVESWorkerOutput drop index ##prefix##MOVESWorkerOutput_New2;
-alter table ##prefix##CrankcasePollutantProcessAssoc drop index ##prefix##CrankcasePollutantProcessAssoc_New1;
-alter table ##prefix##CrankcaseEmissionRatio drop index ##prefix##CrankcaseEmissionRatio_New1;
+alter table movesworkeroutput drop index ##prefix##movesworkeroutput_new2;
+alter table ##prefix##crankcasepollutantprocessassoc drop index ##prefix##crankcasepollutantprocessassoc_new1;
+alter table ##prefix##crankcaseemissionratio drop index ##prefix##crankcaseemissionratio_new1;
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
-drop table if exists ##prefix##CrankcaseMOVESWorkerOutputTemp;
-drop table if exists ##prefix##CrankcasePollutantProcessAssoc;
--- End Section Cleanup
+-- section cleanup
+drop table if exists ##prefix##crankcasemovesworkeroutputtemp;
+drop table if exists ##prefix##crankcasepollutantprocessassoc;
+-- end section cleanup

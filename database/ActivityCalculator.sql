@@ -1,946 +1,946 @@
--- Version 2017-09-29
--- Author Wesley Faler
+-- version 2017-09-29
+-- author wesley faler
 
 -- @algorithm
--- @owner Activity Calculator
+-- @owner activity calculator
 -- @calculator
 
--- Section Create Remote Tables for Extracted Data
+-- section create remote tables for extracted data
 
-##create.HourDay##;
-TRUNCATE TABLE HourDay;
+##create.hourday##;
+truncate table hourday;
 
 ##create.link##;
-TRUNCATE TABLE link;
+truncate table link;
 
-##create.sourceUseType##;
-TRUNCATE TABLE sourceUseType;
+##create.sourceusetype##;
+truncate table sourceusetype;
 
-##create.runSpecSourceType##;
-TRUNCATE TABLE runSpecSourceType;
+##create.runspecsourcetype##;
+truncate table runspecsourcetype;
 
-##create.runSpecSourceFuelType##;
-TRUNCATE TABLE runSpecSourceFuelType;
+##create.runspecsourcefueltype##;
+truncate table runspecsourcefueltype;
 
--- The sections are listed here according to Activty Type, not alphabetically
--- Section SourceHours
-##create.SourceHours##;
-TRUNCATE TABLE SourceHours;
--- End Section SourceHours
+-- the sections are listed here according to activty type, not alphabetically
+-- section sourcehours
+##create.sourcehours##;
+truncate table sourcehours;
+-- end section sourcehours
 
--- Section ExtendedIdleHours
-##create.extendedIdleHours##;
-TRUNCATE TABLE extendedIdleHours;
--- End Section ExtendedIdleHours
+-- section extendedidlehours
+##create.extendedidlehours##;
+truncate table extendedidlehours;
+-- end section extendedidlehours
 
--- Section hotellingHours
-##create.hotellingHours##;
-TRUNCATE TABLE hotellingHours;
+-- section hotellinghours
+##create.hotellinghours##;
+truncate table hotellinghours;
 
-##create.hotellingActivityDistribution##;
-TRUNCATE TABLE hotellingActivityDistribution;
--- End Section hotellingHours
+##create.hotellingactivitydistribution##;
+truncate table hotellingactivitydistribution;
+-- end section hotellinghours
 
--- Section SHO
-##create.SHO##;
-TRUNCATE TABLE SHO;
--- End Section SHO
+-- section sho
+##create.sho##;
+truncate table sho;
+-- end section sho
 
--- Section ONI
-##create.SHO##;
-TRUNCATE TABLE SHO;
--- End Section ONI
+-- section oni
+##create.sho##;
+truncate table sho;
+-- end section oni
 
--- Section SHP
-##create.SHP##;
-TRUNCATE TABLE SHP;
--- End Section SHP
+-- section shp
+##create.shp##;
+truncate table shp;
+-- end section shp
 
--- Section Population
+-- section population
 
--- Section NonProjectDomain
-##create.sourceTypeAgePopulation##;
-TRUNCATE TABLE sourceTypeAgePopulation;
+-- section nonprojectdomain
+##create.sourcetypeagepopulation##;
+truncate table sourcetypeagepopulation;
 
-##create.fractionWithinHPMSVType##;
-TRUNCATE TABLE fractionWithinHPMSVType;
+##create.fractionwithinhpmsvtype##;
+truncate table fractionwithinhpmsvtype;
 
-##create.analysisYearVMT##;
-TRUNCATE TABLE analysisYearVMT;
+##create.analysisyearvmt##;
+truncate table analysisyearvmt;
 
-##create.roadTypeDistribution##;
-TRUNCATE TABLE roadTypeDistribution;
+##create.roadtypedistribution##;
+truncate table roadtypedistribution;
 
-##create.zoneRoadType##;
-TRUNCATE TABLE zoneRoadType;
--- End Section NonProjectDomain
+##create.zoneroadtype##;
+truncate table zoneroadtype;
+-- end section nonprojectdomain
 
--- Section ProjectDomain
-##create.offNetworkLink##;
-TRUNCATE TABLE offNetworkLink;
+-- section projectdomain
+##create.offnetworklink##;
+truncate table offnetworklink;
 
-##create.linkSourceTypeHour##;
-TRUNCATE TABLE linkSourceTypeHour;
+##create.linksourcetypehour##;
+truncate table linksourcetypehour;
 
-##create.sourceTypeAgeDistribution##;
-TRUNCATE TABLE sourceTypeAgeDistribution;
--- End Section ProjectDomain
+##create.sourcetypeagedistribution##;
+truncate table sourcetypeagedistribution;
+-- end section projectdomain
 
--- End Section Population
+-- end section population
 
--- Section Starts
-##create.Starts##;
-TRUNCATE TABLE Starts;
--- End Section Starts
+-- section starts
+##create.starts##;
+truncate table starts;
+-- end section starts
 
-create table if not exists sourceTypeFuelFraction (
-	sourceTypeID smallint not null,
-	modelYearID smallint not null,
-	fuelTypeID smallint not null,
-	fuelFraction double not null,
-	primary key (sourceTypeID, modelYearID, fuelTypeID),
-	key (modelYearID, sourceTypeID, fuelTypeID),
-	key (modelYearID, fuelTypeID, sourceTypeID)
+create table if not exists sourcetypefuelfraction (
+	sourcetypeid smallint not null,
+	modelyearid smallint not null,
+	fueltypeid smallint not null,
+	fuelfraction double not null,
+	primary key (sourcetypeid, modelyearid, fueltypeid),
+	key (modelyearid, sourcetypeid, fueltypeid),
+	key (modelyearid, fueltypeid, sourcetypeid)
 );
-truncate table sourceTypeFuelFraction;
+truncate table sourcetypefuelfraction;
 
--- Section WithRegClassID
-##create.RegClassSourceTypeFraction##;
-TRUNCATE TABLE RegClassSourceTypeFraction;
--- End Section WithRegClassID
+-- section withregclassid
+##create.regclasssourcetypefraction##;
+truncate table regclasssourcetypefraction;
+-- end section withregclassid
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
+-- section extract data
 
-SELECT *
-INTO OUTFILE '##HourDay##'
-FROM HourDay;
+select *
+into outfile '##hourday##'
+from hourday;
 
--- Select all links in the current zone. This is required population calculations in Project domain.
--- Link is further filtered where needed.
-SELECT *
-INTO OUTFILE '##link##'
-FROM link
-WHERE zoneID = ##context.iterLocation.zoneRecordID##;
+-- select all links in the current zone. this is required population calculations in project domain.
+-- link is further filtered where needed.
+select *
+into outfile '##link##'
+from link
+where zoneid = ##context.iterlocation.zonerecordid##;
 
-SELECT *
-INTO OUTFILE '##sourceUseType##'
-FROM sourceUseType;
+select *
+into outfile '##sourceusetype##'
+from sourceusetype;
 
-SELECT *
-INTO OUTFILE '##runSpecSourceType##'
-FROM runSpecSourceType;
+select *
+into outfile '##runspecsourcetype##'
+from runspecsourcetype;
 
-SELECT *
-INTO OUTFILE '##runSpecSourceFuelType##'
-FROM runSpecSourceFuelType;
+select *
+into outfile '##runspecsourcefueltype##'
+from runspecsourcefueltype;
 
--- Section SourceHours
-SELECT SourceHours.* 
-INTO OUTFILE '##SourceHours##'
-FROM SourceHours
-INNER JOIN RunSpecMonth USING (monthID)
-WHERE yearID = ##context.year##
-AND linkID = ##context.iterLocation.linkRecordID##;
--- End Section SourceHours
+-- section sourcehours
+select sourcehours.* 
+into outfile '##sourcehours##'
+from sourcehours
+inner join runspecmonth using (monthid)
+where yearid = ##context.year##
+and linkid = ##context.iterlocation.linkrecordid##;
+-- end section sourcehours
 
--- Section ExtendedIdleHours
-SELECT extendedIdleHours.*
-INTO OUTFILE '##ExtendedIdleHours##'
-FROM extendedIdleHours
-WHERE yearID = ##context.year##
-AND zoneID = ##context.iterLocation.zoneRecordID##;
--- End Section ExtendedIdleHours
+-- section extendedidlehours
+select extendedidlehours.*
+into outfile '##extendedidlehours##'
+from extendedidlehours
+where yearid = ##context.year##
+and zoneid = ##context.iterlocation.zonerecordid##;
+-- end section extendedidlehours
 
--- Section hotellingHours
-SELECT hotellingHours.*
-INTO OUTFILE '##hotellingHours##'
-FROM hotellingHours
-WHERE yearID = ##context.year##
-AND zoneID = ##context.iterLocation.zoneRecordID##;
+-- section hotellinghours
+select hotellinghours.*
+into outfile '##hotellinghours##'
+from hotellinghours
+where yearid = ##context.year##
+and zoneid = ##context.iterlocation.zonerecordid##;
 
 cache select *
-into outfile '##hotellingActivityDistribution##'
-from hotellingActivityDistribution
-where opModeID <> 200
-and beginModelYearID <= ##context.year##
-and endModelYearID >= ##context.year## - 30
-and zoneID = ##hotellingActivityZoneID##;
--- End Section hotellingHours
+into outfile '##hotellingactivitydistribution##'
+from hotellingactivitydistribution
+where opmodeid <> 200
+and beginmodelyearid <= ##context.year##
+and endmodelyearid >= ##context.year## - 30
+and zoneid = ##hotellingactivityzoneid##;
+-- end section hotellinghours
 
--- Section SHO
-SELECT SHO.* 
-INTO OUTFILE '##SHO##'
-FROM SHO
-INNER JOIN RunSpecMonth USING (monthID)
-WHERE yearID = ##context.year##
-AND linkID = ##context.iterLocation.linkRecordID##;
--- End Section SHO
+-- section sho
+select sho.* 
+into outfile '##sho##'
+from sho
+inner join runspecmonth using (monthid)
+where yearid = ##context.year##
+and linkid = ##context.iterlocation.linkrecordid##;
+-- end section sho
 
--- Section ONI
-SELECT SHO.* 
-INTO OUTFILE '##SHO##'
-FROM SHO
-INNER JOIN RunSpecMonth USING (monthID)
-WHERE yearID = ##context.year##
-AND linkID = ##context.iterLocation.linkRecordID##;
--- End Section ONI
+-- section oni
+select sho.* 
+into outfile '##sho##'
+from sho
+inner join runspecmonth using (monthid)
+where yearid = ##context.year##
+and linkid = ##context.iterlocation.linkrecordid##;
+-- end section oni
 
--- Section SHP
-SELECT SHP.* 
-INTO OUTFILE '##SHP##'
-FROM SHP
-WHERE yearID = ##context.year##
-AND zoneID = ##context.iterLocation.zoneRecordID##;
--- End Section SHP
+-- section shp
+select shp.* 
+into outfile '##shp##'
+from shp
+where yearid = ##context.year##
+and zoneid = ##context.iterlocation.zonerecordid##;
+-- end section shp
 
--- Section Population
+-- section population
 
--- Section NonProjectDomain
-cache SELECT *
-INTO OUTFILE '##sourceTypeAgePopulation##'
-FROM sourceTypeAgePopulation
-WHERE yearID = ##context.year##;
-
-cache SELECT *
-INTO OUTFILE '##fractionWithinHPMSVType##'
-FROM fractionWithinHPMSVType
-WHERE yearID = ##context.year##;
-
-cache SELECT *
-INTO OUTFILE '##analysisYearVMT##'
-FROM analysisYearVMT
-WHERE yearID = ##context.year##;
-
-cache SELECT *
-INTO OUTFILE '##roadTypeDistribution##'
-FROM roadTypeDistribution;
-
-cache select zoneID,
-	roadTypeID,
-	sum(SHOAllocFactor) as SHOAllocFactor
-into outfile '##zoneRoadType##'
-from zoneRoadType
-where zoneID=##context.iterLocation.zoneRecordID##
-group by roadTypeID;
--- End Section NonProjectDomain
-
--- Section ProjectDomain
-cache SELECT *
-INTO OUTFILE '##offNetworkLink##'
-FROM offNetworkLink;
-
-cache SELECT linkSourceTypeHour.*
-INTO OUTFILE '##linkSourceTypeHour##'
-FROM linkSourceTypeHour
-INNER JOIN link on (link.linkID = linkSourceTypeHour.linkID)
-WHERE zoneID = ##context.iterLocation.zoneRecordID##;
-
-cache SELECT sourceTypeAgeDistribution.*
-INTO OUTFILE '##sourceTypeAgeDistribution##'
-FROM sourceTypeAgeDistribution
-INNER JOIN RunSpecSourceType using (sourceTypeID)
-WHERE yearID = ##context.year##;
--- End Section ProjectDomain
-
--- End Section Population
-
--- Section Starts
-SELECT Starts.* INTO OUTFILE '##Starts##'
-FROM Starts
-WHERE yearID = ##context.year##
-AND zoneID = ##context.iterLocation.zoneRecordID##;
--- End Section Starts
-
--- Section createSourceTypeFuelFraction
-drop table if exists sourceTypeFuelFraction;
-drop table if exists sourceTypeFuelFractionTemp;
-drop table if exists sourceTypeFuelFractionTotal;
-
-create table if not exists sourceTypeFuelFraction (
-	sourceTypeID smallint not null,
-	modelYearID smallint not null,
-	fuelTypeID smallint not null,
-	fuelFraction double not null,
-	primary key (sourceTypeID, modelYearID, fuelTypeID),
-	key (modelYearID, sourceTypeID, fuelTypeID),
-	key (modelYearID, fuelTypeID, sourceTypeID)
-);
-
-create table sourceTypeFuelFractionTemp (
-	sourceTypeModelYearID int not null,
-	fuelTypeID smallint not null,
-	tempFuelFraction double,
-	primary key (sourceTypeModelYearID, fuelTypeID),
-	key (fuelTypeID, sourceTypeModelYearID)
-);
-
-create table sourceTypeFuelFractionTotal (
-	sourceTypeModelYearID int not null,
-	tempTotal double,
-	sourceTypeID smallint null,
-	modelYearID smallint null,
-	primary key (sourceTypeModelYearID)
-);
-
--- Section UseSampleVehiclePopulation
-insert into sourceTypeFuelFractionTemp (sourceTypeModelYearID, fuelTypeID, tempFuelFraction)
-select sourceTypeModelYearID, fuelTypeID, sum(stmyFraction) as tempFuelFraction
-from sampleVehiclePopulation
-group by sourceTypeModelYearID, fuelTypeID
-order by null;
--- End Section UseSampleVehiclePopulation
-
--- Section UseFuelUsageFraction
-insert into sourceTypeFuelFractionTemp (sourceTypeModelYearID, fuelTypeID, tempFuelFraction)
-select sourceTypeModelYearID, fuelSupplyFuelTypeID as fuelTypeID, 
-	sum(stmyFraction*usageFraction) as tempFuelFraction
-from sampleVehiclePopulation svp
-inner join fuelUsageFraction fuf on (
-	fuf.sourceBinFuelTypeID = svp.fuelTypeID
-)
-where fuf.countyID = ##context.iterLocation.countyRecordID##
-and fuf.fuelYearID = ##context.fuelYearID##
-and fuf.modelYearGroupID = 0
-group by sourceTypeModelYearID, fuelSupplyFuelTypeID
-order by null;
--- End Section UseFuelUsageFraction
-
-insert into sourceTypeFuelFractionTotal (sourceTypeModelYearID, tempTotal)
-select sourceTypeModelYearID, sum(stmyFraction) as tempTotal
-from sampleVehiclePopulation
-group by sourceTypeModelYearID
-order by null;
-
-update sourceTypeFuelFractionTotal, sourceTypeModelYear set sourceTypeFuelFractionTotal.sourceTypeID=sourceTypeModelYear.sourceTypeID,
-	sourceTypeFuelFractionTotal.modelYearID=sourceTypeModelYear.modelYearID
-where sourceTypeModelYear.sourceTypeModelYearID=sourceTypeFuelFractionTotal.sourceTypeModelYearID;
-
-insert into sourceTypeFuelFraction (sourceTypeID, modelYearID, fuelTypeID, fuelFraction)
-select t.sourceTypeID, t.modelYearID, r.fuelTypeID,
-	case when tempTotal > 0 then tempFuelFraction / tempTotal
-	else 0 end as fuelFraction
-from sourceTypeFuelFractionTemp r
-inner join sourceTypeFuelFractionTotal t on (t.sourceTypeModelYearID=r.sourceTypeModelYearID)
-inner join runSpecSourceFuelType rs on (rs.sourceTypeID=t.sourceTypeID and rs.fuelTypeID=r.fuelTypeID);
-
-drop table if exists sourceTypeFuelFractionTemp;
-drop table if exists sourceTypeFuelFractionTotal;
--- End Section createSourceTypeFuelFraction
-
--- Section UseSampleVehiclePopulation
-cache SELECT *
-INTO OUTFILE '##sourceTypeFuelFraction##'
-FROM sourceTypeFuelFraction;
--- End Section UseSampleVehiclePopulation
-
--- Section UseFuelUsageFraction
-cache(countyID=##context.iterLocation.countyRecordID##,fuelYearID=##context.fuelYearID##) SELECT *
-INTO OUTFILE '##sourceTypeFuelFraction##'
-FROM sourceTypeFuelFraction;
--- End Section UseFuelUsageFraction
-
--- Section WithRegClassID
+-- section nonprojectdomain
 cache select *
-into outfile '##RegClassSourceTypeFraction##'
-from RegClassSourceTypeFraction
-where modelYearID <= ##context.year##
-and modelYearID >= ##context.year## - 30;
--- End Section WithRegClassID
+into outfile '##sourcetypeagepopulation##'
+from sourcetypeagepopulation
+where yearid = ##context.year##;
 
--- End Section Extract Data
+cache select *
+into outfile '##fractionwithinhpmsvtype##'
+from fractionwithinhpmsvtype
+where yearid = ##context.year##;
 
--- Section Local Data Removal
---TRUNCATE XXXXXX;
--- End Section Local Data Removal
+cache select *
+into outfile '##analysisyearvmt##'
+from analysisyearvmt
+where yearid = ##context.year##;
 
--- Section Processing
+cache select *
+into outfile '##roadtypedistribution##'
+from roadtypedistribution;
 
--- 2, "sourcehours", "Source Hours"
--- 3, "extidle", "Extended Idle Hours"
--- 4, "sho", "Source Hours Operating"
--- 5, "shp", "Source Hours Parked"
--- 6, "population", "Population"
--- 7, "starts", "Starts"
--- 13, "hotellingAux", "Hotelling Diesel Aux"
--- 14, "hotellingElectric", "Hotelling Battery or AC"
--- 15, "hotellingOff", "Hotelling All Engines Off"
+cache select zoneid,
+	roadtypeid,
+	sum(shoallocfactor) as shoallocfactor
+into outfile '##zoneroadtype##'
+from zoneroadtype
+where zoneid=##context.iterlocation.zonerecordid##
+group by roadtypeid;
+-- end section nonprojectdomain
 
--- Section SourceHours
--- 2, "sourcehours", "Source Hours"
+-- section projectdomain
+cache select *
+into outfile '##offnetworklink##'
+from offnetworklink;
 
--- Section WithRegClassID
--- @algorithm sourceHours = sourceHours[sourceTypeID,hourDayID,monthID,yearID,ageID,linkID]*fuelFraction[sourceTypeID,modelYearID,fuelTypeID]*regClassFraction[fuelTypeID,modelYearID,sourceTypeID,regClassID]
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select s.yearID, s.monthID, h.dayID, h.hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		##context.iterLocation.zoneRecordID## as zoneID,
-		s.linkID, s.sourceTypeID, stf.regClassID,
-		stff.fuelTypeID as fuelTypeID,
-		(s.yearID-s.ageID) as modelYearID,
-		l.roadTypeID as roadTypeID,
-		NULL as SCC,
-		2 as activityTypeID,
-		(sourceHours*stff.fuelFraction*stf.regClassFraction) as activity
-from SourceHours s
-inner join HourDay h on h.hourDayID=s.hourDayID
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(s.yearID-s.ageID))
-inner join Link l on (l.linkID=s.linkID)
-inner join RegClassSourceTypeFraction stf on (
-	stf.sourceTypeID = stff.sourceTypeID
-	and stf.fuelTypeID = stff.fuelTypeID
-	and stf.modelYearID = stff.modelYearID
+cache select linksourcetypehour.*
+into outfile '##linksourcetypehour##'
+from linksourcetypehour
+inner join link on (link.linkid = linksourcetypehour.linkid)
+where zoneid = ##context.iterlocation.zonerecordid##;
+
+cache select sourcetypeagedistribution.*
+into outfile '##sourcetypeagedistribution##'
+from sourcetypeagedistribution
+inner join runspecsourcetype using (sourcetypeid)
+where yearid = ##context.year##;
+-- end section projectdomain
+
+-- end section population
+
+-- section starts
+select starts.* into outfile '##starts##'
+from starts
+where yearid = ##context.year##
+and zoneid = ##context.iterlocation.zonerecordid##;
+-- end section starts
+
+-- section createsourcetypefuelfraction
+drop table if exists sourcetypefuelfraction;
+drop table if exists sourcetypefuelfractiontemp;
+drop table if exists sourcetypefuelfractiontotal;
+
+create table if not exists sourcetypefuelfraction (
+	sourcetypeid smallint not null,
+	modelyearid smallint not null,
+	fueltypeid smallint not null,
+	fuelfraction double not null,
+	primary key (sourcetypeid, modelyearid, fueltypeid),
+	key (modelyearid, sourcetypeid, fueltypeid),
+	key (modelyearid, fueltypeid, sourcetypeid)
 );
--- End Section WithRegClassID
 
--- Section NoRegClassID
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select s.yearID, s.monthID, h.dayID, h.hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		##context.iterLocation.zoneRecordID## as zoneID,
-		s.linkID, s.sourceTypeID,
-		stff.fuelTypeID as fuelTypeID,
-		(s.yearID-s.ageID) as modelYearID,
-		l.roadTypeID as roadTypeID,
-		NULL as SCC,
-		2 as activityTypeID,
-		(sourceHours*stff.fuelFraction) as activity
-from SourceHours s
-inner join HourDay h on h.hourDayID=s.hourDayID
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(s.yearID-s.ageID))
-inner join Link l on (l.linkID=s.linkID);
--- End Section NoRegClassID
-
--- End Section SourceHours
-
--- Section ExtendedIdleHours
--- 3, "extidle", "Extended Idle Hours"
-
--- Section WithRegClassID
--- @algorithm extendedIdleHours = extendedIdleHours[sourceTypeID,hourDayID,monthID,yearID,ageID,zoneID]*fuelFraction[sourceTypeID,modelYearID,fuelTypeID]*regClassFraction[fuelTypeID,modelYearID,sourceTypeID,regClassID]
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select s.yearID, s.monthID, h.dayID, h.hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		zoneID,
-		##context.iterLocation.linkRecordID## linkID, s.sourceTypeID, stf.regClassID,
-		stff.fuelTypeID as fuelTypeID,
-		(s.yearID-s.ageID) as modelYearID,
-		##context.iterLocation.roadTypeRecordID## as roadTypeID,
-		NULL as SCC,
-		3 as activityTypeID,
-		(extendedIdleHours*stff.fuelFraction*stf.regClassFraction) as activity
-from extendedIdleHours s
-inner join HourDay h on h.hourDayID=s.hourDayID
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(s.yearID-s.ageID))
-inner join RegClassSourceTypeFraction stf on (
-	stf.sourceTypeID = stff.sourceTypeID
-	and stf.fuelTypeID = stff.fuelTypeID
-	and stf.modelYearID = stff.modelYearID
+create table sourcetypefuelfractiontemp (
+	sourcetypemodelyearid int not null,
+	fueltypeid smallint not null,
+	tempfuelfraction double,
+	primary key (sourcetypemodelyearid, fueltypeid),
+	key (fueltypeid, sourcetypemodelyearid)
 );
--- End Section WithRegClassID
 
--- Section NoRegClassID
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select s.yearID, s.monthID, h.dayID, h.hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		zoneID,
-		##context.iterLocation.linkRecordID## linkID, s.sourceTypeID,
-		stff.fuelTypeID as fuelTypeID,
-		(s.yearID-s.ageID) as modelYearID,
-		##context.iterLocation.roadTypeRecordID## as roadTypeID,
-		NULL as SCC,
-		3 as activityTypeID,
-		(extendedIdleHours*stff.fuelFraction) as activity
-from extendedIdleHours s
-inner join HourDay h on h.hourDayID=s.hourDayID
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(s.yearID-s.ageID));
--- End Section NoRegClassID
-
--- End Section ExtendedIdleHours
-
--- Section SHO
--- 4, "sho", "Source Hours Operating"
-
--- Section WithRegClassID
--- @algorithm sho = sho[sourceTypeID,hourDayID,monthID,yearID,ageID,linkID]*fuelFraction[sourceTypeID,modelYearID,fuelTypeID]*regClassFraction[fuelTypeID,modelYearID,sourceTypeID,regClassID]
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select s.yearID, s.monthID, h.dayID, h.hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		##context.iterLocation.zoneRecordID## as zoneID,
-		s.linkID, s.sourceTypeID, stf.regClassID,
-		stff.fuelTypeID as fuelTypeID,
-		(s.yearID-s.ageID) as modelYearID,
-		l.roadTypeID as roadTypeID,
-		NULL as SCC,
-		4 as activityTypeID,
-		(SHO*stff.fuelFraction*stf.regClassFraction) as activity
-from SHO s
-inner join HourDay h on h.hourDayID=s.hourDayID
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(s.yearID-s.ageID))
-inner join Link l on (l.linkID=s.linkID)
-inner join RegClassSourceTypeFraction stf on (
-	stf.sourceTypeID = stff.sourceTypeID
-	and stf.fuelTypeID = stff.fuelTypeID
-	and stf.modelYearID = stff.modelYearID
+create table sourcetypefuelfractiontotal (
+	sourcetypemodelyearid int not null,
+	temptotal double,
+	sourcetypeid smallint null,
+	modelyearid smallint null,
+	primary key (sourcetypemodelyearid)
 );
--- End Section WithRegClassID
 
--- Section NoRegClassID
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select s.yearID, s.monthID, h.dayID, h.hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		##context.iterLocation.zoneRecordID## as zoneID,
-		s.linkID, s.sourceTypeID,
-		stff.fuelTypeID as fuelTypeID,
-		(s.yearID-s.ageID) as modelYearID,
-		l.roadTypeID as roadTypeID,
-		NULL as SCC,
-		4 as activityTypeID,
-		(SHO*stff.fuelFraction) as activity
-from SHO s
-inner join HourDay h on h.hourDayID=s.hourDayID
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(s.yearID-s.ageID))
-inner join Link l on (l.linkID=s.linkID);
--- End Section NoRegClassID
+-- section usesamplevehiclepopulation
+insert into sourcetypefuelfractiontemp (sourcetypemodelyearid, fueltypeid, tempfuelfraction)
+select sourcetypemodelyearid, fueltypeid, sum(stmyfraction) as tempfuelfraction
+from samplevehiclepopulation
+group by sourcetypemodelyearid, fueltypeid
+order by null;
+-- end section usesamplevehiclepopulation
 
--- End Section SHO
+-- section usefuelusagefraction
+insert into sourcetypefuelfractiontemp (sourcetypemodelyearid, fueltypeid, tempfuelfraction)
+select sourcetypemodelyearid, fuelsupplyfueltypeid as fueltypeid, 
+	sum(stmyfraction*usagefraction) as tempfuelfraction
+from samplevehiclepopulation svp
+inner join fuelusagefraction fuf on (
+	fuf.sourcebinfueltypeid = svp.fueltypeid
+)
+where fuf.countyid = ##context.iterlocation.countyrecordid##
+and fuf.fuelyearid = ##context.fuelyearid##
+and fuf.modelyeargroupid = 0
+group by sourcetypemodelyearid, fuelsupplyfueltypeid
+order by null;
+-- end section usefuelusagefraction
 
--- Section SHP
--- 5, "shp", "Source Hours Parked"
-
--- Section WithRegClassID
--- @algorithm shp = shp[sourceTypeID,hourDayID,monthID,yearID,ageID,zoneID]*fuelFraction[sourceTypeID,modelYearID,fuelTypeID]*regClassFraction[fuelTypeID,modelYearID,sourceTypeID,regClassID]
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select s.yearID, s.monthID, h.dayID, h.hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		zoneID,
-		##context.iterLocation.linkRecordID## linkID, s.sourceTypeID, stf.regClassID,
-		stff.fuelTypeID as fuelTypeID,
-		(s.yearID-s.ageID) as modelYearID,
-		##context.iterLocation.roadTypeRecordID## as roadTypeID,
-		NULL as SCC,
-		5 as activityTypeID,
-		(SHP*stff.fuelFraction*stf.regClassFraction) as activity
-from SHP s
-inner join HourDay h on h.hourDayID=s.hourDayID
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(s.yearID-s.ageID))
-inner join RegClassSourceTypeFraction stf on (
-	stf.sourceTypeID = stff.sourceTypeID
-	and stf.fuelTypeID = stff.fuelTypeID
-	and stf.modelYearID = stff.modelYearID
-);
--- End Section WithRegClassID
-
--- Section NoRegClassID
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select s.yearID, s.monthID, h.dayID, h.hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		zoneID,
-		##context.iterLocation.linkRecordID## linkID, s.sourceTypeID,
-		stff.fuelTypeID as fuelTypeID,
-		(s.yearID-s.ageID) as modelYearID,
-		##context.iterLocation.roadTypeRecordID## as roadTypeID,
-		NULL as SCC,
-		5 as activityTypeID,
-		(SHP*stff.fuelFraction) as activity
-from SHP s
-inner join HourDay h on h.hourDayID=s.hourDayID
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(s.yearID-s.ageID));
--- End Section NoRegClassID
-
--- End Section SHP
-
--- Section Population
--- 6, "population", "Population" (Zone level)
-
--- Section NonProjectDomain
-drop table if exists fractionBySourceTypeTemp;
-
--- @algorithm sutFraction[sourceTypeID] = sum(roadTypeVMTFraction * shoAllocFactor)/sum(roadTypeVMTFraction)
--- @condition Non-Project domain
-create table fractionBySourceTypeTemp
-select sut.sourceTypeID, sum(rtd.roadTypeVMTFraction*zrt.shoAllocFactor)/sum(rtd.roadTypeVMTFraction) as sutFraction
-from sourceUseType sut
-inner join roadTypeDistribution rtd on (rtd.sourceTypeID=sut.sourceTypeID)
-inner join zoneRoadType zrt on (zrt.roadTypeID=rtd.roadTypeID and zrt.zoneID=##context.iterLocation.zoneRecordID##)
-group by sut.sourceTypeID
+insert into sourcetypefuelfractiontotal (sourcetypemodelyearid, temptotal)
+select sourcetypemodelyearid, sum(stmyfraction) as temptotal
+from samplevehiclepopulation
+group by sourcetypemodelyearid
 order by null;
 
-drop table if exists sourceTypeTempPopulation;
+update sourcetypefuelfractiontotal, sourcetypemodelyear set sourcetypefuelfractiontotal.sourcetypeid=sourcetypemodelyear.sourcetypeid,
+	sourcetypefuelfractiontotal.modelyearid=sourcetypemodelyear.modelyearid
+where sourcetypemodelyear.sourcetypemodelyearid=sourcetypefuelfractiontotal.sourcetypemodelyearid;
 
--- @algorithm tempPopulation = sourceTypeAgePopulation[yearID,sourceTypeID,ageID] * sutFraction[sourceTypeID]
--- @condition Non-Project domain
-create table sourceTypeTempPopulation
-select t.sourceTypeID, stap.ageID, (population*sutFraction) as population, l.linkID
-from fractionBySourceTypeTemp t
-inner join sourceTypeAgePopulation stap on (stap.sourceTypeID=t.sourceTypeID)
-inner join runSpecSourceType rsst on (rsst.sourceTypeID=stap.sourceTypeID)
-inner join link l on (l.roadTypeID=1);
+insert into sourcetypefuelfraction (sourcetypeid, modelyearid, fueltypeid, fuelfraction)
+select t.sourcetypeid, t.modelyearid, r.fueltypeid,
+	case when temptotal > 0 then tempfuelfraction / temptotal
+	else 0 end as fuelfraction
+from sourcetypefuelfractiontemp r
+inner join sourcetypefuelfractiontotal t on (t.sourcetypemodelyearid=r.sourcetypemodelyearid)
+inner join runspecsourcefueltype rs on (rs.sourcetypeid=t.sourcetypeid and rs.fueltypeid=r.fueltypeid);
 
--- Section WithRegClassID
--- @algorithm population = tempPopulation*fuelFraction[sourceTypeID,modelYearID,fuelTypeID]*regClassFraction[fuelTypeID,modelYearID,sourceTypeID,regClassID]
--- @condition Non-Project domain
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select ##context.year##, 0 as monthID, 0 as dayID, 0 as hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		##context.iterLocation.zoneRecordID## as zoneID,
-		s.linkID,
-		s.sourceTypeID, stf.regClassID,
-		stff.fuelTypeID as fuelTypeID,
-		(##context.year##-s.ageID) as modelYearID,
-		1 as roadTypeID,
-		NULL as SCC,
-		6 as activityTypeID,
-		(s.population*stff.fuelFraction*stf.regClassFraction) as activity
-from sourceTypeTempPopulation s
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(##context.year##-s.ageID))
-inner join RegClassSourceTypeFraction stf on (
-	stf.sourceTypeID = stff.sourceTypeID
-	and stf.fuelTypeID = stff.fuelTypeID
-	and stf.modelYearID = stff.modelYearID
+drop table if exists sourcetypefuelfractiontemp;
+drop table if exists sourcetypefuelfractiontotal;
+-- end section createsourcetypefuelfraction
+
+-- section usesamplevehiclepopulation
+cache select *
+into outfile '##sourcetypefuelfraction##'
+from sourcetypefuelfraction;
+-- end section usesamplevehiclepopulation
+
+-- section usefuelusagefraction
+cache(countyid=##context.iterlocation.countyrecordid##,fuelyearid=##context.fuelyearid##) select *
+into outfile '##sourcetypefuelfraction##'
+from sourcetypefuelfraction;
+-- end section usefuelusagefraction
+
+-- section withregclassid
+cache select *
+into outfile '##regclasssourcetypefraction##'
+from regclasssourcetypefraction
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30;
+-- end section withregclassid
+
+-- end section extract data
+
+-- section local data removal
+--truncate xxxxxx;
+-- end section local data removal
+
+-- section processing
+
+-- 2, "sourcehours", "source hours"
+-- 3, "extidle", "extended idle hours"
+-- 4, "sho", "source hours operating"
+-- 5, "shp", "source hours parked"
+-- 6, "population", "population"
+-- 7, "starts", "starts"
+-- 13, "hotellingaux", "hotelling diesel aux"
+-- 14, "hotellingelectric", "hotelling battery or ac"
+-- 15, "hotellingoff", "hotelling all engines off"
+
+-- section sourcehours
+-- 2, "sourcehours", "source hours"
+
+-- section withregclassid
+-- @algorithm sourcehours = sourcehours[sourcetypeid,hourdayid,monthid,yearid,ageid,linkid]*fuelfraction[sourcetypeid,modelyearid,fueltypeid]*regclassfraction[fueltypeid,modelyearid,sourcetypeid,regclassid]
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select s.yearid, s.monthid, h.dayid, h.hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		##context.iterlocation.zonerecordid## as zoneid,
+		s.linkid, s.sourcetypeid, stf.regclassid,
+		stff.fueltypeid as fueltypeid,
+		(s.yearid-s.ageid) as modelyearid,
+		l.roadtypeid as roadtypeid,
+		null as scc,
+		2 as activitytypeid,
+		(sourcehours*stff.fuelfraction*stf.regclassfraction) as activity
+from sourcehours s
+inner join hourday h on h.hourdayid=s.hourdayid
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(s.yearid-s.ageid))
+inner join link l on (l.linkid=s.linkid)
+inner join regclasssourcetypefraction stf on (
+	stf.sourcetypeid = stff.sourcetypeid
+	and stf.fueltypeid = stff.fueltypeid
+	and stf.modelyearid = stff.modelyearid
 );
--- End Section WithRegClassID
+-- end section withregclassid
 
--- Section NoRegClassID
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select ##context.year##, 0 as monthID, 0 as dayID, 0 as hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		##context.iterLocation.zoneRecordID## as zoneID,
-		s.linkID,
-		s.sourceTypeID,
-		stff.fuelTypeID as fuelTypeID,
-		(##context.year##-s.ageID) as modelYearID,
-		1 as roadTypeID,
-		NULL as SCC,
-		6 as activityTypeID,
-		(s.population*stff.fuelFraction) as activity
-from sourceTypeTempPopulation s
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(##context.year##-s.ageID));
--- End Section NoRegClassID
+-- section noregclassid
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select s.yearid, s.monthid, h.dayid, h.hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		##context.iterlocation.zonerecordid## as zoneid,
+		s.linkid, s.sourcetypeid,
+		stff.fueltypeid as fueltypeid,
+		(s.yearid-s.ageid) as modelyearid,
+		l.roadtypeid as roadtypeid,
+		null as scc,
+		2 as activitytypeid,
+		(sourcehours*stff.fuelfraction) as activity
+from sourcehours s
+inner join hourday h on h.hourdayid=s.hourdayid
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(s.yearid-s.ageid))
+inner join link l on (l.linkid=s.linkid);
+-- end section noregclassid
 
--- End Section NonProjectDomain
+-- end section sourcehours
 
--- Section ProjectDomain
+-- section extendedidlehours
+-- 3, "extidle", "extended idle hours"
 
--- Section WithRegClassID
--- @algorithm population on off-network link = vehiclePopulation*ageFraction[yearID,sourceTypeID,ageID]*fuelFraction[sourceTypeID,modelYearID,fuelTypeID]*regClassFraction[fuelTypeID,modelYearID,sourceTypeID,regClassID]
--- @condition Project domain
--- @condition Offnetwork link
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select ##context.year##, 0 as monthID, 0 as dayID, 0 as hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		##context.iterLocation.zoneRecordID## as zoneID,
-		l.linkID,
-		onl.sourceTypeID, stf.regClassID,
-		stff.fuelTypeID as fuelTypeID,
-		(##context.year##-stad.ageID) as modelYearID,
-		1 as roadTypeID,
-		NULL as SCC,
-		6 as activityTypeID,
-		(onl.vehiclePopulation*stad.ageFraction*stff.fuelFraction*stf.regClassFraction) as activity
+-- section withregclassid
+-- @algorithm extendedidlehours = extendedidlehours[sourcetypeid,hourdayid,monthid,yearid,ageid,zoneid]*fuelfraction[sourcetypeid,modelyearid,fueltypeid]*regclassfraction[fueltypeid,modelyearid,sourcetypeid,regclassid]
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select s.yearid, s.monthid, h.dayid, h.hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		zoneid,
+		##context.iterlocation.linkrecordid## linkid, s.sourcetypeid, stf.regclassid,
+		stff.fueltypeid as fueltypeid,
+		(s.yearid-s.ageid) as modelyearid,
+		##context.iterlocation.roadtyperecordid## as roadtypeid,
+		null as scc,
+		3 as activitytypeid,
+		(extendedidlehours*stff.fuelfraction*stf.regclassfraction) as activity
+from extendedidlehours s
+inner join hourday h on h.hourdayid=s.hourdayid
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(s.yearid-s.ageid))
+inner join regclasssourcetypefraction stf on (
+	stf.sourcetypeid = stff.sourcetypeid
+	and stf.fueltypeid = stff.fueltypeid
+	and stf.modelyearid = stff.modelyearid
+);
+-- end section withregclassid
+
+-- section noregclassid
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select s.yearid, s.monthid, h.dayid, h.hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		zoneid,
+		##context.iterlocation.linkrecordid## linkid, s.sourcetypeid,
+		stff.fueltypeid as fueltypeid,
+		(s.yearid-s.ageid) as modelyearid,
+		##context.iterlocation.roadtyperecordid## as roadtypeid,
+		null as scc,
+		3 as activitytypeid,
+		(extendedidlehours*stff.fuelfraction) as activity
+from extendedidlehours s
+inner join hourday h on h.hourdayid=s.hourdayid
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(s.yearid-s.ageid));
+-- end section noregclassid
+
+-- end section extendedidlehours
+
+-- section sho
+-- 4, "sho", "source hours operating"
+
+-- section withregclassid
+-- @algorithm sho = sho[sourcetypeid,hourdayid,monthid,yearid,ageid,linkid]*fuelfraction[sourcetypeid,modelyearid,fueltypeid]*regclassfraction[fueltypeid,modelyearid,sourcetypeid,regclassid]
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select s.yearid, s.monthid, h.dayid, h.hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		##context.iterlocation.zonerecordid## as zoneid,
+		s.linkid, s.sourcetypeid, stf.regclassid,
+		stff.fueltypeid as fueltypeid,
+		(s.yearid-s.ageid) as modelyearid,
+		l.roadtypeid as roadtypeid,
+		null as scc,
+		4 as activitytypeid,
+		(sho*stff.fuelfraction*stf.regclassfraction) as activity
+from sho s
+inner join hourday h on h.hourdayid=s.hourdayid
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(s.yearid-s.ageid))
+inner join link l on (l.linkid=s.linkid)
+inner join regclasssourcetypefraction stf on (
+	stf.sourcetypeid = stff.sourcetypeid
+	and stf.fueltypeid = stff.fueltypeid
+	and stf.modelyearid = stff.modelyearid
+);
+-- end section withregclassid
+
+-- section noregclassid
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select s.yearid, s.monthid, h.dayid, h.hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		##context.iterlocation.zonerecordid## as zoneid,
+		s.linkid, s.sourcetypeid,
+		stff.fueltypeid as fueltypeid,
+		(s.yearid-s.ageid) as modelyearid,
+		l.roadtypeid as roadtypeid,
+		null as scc,
+		4 as activitytypeid,
+		(sho*stff.fuelfraction) as activity
+from sho s
+inner join hourday h on h.hourdayid=s.hourdayid
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(s.yearid-s.ageid))
+inner join link l on (l.linkid=s.linkid);
+-- end section noregclassid
+
+-- end section sho
+
+-- section shp
+-- 5, "shp", "source hours parked"
+
+-- section withregclassid
+-- @algorithm shp = shp[sourcetypeid,hourdayid,monthid,yearid,ageid,zoneid]*fuelfraction[sourcetypeid,modelyearid,fueltypeid]*regclassfraction[fueltypeid,modelyearid,sourcetypeid,regclassid]
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select s.yearid, s.monthid, h.dayid, h.hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		zoneid,
+		##context.iterlocation.linkrecordid## linkid, s.sourcetypeid, stf.regclassid,
+		stff.fueltypeid as fueltypeid,
+		(s.yearid-s.ageid) as modelyearid,
+		##context.iterlocation.roadtyperecordid## as roadtypeid,
+		null as scc,
+		5 as activitytypeid,
+		(shp*stff.fuelfraction*stf.regclassfraction) as activity
+from shp s
+inner join hourday h on h.hourdayid=s.hourdayid
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(s.yearid-s.ageid))
+inner join regclasssourcetypefraction stf on (
+	stf.sourcetypeid = stff.sourcetypeid
+	and stf.fueltypeid = stff.fueltypeid
+	and stf.modelyearid = stff.modelyearid
+);
+-- end section withregclassid
+
+-- section noregclassid
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select s.yearid, s.monthid, h.dayid, h.hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		zoneid,
+		##context.iterlocation.linkrecordid## linkid, s.sourcetypeid,
+		stff.fueltypeid as fueltypeid,
+		(s.yearid-s.ageid) as modelyearid,
+		##context.iterlocation.roadtyperecordid## as roadtypeid,
+		null as scc,
+		5 as activitytypeid,
+		(shp*stff.fuelfraction) as activity
+from shp s
+inner join hourday h on h.hourdayid=s.hourdayid
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(s.yearid-s.ageid));
+-- end section noregclassid
+
+-- end section shp
+
+-- section population
+-- 6, "population", "population" (zone level)
+
+-- section nonprojectdomain
+drop table if exists fractionbysourcetypetemp;
+
+-- @algorithm sutfraction[sourcetypeid] = sum(roadtypevmtfraction * shoallocfactor)/sum(roadtypevmtfraction)
+-- @condition non-project domain
+create table fractionbysourcetypetemp
+select sut.sourcetypeid, sum(rtd.roadtypevmtfraction*zrt.shoallocfactor)/sum(rtd.roadtypevmtfraction) as sutfraction
+from sourceusetype sut
+inner join roadtypedistribution rtd on (rtd.sourcetypeid=sut.sourcetypeid)
+inner join zoneroadtype zrt on (zrt.roadtypeid=rtd.roadtypeid and zrt.zoneid=##context.iterlocation.zonerecordid##)
+group by sut.sourcetypeid
+order by null;
+
+drop table if exists sourcetypetemppopulation;
+
+-- @algorithm temppopulation = sourcetypeagepopulation[yearid,sourcetypeid,ageid] * sutfraction[sourcetypeid]
+-- @condition non-project domain
+create table sourcetypetemppopulation
+select t.sourcetypeid, stap.ageid, (population*sutfraction) as population, l.linkid
+from fractionbysourcetypetemp t
+inner join sourcetypeagepopulation stap on (stap.sourcetypeid=t.sourcetypeid)
+inner join runspecsourcetype rsst on (rsst.sourcetypeid=stap.sourcetypeid)
+inner join link l on (l.roadtypeid=1);
+
+-- section withregclassid
+-- @algorithm population = temppopulation*fuelfraction[sourcetypeid,modelyearid,fueltypeid]*regclassfraction[fueltypeid,modelyearid,sourcetypeid,regclassid]
+-- @condition non-project domain
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select ##context.year##, 0 as monthid, 0 as dayid, 0 as hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		##context.iterlocation.zonerecordid## as zoneid,
+		s.linkid,
+		s.sourcetypeid, stf.regclassid,
+		stff.fueltypeid as fueltypeid,
+		(##context.year##-s.ageid) as modelyearid,
+		1 as roadtypeid,
+		null as scc,
+		6 as activitytypeid,
+		(s.population*stff.fuelfraction*stf.regclassfraction) as activity
+from sourcetypetemppopulation s
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(##context.year##-s.ageid))
+inner join regclasssourcetypefraction stf on (
+	stf.sourcetypeid = stff.sourcetypeid
+	and stf.fueltypeid = stff.fueltypeid
+	and stf.modelyearid = stff.modelyearid
+);
+-- end section withregclassid
+
+-- section noregclassid
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select ##context.year##, 0 as monthid, 0 as dayid, 0 as hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		##context.iterlocation.zonerecordid## as zoneid,
+		s.linkid,
+		s.sourcetypeid,
+		stff.fueltypeid as fueltypeid,
+		(##context.year##-s.ageid) as modelyearid,
+		1 as roadtypeid,
+		null as scc,
+		6 as activitytypeid,
+		(s.population*stff.fuelfraction) as activity
+from sourcetypetemppopulation s
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(##context.year##-s.ageid));
+-- end section noregclassid
+
+-- end section nonprojectdomain
+
+-- section projectdomain
+
+-- section withregclassid
+-- @algorithm population on off-network link = vehiclepopulation*agefraction[yearid,sourcetypeid,ageid]*fuelfraction[sourcetypeid,modelyearid,fueltypeid]*regclassfraction[fueltypeid,modelyearid,sourcetypeid,regclassid]
+-- @condition project domain
+-- @condition offnetwork link
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select ##context.year##, 0 as monthid, 0 as dayid, 0 as hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		##context.iterlocation.zonerecordid## as zoneid,
+		l.linkid,
+		onl.sourcetypeid, stf.regclassid,
+		stff.fueltypeid as fueltypeid,
+		(##context.year##-stad.ageid) as modelyearid,
+		1 as roadtypeid,
+		null as scc,
+		6 as activitytypeid,
+		(onl.vehiclepopulation*stad.agefraction*stff.fuelfraction*stf.regclassfraction) as activity
 from link l
-inner join offNetworkLink onl using (zoneID)
-inner join sourceTypeAgeDistribution stad on (stad.sourceTypeID=onl.sourceTypeID)
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=stad.sourceTypeID and stff.modelYearID=(##context.year##-stad.ageID))
-inner join RegClassSourceTypeFraction stf on (
-	stf.sourceTypeID = stff.sourceTypeID
-	and stf.fuelTypeID = stff.fuelTypeID
-	and stf.modelYearID = stff.modelYearID
+inner join offnetworklink onl using (zoneid)
+inner join sourcetypeagedistribution stad on (stad.sourcetypeid=onl.sourcetypeid)
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=stad.sourcetypeid and stff.modelyearid=(##context.year##-stad.ageid))
+inner join regclasssourcetypefraction stf on (
+	stf.sourcetypeid = stff.sourcetypeid
+	and stf.fueltypeid = stff.fueltypeid
+	and stf.modelyearid = stff.modelyearid
 )
-and l.roadTypeID = 1
-where l.zoneID = ##context.iterLocation.zoneRecordID##;
+and l.roadtypeid = 1
+where l.zoneid = ##context.iterlocation.zonerecordid##;
 
--- @algorithm population on roadways = linkVolume[linkID]*sourceTypeHourFraction[linkID,sourceTypeID]*ageFraction[yearID,sourceTypeID,ageID]*fuelFraction[sourceTypeID,modelYearID,fuelTypeID]*regClassFraction[fuelTypeID,modelYearID,sourceTypeID,regClassID]
--- @condition Project domain
--- @condition On roadways
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select ##context.year##, 0 as monthID, 0 as dayID, 0 as hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		##context.iterLocation.zoneRecordID## as zoneID,
-		l.linkID,
-		lsth.sourceTypeID, stf.regClassID,
-		stff.fuelTypeID as fuelTypeID,
-		(##context.year##-stad.ageID) as modelYearID,
-		roadTypeID,
-		NULL as SCC,
-		6 as activityTypeID,
-		(l.linkVolume*lsth.sourceTypeHourFraction*stad.ageFraction*stff.fuelFraction*stf.regClassFraction) as activity
+-- @algorithm population on roadways = linkvolume[linkid]*sourcetypehourfraction[linkid,sourcetypeid]*agefraction[yearid,sourcetypeid,ageid]*fuelfraction[sourcetypeid,modelyearid,fueltypeid]*regclassfraction[fueltypeid,modelyearid,sourcetypeid,regclassid]
+-- @condition project domain
+-- @condition on roadways
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select ##context.year##, 0 as monthid, 0 as dayid, 0 as hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		##context.iterlocation.zonerecordid## as zoneid,
+		l.linkid,
+		lsth.sourcetypeid, stf.regclassid,
+		stff.fueltypeid as fueltypeid,
+		(##context.year##-stad.ageid) as modelyearid,
+		roadtypeid,
+		null as scc,
+		6 as activitytypeid,
+		(l.linkvolume*lsth.sourcetypehourfraction*stad.agefraction*stff.fuelfraction*stf.regclassfraction) as activity
 from link l
-inner join linkSourceTypeHour lsth on (lsth.linkID=l.linkID)
-inner join sourceTypeAgeDistribution stad on (stad.sourceTypeID=lsth.sourceTypeID)
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=stad.sourceTypeID and stff.modelYearID=(##context.year##-stad.ageID))
-inner join RegClassSourceTypeFraction stf on (
-	stf.sourceTypeID = stff.sourceTypeID
-	and stf.fuelTypeID = stff.fuelTypeID
-	and stf.modelYearID = stff.modelYearID
+inner join linksourcetypehour lsth on (lsth.linkid=l.linkid)
+inner join sourcetypeagedistribution stad on (stad.sourcetypeid=lsth.sourcetypeid)
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=stad.sourcetypeid and stff.modelyearid=(##context.year##-stad.ageid))
+inner join regclasssourcetypefraction stf on (
+	stf.sourcetypeid = stff.sourcetypeid
+	and stf.fueltypeid = stff.fueltypeid
+	and stf.modelyearid = stff.modelyearid
 )
-where l.roadTypeID<>1;
--- End Section WithRegClassID
+where l.roadtypeid<>1;
+-- end section withregclassid
 
--- Section NoRegClassID
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select ##context.year##, 0 as monthID, 0 as dayID, 0 as hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		##context.iterLocation.zoneRecordID## as zoneID,
-		l.linkID,
-		onl.sourceTypeID,
-		stff.fuelTypeID as fuelTypeID,
-		(##context.year##-stad.ageID) as modelYearID,
-		1 as roadTypeID,
-		NULL as SCC,
-		6 as activityTypeID,
-		(onl.vehiclePopulation*stad.ageFraction*stff.fuelFraction) as activity
+-- section noregclassid
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select ##context.year##, 0 as monthid, 0 as dayid, 0 as hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		##context.iterlocation.zonerecordid## as zoneid,
+		l.linkid,
+		onl.sourcetypeid,
+		stff.fueltypeid as fueltypeid,
+		(##context.year##-stad.ageid) as modelyearid,
+		1 as roadtypeid,
+		null as scc,
+		6 as activitytypeid,
+		(onl.vehiclepopulation*stad.agefraction*stff.fuelfraction) as activity
 from link l
-inner join offNetworkLink onl using (zoneID)
-inner join sourceTypeAgeDistribution stad on (stad.sourceTypeID=onl.sourceTypeID)
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=stad.sourceTypeID and stff.modelYearID=(##context.year##-stad.ageID))
-where l.zoneID = ##context.iterLocation.zoneRecordID##
-and l.roadTypeID = 1;
+inner join offnetworklink onl using (zoneid)
+inner join sourcetypeagedistribution stad on (stad.sourcetypeid=onl.sourcetypeid)
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=stad.sourcetypeid and stff.modelyearid=(##context.year##-stad.ageid))
+where l.zoneid = ##context.iterlocation.zonerecordid##
+and l.roadtypeid = 1;
 
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select ##context.year##, 0 as monthID, 0 as dayID, 0 as hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		##context.iterLocation.zoneRecordID## as zoneID,
-		l.linkID,
-		lsth.sourceTypeID,
-		stff.fuelTypeID as fuelTypeID,
-		(##context.year##-stad.ageID) as modelYearID,
-		roadTypeID,
-		NULL as SCC,
-		6 as activityTypeID,
-		(l.linkVolume*lsth.sourceTypeHourFraction*stad.ageFraction*stff.fuelFraction) as activity
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select ##context.year##, 0 as monthid, 0 as dayid, 0 as hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		##context.iterlocation.zonerecordid## as zoneid,
+		l.linkid,
+		lsth.sourcetypeid,
+		stff.fueltypeid as fueltypeid,
+		(##context.year##-stad.ageid) as modelyearid,
+		roadtypeid,
+		null as scc,
+		6 as activitytypeid,
+		(l.linkvolume*lsth.sourcetypehourfraction*stad.agefraction*stff.fuelfraction) as activity
 from link l
-inner join linkSourceTypeHour lsth on (lsth.linkID=l.linkID)
-inner join sourceTypeAgeDistribution stad on (stad.sourceTypeID=lsth.sourceTypeID)
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=stad.sourceTypeID and stff.modelYearID=(##context.year##-stad.ageID))
-where l.roadTypeID<>1;
--- End Section NoRegClassID
+inner join linksourcetypehour lsth on (lsth.linkid=l.linkid)
+inner join sourcetypeagedistribution stad on (stad.sourcetypeid=lsth.sourcetypeid)
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=stad.sourcetypeid and stff.modelyearid=(##context.year##-stad.ageid))
+where l.roadtypeid<>1;
+-- end section noregclassid
 
--- End Section ProjectDomain
+-- end section projectdomain
 
--- End Section Population
+-- end section population
 
--- Section Starts
--- 7, "starts", "Starts"
+-- section starts
+-- 7, "starts", "starts"
 
--- Section WithRegClassID
--- @algorithm starts = starts[sourceTypeID,hourDayID,monthID,yearID,ageID,zoneID]*fuelFraction[sourceTypeID,modelYearID,fuelTypeID]*regClassFraction[fuelTypeID,modelYearID,sourceTypeID,regClassID]
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select s.yearID, s.monthID, h.dayID, h.hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		##context.iterLocation.zoneRecordID## as zoneID,
-		##context.iterLocation.linkRecordID## as linkID,
-		s.sourceTypeID, stf.regClassID,
-		stff.fuelTypeID as fuelTypeID,
-		(s.yearID-s.ageID) as modelYearID,
-		##context.iterLocation.roadTypeRecordID## as roadTypeID,
-		NULL as SCC,
-		7 as activityTypeID,
-		(starts*stff.fuelFraction*stf.regClassFraction) as activity
-from Starts s
-inner join HourDay h on h.hourDayID=s.hourDayID
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(s.yearID-s.ageID))
-inner join RegClassSourceTypeFraction stf on (
-	stf.sourceTypeID = stff.sourceTypeID
-	and stf.fuelTypeID = stff.fuelTypeID
-	and stf.modelYearID = stff.modelYearID
+-- section withregclassid
+-- @algorithm starts = starts[sourcetypeid,hourdayid,monthid,yearid,ageid,zoneid]*fuelfraction[sourcetypeid,modelyearid,fueltypeid]*regclassfraction[fueltypeid,modelyearid,sourcetypeid,regclassid]
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select s.yearid, s.monthid, h.dayid, h.hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		##context.iterlocation.zonerecordid## as zoneid,
+		##context.iterlocation.linkrecordid## as linkid,
+		s.sourcetypeid, stf.regclassid,
+		stff.fueltypeid as fueltypeid,
+		(s.yearid-s.ageid) as modelyearid,
+		##context.iterlocation.roadtyperecordid## as roadtypeid,
+		null as scc,
+		7 as activitytypeid,
+		(starts*stff.fuelfraction*stf.regclassfraction) as activity
+from starts s
+inner join hourday h on h.hourdayid=s.hourdayid
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(s.yearid-s.ageid))
+inner join regclasssourcetypefraction stf on (
+	stf.sourcetypeid = stff.sourcetypeid
+	and stf.fueltypeid = stff.fueltypeid
+	and stf.modelyearid = stff.modelyearid
 );
--- End Section WithRegClassID
+-- end section withregclassid
 
--- Section NoRegClassID
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select s.yearID, s.monthID, h.dayID, h.hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		##context.iterLocation.zoneRecordID## as zoneID,
-		##context.iterLocation.linkRecordID## as linkID,
-		s.sourceTypeID,
-		stff.fuelTypeID as fuelTypeID,
-		(s.yearID-s.ageID) as modelYearID,
-		##context.iterLocation.roadTypeRecordID## as roadTypeID,
-		NULL as SCC,
-		7 as activityTypeID,
-		(starts*stff.fuelFraction) as activity
-from Starts s
-inner join HourDay h on h.hourDayID=s.hourDayID
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(s.yearID-s.ageID));
--- End Section NoRegClassID
+-- section noregclassid
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select s.yearid, s.monthid, h.dayid, h.hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		##context.iterlocation.zonerecordid## as zoneid,
+		##context.iterlocation.linkrecordid## as linkid,
+		s.sourcetypeid,
+		stff.fueltypeid as fueltypeid,
+		(s.yearid-s.ageid) as modelyearid,
+		##context.iterlocation.roadtyperecordid## as roadtypeid,
+		null as scc,
+		7 as activitytypeid,
+		(starts*stff.fuelfraction) as activity
+from starts s
+inner join hourday h on h.hourdayid=s.hourdayid
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(s.yearid-s.ageid));
+-- end section noregclassid
 
--- End Section Starts
+-- end section starts
 
--- Section hotellingHours
--- 13, "hotellingAux", "Hotelling Diesel Aux"
--- 14, "hotellingElectric", "Hotelling Battery or AC"
--- 15, "hotellingOff", "Hotelling All Engines Off"
+-- section hotellinghours
+-- 13, "hotellingaux", "hotelling diesel aux"
+-- 14, "hotellingelectric", "hotelling battery or ac"
+-- 15, "hotellingoff", "hotelling all engines off"
 
--- Section WithRegClassID
--- @algorithm hotellingAux hours = hotellingHours[sourceTypeID,hourDayID,monthID,yearID,ageID,zoneID]*opModeFraction[opModeID=201,modelYearID]*fuelFraction[sourceTypeID,modelYearID,fuelTypeID]*regClassFraction[fuelTypeID,modelYearID,sourceTypeID,regClassID].
--- hotellingElectric hours = hotellingHours[sourceTypeID,hourDayID,monthID,yearID,ageID,zoneID]*opModeFraction[opModeID=203,modelYearID]*fuelFraction[sourceTypeID,modelYearID,fuelTypeID]*regClassFraction[fuelTypeID,modelYearID,sourceTypeID,regClassID].
--- hotellingOff hours = hotellingHours[sourceTypeID,hourDayID,monthID,yearID,ageID,zoneID]*opModeFraction[opModeID=204,modelYearID]*fuelFraction[sourceTypeID,modelYearID,fuelTypeID]*regClassFraction[fuelTypeID,modelYearID,sourceTypeID,regClassID].
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select s.yearID, s.monthID, h.dayID, h.hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		s.zoneID,
-		##context.iterLocation.linkRecordID## linkID, s.sourceTypeID, stf.regClassID,
-		stff.fuelTypeID as fuelTypeID,
-		(s.yearID-s.ageID) as modelYearID,
-		##context.iterLocation.roadTypeRecordID## as roadTypeID,
-		NULL as SCC,
-		case when opModeID=201 then 13
-			when opModeID=203 then 14
-			when opModeID=204 then 15
-			else 8 end as activityTypeID,
-		(hotellingHours*opModeFraction*stff.fuelFraction*stf.regClassFraction) as activity
-from hotellingHours s
-inner join HourDay h on h.hourDayID=s.hourDayID
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(s.yearID-s.ageID))
-inner join RegClassSourceTypeFraction stf on (
-	stf.sourceTypeID = stff.sourceTypeID
-	and stf.fuelTypeID = stff.fuelTypeID
-	and stf.modelYearID = stff.modelYearID)
-inner join hotellingActivityDistribution ha on (
-	ha.beginModelYearID <= stf.modelYearID
-	and ha.endModelYearID >= stf.modelYearID
-	and ha.opModeID in (201,203,204));
--- End Section WithRegClassID
+-- section withregclassid
+-- @algorithm hotellingaux hours = hotellinghours[sourcetypeid,hourdayid,monthid,yearid,ageid,zoneid]*opmodefraction[opmodeid=201,modelyearid]*fuelfraction[sourcetypeid,modelyearid,fueltypeid]*regclassfraction[fueltypeid,modelyearid,sourcetypeid,regclassid].
+-- hotellingelectric hours = hotellinghours[sourcetypeid,hourdayid,monthid,yearid,ageid,zoneid]*opmodefraction[opmodeid=203,modelyearid]*fuelfraction[sourcetypeid,modelyearid,fueltypeid]*regclassfraction[fueltypeid,modelyearid,sourcetypeid,regclassid].
+-- hotellingoff hours = hotellinghours[sourcetypeid,hourdayid,monthid,yearid,ageid,zoneid]*opmodefraction[opmodeid=204,modelyearid]*fuelfraction[sourcetypeid,modelyearid,fueltypeid]*regclassfraction[fueltypeid,modelyearid,sourcetypeid,regclassid].
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select s.yearid, s.monthid, h.dayid, h.hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		s.zoneid,
+		##context.iterlocation.linkrecordid## linkid, s.sourcetypeid, stf.regclassid,
+		stff.fueltypeid as fueltypeid,
+		(s.yearid-s.ageid) as modelyearid,
+		##context.iterlocation.roadtyperecordid## as roadtypeid,
+		null as scc,
+		case when opmodeid=201 then 13
+			when opmodeid=203 then 14
+			when opmodeid=204 then 15
+			else 8 end as activitytypeid,
+		(hotellinghours*opmodefraction*stff.fuelfraction*stf.regclassfraction) as activity
+from hotellinghours s
+inner join hourday h on h.hourdayid=s.hourdayid
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(s.yearid-s.ageid))
+inner join regclasssourcetypefraction stf on (
+	stf.sourcetypeid = stff.sourcetypeid
+	and stf.fueltypeid = stff.fueltypeid
+	and stf.modelyearid = stff.modelyearid)
+inner join hotellingactivitydistribution ha on (
+	ha.beginmodelyearid <= stf.modelyearid
+	and ha.endmodelyearid >= stf.modelyearid
+	and ha.opmodeid in (201,203,204));
+-- end section withregclassid
 
--- Section NoRegClassID
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select s.yearID, s.monthID, h.dayID, h.hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		s.zoneID,
-		##context.iterLocation.linkRecordID## linkID, s.sourceTypeID,
-		stff.fuelTypeID as fuelTypeID,
-		(s.yearID-s.ageID) as modelYearID,
-		##context.iterLocation.roadTypeRecordID## as roadTypeID,
-		NULL as SCC,
-		case when opModeID=201 then 13
-			when opModeID=203 then 14
-			when opModeID=204 then 15
-			else 8 end as activityTypeID,
-		(hotellingHours*opModeFraction*stff.fuelFraction) as activity
-from hotellingHours s
-inner join HourDay h on h.hourDayID=s.hourDayID
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(s.yearID-s.ageID))
-inner join hotellingActivityDistribution ha on (
-	ha.beginModelYearID <= stff.modelYearID
-	and ha.endModelYearID >= stff.modelYearID
-	and ha.opModeID in (201,203,204));
--- End Section NoRegClassID
+-- section noregclassid
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select s.yearid, s.monthid, h.dayid, h.hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		s.zoneid,
+		##context.iterlocation.linkrecordid## linkid, s.sourcetypeid,
+		stff.fueltypeid as fueltypeid,
+		(s.yearid-s.ageid) as modelyearid,
+		##context.iterlocation.roadtyperecordid## as roadtypeid,
+		null as scc,
+		case when opmodeid=201 then 13
+			when opmodeid=203 then 14
+			when opmodeid=204 then 15
+			else 8 end as activitytypeid,
+		(hotellinghours*opmodefraction*stff.fuelfraction) as activity
+from hotellinghours s
+inner join hourday h on h.hourdayid=s.hourdayid
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(s.yearid-s.ageid))
+inner join hotellingactivitydistribution ha on (
+	ha.beginmodelyearid <= stff.modelyearid
+	and ha.endmodelyearid >= stff.modelyearid
+	and ha.opmodeid in (201,203,204));
+-- end section noregclassid
 
--- End Section hotellingHours
+-- end section hotellinghours
 
--- Section ONI
--- 16, "shi", "Source Hours Idling" -- changed to sho (4)
+-- section oni
+-- 16, "shi", "source hours idling" -- changed to sho (4)
 
--- Section WithRegClassID
--- @algorithm shi = sho[roadTypeID=1,sourceTypeID,hourDayID,monthID,yearID,ageID,linkID]*fuelFraction[sourceTypeID,modelYearID,fuelTypeID]*regClassFraction[fuelTypeID,modelYearID,sourceTypeID,regClassID]
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select s.yearID, s.monthID, h.dayID, h.hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		##context.iterLocation.zoneRecordID## as zoneID,
-		s.linkID, s.sourceTypeID, stf.regClassID,
-		stff.fuelTypeID as fuelTypeID,
-		(s.yearID-s.ageID) as modelYearID,
-		l.roadTypeID as roadTypeID,
-		NULL as SCC,
-		4 as activityTypeID,
-		(SHO*stff.fuelFraction*stf.regClassFraction) as activity
-from SHO s
-inner join HourDay h on h.hourDayID=s.hourDayID
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(s.yearID-s.ageID))
-inner join Link l on (l.linkID=s.linkID)
-inner join RegClassSourceTypeFraction stf on (
-	stf.sourceTypeID = stff.sourceTypeID
-	and stf.fuelTypeID = stff.fuelTypeID
-	and stf.modelYearID = stff.modelYearID
+-- section withregclassid
+-- @algorithm shi = sho[roadtypeid=1,sourcetypeid,hourdayid,monthid,yearid,ageid,linkid]*fuelfraction[sourcetypeid,modelyearid,fueltypeid]*regclassfraction[fueltypeid,modelyearid,sourcetypeid,regclassid]
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select s.yearid, s.monthid, h.dayid, h.hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		##context.iterlocation.zonerecordid## as zoneid,
+		s.linkid, s.sourcetypeid, stf.regclassid,
+		stff.fueltypeid as fueltypeid,
+		(s.yearid-s.ageid) as modelyearid,
+		l.roadtypeid as roadtypeid,
+		null as scc,
+		4 as activitytypeid,
+		(sho*stff.fuelfraction*stf.regclassfraction) as activity
+from sho s
+inner join hourday h on h.hourdayid=s.hourdayid
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(s.yearid-s.ageid))
+inner join link l on (l.linkid=s.linkid)
+inner join regclasssourcetypefraction stf on (
+	stf.sourcetypeid = stff.sourcetypeid
+	and stf.fueltypeid = stff.fueltypeid
+	and stf.modelyearid = stff.modelyearid
 );
--- End Section WithRegClassID
+-- end section withregclassid
 
--- Section NoRegClassID
-insert into ##ActivityTable## (yearID, monthID, dayID, hourID, stateID, countyID,
-		zoneID, linkID, sourceTypeID, fuelTypeID, modelYearID, roadTypeID, SCC,
-		activityTypeID, activity)
-select s.yearID, s.monthID, h.dayID, h.hourID,
-		##context.iterLocation.stateRecordID## as stateID,
-		##context.iterLocation.countyRecordID## as countyID,
-		##context.iterLocation.zoneRecordID## as zoneID,
-		s.linkID, s.sourceTypeID,
-		stff.fuelTypeID as fuelTypeID,
-		(s.yearID-s.ageID) as modelYearID,
-		l.roadTypeID as roadTypeID,
-		NULL as SCC,
-		4 as activityTypeID,
-		(SHO*stff.fuelFraction) as activity
-from SHO s
-inner join HourDay h on h.hourDayID=s.hourDayID
-inner join sourceTypeFuelFraction stff on (stff.sourceTypeID=s.sourceTypeID and stff.modelYearID=(s.yearID-s.ageID))
-inner join Link l on (l.linkID=s.linkID);
--- End Section NoRegClassID
+-- section noregclassid
+insert into ##activitytable## (yearid, monthid, dayid, hourid, stateid, countyid,
+		zoneid, linkid, sourcetypeid, fueltypeid, modelyearid, roadtypeid, scc,
+		activitytypeid, activity)
+select s.yearid, s.monthid, h.dayid, h.hourid,
+		##context.iterlocation.staterecordid## as stateid,
+		##context.iterlocation.countyrecordid## as countyid,
+		##context.iterlocation.zonerecordid## as zoneid,
+		s.linkid, s.sourcetypeid,
+		stff.fueltypeid as fueltypeid,
+		(s.yearid-s.ageid) as modelyearid,
+		l.roadtypeid as roadtypeid,
+		null as scc,
+		4 as activitytypeid,
+		(sho*stff.fuelfraction) as activity
+from sho s
+inner join hourday h on h.hourdayid=s.hourdayid
+inner join sourcetypefuelfraction stff on (stff.sourcetypeid=s.sourcetypeid and stff.modelyearid=(s.yearid-s.ageid))
+inner join link l on (l.linkid=s.linkid);
+-- end section noregclassid
 
--- End Section ONI
+-- end section oni
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
-drop table if exists sourceTypeFuelFraction;
-drop table if exists fractionBySourceTypeTemp;
-drop table if exists sourceTypeTempPopulation;
--- End Section Cleanup
+-- section cleanup
+drop table if exists sourcetypefuelfraction;
+drop table if exists fractionbysourcetypetemp;
+drop table if exists sourcetypetemppopulation;
+-- end section cleanup

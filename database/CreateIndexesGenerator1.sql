@@ -1,3 +1,3 @@
-ALTER TABLE Generator1 ADD (
-	PRIMARY KEY(StateID, CountyID, ZoneID, LinkID, Time, VType)
+alter table generator1 add (
+	primary key(stateid, countyid, zoneid, linkid, time, vtype)
 );

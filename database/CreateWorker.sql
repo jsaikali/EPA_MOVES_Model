@@ -1,143 +1,143 @@
--- Create the MOVESWorker database and schema.
--- Author Wesley Faler
--- Version 2015-12-01
+-- create the movesworker database and schema.
+-- author wesley faler
+-- version 2015-12-01
 
-DROP TABLE IF EXISTS MOVESOutput;
-DROP TABLE IF EXISTS MOVESWorkerOutput;
-DROP TABLE IF EXISTS MOVESWorkerActivityOutput;
+drop table if exists movesoutput;
+drop table if exists movesworkeroutput;
+drop table if exists movesworkeractivityoutput;
 
 -- ***********************************************************************************
 -- ***********************************************************************************
--- MOVESOutput table.  Stores one row for each combination
+-- movesoutput table.  stores one row for each combination
 -- of dimension field values, which includes pollutant. 
 --
--- Note that dimension fields will never be null but they
+-- note that dimension fields will never be null but they
 -- may hold a default value that indicates an "all" selection.
 -- ***********************************************************************************
 -- ***********************************************************************************
-CREATE TABLE IF NOT EXISTS MOVESWorkerOutput (
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL DEFAULT 0,
-	iterationID			SMALLINT UNSIGNED DEFAULT 1,
+create table if not exists movesworkeroutput (
+	movesrunid           smallint unsigned not null default 0,
+	iterationid			smallint unsigned default 1,
 	
-	yearID               SMALLINT UNSIGNED NULL,
-	monthID              SMALLINT UNSIGNED NULL,
-	dayID                SMALLINT UNSIGNED NULL,
-	hourID               SMALLINT UNSIGNED NULL,
+	yearid               smallint unsigned null,
+	monthid              smallint unsigned null,
+	dayid                smallint unsigned null,
+	hourid               smallint unsigned null,
 
 	-- ******************************************************
-	-- stateID, locationID, zoneID, and linkID can all be default
-	-- in the case where the user selected "Nation" as the 
+	-- stateid, locationid, zoneid, and linkid can all be default
+	-- in the case where the user selected "nation" as the 
 	-- geographic granularity for the output.
-	-- linkID and/or zoneID will be default otherwise if "County" 
+	-- linkid and/or zoneid will be default otherwise if "county" 
 	-- level granularity was selected depending upon scale.
-	-- locationID will be default otherwise if "State" level
+	-- locationid will be default otherwise if "state" level
 	-- granularity was selected.
 	-- ******************************************************
-	stateID              SMALLINT UNSIGNED NULL,
-	countyID             INTEGER UNSIGNED NULL,
-	zoneID               INTEGER UNSIGNED NULL,
-	linkID               INTEGER UNSIGNED NULL,
+	stateid              smallint unsigned null,
+	countyid             integer unsigned null,
+	zoneid               integer unsigned null,
+	linkid               integer unsigned null,
 	
-	pollutantID          SMALLINT UNSIGNED NULL,
-	processID            SMALLINT UNSIGNED NULL,
+	pollutantid          smallint unsigned null,
+	processid            smallint unsigned null,
 	
-	sourceTypeID         SMALLINT UNSIGNED NULL,
-	regClassID           SMALLINT UNSIGNED NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL,
-	fuelSubTypeID        SMALLINT UNSIGNED NULL,
-	modelYearID          SMALLINT UNSIGNED NULL,
+	sourcetypeid         smallint unsigned null,
+	regclassid           smallint unsigned null,
+	fueltypeid           smallint unsigned null,
+	fuelsubtypeid        smallint unsigned null,
+	modelyearid          smallint unsigned null,
 
 	-- ******************************************************
-	-- roadTypeID is not redundant with linkID in the cases where
+	-- roadtypeid is not redundant with linkid in the cases where
 	-- the user wants road type as a dimension but does not want
 	-- geographic detail to the link/zone (or perhaps even to
-	-- the County) level.
+	-- the county) level.
 	-- ******************************************************
-	roadTypeID           SMALLINT UNSIGNED NULL,
+	roadtypeid           smallint unsigned null,
 
 	-- ******************************************************
-	-- SCC holds both OnRoad and OffRoad SCC codes and may be
-	-- all 0's (zeroes) to represent "all" SCC codes at once.
+	-- scc holds both onroad and offroad scc codes and may be
+	-- all 0's (zeroes) to represent "all" scc codes at once.
 	-- ******************************************************
-	SCC                  CHAR(10) NULL,
+	scc                  char(10) null,
 
 	-- ******************************************************
-	-- OffRoad keys
+	-- offroad keys
 	-- ******************************************************
-	engTechID            SMALLINT UNSIGNED NULL DEFAULT NULL,
-	sectorID             SMALLINT UNSIGNED NULL DEFAULT NULL,
-	hpID                 SMALLINT UNSIGNED NULL DEFAULT NULL,
+	engtechid            smallint unsigned null default null,
+	sectorid             smallint unsigned null default null,
+	hpid                 smallint unsigned null default null,
 
 	-- ******************************************************
-	-- The emission columns are the actual values produced,
-	-- not dimensions to the data.  These will be NULL if the
+	-- the emission columns are the actual values produced,
+	-- not dimensions to the data.  these will be null if the
 	-- user chose not to generate them.
 	-- ******************************************************
 
-	-- Pollutant [mass,energy,moles,etc] in the time period and region.
-	-- Reflects mixture of I/M and non-I/M vehicles.
-	emissionQuant        FLOAT NULL,
+	-- pollutant [mass,energy,moles,etc] in the time period and region.
+	-- reflects mixture of i/m and non-i/m vehicles.
+	emissionquant        float null,
 
-	-- Pollutant [mass,energy,moles,etc] per activity unit such
+	-- pollutant [mass,energy,moles,etc] per activity unit such
 	-- as distance, start, and idle hour.
-	-- Reflects mixture of I/M and non-I/M vehicles.
-	emissionRate         FLOAT NULL
+	-- reflects mixture of i/m and non-i/m vehicles.
+	emissionrate         float null
 );
 
-TRUNCATE TABLE MOVESWorkerOutput;
+truncate table movesworkeroutput;
 
-CREATE TABLE IF NOT EXISTS MOVESWorkerActivityOutput (
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL DEFAULT 0,
-	iterationID			SMALLINT UNSIGNED DEFAULT 1,
+create table if not exists movesworkeractivityoutput (
+	movesrunid           smallint unsigned not null default 0,
+	iterationid			smallint unsigned default 1,
 	
-	yearID               SMALLINT UNSIGNED NULL,
-	monthID              SMALLINT UNSIGNED NULL,
-	dayID                SMALLINT UNSIGNED NULL,
-	hourID               SMALLINT UNSIGNED NULL,
+	yearid               smallint unsigned null,
+	monthid              smallint unsigned null,
+	dayid                smallint unsigned null,
+	hourid               smallint unsigned null,
 
 	-- ******************************************************
-	-- stateID, locationID, zoneID, and linkID can all be default
-	-- in the case where the user selected "Nation" as the 
+	-- stateid, locationid, zoneid, and linkid can all be default
+	-- in the case where the user selected "nation" as the 
 	-- geographic granularity for the output.
-	-- linkID and/or zoneID will be default otherwise if "County" 
+	-- linkid and/or zoneid will be default otherwise if "county" 
 	-- level granularity was selected depending upon scale.
-	-- locationID will be default otherwise if "State" level
+	-- locationid will be default otherwise if "state" level
 	-- granularity was selected.
 	-- ******************************************************
-	stateID              SMALLINT UNSIGNED NULL,
-	countyID             INTEGER UNSIGNED NULL,
-	zoneID               INTEGER UNSIGNED NULL,
-	linkID               INTEGER UNSIGNED NULL,
+	stateid              smallint unsigned null,
+	countyid             integer unsigned null,
+	zoneid               integer unsigned null,
+	linkid               integer unsigned null,
 	
-	sourceTypeID         SMALLINT UNSIGNED NULL,
-	regClassID           SMALLINT UNSIGNED NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL,
-	fuelSubTypeID        SMALLINT UNSIGNED NULL,
-	modelYearID          SMALLINT UNSIGNED NULL,
+	sourcetypeid         smallint unsigned null,
+	regclassid           smallint unsigned null,
+	fueltypeid           smallint unsigned null,
+	fuelsubtypeid        smallint unsigned null,
+	modelyearid          smallint unsigned null,
 
 	-- ******************************************************
-	-- roadTypeID is not redundant with linkID in the cases where
+	-- roadtypeid is not redundant with linkid in the cases where
 	-- the user wants road type as a dimension but does not want
 	-- geographic detail to the link/zone (or perhaps even to
-	-- the County) level.
+	-- the county) level.
 	-- ******************************************************
-	roadTypeID           SMALLINT UNSIGNED NULL,
+	roadtypeid           smallint unsigned null,
 
 	-- ******************************************************
-	-- SCC holds both OnRoad and OffRoad SCC codes and may be
-	-- all 0's (zeroes) to represent "all" SCC codes at once.
+	-- scc holds both onroad and offroad scc codes and may be
+	-- all 0's (zeroes) to represent "all" scc codes at once.
 	-- ******************************************************
-	SCC                  CHAR(10) NULL,
+	scc                  char(10) null,
 
 	-- ******************************************************
-	-- OffRoad keys
+	-- offroad keys
 	-- ******************************************************
-	engTechID            SMALLINT UNSIGNED NULL DEFAULT NULL,
-	sectorID             SMALLINT UNSIGNED NULL DEFAULT NULL,
-	hpID                 SMALLINT UNSIGNED NULL DEFAULT NULL,
+	engtechid            smallint unsigned null default null,
+	sectorid             smallint unsigned null default null,
+	hpid                 smallint unsigned null default null,
 
-	activityTypeID       SMALLINT NOT NULL,
-	activity             FLOAT NULL DEFAULT NULL
+	activitytypeid       smallint not null,
+	activity             float null default null
 );
 
-TRUNCATE TABLE MOVESWorkerActivityOutput;
+truncate table movesworkeractivityoutput;

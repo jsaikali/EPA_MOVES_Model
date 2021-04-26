@@ -1,43 +1,43 @@
--- Nonroad calculator script.
--- Author Wesley Faler
--- Version 2015-04-07
+-- nonroad calculator script.
+-- author wesley faler
+-- version 2015-04-07
 
 -- @algorithm
--- @owner Nonroad Calculator
+-- @owner nonroad calculator
 -- @calculator
 
--- Section Create Remote Tables for Extracted Data
+-- section create remote tables for extracted data
 
 ##create.nrequipmenttype##;
-TRUNCATE TABLE nrequipmenttype;
+truncate table nrequipmenttype;
 
 ##create.nrscc##;
-TRUNCATE TABLE nrscc;
+truncate table nrscc;
 
-##create.engineTech##;
-TRUNCATE TABLE engineTech;
+##create.enginetech##;
+truncate table enginetech;
 
 ##create.nrsourceusetype##;
-TRUNCATE TABLE nrsourceusetype;
+truncate table nrsourceusetype;
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
+-- section extract data
 
--- End Section Extract Data
+-- end section extract data
 
--- Section Local Data Removal
--- End Section Local Data Removal
+-- section local data removal
+-- end section local data removal
 
--- Section Processing
+-- section processing
 
-nonroad monthToRealDayFactor=##NRmonthToRealDayFactor## ##NRPolProcessIDs##;
+nonroad monthtorealdayfactor=##nrmonthtorealdayfactor## ##nrpolprocessids##;
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
-DROP TABLE IF EXISTS nrequipmenttype;
-DROP TABLE IF EXISTS nrscc;
-DROP TABLE IF EXISTS enginetech;
-DROP TABLE IF EXISTS nrsourceusetype;
--- End Section Cleanup
+-- section cleanup
+drop table if exists nrequipmenttype;
+drop table if exists nrscc;
+drop table if exists enginetech;
+drop table if exists nrsourceusetype;
+-- end section cleanup

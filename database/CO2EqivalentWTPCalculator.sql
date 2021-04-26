@@ -1,65 +1,65 @@
--- Version 2008-01-21
--- Purpose: Calculate CO2 Equivalent for Well-Tp-Pump
--- Gwo Shyu, EPA
+-- version 2008-01-21
+-- purpose: calculate co2 equivalent for well-tp-pump
+-- gwo shyu, epa
 
--- Section Create Remote Tables for Extracted Data
-DROP TABLE IF EXISTS CO2EqWTPStep2Pollutant;
-CREATE TABLE IF NOT EXISTS CO2EqWTPStep2Pollutant(
-	pollutantID		SMALLINT NOT NULL,
-	pollutantName		CHAR(50) NULL,
-	energyOrMass		CHAR(6) NULL,
-	globalWarmingPotential	SMALLINT NULL, 
-	PRIMARY KEY (pollutantID)
+-- section create remote tables for extracted data
+drop table if exists co2eqwtpstep2pollutant;
+create table if not exists co2eqwtpstep2pollutant(
+	pollutantid		smallint not null,
+	pollutantname		char(50) null,
+	energyormass		char(6) null,
+	globalwarmingpotential	smallint null, 
+	primary key (pollutantid)
 );
-TRUNCATE TABLE CO2EqWTPStep2Pollutant;
--- End Section Create Remote Tables for Extracted Data
+truncate table co2eqwtpstep2pollutant;
+-- end section create remote tables for extracted data
 
--- Section Extract Data
-SELECT * INTO OUTFILE '##CO2EqWTPStep2Pollutant##' FROM Pollutant;
--- FLUSH TABLES;
--- End Section Extract Data
+-- section extract data
+select * into outfile '##co2eqwtpstep2pollutant##' from pollutant;
+-- flush tables;
+-- end section extract data
 
--- Section Local Data Removal
--- End Section Local Data Removal
+-- section local data removal
+-- end section local data removal
 
--- Section Processing
--- 	SubSection Task 122 step 2 for WTP: Calculate Equivalent CO2 from
--- 					CO2, Methane, and N2O for WTP
--- 	MOVESWorkerOutput mwo INNER JOIN CO2EqWTPStep2Pollutant pol on mwo.pollutantID = pol.pollutantID 
+-- section processing
+-- 	subsection task 122 step 2 for wtp: calculate equivalent co2 from
+-- 					co2, methane, and n2o for wtp
+-- 	movesworkeroutput mwo inner join co2eqwtpstep2pollutant pol on mwo.pollutantid = pol.pollutantid 
 
-DROP TABLE IF EXISTS MOVESOutputCO2Temp2eq;
-CREATE TABLE MOVESOutputCO2Temp2eq 
-SELECT 
-	mwo.MOVESRunID, mwo.yearID, mwo.monthID, mwo.dayID, 
-	mwo.hourID,mwo.stateID,mwo.countyID,mwo.zoneID, 
-	mwo.linkID,##CO2EqpollutantID## AS pollutantID,mwo.processID, 
-	mwo.sourceTypeID,mwo.fuelTypeID,mwo.modelYearID, 
-	mwo.roadTypeID,mwo.SCC, 
-	SUM(mwo.emissionQuant * pol.globalWarmingPotential) AS emissionQuant
-FROM 
- 	MOVESWorkerOutput mwo INNER JOIN CO2EqWTPStep2Pollutant pol on mwo.pollutantID = pol.pollutantID 
-WHERE 	mwo.pollutantID IN (##CO2Step2EqpollutantIDs##) AND ##CO2Step2EqprocessIDs##  
-GROUP BY 
-	mwo.MOVESRunID,mwo.yearID,mwo.monthID,mwo.dayID, mwo.hourID, 
-	mwo.stateID,mwo.countyID,mwo.zoneID,mwo.linkID,mwo.pollutantID, mwo.processID, 
-	mwo.sourceTypeID,mwo.fuelTypeID,mwo.modelYearID,mwo.roadTypeID, mwo.SCC;
--- FLUSH TABLES;
--- 	End of SubSection Task 122 step 2 for WTP:
+drop table if exists movesoutputco2temp2eq;
+create table movesoutputco2temp2eq 
+select 
+	mwo.movesrunid, mwo.yearid, mwo.monthid, mwo.dayid, 
+	mwo.hourid,mwo.stateid,mwo.countyid,mwo.zoneid, 
+	mwo.linkid,##co2eqpollutantid## as pollutantid,mwo.processid, 
+	mwo.sourcetypeid,mwo.fueltypeid,mwo.modelyearid, 
+	mwo.roadtypeid,mwo.scc, 
+	sum(mwo.emissionquant * pol.globalwarmingpotential) as emissionquant
+from 
+ 	movesworkeroutput mwo inner join co2eqwtpstep2pollutant pol on mwo.pollutantid = pol.pollutantid 
+where 	mwo.pollutantid in (##co2step2eqpollutantids##) and ##co2step2eqprocessids##  
+group by 
+	mwo.movesrunid,mwo.yearid,mwo.monthid,mwo.dayid, mwo.hourid, 
+	mwo.stateid,mwo.countyid,mwo.zoneid,mwo.linkid,mwo.pollutantid, mwo.processid, 
+	mwo.sourcetypeid,mwo.fueltypeid,mwo.modelyearid,mwo.roadtypeid, mwo.scc;
+-- flush tables;
+-- 	end of subsection task 122 step 2 for wtp:
 
-INSERT INTO MOVESWorkerOutput ( 
-	MOVESRunID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID, 
-	linkID,pollutantID,processID,sourceTypeID,fuelTypeID,modelYearID, 
-	roadTypeID,SCC,emissionQuant) 
-SELECT 
-	MOVESRunID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID, 
-	linkID,pollutantID,processID,sourceTypeID,fuelTypeID,modelYearID, 
-	roadTypeID,SCC,emissionQuant 
-FROM MOVESOutputCO2Temp2eq;
-ANALYZE TABLE MOVESWorkerOutput;
--- FLUSH TABLES;
+insert into movesworkeroutput ( 
+	movesrunid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid, 
+	linkid,pollutantid,processid,sourcetypeid,fueltypeid,modelyearid, 
+	roadtypeid,scc,emissionquant) 
+select 
+	movesrunid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid, 
+	linkid,pollutantid,processid,sourcetypeid,fueltypeid,modelyearid, 
+	roadtypeid,scc,emissionquant 
+from movesoutputco2temp2eq;
+analyze table movesworkeroutput;
+-- flush tables;
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
-DROP TABLE IF EXISTS MOVESOutputCO2Temp2eq;
--- End Section Cleanup
+-- section cleanup
+drop table if exists movesoutputco2temp2eq;
+-- end section cleanup

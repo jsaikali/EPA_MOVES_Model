@@ -1,168 +1,168 @@
--- Author Wesley Faler
--- Author Ed Glover EPA
--- Version 2014-08-20
+-- author wesley faler
+-- author ed glover epa
+-- version 2014-08-20
 
 -- @algorithm
--- @owner NO Calculator
+-- @owner no calculator
 -- @calculator
 
--- Section Create Remote Tables for Extracted Data
-DROP TABLE IF EXISTS NOCopyOfSourceUseType;
-CREATE TABLE NOCopyOfSourceUseType (
-	sourceTypeID	smallint(6)
+-- section create remote tables for extracted data
+drop table if exists nocopyofsourceusetype;
+create table nocopyofsourceusetype (
+	sourcetypeid	smallint(6)
 );
 
-DROP TABLE IF EXISTS NOCopyOfPPA;
-CREATE TABLE NOCopyOfPPA (
-	polProcessID	int,
-	processID		smallint(6),	
-	pollutantID		smallint(6)
+drop table if exists nocopyofppa;
+create table nocopyofppa (
+	polprocessid	int,
+	processid		smallint(6),	
+	pollutantid		smallint(6)
 );
 
-DROP TABLE IF EXISTS NOCopyOfPPMY;
-CREATE TABLE NOCopyOfPPMY (
-	polProcessID		int,
-	modelYearID			smallint(6),	
-	modelYearGroupID	int(11),
-	fuelMYGroupID		int(11)
+drop table if exists nocopyofppmy;
+create table nocopyofppmy (
+	polprocessid		int,
+	modelyearid			smallint(6),	
+	modelyeargroupid	int(11),
+	fuelmygroupid		int(11)
 );
 
-DROP TABLE IF EXISTS NOCopyOfFuelType;
-CREATE TABLE NOCopyOfFuelType (
-       fuelTypeID        smallint(6)
+drop table if exists nocopyoffueltype;
+create table nocopyoffueltype (
+       fueltypeid        smallint(6)
 );
 
-DROP TABLE IF EXISTS NOCopyOfNONO2Ratio;
-CREATE TABLE NOCopyOfNONO2Ratio (
-	polProcessID		int,
-	sourceTypeID		smallint(6),
-	fuelTypeID			smallint(6),
-	modelYearGroupID	int(11),
-	NOxRatio 			float,
-	NOxRatioCV			float,
-	dataSourceId		smallint(6)
+drop table if exists nocopyofnono2ratio;
+create table nocopyofnono2ratio (
+	polprocessid		int,
+	sourcetypeid		smallint(6),
+	fueltypeid			smallint(6),
+	modelyeargroupid	int(11),
+	noxratio 			float,
+	noxratiocv			float,
+	datasourceid		smallint(6)
 );
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
-cache SELECT distinct sourceTypeID  INTO OUTFILE '##NOCopyOfSourceUseType##'
-	FROM SourceUseType;
+-- section extract data
+cache select distinct sourcetypeid  into outfile '##nocopyofsourceusetype##'
+	from sourceusetype;
 
-cache SELECT distinct fuelTypeID  INTO OUTFILE '##NOCopyOfFuelType##'
-	FROM FuelType;
+cache select distinct fueltypeid  into outfile '##nocopyoffueltype##'
+	from fueltype;
 
-cache SELECT polProcessID,sourceTypeID,fuelTypeID,modelYearGroupID,NOxRatio,NOxRatioCV,dataSourceId
-INTO OUTFILE '##NOCopyOfNONO2Ratio##' FROM NONO2Ratio
-WHERE polProcessID IN (##pollutantProcessIDs##);
+cache select polprocessid,sourcetypeid,fueltypeid,modelyeargroupid,noxratio,noxratiocv,datasourceid
+into outfile '##nocopyofnono2ratio##' from nono2ratio
+where polprocessid in (##pollutantprocessids##);
 
-cache SELECT polProcessID,processID,pollutantID
-INTO OUTFILE '##NOCopyOfPPA##' FROM pollutantprocessassoc 
-WHERE processID=##context.iterProcess.databaseKey##
-AND pollutantID in (##pollutantIDs##);
+cache select polprocessid,processid,pollutantid
+into outfile '##nocopyofppa##' from pollutantprocessassoc 
+where processid=##context.iterprocess.databasekey##
+and pollutantid in (##pollutantids##);
 
-cache SELECT polProcessID,modelYearID,modelYearGroupID,fuelMYGroupID
-INTO OUTFILE '##NOCopyOfPPMY##' FROM pollutantprocessmappedmodelyear 
-WHERE polProcessID IN (##pollutantProcessIDs##)
-and modelYearID <= ##context.year##
-and modelYearID >= ##context.year## - 30;
--- End Section Extract Data
+cache select polprocessid,modelyearid,modelyeargroupid,fuelmygroupid
+into outfile '##nocopyofppmy##' from pollutantprocessmappedmodelyear 
+where polprocessid in (##pollutantprocessids##)
+and modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30;
+-- end section extract data
 
--- Section Local Data Removal
--- End Section Local Data Removal
+-- section local data removal
+-- end section local data removal
 
--- Section Processing
-DROP TABLE IF EXISTS NOCalculation1;
+-- section processing
+drop table if exists nocalculation1;
 
-CREATE TABLE NOCalculation1 (
-	polProcessID			int,
-	processID				smallint(6),
-	pollutantID				smallint(6),
-	sourceTypeID			smallint(6),
-	fuelTypeID				smallint(6),
-	modelYearID				smallint(6),
-	NOxRatio				float
-);
-
--- @algorithm To simplify future table joins, add dimensions to NOxRatio.
-INSERT INTO NOCalculation1 (
-	polProcessID,
-	processID,
-	pollutantID,
-	sourceTypeID,
-	fuelTypeID,
-	modelYearID,
-	NOxRatio     ) 
-SELECT 
-	nnr.polProcessID,
-	ppa.processID,
-	ppa.pollutantID,
-	nnr.sourceTypeID,
-	nnr.fuelTypeID,
-	ppmy.modelYearID,
-	nnr.NOxRatio 
-FROM 	NOCopyOfNONO2Ratio nnr  
-		INNER JOIN 	NOCopyOfPPA  ppa 	 	 	ON nnr.polProcessID = ppa.polProcessID 
-		INNER JOIN 	NOCopyOfSourceUseType ns 	ON nnr.sourceTypeID = ns.sourceTypeID
-		INNER JOIN 	NOCopyOfPPMY ppmy		 	ON nnr.modelYearGroupID = ppmy.modelYearGroupID 
-		                                     		AND ppa.polProcessID = ppmy.polProcessID;
-
-create index index1 on NOCalculation1 (processID, sourceTypeID, pollutantID, modelYearID, fuelTypeID);
-
-CREATE INDEX MOVESWorkerOutput_New1 ON MOVESWorkerOutput (
-	fuelTypeID ASC,
-	modelyearID ASC,
-	sourceTypeID ASC,
-	pollutantID ASC,
-	processID ASC
-);
-CREATE INDEX NOCalculation1_New1 ON NOCalculation1 (
-	fuelTypeID ASC,
-	modelyearID ASC,
-	sourceTypeID ASC
+create table nocalculation1 (
+	polprocessid			int,
+	processid				smallint(6),
+	pollutantid				smallint(6),
+	sourcetypeid			smallint(6),
+	fueltypeid				smallint(6),
+	modelyearid				smallint(6),
+	noxratio				float
 );
 
-DROP TABLE IF EXISTS NOMOVESOutputTemp1;
+-- @algorithm to simplify future table joins, add dimensions to noxratio.
+insert into nocalculation1 (
+	polprocessid,
+	processid,
+	pollutantid,
+	sourcetypeid,
+	fueltypeid,
+	modelyearid,
+	noxratio     ) 
+select 
+	nnr.polprocessid,
+	ppa.processid,
+	ppa.pollutantid,
+	nnr.sourcetypeid,
+	nnr.fueltypeid,
+	ppmy.modelyearid,
+	nnr.noxratio 
+from 	nocopyofnono2ratio nnr  
+		inner join 	nocopyofppa  ppa 	 	 	on nnr.polprocessid = ppa.polprocessid 
+		inner join 	nocopyofsourceusetype ns 	on nnr.sourcetypeid = ns.sourcetypeid
+		inner join 	nocopyofppmy ppmy		 	on nnr.modelyeargroupid = ppmy.modelyeargroupid 
+		                                     		and ppa.polprocessid = ppmy.polprocessid;
 
--- @algorithm emissionQuant = NOxRatio * Oxides of Nitrogen (3).
-CREATE TABLE NOMOVESOutputTemp1
-SELECT 
-	mwo.MOVESRunID, mwo.iterationID, mwo.yearID, mwo.monthID, mwo.dayID, 
-	mwo.hourID, mwo.stateID, mwo.countyID, mwo.zoneID, 
-	mwo.linkID, noc.pollutantID, noc.processID, 
-	noc.sourceTypeID, mwo.regClassID, mwo.fuelTypeID, mwo.modelYearID, 
-	mwo.roadTypeID, mwo.SCC,
-	mwo.emissionQuant as NOx,
-	noc.NOxRatio,
-	(noc.NOxRatio * mwo.emissionQuant) as emissionQuant,
-	(noc.NOxRatio * mwo.emissionRate) as emissionRate
-FROM
-	MOVESWorkerOutput mwo, NOCalculation1 noc  
-WHERE  
-	mwo.fuelTypeID			=	noc.fuelTypeID		AND 
-	mwo.modelyearID			=	noc.modelyearID		AND
-	mwo.sourceTypeID		=	noc.sourceTypeID	AND 
-	mwo.pollutantID = 3 	AND
-	mwo.processID = ##context.iterProcess.databaseKey##;
+create index index1 on nocalculation1 (processid, sourcetypeid, pollutantid, modelyearid, fueltypeid);
 
-INSERT INTO MOVESWorkerOutput ( 
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID, 
-	linkID,pollutantID,processID,sourceTypeID,regClassID,fuelTypeID,modelYearID, 
-	roadTypeID,SCC,emissionQuant,emissionRate) 
-SELECT 
-	MOVESRunID,iterationID, yearID,monthID,dayID,hourID,stateID,countyID,zoneID, 
-	linkID,pollutantID,processID,sourceTypeID,regClassID,fuelTypeID,modelYearID, 
-	roadTypeID,SCC,emissionQuant,emissionRate
-FROM NOMOVESOutputTemp1;
+create index movesworkeroutput_new1 on movesworkeroutput (
+	fueltypeid asc,
+	modelyearid asc,
+	sourcetypeid asc,
+	pollutantid asc,
+	processid asc
+);
+create index nocalculation1_new1 on nocalculation1 (
+	fueltypeid asc,
+	modelyearid asc,
+	sourcetypeid asc
+);
 
-alter table MOVESWorkerOutput drop index MOVESWorkerOutput_New1;
--- End Section Processing
+drop table if exists nomovesoutputtemp1;
 
--- Section Cleanup
-DROP TABLE IF EXISTS NOCopyOfSourceUseType;
-DROP TABLE IF EXISTS NOMOVESOutputTemp1;
-DROP TABLE IF EXISTS NOCalculation1;
-DROP TABLE IF EXISTS NOCopyOfNONO2Ratio;
-DROP TABLE IF EXISTS NOCopyOfFuelType;
-DROP TABLE IF EXISTS NOCopyOfPPA;
-DROP TABLE IF EXISTS NOCopyOfPPMY;
--- End Section Cleanup
+-- @algorithm emissionquant = noxratio * oxides of nitrogen (3).
+create table nomovesoutputtemp1
+select 
+	mwo.movesrunid, mwo.iterationid, mwo.yearid, mwo.monthid, mwo.dayid, 
+	mwo.hourid, mwo.stateid, mwo.countyid, mwo.zoneid, 
+	mwo.linkid, noc.pollutantid, noc.processid, 
+	noc.sourcetypeid, mwo.regclassid, mwo.fueltypeid, mwo.modelyearid, 
+	mwo.roadtypeid, mwo.scc,
+	mwo.emissionquant as nox,
+	noc.noxratio,
+	(noc.noxratio * mwo.emissionquant) as emissionquant,
+	(noc.noxratio * mwo.emissionrate) as emissionrate
+from
+	movesworkeroutput mwo, nocalculation1 noc  
+where  
+	mwo.fueltypeid			=	noc.fueltypeid		and 
+	mwo.modelyearid			=	noc.modelyearid		and
+	mwo.sourcetypeid		=	noc.sourcetypeid	and 
+	mwo.pollutantid = 3 	and
+	mwo.processid = ##context.iterprocess.databasekey##;
+
+insert into movesworkeroutput ( 
+	movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid, 
+	linkid,pollutantid,processid,sourcetypeid,regclassid,fueltypeid,modelyearid, 
+	roadtypeid,scc,emissionquant,emissionrate) 
+select 
+	movesrunid,iterationid, yearid,monthid,dayid,hourid,stateid,countyid,zoneid, 
+	linkid,pollutantid,processid,sourcetypeid,regclassid,fueltypeid,modelyearid, 
+	roadtypeid,scc,emissionquant,emissionrate
+from nomovesoutputtemp1;
+
+alter table movesworkeroutput drop index movesworkeroutput_new1;
+-- end section processing
+
+-- section cleanup
+drop table if exists nocopyofsourceusetype;
+drop table if exists nomovesoutputtemp1;
+drop table if exists nocalculation1;
+drop table if exists nocopyofnono2ratio;
+drop table if exists nocopyoffueltype;
+drop table if exists nocopyofppa;
+drop table if exists nocopyofppmy;
+-- end section cleanup

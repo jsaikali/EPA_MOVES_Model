@@ -1,93 +1,93 @@
--- Author Wesley Faler
--- Version 2017-09-19
+-- author wesley faler
+-- version 2017-09-19
 
-drop procedure if exists spCheckHotellingImporter;
+drop procedure if exists spcheckhotellingimporter;
 
-BeginBlock
-create procedure spCheckHotellingImporter()
+beginblock
+create procedure spcheckhotellingimporter()
 begin
-	-- Mode 0 is run after importing
-	-- Mode 1 is run to check overall success/failure
+	-- mode 0 is run after importing
+	-- mode 1 is run to check overall success/failure
 	declare mode int default ##mode##;
-	declare isOk int default 1;
-	declare howMany int default 0;
+	declare isok int default 1;
+	declare howmany int default 0;
 
-	-- Scale 0 is national
-	-- Scale 1 is single county
-	-- Scale 2 is project domain
+	-- scale 0 is national
+	-- scale 1 is single county
+	-- scale 2 is project domain
 	declare scale int default ##scale##;
 
-	-- Rate 0 is Inventory
-	-- Rate 1 is Rates
+	-- rate 0 is inventory
+	-- rate 1 is rates
 	declare rate int default ##rate##;
 
-	-- Complain about an empty table in project domain
-	if(scale = 2 and (90 in (##processIDs##) or 91 in (##processIDs##))) then
-		set howMany=0;
-		select count(*) into howMany from hotellingActivityDistribution;
-		set howMany=ifnull(howMany,0);
-		if(howMany <= 0) then
-			insert into importTempMessages (message) values ('ERROR: hotellingActivityDistribution must be provided.');
+	-- complain about an empty table in project domain
+	if(scale = 2 and (90 in (##processids##) or 91 in (##processids##))) then
+		set howmany=0;
+		select count(*) into howmany from hotellingactivitydistribution;
+		set howmany=ifnull(howmany,0);
+		if(howmany <= 0) then
+			insert into importtempmessages (message) values ('error: hotellingactivitydistribution must be provided.');
 		end if;
 	end if;
 
-	-- Check hotellingHourFraction if any entries are provided
-	set howMany=0;
-	select count(*) into howMany from hotellingHourFraction;
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then
-		-- Complain about zone/days with distributions that don't sum to exactly 1.0000
-		insert into importTempMessages (message)
-		select concat('ERROR: total HotellingHourFraction.hourFraction for zone ',zoneID,', day ',dayID,' should be 1 but instead is ',round(sum(hourFraction),4)) as errorMessage
-		from hotellingHourFraction
-		group by zoneID, dayID
-		having round(sum(hourFraction),4) <> 1.0000;
+	-- check hotellinghourfraction if any entries are provided
+	set howmany=0;
+	select count(*) into howmany from hotellinghourfraction;
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then
+		-- complain about zone/days with distributions that don't sum to exactly 1.0000
+		insert into importtempmessages (message)
+		select concat('error: total hotellinghourfraction.hourfraction for zone ',zoneid,', day ',dayid,' should be 1 but instead is ',round(sum(hourfraction),4)) as errormessage
+		from hotellinghourfraction
+		group by zoneid, dayid
+		having round(sum(hourfraction),4) <> 1.0000;
 	end if;
 
-	-- Check hotellingAgeFraction if any entries are provided
-	set howMany=0;
-	select count(*) into howMany from hotellingAgeFraction;
-	set howMany=ifnull(howMany,0);
-	if(howMany > 0) then
-		-- Complain about zones with distributions that don't sum to exactly 1.0000
-		insert into importTempMessages (message)
-		select concat('ERROR: total HotellingAgeFraction.ageFraction for zone ',zoneID,' should be 1 but instead is ',round(sum(ageFraction),4)) as errorMessage
-		from hotellingAgeFraction
-		group by zoneID
-		having round(sum(ageFraction),4) <> 1.0000;
+	-- check hotellingagefraction if any entries are provided
+	set howmany=0;
+	select count(*) into howmany from hotellingagefraction;
+	set howmany=ifnull(howmany,0);
+	if(howmany > 0) then
+		-- complain about zones with distributions that don't sum to exactly 1.0000
+		insert into importtempmessages (message)
+		select concat('error: total hotellingagefraction.agefraction for zone ',zoneid,' should be 1 but instead is ',round(sum(agefraction),4)) as errormessage
+		from hotellingagefraction
+		group by zoneid
+		having round(sum(agefraction),4) <> 1.0000;
 	end if;
 
-	-- Complain about invalid operating modes
-	insert into importTempMessages (message)
-	select distinct concat('ERROR: Unknown opModeID (',opModeID,'). Hotelling operating modes are 200-299.') as errorMessage
-	from hotellingActivityDistribution
-	where opModeID < 200 || opModeID > 299;
+	-- complain about invalid operating modes
+	insert into importtempmessages (message)
+	select distinct concat('error: unknown opmodeid (',opmodeid,'). hotelling operating modes are 200-299.') as errormessage
+	from hotellingactivitydistribution
+	where opmodeid < 200 || opmodeid > 299;
 
-	-- Complain if any model year ranges are inverted
-	insert into importTempMessages (message)
-	select distinct concat('ERROR: BeginModelYearID (',beginModelYearID,') must be <= EndModelYearID (',endModelYearID,')') as errorMessage
-	from hotellingActivityDistribution
-	where beginModelYearID > endModelYearID;
+	-- complain if any model year ranges are inverted
+	insert into importtempmessages (message)
+	select distinct concat('error: beginmodelyearid (',beginmodelyearid,') must be <= endmodelyearid (',endmodelyearid,')') as errormessage
+	from hotellingactivitydistribution
+	where beginmodelyearid > endmodelyearid;
 
-	-- Complain about entries with negative fractions
-	insert into importTempMessages (message)
-	select concat('ERROR: opModeFraction is less than zero (',opModeFraction,') for model years ',beginModelYearID,' to ',endModelYearID) as errorMessage
-	from hotellingActivityDistribution
-	where opModeFraction < 0;
+	-- complain about entries with negative fractions
+	insert into importtempmessages (message)
+	select concat('error: opmodefraction is less than zero (',opmodefraction,') for model years ',beginmodelyearid,' to ',endmodelyearid) as errormessage
+	from hotellingactivitydistribution
+	where opmodefraction < 0;
 
-	-- Complain about entries with fractions greater than 1
-	insert into importTempMessages (message)
-	select concat('ERROR: opModeFraction is greater than 1 (',round(opModeFraction,4),') for model years ',beginModelYearID,' to ',endModelYearID) as errorMessage
-	from hotellingActivityDistribution
-	where round(opModeFraction,4) > 1;
+	-- complain about entries with fractions greater than 1
+	insert into importtempmessages (message)
+	select concat('error: opmodefraction is greater than 1 (',round(opmodefraction,4),') for model years ',beginmodelyearid,' to ',endmodelyearid) as errormessage
+	from hotellingactivitydistribution
+	where round(opmodefraction,4) > 1;
 
-	-- Expand to full set of model years
-	drop table if exists tempYear;
-	create table if not exists tempYear (
+	-- expand to full set of model years
+	drop table if exists tempyear;
+	create table if not exists tempyear (
 		year int not null primary key
 	);
 	
-	insert into tempYear(year) values(1960),(1961),(1962),(1963),(1964),(1965),(1966),(1967)
+	insert into tempyear(year) values(1960),(1961),(1962),(1963),(1964),(1965),(1966),(1967)
 		,(1968),(1969),(1970),(1971),(1972),(1973),(1974),(1975),(1976),(1977)
 		,(1978),(1979),(1980),(1981),(1982),(1983),(1984),(1985),(1986),(1987)
 		,(1988),(1989),(1990),(1991),(1992),(1993),(1994),(1995),(1996),(1997)
@@ -100,56 +100,56 @@ begin
 		,(2058),(2059),(2060)
 	;
 
-	drop table if exists tempHotellingActivityDistribution;
-	create table if not exists tempHotellingActivityDistribution (
-		zoneID int not null,
-		modelYearID smallint(6) not null,
-		opModeID smallint(6) not null,
-		opModeFraction float not null,
-		key (zoneID, modelYearID, opModeID),
-		key (zoneID, opModeID, modelYearID)
+	drop table if exists temphotellingactivitydistribution;
+	create table if not exists temphotellingactivitydistribution (
+		zoneid int not null,
+		modelyearid smallint(6) not null,
+		opmodeid smallint(6) not null,
+		opmodefraction float not null,
+		key (zoneid, modelyearid, opmodeid),
+		key (zoneid, opmodeid, modelyearid)
 	);
 
-	insert into tempHotellingActivityDistribution (zoneID, modelYearID, opModeID, opModeFraction)
-	select zoneID, year, opModeID, opModeFraction
-	from hotellingActivityDistribution, tempYear
-	where beginModelYearID <= year
-	and endModelYearID >= year;
+	insert into temphotellingactivitydistribution (zoneid, modelyearid, opmodeid, opmodefraction)
+	select zoneid, year, opmodeid, opmodefraction
+	from hotellingactivitydistribution, tempyear
+	where beginmodelyearid <= year
+	and endmodelyearid >= year;
 
-	-- Complain about model years that appear more than once
-	insert into importTempMessages (message)
-	select distinct concat('ERROR: Model year ',modelYearID,' appears more than once (',count(*),') for zone ',zoneID) as errorMessage
-	from tempHotellingActivityDistribution
-	group by zoneID, modelYearID, opModeID
+	-- complain about model years that appear more than once
+	insert into importtempmessages (message)
+	select distinct concat('error: model year ',modelyearid,' appears more than once (',count(*),') for zone ',zoneid) as errormessage
+	from temphotellingactivitydistribution
+	group by zoneid, modelyearid, opmodeid
 	having count(*) > 1;
 
-	-- Complain about model years with distributions that don't sum to exactly 1.0000
-	insert into importTempMessages (message)
-	select concat('ERROR: total opModeFraction for zone ',zoneID,', model year ',modelYearID,' should be 1 but instead ',round(sum(opModeFraction),4)) as errorMessage
-	from tempHotellingActivityDistribution
-	group by zoneID, modelYearID
-	having round(sum(opModeFraction),4) <> 1.0000;
+	-- complain about model years with distributions that don't sum to exactly 1.0000
+	insert into importtempmessages (message)
+	select concat('error: total opmodefraction for zone ',zoneid,', model year ',modelyearid,' should be 1 but instead ',round(sum(opmodefraction),4)) as errormessage
+	from temphotellingactivitydistribution
+	group by zoneid, modelyearid
+	having round(sum(opmodefraction),4) <> 1.0000;
 
-	-- Cleanup
-	drop table if exists tempYear;
-	drop table if exists tempHotellingActivityDistribution;
+	-- cleanup
+	drop table if exists tempyear;
+	drop table if exists temphotellingactivitydistribution;
 
-	-- Check final status
-	if(isOk=1) then
-		set howMany=0;
-		select count(*) into howMany from importTempMessages where message like 'ERROR: %';
-		set howMany=ifnull(howMany,0);
-		if(howMany > 0) then
-			set isOk=0;
+	-- check final status
+	if(isok=1) then
+		set howmany=0;
+		select count(*) into howmany from importtempmessages where message like 'error: %';
+		set howmany=ifnull(howmany,0);
+		if(howmany > 0) then
+			set isok=0;
 		end if;
 	end if;
 
-	-- Insert 'NOT_READY' or 'OK' to indicate iconic success
+	-- insert 'not_ready' or 'ok' to indicate iconic success
 	if(mode = 1) then
-		insert into importTempMessages (message) values (case when isOk=1 then 'OK' else 'NOT_READY' end);
+		insert into importtempmessages (message) values (case when isok=1 then 'OK' else 'NOT_READY' end);
 	end if;
 end
-EndBlock
+endblock
 
-call spCheckHotellingImporter();
-drop procedure if exists spCheckHotellingImporter;
+call spcheckhotellingimporter();
+drop procedure if exists spcheckhotellingimporter;

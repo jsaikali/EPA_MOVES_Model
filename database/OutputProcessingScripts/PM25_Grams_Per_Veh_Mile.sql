@@ -8,21 +8,21 @@
 --
 
 
-Drop   table if exists pm25_Grams_Per_Veh_Mile;
-Create table pm25_Grams_Per_Veh_Mile
-Select   movesRunId,
-         yearId,
-         monthId,
-         hourId,
-         linkId,
+drop   table if exists pm25_grams_per_veh_mile;
+create table pm25_grams_per_veh_mile
+select   movesrunid,
+         yearid,
+         monthid,
+         hourid,
+         linkid,
          'Total PM2.5' as pollutant,
-         sum(rateperdistance) as GramsPerVehMile
-From     rateperdistance
-where    pollutantId in (110,116,117)
-Group by movesRunId,
-         yearId,
-         monthId,
-         hourId,
-         linkId;
+         sum(rateperdistance) as gramspervehmile
+from     rateperdistance
+where    pollutantid in (110,116,117)
+group by movesrunid,
+         yearid,
+         monthid,
+         hourid,
+         linkid;
 
 

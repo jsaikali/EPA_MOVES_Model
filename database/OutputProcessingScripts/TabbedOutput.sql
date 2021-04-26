@@ -1,19 +1,19 @@
--- This MySQL script produces tab-delimited output suitable for reading into an
--- EXCEL Spreadsheet from the MOVES Maria database output tables.
--- Three separate text files are produced.  They are:
---      MovesOutputyyyymmddhhmmss.txt
---      MovesActivityOutputyyyymmddhhmmss.txt
---      MovesRunyyyymmddhhmmss.txt
+-- this mysql script produces tab-delimited output suitable for reading into an
+-- excel spreadsheet from the moves maria database output tables.
+-- three separate text files are produced.  they are:
+--      movesoutputyyyymmddhhmmss.txt
+--      movesactivityoutputyyyymmddhhmmss.txt
+--      movesrunyyyymmddhhmmss.txt
 
--- These correspond directly to the similarily named MOVES output tables.
+-- these correspond directly to the similarily named moves output tables.
 
--- The script does not write out the MovesError Table.
+-- the script does not write out the moveserror table.
 
 --
 --
 -- general:
 
-FLUSH TABLES;
+flush tables;
 
 set @datetime = concat(  mid(curdate(),1,4),
                          mid(curdate(),6,2),
@@ -22,103 +22,103 @@ set @datetime = concat(  mid(curdate(),1,4),
                          mid(curtime(),4,2),
                          mid(curtime(),7,2) );
 
--- create 'MovesOutputyyyymmddhhmmss.txt':
+-- create 'movesoutputyyyymmddhhmmss.txt':
 
 
-SET @sql_text =
-CONCAT(
-" SELECT * ",
-" INTO OUTFILE ", "'MovesOutput",
-	@datetime,
-	".txt'",
-	" FIELDS TERMINATED BY '\t'",
-	" LINES TERMINATED BY '\r\n'",	
-"FROM(",
-	" select 'MOVESRunID',    'IterationId',       'YearID',             'MonthID',           'DayID',
-        'HourID',        'StateID',           'CountyID',           'ZoneID',            'LinkID',
-        'PollutantID',   'ProcessID',         'SourceTypeID',       'regClassId',        'FuelTypeID',
-        'fuelSubtypeid',
-        'ModelYearID',   'RoadTypeID',        'SCC',                'engTechId',         'sectorId',
-        'hpId',          'EmissionQuant',     'EmissionQuantMean',  'EmissionQuantSigma'",
-	" UNION ",
-	" SELECT MOVESRunID,    IterationId,       YearID,             MonthID,           DayID,
-        HourID,        StateID,           CountyID,           ZoneID,            LinkID,
-        PollutantID,   ProcessID,         SourceTypeID,       regClassId,        FuelTypeID,
-        fuelSubtypeid,
-        ModelYearID,   RoadTypeID,        SCC,                engTechId,         sectorId,
-        hpId,          EmissionQuant,     EmissionQuantMean,  EmissionQuantSigma ",
-	" from movesoutput",
+set @sql_text =
+concat(
+" select * ",
+" into outfile ", "'movesoutput",
+    @datetime,
+    ".txt'",
+    " fields terminated by '\t'",
+    " lines terminated by '\r\n'",  
+"from(",
+    " select 'movesrunid',    'iterationid',       'yearid',             'monthid',           'dayid',
+        'hourid',        'stateid',           'countyid',           'zoneid',            'linkid',
+        'pollutantid',   'processid',         'sourcetypeid',       'regclassid',        'fueltypeid',
+        'fuelsubtypeid',
+        'modelyearid',   'roadtypeid',        'scc',                'engtechid',         'sectorid',
+        'hpid',          'emissionquant',     'emissionquantmean',  'emissionquantsigma'",
+    " union ",
+    " select movesrunid,    iterationid,       yearid,             monthid,           dayid,
+        hourid,        stateid,           countyid,           zoneid,            linkid,
+        pollutantid,   processid,         sourcetypeid,       regclassid,        fueltypeid,
+        fuelsubtypeid,
+        modelyearid,   roadtypeid,        scc,                engtechid,         sectorid,
+        hpid,          emissionquant,     emissionquantmean,  emissionquantsigma ",
+    " from movesoutput",
 ")as t1;");
 
 
 
 
-PREPARE s1 FROM @sql_text;
-EXECUTE s1;
-DROP PREPARE s1;
+prepare s1 from @sql_text;
+execute s1;
+drop prepare s1;
 
 
--- create 'MovesActivityOutputyyyymmddhhmmss.txt':
-SET @sql_text =
-   CONCAT (
-" SELECT * ",
-" INTO OUTFILE ", "'MovesActivityOutput",
-	@datetime,
-	".txt'",
-	" FIELDS TERMINATED BY '\t'",
-	" LINES TERMINATED BY '\r\n'",	
-"FROM(",
-	" SELECT 'MOVESRunID',     'IterationId',  'YearID',        'MonthID',       'DayID',
-			'HourID',         'StateID',      'CountyID',      'ZoneID',        'LinkID',
-			'SourceTypeID',   'regClassId',   'FuelTypeID',    'fuelSubTypeId', 'ModelYearID',
-			'RoadTypeID',     'SCC',          'engTechId',     'sectorId',      'hpId',
-			'ActivityTypeId', 'Activity',     'ActivityMean',  'ActivitySigma'",
-	" UNION ",
-	" SELECT MOVESRunID,     IterationId,  YearID,        MonthID,       DayID,
-        HourID,         StateID,      CountyID,      ZoneID,        LinkID,
-        SourceTypeID,   regClassId,   FuelTypeID,    fuelSubTypeId, ModelYearID,
-        RoadTypeID,     SCC,          engTechId,     sectorId,      hpId,
-        ActivityTypeId, Activity,     ActivityMean,  ActivitySigma",
-	" FROM MovesActivityOutput",
+-- create 'movesactivityoutputyyyymmddhhmmss.txt':
+set @sql_text =
+   concat (
+" select * ",
+" into outfile ", "'movesactivityoutput",
+    @datetime,
+    ".txt'",
+    " fields terminated by '\t'",
+    " lines terminated by '\r\n'",  
+"from(",
+    " select 'movesrunid',     'iterationid',  'yearid',        'monthid',       'dayid',
+            'hourid',         'stateid',      'countyid',      'zoneid',        'linkid',
+            'sourcetypeid',   'regclassid',   'fueltypeid',    'fuelsubtypeid', 'modelyearid',
+            'roadtypeid',     'scc',          'engtechid',     'sectorid',      'hpid',
+            'activitytypeid', 'activity',     'activitymean',  'activitysigma'",
+    " union ",
+    " select movesrunid,     iterationid,  yearid,        monthid,       dayid,
+        hourid,         stateid,      countyid,      zoneid,        linkid,
+        sourcetypeid,   regclassid,   fueltypeid,    fuelsubtypeid, modelyearid,
+        roadtypeid,     scc,          engtechid,     sectorid,      hpid,
+        activitytypeid, activity,     activitymean,  activitysigma",
+    " from movesactivityoutput",
 ")as t1;");
 
 
-PREPARE s2 FROM @sql_text;
-EXECUTE s2;
-DROP PREPARE s2;
+prepare s2 from @sql_text;
+execute s2;
+drop prepare s2;
 
 
--- create 'MovesRunyyyymmddhhmmss.txt':
+-- create 'movesrunyyyymmddhhmmss.txt':
 
-SET @sql_text =
-CONCAT (
-" SELECT * ",
-" INTO OUTFILE ", "'movesrun",
-	@datetime,
-	".txt'",
-	" FIELDS TERMINATED BY '\t'",
-	" LINES TERMINATED BY '\r\n'",	
-"FROM(",
-	" SELECT 'MOVESRunID',          'outputTimePeriod',  'timeUnits',            'distanceUnits',
-        'massUnits',           'energyUnits',       'runSpecFileName',      'runSpecDescription',
-        'runSpecFileDateTime', 'runDateTime',       'scale',                'minutesDuration',
-        'defaultDatabaseUsed', 'masterVersion',     'masterComputerId',     'masterIdNumber',
-        'domain',              'domainCountyId',   'domainCountyName',    'domainDatabaseServer',
-        'domainDataBaseName',  'expectedDONEfiles', 'retrievedDONEfiles',   'models'",
-	" UNION ",
-	" SELECT MOVESRunID,          outputTimePeriod,  timeUnits,            distanceUnits,
-        massUnits,           energyUnits,       runSpecFileName,      runSpecDescription,
-        runSpecFileDateTime, runDateTime,       scale,                minutesDuration,
-        defaultDatabaseUsed, masterVersion,     masterComputerId,     masterIdNumber,
-        domain,              domainCountyId,   domainCountyName,    domainDatabaseServer,
-        domainDataBaseName,  expectedDONEfiles, retrievedDONEfiles,   models",
-	" FROM movesrun",
+set @sql_text =
+concat (
+" select * ",
+" into outfile ", "'movesrun",
+    @datetime,
+    ".txt'",
+    " fields terminated by '\t'",
+    " lines terminated by '\r\n'",  
+"from(",
+    " select 'movesrunid',          'outputtimeperiod',  'timeunits',            'distanceunits',
+        'massunits',           'energyunits',       'runspecfilename',      'runspecdescription',
+        'runspecfiledatetime', 'rundatetime',       'scale',                'minutesduration',
+        'defaultdatabaseused', 'masterversion',     'mastercomputerid',     'masteridnumber',
+        'domain',              'domaincountyid',   'domaincountyname',    'domaindatabaseserver',
+        'domaindatabasename',  'expecteddonefiles', 'retrieveddonefiles',   'models'",
+    " union ",
+    " select movesrunid,          outputtimeperiod,  timeunits,            distanceunits,
+        massunits,           energyunits,       runspecfilename,      runspecdescription,
+        runspecfiledatetime, rundatetime,       scale,                minutesduration,
+        defaultdatabaseused, masterversion,     mastercomputerid,     masteridnumber,
+        domain,              domaincountyid,   domaincountyname,    domaindatabaseserver,
+        domaindatabasename,  expecteddonefiles, retrieveddonefiles,   models",
+    " from movesrun",
 ")as t1;");
 
 
-PREPARE s3 FROM @sql_text;
-EXECUTE s3;
-DROP PREPARE s3;
+prepare s3 from @sql_text;
+execute s3;
+drop prepare s3;
 
 
-FLUSH TABLES;
+flush tables;

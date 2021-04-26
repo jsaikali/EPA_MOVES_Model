@@ -1,1440 +1,1440 @@
--- Directly calculate rates.
--- Version 2017-09-17
--- Author Wesley Faler
+-- directly calculate rates.
+-- version 2017-09-17
+-- author wesley faler
 
 -- @calculator
 
--- Section Create Remote Tables for Extracted Data
+-- section create remote tables for extracted data
 
-##create.AgeCategory##;
-TRUNCATE AgeCategory;
+##create.agecategory##;
+truncate agecategory;
 
-##create.BaseRateByAge##;
-TRUNCATE BaseRateByAge;
+##create.baseratebyage##;
+truncate baseratebyage;
 
-##create.BaseRate##;
-TRUNCATE BaseRate;
+##create.baserate##;
+truncate baserate;
 
-##create.County##;
-TRUNCATE TABLE County;
+##create.county##;
+truncate table county;
 
-CREATE TABLE EmissionRateAdjustmentWorker
+create table emissionrateadjustmentworker
 (	
-	polProcessID			int(11)			not null,
-	sourceTypeID			smallint(6)		not null,
-	regClassID				smallint(6)		not null,
-	fuelTypeID				smallint(6)		not null,
-	modelYearID				smallint(6)		not null,
-	EmissionRateAdjustment	double null default NULL,
-	primary key (polProcessID, sourceTypeID, fuelTypeID, regClassID, modelYearID)
+	polprocessid			int(11)			not null,
+	sourcetypeid			smallint(6)		not null,
+	regclassid				smallint(6)		not null,
+	fueltypeid				smallint(6)		not null,
+	modelyearid				smallint(6)		not null,
+	emissionrateadjustment	double null default null,
+	primary key (polprocessid, sourcetypeid, fueltypeid, regclassid, modelyearid)
 );
-TRUNCATE EmissionRateAdjustmentWorker;
+truncate emissionrateadjustmentworker;
 
-##create.FuelType##;
-TRUNCATE TABLE FuelType;
+##create.fueltype##;
+truncate table fueltype;
 
-create table if not exists LocalFuelSupply (
-	fuelTypeID smallint not null,
-	fuelSubtypeID smallint not null,
-	fuelFormulationID smallint not null,
-	marketShare double not null,
-	primary key (fuelFormulationID),
-	key (fuelTypeID, fuelSubtypeID, fuelFormulationID, marketShare),
-	key (fuelFormulationID)
+create table if not exists localfuelsupply (
+	fueltypeid smallint not null,
+	fuelsubtypeid smallint not null,
+	fuelformulationid smallint not null,
+	marketshare double not null,
+	primary key (fuelformulationid),
+	key (fueltypeid, fuelsubtypeid, fuelformulationid, marketshare),
+	key (fuelformulationid)
 );
-TRUNCATE TABLE LocalFuelSupply;
+truncate table localfuelsupply;
 
-##create.generalFuelRatio##;
-TRUNCATE TABLE generalFuelRatio;
+##create.generalfuelratio##;
+truncate table generalfuelratio;
 
-##create.IMCoverage##;
-TRUNCATE IMCoverage;
+##create.imcoverage##;
+truncate imcoverage;
 
-##create.IMFactor##;
-TRUNCATE IMFactor;
+##create.imfactor##;
+truncate imfactor;
 
-##create.PollutantProcessAssoc##;
-TRUNCATE PollutantProcessAssoc;
+##create.pollutantprocessassoc##;
+truncate pollutantprocessassoc;
 
-##create.PollutantProcessMappedModelYear##;
-TRUNCATE PollutantProcessMappedModelYear;
+##create.pollutantprocessmappedmodelyear##;
+truncate pollutantprocessmappedmodelyear;
 
-##create.RunspecModelYearAge##;
-TRUNCATE TABLE RunspecModelYearAge;
+##create.runspecmodelyearage##;
+truncate table runspecmodelyearage;
 
-##create.RunSpecSourceFuelType##;
-TRUNCATE TABLE RunSpecSourceFuelType;
+##create.runspecsourcefueltype##;
+truncate table runspecsourcefueltype;
 
--- Section Process1_2
-##create.criteriaRatio##;
-TRUNCATE criteriaRatio;
+-- section process1_2
+##create.criteriaratio##;
+truncate criteriaratio;
 
-##create.altCriteriaRatio##;
-TRUNCATE altCriteriaRatio;
--- End Section Process1_2
+##create.altcriteriaratio##;
+truncate altcriteriaratio;
+-- end section process1_2
 
--- Section Process2
-##create.StartTempAdjustment##;
-TRUNCATE TABLE StartTempAdjustment;
--- End Section Process2
+-- section process2
+##create.starttempadjustment##;
+truncate table starttempadjustment;
+-- end section process2
 
-##create.TemperatureAdjustment##;
-TRUNCATE TABLE TemperatureAdjustment;
+##create.temperatureadjustment##;
+truncate table temperatureadjustment;
 
--- Section GetActivity
-create table if not exists universalActivity (
-	hourDayID smallint not null,
-	modelYearID smallint not null,
-	sourceTypeID smallint not null,
+-- section getactivity
+create table if not exists universalactivity (
+	hourdayid smallint not null,
+	modelyearid smallint not null,
+	sourcetypeid smallint not null,
 	activity double,
-	primary key (sourceTypeID, hourDayID, modelYearID),
-	key (hourDayID, modelYearID)
+	primary key (sourcetypeid, hourdayid, modelyearid),
+	key (hourdayid, modelyearid)
 );
 
-truncate table universalActivity;
+truncate table universalactivity;
 
-##create.RunSpecHourDay##;
-TRUNCATE TABLE RunSpecHourDay;
+##create.runspechourday##;
+truncate table runspechourday;
 
-##create.RunSpecSourceType##;
-TRUNCATE TABLE RunSpecSourceType;
+##create.runspecsourcetype##;
+truncate table runspecsourcetype;
 
--- End Section GetActivity
+-- end section getactivity
 
-##create.ZoneMonthHour##;
-TRUNCATE ZoneMonthHour;
+##create.zonemonthhour##;
+truncate zonemonthhour;
 
-create table if not exists zoneACFactor (
-	hourID smallint(6) NOT NULL DEFAULT 0,
-	sourceTypeID smallint(6) NOT NULL DEFAULT 0,
-	modelYearID smallint(6) NOT NULL DEFAULT 0,
-	ACFactor double NOT NULL DEFAULT 0,
-	primary key (hourID, sourceTypeID, modelYearID)
+create table if not exists zoneacfactor (
+	hourid smallint(6) not null default 0,
+	sourcetypeid smallint(6) not null default 0,
+	modelyearid smallint(6) not null default 0,
+	acfactor double not null default 0,
+	primary key (hourid, sourcetypeid, modelyearid)
 );
-TRUNCATE zoneACFactor;
+truncate zoneacfactor;
 
--- Section AggregateSMFR
-create table if not exists smfrSBDSummary (
-	sourceTypeID smallint not null,
-	modelYearID smallint not null,
-	fuelTypeID smallint not null,
-	regClassID smallint not null,
-	sbdTotal double not null,
-	primary key (sourceTypeID, modelYearID, fuelTypeID, regClassID),
-	key (modelYearID, sourceTypeID, fuelTypeID, regClassID)
+-- section aggregatesmfr
+create table if not exists smfrsbdsummary (
+	sourcetypeid smallint not null,
+	modelyearid smallint not null,
+	fueltypeid smallint not null,
+	regclassid smallint not null,
+	sbdtotal double not null,
+	primary key (sourcetypeid, modelyearid, fueltypeid, regclassid),
+	key (modelyearid, sourcetypeid, fueltypeid, regclassid)
 );
 
-truncate smfrSBDSummary;
--- End Section AggregateSMFR
+truncate smfrsbdsummary;
+-- end section aggregatesmfr
 
--- Section Process91
--- Section AdjustAPUEmissionRate
-create table if not exists apuEmissionRateFraction (
-	modelYearID smallint not null,
-	hourFractionAdjust double not null,
-	primary key (modelYearID)
+-- section process91
+-- section adjustapuemissionrate
+create table if not exists apuemissionratefraction (
+	modelyearid smallint not null,
+	hourfractionadjust double not null,
+	primary key (modelyearid)
 );
--- End Section AdjustAPUEmissionRate
--- End Section Process91
+-- end section adjustapuemissionrate
+-- end section process91
 
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
+-- section extract data
 
-cache SELECT * INTO OUTFILE '##AgeCategory##'
-FROM AgeCategory;
+cache select * into outfile '##agecategory##'
+from agecategory;
 
--- @algorithm Create EmissionRateAdjustment by modelyear.
--- @output EmissionRateAdjustmentWorker
-cache SELECT 
-	era.polProcessID,
-	sourceTypeID,
-	regClassID,
-	fuelTypeID,
-	modelYearID,
-	emissionRateAdjustment
-INTO OUTFILE '##EmissionRateAdjustmentWorker##'
-FROM EmissionRateAdjustment era 
-INNER JOIN pollutantprocessassoc USING (polprocessID)
-INNER JOIN modelyear
-WHERE processID = ##context.iterProcess.databaseKey##
-AND pollutantID in (##pollutantIDs##)
-AND modelYearID >= ##context.year##-30
-AND modelYearID <= ##context.year##
-AND endmodelYearID >= modelYearID
-AND beginmodelYearID <= modelYearID;
+-- @algorithm create emissionrateadjustment by modelyear.
+-- @output emissionrateadjustmentworker
+cache select 
+	era.polprocessid,
+	sourcetypeid,
+	regclassid,
+	fueltypeid,
+	modelyearid,
+	emissionrateadjustment
+into outfile '##emissionrateadjustmentworker##'
+from emissionrateadjustment era 
+inner join pollutantprocessassoc using (polprocessid)
+inner join modelyear
+where processid = ##context.iterprocess.databasekey##
+and pollutantid in (##pollutantids##)
+and modelyearid >= ##context.year##-30
+and modelyearid <= ##context.year##
+and endmodelyearid >= modelyearid
+and beginmodelyearid <= modelyearid;
 
--- Section Inventory
+-- section inventory
 
-cache(linkID=##context.iterLocation.linkRecordID##) SELECT br.sourceTypeID,
-br.roadTypeID,br.avgSpeedBinID,br.hourDayID,
-br.polProcessID,br.pollutantID,br.processID,
-br.modelYearID,br.fuelTypeID,br.ageGroupID,br.regClassID,
-br.opModeID,br.meanBaseRate,br.meanBaseRateIM,
-br.emissionRate,br.emissionRateIM,
-br.meanBaseRateACAdj,br.meanBaseRateIMACAdj,
-br.emissionRateACAdj,br.emissionRateIMACAdj,
-br.opModeFraction,br.opModeFractionRate
-INTO OUTFILE '##BaseRateByAge##'
-FROM BaseRateByAge_##context.iterProcess.databaseKey##_##context.year## br
-INNER JOIN ageCategory ac on (ac.ageGroupID = br.ageGroupID)
-WHERE processID = ##context.iterProcess.databaseKey##
-AND pollutantID in (##pollutantIDs##)
-AND modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND ageID = ##context.year## - modelYearID
-AND roadTypeID = ##context.iterLocation.roadTypeRecordID##;
+cache(linkid=##context.iterlocation.linkrecordid##) select br.sourcetypeid,
+br.roadtypeid,br.avgspeedbinid,br.hourdayid,
+br.polprocessid,br.pollutantid,br.processid,
+br.modelyearid,br.fueltypeid,br.agegroupid,br.regclassid,
+br.opmodeid,br.meanbaserate,br.meanbaserateim,
+br.emissionrate,br.emissionrateim,
+br.meanbaserateacadj,br.meanbaserateimacadj,
+br.emissionrateacadj,br.emissionrateimacadj,
+br.opmodefraction,br.opmodefractionrate
+into outfile '##baseratebyage##'
+from baseratebyage_##context.iterprocess.databasekey##_##context.year## br
+inner join agecategory ac on (ac.agegroupid = br.agegroupid)
+where processid = ##context.iterprocess.databasekey##
+and pollutantid in (##pollutantids##)
+and modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and ageid = ##context.year## - modelyearid
+and roadtypeid = ##context.iterlocation.roadtyperecordid##;
 
-cache(linkID=##context.iterLocation.linkRecordID##) SELECT br.sourceTypeID,
-br.roadTypeID,br.avgSpeedBinID,br.hourDayID,
-br.polProcessID,br.pollutantID,br.processID,
-br.modelYearID,br.fuelTypeID,br.regClassID,
-br.opModeID,br.meanBaseRate,br.meanBaseRateIM,
-br.emissionRate,br.emissionRateIM,
-br.meanBaseRateACAdj,br.meanBaseRateIMACAdj,
-br.emissionRateACAdj,br.emissionRateIMACAdj,
-br.opModeFraction,br.opModeFractionRate
-INTO OUTFILE '##BaseRate##'
-FROM BaseRate_##context.iterProcess.databaseKey##_##context.year## br
-WHERE processID = ##context.iterProcess.databaseKey##
-AND pollutantID in (##pollutantIDs##)
-AND modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND roadTypeID = ##context.iterLocation.roadTypeRecordID##;
--- End Section Inventory
+cache(linkid=##context.iterlocation.linkrecordid##) select br.sourcetypeid,
+br.roadtypeid,br.avgspeedbinid,br.hourdayid,
+br.polprocessid,br.pollutantid,br.processid,
+br.modelyearid,br.fueltypeid,br.regclassid,
+br.opmodeid,br.meanbaserate,br.meanbaserateim,
+br.emissionrate,br.emissionrateim,
+br.meanbaserateacadj,br.meanbaserateimacadj,
+br.emissionrateacadj,br.emissionrateimacadj,
+br.opmodefraction,br.opmodefractionrate
+into outfile '##baserate##'
+from baserate_##context.iterprocess.databasekey##_##context.year## br
+where processid = ##context.iterprocess.databasekey##
+and pollutantid in (##pollutantids##)
+and modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and roadtypeid = ##context.iterlocation.roadtyperecordid##;
+-- end section inventory
 
--- Section Rates
--- Section NotProject
-cache(linkID=##context.iterLocation.linkRecordID##) SELECT br.sourceTypeID,
-br.roadTypeID,br.avgSpeedBinID,br.hourDayID,
-br.polProcessID,br.pollutantID,br.processID,
-br.modelYearID,br.fuelTypeID,br.ageGroupID,br.regClassID,
-br.opModeID,br.meanBaseRate,br.meanBaseRateIM,
-br.emissionRate,br.emissionRateIM,
-br.meanBaseRateACAdj,br.meanBaseRateIMACAdj,
-br.emissionRateACAdj,br.emissionRateIMACAdj,
-br.opModeFraction,br.opModeFractionRate
-INTO OUTFILE '##BaseRateByAge##'
-FROM BaseRateByAge_##context.iterProcess.databaseKey##_##context.year## br
-INNER JOIN ageCategory ac on (ac.ageGroupID = br.ageGroupID)
-WHERE processID = ##context.iterProcess.databaseKey##
-AND pollutantID in (##pollutantIDs##)
-AND modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND ageID = ##context.year## - modelYearID
-AND roadTypeID = ##context.iterLocation.roadTypeRecordID##
-AND avgSpeedBinID = mod(##context.iterLocation.linkRecordID##,100);
+-- section rates
+-- section notproject
+cache(linkid=##context.iterlocation.linkrecordid##) select br.sourcetypeid,
+br.roadtypeid,br.avgspeedbinid,br.hourdayid,
+br.polprocessid,br.pollutantid,br.processid,
+br.modelyearid,br.fueltypeid,br.agegroupid,br.regclassid,
+br.opmodeid,br.meanbaserate,br.meanbaserateim,
+br.emissionrate,br.emissionrateim,
+br.meanbaserateacadj,br.meanbaserateimacadj,
+br.emissionrateacadj,br.emissionrateimacadj,
+br.opmodefraction,br.opmodefractionrate
+into outfile '##baseratebyage##'
+from baseratebyage_##context.iterprocess.databasekey##_##context.year## br
+inner join agecategory ac on (ac.agegroupid = br.agegroupid)
+where processid = ##context.iterprocess.databasekey##
+and pollutantid in (##pollutantids##)
+and modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and ageid = ##context.year## - modelyearid
+and roadtypeid = ##context.iterlocation.roadtyperecordid##
+and avgspeedbinid = mod(##context.iterlocation.linkrecordid##,100);
 
-cache(linkID=##context.iterLocation.linkRecordID##) SELECT br.sourceTypeID,
-br.roadTypeID,br.avgSpeedBinID,br.hourDayID,
-br.polProcessID,br.pollutantID,br.processID,
-br.modelYearID,br.fuelTypeID,br.regClassID,
-br.opModeID,br.meanBaseRate,br.meanBaseRateIM,
-br.emissionRate,br.emissionRateIM,
-br.meanBaseRateACAdj,br.meanBaseRateIMACAdj,
-br.emissionRateACAdj,br.emissionRateIMACAdj,
-br.opModeFraction,br.opModeFractionRate
-INTO OUTFILE '##BaseRate##'
-FROM BaseRate_##context.iterProcess.databaseKey##_##context.year## br
-WHERE processID = ##context.iterProcess.databaseKey##
-AND pollutantID in (##pollutantIDs##)
-AND modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND roadTypeID = ##context.iterLocation.roadTypeRecordID##
-AND avgSpeedBinID = mod(##context.iterLocation.linkRecordID##,100);
--- End Section NotProject
+cache(linkid=##context.iterlocation.linkrecordid##) select br.sourcetypeid,
+br.roadtypeid,br.avgspeedbinid,br.hourdayid,
+br.polprocessid,br.pollutantid,br.processid,
+br.modelyearid,br.fueltypeid,br.regclassid,
+br.opmodeid,br.meanbaserate,br.meanbaserateim,
+br.emissionrate,br.emissionrateim,
+br.meanbaserateacadj,br.meanbaserateimacadj,
+br.emissionrateacadj,br.emissionrateimacadj,
+br.opmodefraction,br.opmodefractionrate
+into outfile '##baserate##'
+from baserate_##context.iterprocess.databasekey##_##context.year## br
+where processid = ##context.iterprocess.databasekey##
+and pollutantid in (##pollutantids##)
+and modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and roadtypeid = ##context.iterlocation.roadtyperecordid##
+and avgspeedbinid = mod(##context.iterlocation.linkrecordid##,100);
+-- end section notproject
 
--- Section Project
-cache(linkID=##context.iterLocation.linkRecordID##) SELECT br.sourceTypeID,
-br.roadTypeID,br.avgSpeedBinID,br.hourDayID,
-br.polProcessID,br.pollutantID,br.processID,
-br.modelYearID,br.fuelTypeID,br.ageGroupID,br.regClassID,
-br.opModeID,br.meanBaseRate,br.meanBaseRateIM,
-br.emissionRate,br.emissionRateIM,
-br.meanBaseRateACAdj,br.meanBaseRateIMACAdj,
-br.emissionRateACAdj,br.emissionRateIMACAdj,
-br.opModeFraction,br.opModeFractionRate
-INTO OUTFILE '##BaseRateByAge##'
-FROM BaseRateByAge_##context.iterProcess.databaseKey##_##context.year## br
-INNER JOIN ageCategory ac on (ac.ageGroupID = br.ageGroupID)
-WHERE processID = ##context.iterProcess.databaseKey##
-AND pollutantID in (##pollutantIDs##)
-AND modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND ageID = ##context.year## - modelYearID
-AND roadTypeID = ##context.iterLocation.roadTypeRecordID##;
+-- section project
+cache(linkid=##context.iterlocation.linkrecordid##) select br.sourcetypeid,
+br.roadtypeid,br.avgspeedbinid,br.hourdayid,
+br.polprocessid,br.pollutantid,br.processid,
+br.modelyearid,br.fueltypeid,br.agegroupid,br.regclassid,
+br.opmodeid,br.meanbaserate,br.meanbaserateim,
+br.emissionrate,br.emissionrateim,
+br.meanbaserateacadj,br.meanbaserateimacadj,
+br.emissionrateacadj,br.emissionrateimacadj,
+br.opmodefraction,br.opmodefractionrate
+into outfile '##baseratebyage##'
+from baseratebyage_##context.iterprocess.databasekey##_##context.year## br
+inner join agecategory ac on (ac.agegroupid = br.agegroupid)
+where processid = ##context.iterprocess.databasekey##
+and pollutantid in (##pollutantids##)
+and modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and ageid = ##context.year## - modelyearid
+and roadtypeid = ##context.iterlocation.roadtyperecordid##;
 
-cache(linkID=##context.iterLocation.linkRecordID##) SELECT br.sourceTypeID,
-br.roadTypeID,br.avgSpeedBinID,br.hourDayID,
-br.polProcessID,br.pollutantID,br.processID,
-br.modelYearID,br.fuelTypeID,br.regClassID,
-br.opModeID,br.meanBaseRate,br.meanBaseRateIM,
-br.emissionRate,br.emissionRateIM,
-br.meanBaseRateACAdj,br.meanBaseRateIMACAdj,
-br.emissionRateACAdj,br.emissionRateIMACAdj,
-br.opModeFraction,br.opModeFractionRate
-INTO OUTFILE '##BaseRate##'
-FROM BaseRate_##context.iterProcess.databaseKey##_##context.year## br
-WHERE processID = ##context.iterProcess.databaseKey##
-AND pollutantID in (##pollutantIDs##)
-AND modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND roadTypeID = ##context.iterLocation.roadTypeRecordID##;
--- End Section Project
--- End Section Rates
+cache(linkid=##context.iterlocation.linkrecordid##) select br.sourcetypeid,
+br.roadtypeid,br.avgspeedbinid,br.hourdayid,
+br.polprocessid,br.pollutantid,br.processid,
+br.modelyearid,br.fueltypeid,br.regclassid,
+br.opmodeid,br.meanbaserate,br.meanbaserateim,
+br.emissionrate,br.emissionrateim,
+br.meanbaserateacadj,br.meanbaserateimacadj,
+br.emissionrateacadj,br.emissionrateimacadj,
+br.opmodefraction,br.opmodefractionrate
+into outfile '##baserate##'
+from baserate_##context.iterprocess.databasekey##_##context.year## br
+where processid = ##context.iterprocess.databasekey##
+and pollutantid in (##pollutantids##)
+and modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and roadtypeid = ##context.iterlocation.roadtyperecordid##;
+-- end section project
+-- end section rates
 
-cache SELECT countyID, stateID, countyName, altitude, GPAFract, barometricPressure, barometricPressureCV
-INTO OUTFILE '##County##'
-FROM County
-WHERE countyID = ##context.iterLocation.countyRecordID##;
+cache select countyid, stateid, countyname, altitude, gpafract, barometricpressure, barometricpressurecv
+into outfile '##county##'
+from county
+where countyid = ##context.iterlocation.countyrecordid##;
 
--- Section Process1_2
-cache SELECT fuelTypeID,
-	fuelFormulationID,
-	polProcessID,
-	pollutantID,
-	processID,
-	sourceTypeID,
-	MYRMAP(modelYearID) as modelYearID,
-	ageID,
+-- section process1_2
+cache select fueltypeid,
+	fuelformulationid,
+	polprocessid,
+	pollutantid,
+	processid,
+	sourcetypeid,
+	myrmap(modelyearid) as modelyearid,
+	ageid,
 	ratio,
-	ratioGPA,
-	ratioNoSulfur
-INTO OUTFILE '##criteriaRatio##'
-FROM criteriaRatio
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND modelYearID = MYMAP(##context.year## - ageID);
+	ratiogpa,
+	rationosulfur
+into outfile '##criteriaratio##'
+from criteriaratio
+where polprocessid in (##pollutantprocessids##)
+and modelyearid = mymap(##context.year## - ageid);
 
-cache SELECT fuelTypeID,
-	fuelFormulationID,
-	polProcessID,
-	pollutantID,
-	processID,
-	sourceTypeID,
-	MYRMAP(modelYearID) as modelYearID,
-	ageID,
+cache select fueltypeid,
+	fuelformulationid,
+	polprocessid,
+	pollutantid,
+	processid,
+	sourcetypeid,
+	myrmap(modelyearid) as modelyearid,
+	ageid,
 	ratio,
-	ratioGPA,
-	ratioNoSulfur
-INTO OUTFILE '##altCriteriaRatio##'
-FROM altCriteriaRatio
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND modelYearID = MYMAP(##context.year## - ageID);
--- End Section Process1_2
+	ratiogpa,
+	rationosulfur
+into outfile '##altcriteriaratio##'
+from altcriteriaratio
+where polprocessid in (##pollutantprocessids##)
+and modelyearid = mymap(##context.year## - ageid);
+-- end section process1_2
 
-cache SELECT * INTO OUTFILE '##FuelType##'
-FROM FuelType
-WHERE fuelTypeID in (##macro.csv.all.fuelTypeID##);
+cache select * into outfile '##fueltype##'
+from fueltype
+where fueltypeid in (##macro.csv.all.fueltypeid##);
 
-cache select fst.fuelTypeID, fst.fuelSubTypeID, ff.fuelFormulationID, fs.marketShare
-into outfile '##LocalFuelSupply##'
+cache select fst.fueltypeid, fst.fuelsubtypeid, ff.fuelformulationid, fs.marketshare
+into outfile '##localfuelsupply##'
 from year
-inner join fuelSupply fs on (fs.fuelYearID=year.fuelYearID)
-inner join monthOfAnyYear moay on (moay.monthGroupID=fs.monthGroupID)
-inner join fuelFormulation ff on (ff.fuelFormulationID=fs.fuelFormulationID)
-inner join fuelSubtype fst on (fst.fuelSubtypeID=ff.fuelSubtypeID)
-where yearID = ##context.year##
-and fs.fuelRegionID = ##context.fuelRegionID##
-and moay.monthID = ##context.monthID##
-and fst.fuelTypeID in (##macro.csv.all.fuelTypeID##);
+inner join fuelsupply fs on (fs.fuelyearid=year.fuelyearid)
+inner join monthofanyyear moay on (moay.monthgroupid=fs.monthgroupid)
+inner join fuelformulation ff on (ff.fuelformulationid=fs.fuelformulationid)
+inner join fuelsubtype fst on (fst.fuelsubtypeid=ff.fuelsubtypeid)
+where yearid = ##context.year##
+and fs.fuelregionid = ##context.fuelregionid##
+and moay.monthid = ##context.monthid##
+and fst.fueltypeid in (##macro.csv.all.fueltypeid##);
 
-cache select fuelTypeID, fuelFormulationID, polProcessID, pollutantID, processID,
-	minModelYearID, maxModelYearID,
-	minAgeID, maxAgeID,
-	sourceTypeID,
-	ifnull(fuelEffectRatio,1) as fuelEffectRatio, ifnull(fuelEffectRatioGPA,1) as fuelEffectRatioGPA
-into outfile '##generalFuelRatio##'
-from generalFuelRatio gfr
-where polProcessID in (##pollutantProcessIDs##)
-and minModelYearID <= ##context.year##
-and maxModelYearID >= ##context.year##-30
-and fuelFormulationID in (
-	select ff.fuelFormulationID
+cache select fueltypeid, fuelformulationid, polprocessid, pollutantid, processid,
+	minmodelyearid, maxmodelyearid,
+	minageid, maxageid,
+	sourcetypeid,
+	ifnull(fueleffectratio,1) as fueleffectratio, ifnull(fueleffectratiogpa,1) as fueleffectratiogpa
+into outfile '##generalfuelratio##'
+from generalfuelratio gfr
+where polprocessid in (##pollutantprocessids##)
+and minmodelyearid <= ##context.year##
+and maxmodelyearid >= ##context.year##-30
+and fuelformulationid in (
+	select ff.fuelformulationid
 	from year
-	inner join fuelSupply fs on (fs.fuelYearID=year.fuelYearID)
-	inner join monthOfAnyYear moay on (moay.monthGroupID=fs.monthGroupID)
-	inner join fuelFormulation ff on (ff.fuelFormulationID=fs.fuelFormulationID)
-	inner join fuelSubtype fst on (fst.fuelSubtypeID=ff.fuelSubtypeID)
-	where yearID = ##context.year##
-	and fs.fuelRegionID = ##context.fuelRegionID##
-	and moay.monthID = ##context.monthID##
-	and fst.fuelTypeID in (##macro.csv.all.fuelTypeID##)
+	inner join fuelsupply fs on (fs.fuelyearid=year.fuelyearid)
+	inner join monthofanyyear moay on (moay.monthgroupid=fs.monthgroupid)
+	inner join fuelformulation ff on (ff.fuelformulationid=fs.fuelformulationid)
+	inner join fuelsubtype fst on (fst.fuelsubtypeid=ff.fuelsubtypeid)
+	where yearid = ##context.year##
+	and fs.fuelregionid = ##context.fuelregionid##
+	and moay.monthid = ##context.monthid##
+	and fst.fueltypeid in (##macro.csv.all.fueltypeid##)
 );
 
-cache SELECT DISTINCT IMCoverage.polProcessID,
-	IMCoverage.stateID, IMCoverage.countyID,
-	IMCoverage.yearID,
-	IMCoverage.sourceTypeID,
-	IMCoverage.fuelTypeID,
-	IMCoverage.IMProgramID,
-	IMCoverage.begModelYearID, IMCoverage.endModelYearID,
-	IMCoverage.inspectFreq,
-	IMCoverage.testStandardsID,
-	IMCoverage.useIMyn,
-	IMCoverage.complianceFactor
-INTO OUTFILE '##IMCoverage##'
-FROM IMCoverage
-INNER JOIN RunSpecSourceFuelType ON (RunSpecSourceFuelType.fuelTypeID = IMCoverage.fuelTypeID
-	and RunSpecSourceFuelType.sourceTypeID = IMCoverage.sourceTypeID)
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND countyID = ##context.iterLocation.countyRecordID## 
-AND yearID = ##context.year##
-AND useIMyn = 'Y';
+cache select distinct imcoverage.polprocessid,
+	imcoverage.stateid, imcoverage.countyid,
+	imcoverage.yearid,
+	imcoverage.sourcetypeid,
+	imcoverage.fueltypeid,
+	imcoverage.improgramid,
+	imcoverage.begmodelyearid, imcoverage.endmodelyearid,
+	imcoverage.inspectfreq,
+	imcoverage.teststandardsid,
+	imcoverage.useimyn,
+	imcoverage.compliancefactor
+into outfile '##imcoverage##'
+from imcoverage
+inner join runspecsourcefueltype on (runspecsourcefueltype.fueltypeid = imcoverage.fueltypeid
+	and runspecsourcefueltype.sourcetypeid = imcoverage.sourcetypeid)
+where polprocessid in (##pollutantprocessids##)
+and countyid = ##context.iterlocation.countyrecordid## 
+and yearid = ##context.year##
+and useimyn = 'Y';
 
-cache SELECT DISTINCT IMFactor.polProcessID,
-	IMFactor.inspectFreq, IMFactor.testStandardsID,
-	IMFactor.sourceTypeID, IMFactor.fuelTypeID,
-	IMFactor.IMModelYearGroupID,
-	IMFactor.ageGroupID,
-	IMFactor.IMFactor
-INTO OUTFILE '##IMFactor##'
-FROM IMFactor
-INNER JOIN RunSpecSourceFuelType ON (RunSpecSourceFuelType.fuelTypeID = IMFactor.fuelTypeID
-	and RunSpecSourceFuelType.sourceTypeID = IMFactor.sourceTypeID)
-WHERE polProcessID IN (##pollutantProcessIDs##);
+cache select distinct imfactor.polprocessid,
+	imfactor.inspectfreq, imfactor.teststandardsid,
+	imfactor.sourcetypeid, imfactor.fueltypeid,
+	imfactor.immodelyeargroupid,
+	imfactor.agegroupid,
+	imfactor.imfactor
+into outfile '##imfactor##'
+from imfactor
+inner join runspecsourcefueltype on (runspecsourcefueltype.fueltypeid = imfactor.fueltypeid
+	and runspecsourcefueltype.sourcetypeid = imfactor.sourcetypeid)
+where polprocessid in (##pollutantprocessids##);
 
-cache SELECT polProcessID, modelYearID, modelYearGroupID, fuelMYGroupID, IMModelYearGroupID
-INTO OUTFILE '##PollutantProcessMappedModelYear##'
-FROM PollutantProcessMappedModelYear
-WHERE modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND polProcessID IN (##pollutantProcessIDs##);
+cache select polprocessid, modelyearid, modelyeargroupid, fuelmygroupid, immodelyeargroupid
+into outfile '##pollutantprocessmappedmodelyear##'
+from pollutantprocessmappedmodelyear
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and polprocessid in (##pollutantprocessids##);
 
-cache SELECT * INTO OUTFILE '##PollutantProcessAssoc##'
-FROM PollutantProcessAssoc
-WHERE processID=##context.iterProcess.databaseKey##
-AND polProcessID IN (##pollutantProcessIDs##);
+cache select * into outfile '##pollutantprocessassoc##'
+from pollutantprocessassoc
+where processid=##context.iterprocess.databasekey##
+and polprocessid in (##pollutantprocessids##);
 
-cache select * into outfile '##RunspecModelYearAge##'
-from RunspecModelYearAge
-where modelYearID <= ##context.year##
-and modelYearID >= ##context.year## - 30
-and yearID = ##context.year##;
+cache select * into outfile '##runspecmodelyearage##'
+from runspecmodelyearage
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and yearid = ##context.year##;
 
-cache select * into outfile '##RunSpecSourceFuelType##'
-from RunSpecSourceFuelType;
+cache select * into outfile '##runspecsourcefueltype##'
+from runspecsourcefueltype;
 
--- Section Process2
-cache SELECT fuelTypeID, polProcessID, modelYearGroupID, opModeID,
-	tempAdjustTermA, tempAdjustTermACV,
-	tempAdjustTermB, tempAdjustTermBCV,
-	tempAdjustTermC, tempAdjustTermCCV,
-	startTempEquationType
-INTO OUTFILE '##StartTempAdjustment##'
-FROM StartTempAdjustment
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND fuelTypeID in (##macro.csv.all.fuelTypeID##);
--- End Section Process2
+-- section process2
+cache select fueltypeid, polprocessid, modelyeargroupid, opmodeid,
+	tempadjustterma, tempadjusttermacv,
+	tempadjusttermb, tempadjusttermbcv,
+	tempadjusttermc, tempadjusttermccv,
+	starttempequationtype
+into outfile '##starttempadjustment##'
+from starttempadjustment
+where polprocessid in (##pollutantprocessids##)
+and fueltypeid in (##macro.csv.all.fueltypeid##);
+-- end section process2
 
-cache SELECT polProcessID, fuelTypeID,
-	tempAdjustTermA, tempAdjustTermACV,
-	tempAdjustTermB, tempAdjustTermBCV,
-	tempAdjustTermC, tempAdjustTermCCV,
-	minModelYearID, maxModelYearID
-INTO OUTFILE '##TemperatureAdjustment##'
-FROM TemperatureAdjustment
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND fuelTypeID in (##macro.csv.all.fuelTypeID##);
+cache select polprocessid, fueltypeid,
+	tempadjustterma, tempadjusttermacv,
+	tempadjusttermb, tempadjusttermbcv,
+	tempadjusttermc, tempadjusttermccv,
+	minmodelyearid, maxmodelyearid
+into outfile '##temperatureadjustment##'
+from temperatureadjustment
+where polprocessid in (##pollutantprocessids##)
+and fueltypeid in (##macro.csv.all.fueltypeid##);
 
-SELECT monthID, zoneID, hourID, temperature, temperatureCV, relHumidity, heatIndex, specificHumidity, relativeHumidityCV
-INTO OUTFILE '##ZoneMonthHour##'
-FROM ZoneMonthHour
-WHERE zoneID = ##context.iterLocation.zoneRecordID##
-AND ZoneMonthHour.monthID = ##context.monthID##
-AND ZoneMonthHour.hourID in (##macro.csv.all.hourID##);
+select monthid, zoneid, hourid, temperature, temperaturecv, relhumidity, heatindex, specifichumidity, relativehumiditycv
+into outfile '##zonemonthhour##'
+from zonemonthhour
+where zoneid = ##context.iterlocation.zonerecordid##
+and zonemonthhour.monthid = ##context.monthid##
+and zonemonthhour.hourid in (##macro.csv.all.hourid##);
 
--- @algorithm ACFactor[hourID,sourceTypeID,modelYearID]=LEAST(GREATEST(ACActivityTermA+heatIndex*(ACActivityTermB+ACActivityTermC*heatIndex),0),1.0)*ACPenetrationFraction*functioningACFraction.
--- @output zoneACFactor
--- @input ZoneMonthHour
--- @input SourceTypeAge
-cache SELECT zmh.hourID, sta.sourceTypeID, modelYearID, 
-	LEAST(GREATEST(ACActivityTermA+heatIndex*(ACActivityTermB+ACActivityTermC*heatIndex),0),1.0)*ACPenetrationFraction*functioningACFraction as ACFactor
-	INTO OUTFILE '##zoneACFactor##'
-FROM ZoneMonthHour zmh
-INNER JOIN MonthOfAnyYear may ON (may.monthID = zmh.monthID)
-INNER JOIN MonthGroupHour mgh ON (mgh.monthGroupID = may.monthGroupID AND mgh.hourID = zmh.hourID)
-INNER JOIN SourceTypeModelYear stmy
-INNER JOIN SourceTypeAge sta ON (
-	sta.sourceTypeID = stmy.sourceTypeID AND
-	sta.ageID = ##context.year## - stmy.modelYearID)
-WHERE zmh.zoneID = ##context.iterLocation.zoneRecordID##
-and zmh.monthID = ##context.monthID##
-and sta.sourceTypeID in (##macro.csv.all.sourceTypeID##);
+-- @algorithm acfactor[hourid,sourcetypeid,modelyearid]=least(greatest(acactivityterma+heatindex*(acactivitytermb+acactivitytermc*heatindex),0),1.0)*acpenetrationfraction*functioningacfraction.
+-- @output zoneacfactor
+-- @input zonemonthhour
+-- @input sourcetypeage
+cache select zmh.hourid, sta.sourcetypeid, modelyearid, 
+	least(greatest(acactivityterma+heatindex*(acactivitytermb+acactivitytermc*heatindex),0),1.0)*acpenetrationfraction*functioningacfraction as acfactor
+	into outfile '##zoneacfactor##'
+from zonemonthhour zmh
+inner join monthofanyyear may on (may.monthid = zmh.monthid)
+inner join monthgrouphour mgh on (mgh.monthgroupid = may.monthgroupid and mgh.hourid = zmh.hourid)
+inner join sourcetypemodelyear stmy
+inner join sourcetypeage sta on (
+	sta.sourcetypeid = stmy.sourcetypeid and
+	sta.ageid = ##context.year## - stmy.modelyearid)
+where zmh.zoneid = ##context.iterlocation.zonerecordid##
+and zmh.monthid = ##context.monthid##
+and sta.sourcetypeid in (##macro.csv.all.sourcetypeid##);
 
--- Section GetActivity
--- Extract activity at the Month context.
+-- section getactivity
+-- extract activity at the month context.
 
--- Section Process1_9_10
+-- section process1_9_10
 
--- @algorithm activity=SHO
--- @condition Running Exhaust, Brakewear, Tirewear
-select SHO.hourDayID, ##context.year##-ageID as modelYearID, sourceTypeID, 
-	SHO as activity
-	into outfile '##universalActivity##'
-from SHO
-inner join RunSpecHourDay using (hourDayID)
-where monthID = ##context.monthID##
-and yearID = ##context.year##
-and linkID = ##context.iterLocation.linkRecordID##;
--- End Section Process1_9_10
+-- @algorithm activity=sho
+-- @condition running exhaust, brakewear, tirewear
+select sho.hourdayid, ##context.year##-ageid as modelyearid, sourcetypeid, 
+	sho as activity
+	into outfile '##universalactivity##'
+from sho
+inner join runspechourday using (hourdayid)
+where monthid = ##context.monthid##
+and yearid = ##context.year##
+and linkid = ##context.iterlocation.linkrecordid##;
+-- end section process1_9_10
 
--- Section Process2
+-- section process2
 
 -- @algorithm activity=starts
--- @condition Starts
-select Starts.hourDayID, ##context.year##-ageID as modelYearID, sourceTypeID, starts as activity
-	into outfile '##universalActivity##'
-from Starts
-inner join RunSpecHourDay using (hourDayID)
-where monthID = ##context.monthID##
-and yearID = ##context.year##
-and zoneID = ##context.iterLocation.zoneRecordID##;
--- End Section Process2
+-- @condition starts
+select starts.hourdayid, ##context.year##-ageid as modelyearid, sourcetypeid, starts as activity
+	into outfile '##universalactivity##'
+from starts
+inner join runspechourday using (hourdayid)
+where monthid = ##context.monthid##
+and yearid = ##context.year##
+and zoneid = ##context.iterlocation.zonerecordid##;
+-- end section process2
 
--- Section Process90
+-- section process90
 
--- @algorithm activity=extendedIdleHours
--- @condition Extended Idle Exhaust
-select ExtendedIdleHours.hourDayID, ##context.year##-ageID as modelYearID, sourceTypeID, extendedIdleHours as activity
-	into outfile '##universalActivity##'
-from ExtendedIdleHours
-inner join RunSpecHourDay using (hourDayID)
-where monthID = ##context.monthID##
-and yearID = ##context.year##
-and zoneID = ##context.iterLocation.zoneRecordID##
-and sourceTypeID=62;
--- End Section Process90
+-- @algorithm activity=extendedidlehours
+-- @condition extended idle exhaust
+select extendedidlehours.hourdayid, ##context.year##-ageid as modelyearid, sourcetypeid, extendedidlehours as activity
+	into outfile '##universalactivity##'
+from extendedidlehours
+inner join runspechourday using (hourdayid)
+where monthid = ##context.monthid##
+and yearid = ##context.year##
+and zoneid = ##context.iterlocation.zonerecordid##
+and sourcetypeid=62;
+-- end section process90
 
--- Section Process91
+-- section process91
 
--- @algorithm activity=hotellingHours
--- @condition Auxiliary Power Exhaust
-select HotellingHours.hourDayID, ##context.year##-ageID as modelYearID, sourceTypeID, hotellingHours as activity
-	into outfile '##universalActivity##'
-from HotellingHours
-inner join RunSpecHourDay using (hourDayID)
-where monthID = ##context.monthID##
-and yearID = ##context.year##
-and zoneID = ##context.iterLocation.zoneRecordID##
-and sourceTypeID=62;
+-- @algorithm activity=hotellinghours
+-- @condition auxiliary power exhaust
+select hotellinghours.hourdayid, ##context.year##-ageid as modelyearid, sourcetypeid, hotellinghours as activity
+	into outfile '##universalactivity##'
+from hotellinghours
+inner join runspechourday using (hourdayid)
+where monthid = ##context.monthid##
+and yearid = ##context.year##
+and zoneid = ##context.iterlocation.zonerecordid##
+and sourcetypeid=62;
 
--- Section AdjustAPUEmissionRate
+-- section adjustapuemissionrate
 
--- @algorithm hourFractionAdjust=opModeFraction[opModeID=201].
--- @input hotellingActivityDistribution
--- @output apuEmissionRateFraction
--- @condition Auxiliary Power Exhaust
-cache select modelYearID, opModeFraction as hourFractionAdjust
-	into outfile '##apuEmissionRateFraction##'
-from hotellingActivityDistribution
-inner join RunspecModelYearAge on (
-	beginModelYearID <= modelYearID
-	and endModelYearID >= modelYearID)
-where modelYearID <= ##context.year##
-and modelYearID >= ##context.year## - 30
-and yearID = ##context.year##
-and opModeID = 201
-and zoneID = ##hotellingActivityZoneID##;
+-- @algorithm hourfractionadjust=opmodefraction[opmodeid=201].
+-- @input hotellingactivitydistribution
+-- @output apuemissionratefraction
+-- @condition auxiliary power exhaust
+cache select modelyearid, opmodefraction as hourfractionadjust
+	into outfile '##apuemissionratefraction##'
+from hotellingactivitydistribution
+inner join runspecmodelyearage on (
+	beginmodelyearid <= modelyearid
+	and endmodelyearid >= modelyearid)
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and yearid = ##context.year##
+and opmodeid = 201
+and zoneid = ##hotellingactivityzoneid##;
 
--- End Section AdjustAPUEmissionRate
--- End Section Process91
+-- end section adjustapuemissionrate
+-- end section process91
 
-cache select * into outfile '##RunSpecHourDay##'
-from RunSpecHourDay;
+cache select * into outfile '##runspechourday##'
+from runspechourday;
 
-cache select * into outfile '##RunSpecSourceType##'
-from RunSpecSourceType;
+cache select * into outfile '##runspecsourcetype##'
+from runspecsourcetype;
 
--- End Section GetActivity
+-- end section getactivity
 
--- Section AggregateSMFR
-cache select round(SourceBinDistribution.sourceTypeModelYearID/10000,0) as sourceTypeID,
-	mod(SourceBinDistribution.sourceTypeModelYearID,10000) as modelYearID,
-	SourceBin.fuelTypeID, regClassID,
-	sum(sourceBinActivityFraction) as sbdTotal
-into outfile '##smfrSBDSummary##'
-from sourceBinDistributionFuelUsage_##context.iterProcess.databaseKey##_##context.iterLocation.countyRecordID##_##context.year## as SourceBinDistribution, 
-SourceTypeModelYear, SourceBin, RunSpecSourceFuelType
-WHERE polProcessID IN (##sbdPolProcessID##)
-AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
-AND SourceTypeModelYear.modelYearID <= ##context.year##
-AND SourceTypeModelYear.modelYearID >= ##context.year## - 30
-AND SourceTypeModelYear.sourceTypeID = RunSpecSourceFuelType.sourceTypeID
-AND SourceBinDistribution.SourceBinID = SourceBin.SourceBinID
-AND SourceBin.fuelTypeID = RunSpecSourceFuelType.fuelTypeID
-group by SourceBinDistribution.sourceTypeModelYearID, SourceBin.fuelTypeID, regClassID
+-- section aggregatesmfr
+cache select round(sourcebindistribution.sourcetypemodelyearid/10000,0) as sourcetypeid,
+	mod(sourcebindistribution.sourcetypemodelyearid,10000) as modelyearid,
+	sourcebin.fueltypeid, regclassid,
+	sum(sourcebinactivityfraction) as sbdtotal
+into outfile '##smfrsbdsummary##'
+from sourcebindistributionfuelusage_##context.iterprocess.databasekey##_##context.iterlocation.countyrecordid##_##context.year## as sourcebindistribution, 
+sourcetypemodelyear, sourcebin, runspecsourcefueltype
+where polprocessid in (##sbdpolprocessid##)
+and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+and sourcetypemodelyear.modelyearid <= ##context.year##
+and sourcetypemodelyear.modelyearid >= ##context.year## - 30
+and sourcetypemodelyear.sourcetypeid = runspecsourcefueltype.sourcetypeid
+and sourcebindistribution.sourcebinid = sourcebin.sourcebinid
+and sourcebin.fueltypeid = runspecsourcefueltype.fueltypeid
+group by sourcebindistribution.sourcetypemodelyearid, sourcebin.fueltypeid, regclassid
 order by null;
--- End Section AggregateSMFR
+-- end section aggregatesmfr
 
--- End Section Extract Data
+-- end section extract data
 
--- Section Processing
+-- section processing
 
-alter table FuelType add key speed1 (fuelTypeID, humidityCorrectionCoeff);
-analyze table FuelType;
+alter table fueltype add key speed1 (fueltypeid, humiditycorrectioncoeff);
+analyze table fueltype;
 
-alter table ZoneMonthHour add key speed1 (hourID, monthID, zoneID, temperature, specificHumidity, heatIndex);
-analyze table ZoneMonthHour;
+alter table zonemonthhour add key speed1 (hourid, monthid, zoneid, temperature, specifichumidity, heatindex);
+analyze table zonemonthhour;
 
-DROP TABLE IF EXISTS IMCoverageMergedUngrouped;
-CREATE TABLE IMCoverageMergedUngrouped (
-	processID SMALLINT NOT NULL,
-	pollutantID SMALLINT NOT NULL,
-	modelYearID SMALLINT NOT NULL,
-	fuelTypeID SMALLINT NOT NULL,
-	sourceTypeID SMALLINT NOT NULL,
-	IMAdjustFract FLOAT,
-	key (processID,pollutantID,modelYearID,fuelTypeID,sourceTypeID)
+drop table if exists imcoveragemergedungrouped;
+create table imcoveragemergedungrouped (
+	processid smallint not null,
+	pollutantid smallint not null,
+	modelyearid smallint not null,
+	fueltypeid smallint not null,
+	sourcetypeid smallint not null,
+	imadjustfract float,
+	key (processid,pollutantid,modelyearid,fueltypeid,sourcetypeid)
 );
 
--- @algorithm Disaggregate IMCoverage records, expanding model year ranges into individual model years. 
--- IMAdjustFract[processID,pollutantID,modelYearID,fuelTypeID,sourceTypeID]=IMFactor*complianceFactor*0.01.
-INSERT INTO IMCoverageMergedUngrouped (
-	processID,pollutantID,modelYearID,fuelTypeID,sourceTypeID,IMAdjustFract)
-SELECT
- ppa.processID,
- ppa.pollutantID,
- ppmy.modelYearID,
- imf.fuelTypeID,
- imc.sourceTypeID,
- sum(IMFactor*complianceFactor*.01) AS IMAdjustFract
-FROM PollutantProcessMappedModelYear ppmy
-INNER JOIN PollutantProcessAssoc ppa on (ppa.polProcessID=ppmy.polProcessID)
-INNER JOIN IMFactor imf ON (
-	imf.polProcessID = ppa.polProcessID
-	AND imf.IMModelYearGroupID = ppmy.IMModelYearGroupID)
-INNER JOIN AgeCategory ac ON (
-	ac.ageGroupID = imf.ageGroupID)
-INNER JOIN IMCoverage imc ON (
-	imc.polProcessID = imf.polProcessID
-	AND imc.inspectFreq = imf.inspectFreq
-	AND imc.testStandardsID = imf.testStandardsID
-	AND imc.sourceTypeID = imf.sourceTypeID
-	AND imc.fuelTypeID = imf.fuelTypeID
-	AND imc.begModelYearID <= ppmy.modelYearID
-	AND imc.endModelYearID >= ppmy.modelYearID)
-WHERE imc.countyID = ##context.iterLocation.countyRecordID##
-AND imc.yearID = ##context.year##
-AND ppmy.modelYearID = ##context.year##-ageID
-AND ppmy.polProcessID IN (##pollutantProcessIDs##)
-GROUP BY ppa.processID,
- ppa.pollutantID,
- ppmy.modelYearID,
- imf.fuelTypeID,
- imc.sourceTypeID;
-
--- Add columns
-drop table if exists tempBaseRateOutput;
-create table tempBaseRateOutput like BaseRateOutput;
-alter table tempBaseRateOutput add column meanBaseRateIM float default '0';
-alter table tempBaseRateOutput add column emissionRateIM float default '0';
-
-alter table tempBaseRateOutput add column opModeID smallint not null default '0';
-alter table tempBaseRateOutput add column generalFraction float not null default '0';
-alter table tempBaseRateOutput add column generalFractionRate float not null default '0';
-
-alter table tempBaseRateOutput add column meanBaseRateACAdj float default '0';
-alter table tempBaseRateOutput add column meanBaseRateIMACAdj float default '0';
-alter table tempBaseRateOutput add column emissionRateACAdj float default '0';
-alter table tempBaseRateOutput add column emissionRateIMACAdj float default '0';
-
--- @algorithm Add age-based rates
-insert into tempBaseRateOutput (movesRunID, iterationID,
-	zoneID, 
-	sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID, pollutantID, processID,
-	modelYearID, 
-	yearID, monthID,
-	fuelTypeID,
-	regClassID,
-	opModeID, generalFraction, generalFractionRate,
-	meanBaseRate, meanBaseRateIM,
-	emissionRate, emissionRateIM,
-	meanBaseRateACAdj, meanBaseRateIMACAdj,
-	emissionRateACAdj, emissionRateIMACAdj)
-select 0, 0,
-	##context.iterLocation.zoneRecordID##, 
-	br.sourceTypeID, br.roadTypeID, br.avgSpeedBinID, br.hourDayID, br.pollutantID, br.processID,
-	br.modelYearID, 
-	##context.year##, ##context.monthID##,
-	fuelTypeID,
-	br.regClassID,
-	br.opModeID, br.opModeFraction, br.opModeFractionRate,
-	br.meanBaseRate, br.meanBaseRateIM,
-	br.emissionRate, br.emissionRateIM,
-	br.meanBaseRateACAdj, br.meanBaseRateIMACAdj,
-	br.emissionRateACAdj, br.emissionRateIMACAdj
-from BaseRateByAge br
-inner join AgeCategory ac on (ac.ageGroupID = br.ageGroupID)
-inner join RunspecModelYearAge mya on (
-	mya.yearID = ##context.year##
-	and mya.modelYearID = br.modelYearID
-	and mya.ageID = ac.ageID);
-
--- @algorithm Add rates that don't depend upon age
-insert into tempBaseRateOutput (movesRunID, iterationID,
-	zoneID, 
-	sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID, pollutantID, processID,
-	modelYearID, 
-	yearID, monthID,
-	fuelTypeID,
-	regClassID,
-	opModeID, generalFraction, generalFractionRate,
-	meanBaseRate, meanBaseRateIM,
-	emissionRate, emissionRateIM,
-	meanBaseRateACAdj, meanBaseRateIMACAdj,
-	emissionRateACAdj, emissionRateIMACAdj)
-select 0, 0,
-	##context.iterLocation.zoneRecordID##, 
-	br.sourceTypeID, br.roadTypeID, br.avgSpeedBinID, br.hourDayID, br.pollutantID, br.processID,
-	br.modelYearID, 
-	##context.year##, ##context.monthID##,
-	br.fuelTypeID,
-	br.regClassID,
-	br.opModeID, br.opModeFraction, br.opModeFractionRate,
-	br.meanBaseRate, br.meanBaseRateIM,
-	br.emissionRate, br.emissionRateIM,
-	br.meanBaseRateACAdj, br.meanBaseRateIMACAdj,
-	br.emissionRateACAdj, br.emissionRateIMACAdj
-from BaseRate br;
-
--- Section AdjustAPUEmissionRate
-insert ignore into apuEmissionRateFraction (modelYearID, hourFractionAdjust)
-select modelYearID, 0 from RunspecModelYearAge;
-
--- @algorithm APU hourly rates have not been scaled by the APU operating mode (201) fraction.
--- Inventory, but not emission rates, must be multiplied by the opModeFraction for opMode 201.
--- hourFractionAdjust is opModeFraction for opMode 201.
--- @condition APU process hourly rates
-update tempBaseRateOutput, apuEmissionRateFraction
-	set meanBaseRate = meanBaseRate * hourFractionAdjust,
-	meanBaseRateIM = meanBaseRateIM * hourFractionAdjust,
-	meanBaseRateACAdj = meanBaseRateACAdj * hourFractionAdjust,
-	meanBaseRateIMACAdj = meanBaseRateIMACAdj * hourFractionAdjust
-where apuEmissionRateFraction.modelYearID = tempBaseRateOutput.modelYearID
-and tempBaseRateOutput.processID = 91;
--- End Section AdjustAPUEmissionRate
-
--- Add fuel formulation, hour, and polProcess
-drop table if exists BaseRateOutputWithFuel;
-create table BaseRateOutputWithFuel like BaseRateOutput;
-alter table BaseRateOutputWithFuel add column meanBaseRateIM float default '0';
-alter table BaseRateOutputWithFuel add column emissionRateIM float default '0';
-alter table BaseRateOutputWithFuel add column opModeID smallint not null default '0';
-alter table BaseRateOutputWithFuel add column generalFraction float not null default '0';
-alter table BaseRateOutputWithFuel add column generalFractionRate float not null default '0';
-alter table BaseRateOutputWithFuel add column fuelFormulationID smallint not null default '0';
-alter table BaseRateOutputWithFuel add column fuelSubtypeID smallint not null default '0';
-alter table BaseRateOutputWithFuel add column polProcessID int not null default '0';
-alter table BaseRateOutputWithFuel add column fuelMarketShare double not null default '0';
-alter table BaseRateOutputWithFuel add column hourID smallint not null default '0';
-alter table BaseRateOutputWithFuel add column dayID smallint not null default '0';
-
-alter table BaseRateOutputWithFuel add column meanBaseRateACAdj float default '0';
-alter table BaseRateOutputWithFuel add column meanBaseRateIMACAdj float default '0';
-alter table BaseRateOutputWithFuel add column emissionRateACAdj float default '0';
-alter table BaseRateOutputWithFuel add column emissionRateIMACAdj float default '0';
-
-analyze table BaseRateOutputWithFuel;
-
--- @algorithm Obtain fuel market share.
-insert into BaseRateOutputWithFuel (movesRunID, iterationID,
-	zoneID, 
-	sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID, hourID, dayID,
-	pollutantID, processID,
-	polProcessID,
-	modelYearID, 
-	yearID, monthID,
-	fuelTypeID,
-	fuelSubtypeID,
-	fuelFormulationID,
-	fuelMarketShare,
-	regClassID,
-	opModeID, generalFraction, generalFractionRate,
-	meanBaseRate, meanBaseRateIM,
-	emissionRate, emissionRateIM,
-	meanBaseRateACAdj, meanBaseRateIMACAdj,
-	emissionRateACAdj, emissionRateIMACAdj)
+-- @algorithm disaggregate imcoverage records, expanding model year ranges into individual model years. 
+-- imadjustfract[processid,pollutantid,modelyearid,fueltypeid,sourcetypeid]=imfactor*compliancefactor*0.01.
+insert into imcoveragemergedungrouped (
+	processid,pollutantid,modelyearid,fueltypeid,sourcetypeid,imadjustfract)
 select
-	movesRunID, iterationID,
-	zoneID, 
-	sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID, floor(hourDayID/10) as hourID, mod(hourDayID,10) as dayID,
-	pollutantID, processID,
-	(pollutantID * 100 + processID) as polProcessID,
-	modelYearID, 
-	yearID, monthID,
-	fs.fuelTypeID,
-	fs.fuelSubtypeID,
-	fs.fuelFormulationID,
-	fs.marketShare as fuelMarketShare,
-	regClassID,
-	opModeID, generalFraction, generalFractionRate,
-	meanBaseRate, meanBaseRateIM,
-	emissionRate, emissionRateIM,
-	meanBaseRateACAdj, meanBaseRateIMACAdj,
-	emissionRateACAdj, emissionRateIMACAdj
-from tempBaseRateOutput tbro
-inner join LocalFuelSupply fs on (fs.fuelTypeID=tbro.fuelTypeID);
+ ppa.processid,
+ ppa.pollutantid,
+ ppmy.modelyearid,
+ imf.fueltypeid,
+ imc.sourcetypeid,
+ sum(imfactor*compliancefactor*.01) as imadjustfract
+from pollutantprocessmappedmodelyear ppmy
+inner join pollutantprocessassoc ppa on (ppa.polprocessid=ppmy.polprocessid)
+inner join imfactor imf on (
+	imf.polprocessid = ppa.polprocessid
+	and imf.immodelyeargroupid = ppmy.immodelyeargroupid)
+inner join agecategory ac on (
+	ac.agegroupid = imf.agegroupid)
+inner join imcoverage imc on (
+	imc.polprocessid = imf.polprocessid
+	and imc.inspectfreq = imf.inspectfreq
+	and imc.teststandardsid = imf.teststandardsid
+	and imc.sourcetypeid = imf.sourcetypeid
+	and imc.fueltypeid = imf.fueltypeid
+	and imc.begmodelyearid <= ppmy.modelyearid
+	and imc.endmodelyearid >= ppmy.modelyearid)
+where imc.countyid = ##context.iterlocation.countyrecordid##
+and imc.yearid = ##context.year##
+and ppmy.modelyearid = ##context.year##-ageid
+and ppmy.polprocessid in (##pollutantprocessids##)
+group by ppa.processid,
+ ppa.pollutantid,
+ ppmy.modelyearid,
+ imf.fueltypeid,
+ imc.sourcetypeid;
 
--- create table step1 select * from BaseRateOutputWithFuel;
+-- add columns
+drop table if exists tempbaserateoutput;
+create table tempbaserateoutput like baserateoutput;
+alter table tempbaserateoutput add column meanbaserateim float default '0';
+alter table tempbaserateoutput add column emissionrateim float default '0';
 
--- Section Process2
-alter table BaseRateOutputWithFuel add column temperature float null;
-alter table BaseRateOutputWithFuel add column specificHumidity float null;
-alter table BaseRateOutputWithFuel add column K float null;
-alter table BaseRateOutputWithFuel add column heatIndex float null;
+alter table tempbaserateoutput add column opmodeid smallint not null default '0';
+alter table tempbaserateoutput add column generalfraction float not null default '0';
+alter table tempbaserateoutput add column generalfractionrate float not null default '0';
 
--- Note: Uncomment the following line to disable starts additive temperature adjustment.
--- update BaseRateOutputWithFuel set generalFraction = 0, generalFractionRate = 0;
+alter table tempbaserateoutput add column meanbaserateacadj float default '0';
+alter table tempbaserateoutput add column meanbaserateimacadj float default '0';
+alter table tempbaserateoutput add column emissionrateacadj float default '0';
+alter table tempbaserateoutput add column emissionrateimacadj float default '0';
 
--- @algorithm Calculate humidity adjustment factor K.
--- K = 1.0 - ((greatest(21.0, least(specificHumidity, 124.0))) - 75.0) * humidityCorrectionCoeff
--- @condition Start Exhaust (2).
-update BaseRateOutputWithFuel, ZoneMonthHour, FuelType
-set BaseRateOutputWithFuel.temperature = ZoneMonthHour.temperature,
-	BaseRateOutputWithFuel.specificHumidity = ZoneMonthHour.specificHumidity,
-	BaseRateOutputWithFuel.K = 1.0 - ((greatest(21.0, least(ZoneMonthHour.specificHumidity, 124.0))) - 75.0) * FuelType.humidityCorrectionCoeff,
-	BaseRateOutputWithFuel.heatIndex = ZoneMonthHour.heatIndex
-where BaseRateOutputWithFuel.zoneID = ZoneMonthHour.zoneID
-and BaseRateOutputWithFuel.monthID = ZoneMonthHour.monthID
-and BaseRateOutputWithFuel.hourID = ZoneMonthHour.hourID
-and BaseRateOutputWithFuel.fuelTypeID = FuelType.fuelTypeID;
+-- @algorithm add age-based rates
+insert into tempbaserateoutput (movesrunid, iterationid,
+	zoneid, 
+	sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, pollutantid, processid,
+	modelyearid, 
+	yearid, monthid,
+	fueltypeid,
+	regclassid,
+	opmodeid, generalfraction, generalfractionrate,
+	meanbaserate, meanbaserateim,
+	emissionrate, emissionrateim,
+	meanbaserateacadj, meanbaserateimacadj,
+	emissionrateacadj, emissionrateimacadj)
+select 0, 0,
+	##context.iterlocation.zonerecordid##, 
+	br.sourcetypeid, br.roadtypeid, br.avgspeedbinid, br.hourdayid, br.pollutantid, br.processid,
+	br.modelyearid, 
+	##context.year##, ##context.monthid##,
+	fueltypeid,
+	br.regclassid,
+	br.opmodeid, br.opmodefraction, br.opmodefractionrate,
+	br.meanbaserate, br.meanbaserateim,
+	br.emissionrate, br.emissionrateim,
+	br.meanbaserateacadj, br.meanbaserateimacadj,
+	br.emissionrateacadj, br.emissionrateimacadj
+from baseratebyage br
+inner join agecategory ac on (ac.agegroupid = br.agegroupid)
+inner join runspecmodelyearage mya on (
+	mya.yearid = ##context.year##
+	and mya.modelyearid = br.modelyearid
+	and mya.ageid = ac.ageid);
 
--- @algorithm Do Start Temperature adjustments by opModeID. PM uses multiplicative factors.
--- Everything else uses additive factors.
--- The additive part needs to be weighted by opModeFraction (stored in generalFraction).  Being a rate, sourceBinActivityFraction
+-- @algorithm add rates that don't depend upon age
+insert into tempbaserateoutput (movesrunid, iterationid,
+	zoneid, 
+	sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, pollutantid, processid,
+	modelyearid, 
+	yearid, monthid,
+	fueltypeid,
+	regclassid,
+	opmodeid, generalfraction, generalfractionrate,
+	meanbaserate, meanbaserateim,
+	emissionrate, emissionrateim,
+	meanbaserateacadj, meanbaserateimacadj,
+	emissionrateacadj, emissionrateimacadj)
+select 0, 0,
+	##context.iterlocation.zonerecordid##, 
+	br.sourcetypeid, br.roadtypeid, br.avgspeedbinid, br.hourdayid, br.pollutantid, br.processid,
+	br.modelyearid, 
+	##context.year##, ##context.monthid##,
+	br.fueltypeid,
+	br.regclassid,
+	br.opmodeid, br.opmodefraction, br.opmodefractionrate,
+	br.meanbaserate, br.meanbaserateim,
+	br.emissionrate, br.emissionrateim,
+	br.meanbaserateacadj, br.meanbaserateimacadj,
+	br.emissionrateacadj, br.emissionrateimacadj
+from baserate br;
+
+-- section adjustapuemissionrate
+insert ignore into apuemissionratefraction (modelyearid, hourfractionadjust)
+select modelyearid, 0 from runspecmodelyearage;
+
+-- @algorithm apu hourly rates have not been scaled by the apu operating mode (201) fraction.
+-- inventory, but not emission rates, must be multiplied by the opmodefraction for opmode 201.
+-- hourfractionadjust is opmodefraction for opmode 201.
+-- @condition apu process hourly rates
+update tempbaserateoutput, apuemissionratefraction
+	set meanbaserate = meanbaserate * hourfractionadjust,
+	meanbaserateim = meanbaserateim * hourfractionadjust,
+	meanbaserateacadj = meanbaserateacadj * hourfractionadjust,
+	meanbaserateimacadj = meanbaserateimacadj * hourfractionadjust
+where apuemissionratefraction.modelyearid = tempbaserateoutput.modelyearid
+and tempbaserateoutput.processid = 91;
+-- end section adjustapuemissionrate
+
+-- add fuel formulation, hour, and polprocess
+drop table if exists baserateoutputwithfuel;
+create table baserateoutputwithfuel like baserateoutput;
+alter table baserateoutputwithfuel add column meanbaserateim float default '0';
+alter table baserateoutputwithfuel add column emissionrateim float default '0';
+alter table baserateoutputwithfuel add column opmodeid smallint not null default '0';
+alter table baserateoutputwithfuel add column generalfraction float not null default '0';
+alter table baserateoutputwithfuel add column generalfractionrate float not null default '0';
+alter table baserateoutputwithfuel add column fuelformulationid smallint not null default '0';
+alter table baserateoutputwithfuel add column fuelsubtypeid smallint not null default '0';
+alter table baserateoutputwithfuel add column polprocessid int not null default '0';
+alter table baserateoutputwithfuel add column fuelmarketshare double not null default '0';
+alter table baserateoutputwithfuel add column hourid smallint not null default '0';
+alter table baserateoutputwithfuel add column dayid smallint not null default '0';
+
+alter table baserateoutputwithfuel add column meanbaserateacadj float default '0';
+alter table baserateoutputwithfuel add column meanbaserateimacadj float default '0';
+alter table baserateoutputwithfuel add column emissionrateacadj float default '0';
+alter table baserateoutputwithfuel add column emissionrateimacadj float default '0';
+
+analyze table baserateoutputwithfuel;
+
+-- @algorithm obtain fuel market share.
+insert into baserateoutputwithfuel (movesrunid, iterationid,
+	zoneid, 
+	sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, hourid, dayid,
+	pollutantid, processid,
+	polprocessid,
+	modelyearid, 
+	yearid, monthid,
+	fueltypeid,
+	fuelsubtypeid,
+	fuelformulationid,
+	fuelmarketshare,
+	regclassid,
+	opmodeid, generalfraction, generalfractionrate,
+	meanbaserate, meanbaserateim,
+	emissionrate, emissionrateim,
+	meanbaserateacadj, meanbaserateimacadj,
+	emissionrateacadj, emissionrateimacadj)
+select
+	movesrunid, iterationid,
+	zoneid, 
+	sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, floor(hourdayid/10) as hourid, mod(hourdayid,10) as dayid,
+	pollutantid, processid,
+	(pollutantid * 100 + processid) as polprocessid,
+	modelyearid, 
+	yearid, monthid,
+	fs.fueltypeid,
+	fs.fuelsubtypeid,
+	fs.fuelformulationid,
+	fs.marketshare as fuelmarketshare,
+	regclassid,
+	opmodeid, generalfraction, generalfractionrate,
+	meanbaserate, meanbaserateim,
+	emissionrate, emissionrateim,
+	meanbaserateacadj, meanbaserateimacadj,
+	emissionrateacadj, emissionrateimacadj
+from tempbaserateoutput tbro
+inner join localfuelsupply fs on (fs.fueltypeid=tbro.fueltypeid);
+
+-- create table step1 select * from baserateoutputwithfuel;
+
+-- section process2
+alter table baserateoutputwithfuel add column temperature float null;
+alter table baserateoutputwithfuel add column specifichumidity float null;
+alter table baserateoutputwithfuel add column k float null;
+alter table baserateoutputwithfuel add column heatindex float null;
+
+-- note: uncomment the following line to disable starts additive temperature adjustment.
+-- update baserateoutputwithfuel set generalfraction = 0, generalfractionrate = 0;
+
+-- @algorithm calculate humidity adjustment factor k.
+-- k = 1.0 - ((greatest(21.0, least(specifichumidity, 124.0))) - 75.0) * humiditycorrectioncoeff
+-- @condition start exhaust (2).
+update baserateoutputwithfuel, zonemonthhour, fueltype
+set baserateoutputwithfuel.temperature = zonemonthhour.temperature,
+	baserateoutputwithfuel.specifichumidity = zonemonthhour.specifichumidity,
+	baserateoutputwithfuel.k = 1.0 - ((greatest(21.0, least(zonemonthhour.specifichumidity, 124.0))) - 75.0) * fueltype.humiditycorrectioncoeff,
+	baserateoutputwithfuel.heatindex = zonemonthhour.heatindex
+where baserateoutputwithfuel.zoneid = zonemonthhour.zoneid
+and baserateoutputwithfuel.monthid = zonemonthhour.monthid
+and baserateoutputwithfuel.hourid = zonemonthhour.hourid
+and baserateoutputwithfuel.fueltypeid = fueltype.fueltypeid;
+
+-- @algorithm do start temperature adjustments by opmodeid. pm uses multiplicative factors.
+-- everything else uses additive factors.
+-- the additive part needs to be weighted by opmodefraction (stored in generalfraction).  being a rate, sourcebinactivityfraction
 -- is not required for the weighting since activity would have been weighted similarly.
--- For polProcessIDs (11202,11802): rate = rate*tempAdjustTermB*exp(tempAdjustTermA*(72.0-least(temperature,72)))+tempAdjustTermC.
--- For all other polProcessIDs with startTempEquationType of 'LOG': rate = rate + generalFraction * (tempAdjustTermB*exp(tempAdjustTermA*(LEAST(temperature,75)-75))+ tempAdjustTermC).
--- For all other polProcessIDs with startTempEquationType of 'POLY': rate = rate + generalFraction * ((LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC))).
--- @condition Start Exhaust (2) process.
-update BaseRateOutputWithFuel, StartTempAdjustment, PollutantProcessMappedModelYear
+-- for polprocessids (11202,11802): rate = rate*tempadjusttermb*exp(tempadjustterma*(72.0-least(temperature,72)))+tempadjusttermc.
+-- for all other polprocessids with starttempequationtype of 'LOG': rate = rate + generalfraction * (tempadjusttermb*exp(tempadjustterma*(least(temperature,75)-75))+ tempadjusttermc).
+-- for all other polprocessids with starttempequationtype of 'POLY': rate = rate + generalfraction * ((least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc))).
+-- @condition start exhaust (2) process.
+update baserateoutputwithfuel, starttempadjustment, pollutantprocessmappedmodelyear
 set
-	meanBaseRate   = 
-		CASE WHEN BaseRateOutputWithFuel.polProcessID in (11202,11802) THEN
-			meanBaseRate*tempAdjustTermB*exp(tempAdjustTermA*(72.0-least(temperature,72)))+tempAdjustTermC
-		ELSE
-			meanBaseRate   + generalFraction * 
-			CASE WHEN startTempEquationType = 'LOG' THEN
-				(tempAdjustTermB*exp(tempAdjustTermA*(LEAST(temperature,75)-75))+ tempAdjustTermC)	   
-			WHEN startTempEquationType = 'POLY' THEN
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC)) 
-			ELSE
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC))
-			END
-		END,
-	meanBaseRateIM = 
-		CASE WHEN BaseRateOutputWithFuel.polProcessID in (11202,11802) THEN
-			meanBaseRateIM*tempAdjustTermB*exp(tempAdjustTermA*(72.0-least(temperature,72)))+tempAdjustTermC
-		ELSE
-			meanBaseRateIM + generalFraction * 
-			CASE WHEN startTempEquationType = 'LOG' THEN
-				(tempAdjustTermB*exp(tempAdjustTermA*(LEAST(temperature,75)-75))+ tempAdjustTermC)	   
-			WHEN startTempEquationType = 'POLY' THEN
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC)) 
-			ELSE
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC))
-			END
-		END,
-	emissionRate   = 
-		CASE WHEN BaseRateOutputWithFuel.polProcessID in (11202,11802) THEN
-			emissionRate*tempAdjustTermB*exp(tempAdjustTermA*(72.0-least(temperature,72)))+tempAdjustTermC
-		ELSE
-			emissionRate   + generalFractionRate * 
-			CASE WHEN startTempEquationType = 'LOG' THEN
-				(tempAdjustTermB*exp(tempAdjustTermA*(LEAST(temperature,75)-75))+ tempAdjustTermC)	   
-			WHEN startTempEquationType = 'POLY' THEN
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC)) 
-			ELSE
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC))
-			END
-		END,
-	emissionRateIM = 
-		CASE WHEN BaseRateOutputWithFuel.polProcessID in (11202,11802) THEN
-			emissionRateIM*tempAdjustTermB*exp(tempAdjustTermA*(72.0-least(temperature,72)))+tempAdjustTermC
-		ELSE
-			emissionRateIM + generalFractionRate * 
-			CASE WHEN startTempEquationType = 'LOG' THEN
-				(tempAdjustTermB*exp(tempAdjustTermA*(LEAST(temperature,75)-75))+ tempAdjustTermC)	   
-			WHEN startTempEquationType = 'POLY' THEN
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC)) 
-			ELSE
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC))
-			END
-		END,
-	meanBaseRateACAdj   = 
-		CASE WHEN BaseRateOutputWithFuel.polProcessID in (11202,11802) THEN
-			meanBaseRateACAdj*tempAdjustTermB*exp(tempAdjustTermA*(72.0-least(temperature,72)))+tempAdjustTermC
-		ELSE
-			meanBaseRateACAdj   + generalFraction * 
-			CASE WHEN startTempEquationType = 'LOG' THEN
-				(tempAdjustTermB*exp(tempAdjustTermA*(LEAST(temperature,75)-75))+ tempAdjustTermC)	   
-			WHEN startTempEquationType = 'POLY' THEN
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC)) 
-			ELSE
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC))
-			END
-		END,
-	meanBaseRateIMACAdj = 
-		CASE WHEN BaseRateOutputWithFuel.polProcessID in (11202,11802) THEN
-			meanBaseRateIMACAdj*tempAdjustTermB*exp(tempAdjustTermA*(72.0-least(temperature,72)))+tempAdjustTermC
-		ELSE
-			meanBaseRateIMACAdj + generalFraction * 
-			CASE WHEN startTempEquationType = 'LOG' THEN
-				(tempAdjustTermB*exp(tempAdjustTermA*(LEAST(temperature,75)-75))+ tempAdjustTermC)	   
-			WHEN startTempEquationType = 'POLY' THEN
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC)) 
-			ELSE
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC))
-			END
-		END,
-	emissionRateACAdj   = 
-		CASE WHEN BaseRateOutputWithFuel.polProcessID in (11202,11802) THEN
-			emissionRateACAdj*tempAdjustTermB*exp(tempAdjustTermA*(72.0-least(temperature,72)))+tempAdjustTermC
-		ELSE
-			emissionRateACAdj   + generalFractionRate * 
-			CASE WHEN startTempEquationType = 'LOG' THEN
-				(tempAdjustTermB*exp(tempAdjustTermA*(LEAST(temperature,75)-75))+ tempAdjustTermC)	   
-			WHEN startTempEquationType = 'POLY' THEN
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC)) 
-			ELSE
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC))
-			END
-		END,
-	emissionRateIMACAdj = 
-		CASE WHEN BaseRateOutputWithFuel.polProcessID in (11202,11802) THEN
-			emissionRateIMACAdj*tempAdjustTermB*exp(tempAdjustTermA*(72.0-least(temperature,72)))+tempAdjustTermC
-		ELSE
-			emissionRateIMACAdj + generalFractionRate * 
-			CASE WHEN startTempEquationType = 'LOG' THEN
-				(tempAdjustTermB*exp(tempAdjustTermA*(LEAST(temperature,75)-75))+ tempAdjustTermC)	   
-			WHEN startTempEquationType = 'POLY' THEN
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC)) 
-			ELSE
-				(LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC))
-			END
-		END
-where BaseRateOutputWithFuel.polProcessID=StartTempAdjustment.polProcessID
-and BaseRateOutputWithFuel.fuelTypeID=StartTempAdjustment.fuelTypeID
-and BaseRateOutputWithFuel.opModeID=StartTempAdjustment.opModeID
-and BaseRateOutputWithFuel.modelYearID=PollutantProcessMappedModelYear.modelYearID
-and StartTempAdjustment.polProcessID=PollutantProcessMappedModelYear.polProcessID
-and StartTempAdjustment.modelYearGroupID=PollutantProcessMappedModelYear.modelYearGroupID;
--- End Section Process2
-
--- @algorithm Apply the County's GPAFract to the general fuel adjustment.
--- fuelEffectRatio=ifnull(fuelEffectRatio,1)+GPAFract*(ifnull(fuelEffectRatioGPA,1)-ifnull(fuelEffectRatio,1))
-update GeneralFuelRatio, County
-set fuelEffectRatio=ifnull(fuelEffectRatio,1)+GPAFract*(ifnull(fuelEffectRatioGPA,1)-ifnull(fuelEffectRatio,1));
-
--- Apply GeneralFuelRatio to BaseRateOutputWithFuel
-alter table generalFuelRatio add key (fuelTypeID, fuelFormulationID, sourceTypeID, polProcessID);
-
--- @algorithm Apply GeneralFuelRatio to BaseRateOutputWithFuel. rate = rate * fuelEffectRatio.
--- fuelEffectRatio is the GPA-weighted GeneralFuelRatio.
-update BaseRateOutputWithFuel, GeneralFuelRatio
-set meanBaseRate=meanBaseRate*fuelEffectRatio, meanBaseRateIM=meanBaseRateIM*fuelEffectRatio,
-	emissionRate=emissionRate*fuelEffectRatio, emissionRateIM=emissionRateIM*fuelEffectRatio,
-	meanBaseRateACAdj=meanBaseRateACAdj*fuelEffectRatio, meanBaseRateIMACAdj=meanBaseRateIMACAdj*fuelEffectRatio,
-	emissionRateACAdj=emissionRateACAdj*fuelEffectRatio, emissionRateIMACAdj=emissionRateIMACAdj*fuelEffectRatio
-where GeneralFuelRatio.fuelTypeID = BaseRateOutputWithFuel.fuelTypeID
-and GeneralFuelRatio.fuelFormulationID = BaseRateOutputWithFuel.fuelFormulationID
-and GeneralFuelRatio.polProcessID = BaseRateOutputWithFuel.polProcessID
-and GeneralFuelRatio.minModelYearID <= BaseRateOutputWithFuel.modelYearID
-and GeneralFuelRatio.maxModelYearID >= BaseRateOutputWithFuel.modelYearID
-and GeneralFuelRatio.minAgeID <= BaseRateOutputWithFuel.yearID - BaseRateOutputWithFuel.modelYearID
-and GeneralFuelRatio.maxAgeID >= BaseRateOutputWithFuel.yearID - BaseRateOutputWithFuel.modelYearID
-and GeneralFuelRatio.sourceTypeID = BaseRateOutputWithFuel.sourceTypeID;
-
--- create table step2 select * from BaseRateOutputWithFuel;
-
--- Section Process1_2
--- @algorithm Apply the County's GPAFract to the criteriaRatio fuel adjustment.
--- criteria ratio = ifnull(ratio,1)+GPAFract*(ifnull(ratioGPA,1)-ifnull(ratio,1))
--- @condition Running Exhaust (1) and Start Exhaust (2).
-update CriteriaRatio, County
-set ratio=ifnull(ratio,1)+GPAFract*(ifnull(ratioGPA,1)-ifnull(ratio,1));
-
-alter table CriteriaRatio add key speed1 (fuelTypeID,fuelFormulationID,polProcessID,sourceTypeID,modelYearID,ageID);
-analyze table CriteriaRatio;
-
--- @algorithm Apply CriteriaRatio to BaseRateOutputWithFuel. 
--- rate = rate * criteria ratio[fuelTypeID,fuelFormulationID,polProcessID,sourceTypeID,modelYearID,ageID]
--- @condition Running Exhaust (1) and Start Exhaust (2).
-update BaseRateOutputWithFuel, CriteriaRatio
-set meanBaseRate=meanBaseRate*ratio, meanBaseRateIM=meanBaseRateIM*ratio,
-	emissionRate=emissionRate*ratio, emissionRateIM=emissionRateIM*ratio,
-	meanBaseRateACAdj=meanBaseRateACAdj*ratio, meanBaseRateIMACAdj=meanBaseRateIMACAdj*ratio,
-	emissionRateACAdj=emissionRateACAdj*ratio, emissionRateIMACAdj=emissionRateIMACAdj*ratio
-where CriteriaRatio.fuelTypeID = BaseRateOutputWithFuel.fuelTypeID
-and CriteriaRatio.fuelFormulationID = BaseRateOutputWithFuel.fuelFormulationID
-and CriteriaRatio.polProcessID = BaseRateOutputWithFuel.polProcessID
-and CriteriaRatio.sourceTypeID = BaseRateOutputWithFuel.sourceTypeID
-and CriteriaRatio.modelYearID = BaseRateOutputWithFuel.modelYearID
-and CriteriaRatio.ageID = BaseRateOutputWithFuel.yearID - BaseRateOutputWithFuel.modelYearID;
-
--- create table step3 select * from BaseRateOutputWithFuel;
-
--- End Section Process1_2
-
--- Apply temperature effects
--- Section NotProcess2
-alter table BaseRateOutputWithFuel add column temperature float null;
-alter table BaseRateOutputWithFuel add column specificHumidity float null;
-alter table BaseRateOutputWithFuel add column K float null;
-alter table BaseRateOutputWithFuel add column heatIndex float null;
-
--- @algorithm Calculate humidity adjustment factor K.
--- K = 1.0 - ((greatest(21.0, least(specificHumidity, 124.0))) - 75.0) * humidityCorrectionCoeff
--- @condition Not Start Exhaust (2).
-update BaseRateOutputWithFuel, ZoneMonthHour, FuelType
-set BaseRateOutputWithFuel.temperature = ZoneMonthHour.temperature,
-	BaseRateOutputWithFuel.specificHumidity = ZoneMonthHour.specificHumidity,
-	BaseRateOutputWithFuel.K = 1.0 - ((greatest(21.0, least(ZoneMonthHour.specificHumidity, 124.0))) - 75.0) * FuelType.humidityCorrectionCoeff,
-	BaseRateOutputWithFuel.heatIndex = ZoneMonthHour.heatIndex
-where BaseRateOutputWithFuel.zoneID = ZoneMonthHour.zoneID
-and BaseRateOutputWithFuel.monthID = ZoneMonthHour.monthID
-and BaseRateOutputWithFuel.hourID = ZoneMonthHour.hourID
-and BaseRateOutputWithFuel.fuelTypeID = FuelType.fuelTypeID;
-
--- create table step4 select * from BaseRateOutputWithFuel;
-
--- End Section NotProcess2
-
--- @algorithm Apply temperature adjustment.
--- For processes (1,2) and pollutants (118,112): rate=rate*exp((case when temperature <= 72.0 then tempAdjustTermA*(72.0-temperature) else 0 end)).
--- For all others: rate=rate*((1.0 + (temperature-75)*(tempAdjustTermA + (temperature-75)*tempAdjustTermB))*if(BaseRateOutputWithFuel.processID in (1,90,91),if(BaseRateOutputWithFuel.pollutantID=3,K,1.0),1.0)).
--- @input TemperatureAdjustment
--- @output BaseRateOutputWithFuel
-update BaseRateOutputWithFuel, TemperatureAdjustment
-set 
-	meanBaseRate=meanBaseRate*
-		case when (processID in (1,2) and pollutantID in (118,112) and modelYearID between minModelYearID and maxModelYearID) then
-			exp((case when temperature <= 72.0 then tempAdjustTermA*(72.0-temperature) else 0 end))
+	meanbaserate   = 
+		case when baserateoutputwithfuel.polprocessid in (11202,11802) then
+			meanbaserate*tempadjusttermb*exp(tempadjustterma*(72.0-least(temperature,72)))+tempadjusttermc
 		else
-			(1.0 + (temperature-75)*(tempAdjustTermA + (temperature-75)*tempAdjustTermB))
-			*if(BaseRateOutputWithFuel.processID in (1,90,91),if(BaseRateOutputWithFuel.pollutantID=3,K,1.0),1.0)
+			meanbaserate   + generalfraction * 
+			case when starttempequationtype = 'LOG' then
+				(tempadjusttermb*exp(tempadjustterma*(least(temperature,75)-75))+ tempadjusttermc)	   
+			when starttempequationtype = 'POLY' then
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc)) 
+			else
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc))
+			end
 		end,
-	meanBaseRateIM=meanBaseRateIM*
-		case when (processID in (1,2) and pollutantID in (118,112) and modelYearID between minModelYearID and maxModelYearID) then
-			exp((case when temperature <= 72.0 then tempAdjustTermA*(72.0-temperature) else 0 end))
+	meanbaserateim = 
+		case when baserateoutputwithfuel.polprocessid in (11202,11802) then
+			meanbaserateim*tempadjusttermb*exp(tempadjustterma*(72.0-least(temperature,72)))+tempadjusttermc
 		else
-			(1.0 + (temperature-75)*(tempAdjustTermA + (temperature-75)*tempAdjustTermB))
-			*if(BaseRateOutputWithFuel.processID in (1,90,91),if(BaseRateOutputWithFuel.pollutantID=3,K,1.0),1.0)
+			meanbaserateim + generalfraction * 
+			case when starttempequationtype = 'LOG' then
+				(tempadjusttermb*exp(tempadjustterma*(least(temperature,75)-75))+ tempadjusttermc)	   
+			when starttempequationtype = 'POLY' then
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc)) 
+			else
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc))
+			end
 		end,
-	emissionRate=emissionRate*
-		case when (processID in (1,2) and pollutantID in (118,112) and modelYearID between minModelYearID and maxModelYearID) then
-			exp((case when temperature <= 72.0 then tempAdjustTermA*(72.0-temperature) else 0 end))
+	emissionrate   = 
+		case when baserateoutputwithfuel.polprocessid in (11202,11802) then
+			emissionrate*tempadjusttermb*exp(tempadjustterma*(72.0-least(temperature,72)))+tempadjusttermc
 		else
-			(1.0 + (temperature-75)*(tempAdjustTermA + (temperature-75)*tempAdjustTermB))
-			*if(BaseRateOutputWithFuel.processID in (1,90,91),if(BaseRateOutputWithFuel.pollutantID=3,K,1.0),1.0)
+			emissionrate   + generalfractionrate * 
+			case when starttempequationtype = 'LOG' then
+				(tempadjusttermb*exp(tempadjustterma*(least(temperature,75)-75))+ tempadjusttermc)	   
+			when starttempequationtype = 'POLY' then
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc)) 
+			else
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc))
+			end
 		end,
-	emissionRateIM=emissionRateIM*
-		case when (processID in (1,2) and pollutantID in (118,112) and modelYearID between minModelYearID and maxModelYearID) then
-			exp((case when temperature <= 72.0 then tempAdjustTermA*(72.0-temperature) else 0 end))
+	emissionrateim = 
+		case when baserateoutputwithfuel.polprocessid in (11202,11802) then
+			emissionrateim*tempadjusttermb*exp(tempadjustterma*(72.0-least(temperature,72)))+tempadjusttermc
 		else
-			(1.0 + (temperature-75)*(tempAdjustTermA + (temperature-75)*tempAdjustTermB))
-			*if(BaseRateOutputWithFuel.processID in (1,90,91),if(BaseRateOutputWithFuel.pollutantID=3,K,1.0),1.0)
+			emissionrateim + generalfractionrate * 
+			case when starttempequationtype = 'LOG' then
+				(tempadjusttermb*exp(tempadjustterma*(least(temperature,75)-75))+ tempadjusttermc)	   
+			when starttempequationtype = 'POLY' then
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc)) 
+			else
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc))
+			end
 		end,
-	meanBaseRateACAdj=meanBaseRateACAdj*
-		case when (processID in (1,2) and pollutantID in (118,112) and modelYearID between minModelYearID and maxModelYearID) then
-			exp((case when temperature <= 72.0 then tempAdjustTermA*(72.0-temperature) else 0 end))
+	meanbaserateacadj   = 
+		case when baserateoutputwithfuel.polprocessid in (11202,11802) then
+			meanbaserateacadj*tempadjusttermb*exp(tempadjustterma*(72.0-least(temperature,72)))+tempadjusttermc
 		else
-			(1.0 + (temperature-75)*(tempAdjustTermA + (temperature-75)*tempAdjustTermB))
-			*if(BaseRateOutputWithFuel.processID in (1,90,91),if(BaseRateOutputWithFuel.pollutantID=3,K,1.0),1.0)
+			meanbaserateacadj   + generalfraction * 
+			case when starttempequationtype = 'LOG' then
+				(tempadjusttermb*exp(tempadjustterma*(least(temperature,75)-75))+ tempadjusttermc)	   
+			when starttempequationtype = 'POLY' then
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc)) 
+			else
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc))
+			end
 		end,
-	meanBaseRateIMACAdj=meanBaseRateIMACAdj*
-		case when (processID in (1,2) and pollutantID in (118,112) and modelYearID between minModelYearID and maxModelYearID) then
-			exp((case when temperature <= 72.0 then tempAdjustTermA*(72.0-temperature) else 0 end))
+	meanbaserateimacadj = 
+		case when baserateoutputwithfuel.polprocessid in (11202,11802) then
+			meanbaserateimacadj*tempadjusttermb*exp(tempadjustterma*(72.0-least(temperature,72)))+tempadjusttermc
 		else
-			(1.0 + (temperature-75)*(tempAdjustTermA + (temperature-75)*tempAdjustTermB))
-			*if(BaseRateOutputWithFuel.processID in (1,90,91),if(BaseRateOutputWithFuel.pollutantID=3,K,1.0),1.0)
+			meanbaserateimacadj + generalfraction * 
+			case when starttempequationtype = 'LOG' then
+				(tempadjusttermb*exp(tempadjustterma*(least(temperature,75)-75))+ tempadjusttermc)	   
+			when starttempequationtype = 'POLY' then
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc)) 
+			else
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc))
+			end
 		end,
-	emissionRateACAdj=emissionRateACAdj*
-		case when (processID in (1,2) and pollutantID in (118,112) and modelYearID between minModelYearID and maxModelYearID) then
-			exp((case when temperature <= 72.0 then tempAdjustTermA*(72.0-temperature) else 0 end))
+	emissionrateacadj   = 
+		case when baserateoutputwithfuel.polprocessid in (11202,11802) then
+			emissionrateacadj*tempadjusttermb*exp(tempadjustterma*(72.0-least(temperature,72)))+tempadjusttermc
 		else
-			(1.0 + (temperature-75)*(tempAdjustTermA + (temperature-75)*tempAdjustTermB))
-			*if(BaseRateOutputWithFuel.processID in (1,90,91),if(BaseRateOutputWithFuel.pollutantID=3,K,1.0),1.0)
+			emissionrateacadj   + generalfractionrate * 
+			case when starttempequationtype = 'LOG' then
+				(tempadjusttermb*exp(tempadjustterma*(least(temperature,75)-75))+ tempadjusttermc)	   
+			when starttempequationtype = 'POLY' then
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc)) 
+			else
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc))
+			end
 		end,
-	emissionRateIMACAdj=emissionRateIMACAdj*
-		case when (processID in (1,2) and pollutantID in (118,112) and modelYearID between minModelYearID and maxModelYearID) then
-			exp((case when temperature <= 72.0 then tempAdjustTermA*(72.0-temperature) else 0 end))
+	emissionrateimacadj = 
+		case when baserateoutputwithfuel.polprocessid in (11202,11802) then
+			emissionrateimacadj*tempadjusttermb*exp(tempadjustterma*(72.0-least(temperature,72)))+tempadjusttermc
 		else
-			(1.0 + (temperature-75)*(tempAdjustTermA + (temperature-75)*tempAdjustTermB))
-			*if(BaseRateOutputWithFuel.processID in (1,90,91),if(BaseRateOutputWithFuel.pollutantID=3,K,1.0),1.0)
+			emissionrateimacadj + generalfractionrate * 
+			case when starttempequationtype = 'LOG' then
+				(tempadjusttermb*exp(tempadjustterma*(least(temperature,75)-75))+ tempadjusttermc)	   
+			when starttempequationtype = 'POLY' then
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc)) 
+			else
+				(least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc))
+			end
 		end
-where BaseRateOutputWithFuel.polProcessID = TemperatureAdjustment.polProcessID
-and BaseRateOutputWithFuel.fuelTypeID = TemperatureAdjustment.fuelTypeID 
-and modelYearID between TemperatureAdjustment.minModelYearID and TemperatureAdjustment.maxModelYearID;
+where baserateoutputwithfuel.polprocessid=starttempadjustment.polprocessid
+and baserateoutputwithfuel.fueltypeid=starttempadjustment.fueltypeid
+and baserateoutputwithfuel.opmodeid=starttempadjustment.opmodeid
+and baserateoutputwithfuel.modelyearid=pollutantprocessmappedmodelyear.modelyearid
+and starttempadjustment.polprocessid=pollutantprocessmappedmodelyear.polprocessid
+and starttempadjustment.modelyeargroupid=pollutantprocessmappedmodelyear.modelyeargroupid;
+-- end section process2
 
--- create table step5_BaseRateOutputWithFuel select * from BaseRateOutputWithFuel
+-- @algorithm apply the county's gpafract to the general fuel adjustment.
+-- fueleffectratio=ifnull(fueleffectratio,1)+gpafract*(ifnull(fueleffectratiogpa,1)-ifnull(fueleffectratio,1))
+update generalfuelratio, county
+set fueleffectratio=ifnull(fueleffectratio,1)+gpafract*(ifnull(fueleffectratiogpa,1)-ifnull(fueleffectratio,1));
 
--- Section NotProcess2
--- Apply Air Conditioning to BaseRateOutputWithFuel
--- Build the AC update in two steps.  First set the zoneACFactor (hour, source, modelyear).
--- Then multiply the factor by the full AC adjustment addition (i.e. fullACAdjustment-1).
--- When all done, change the emissions for any non-zero factor.
-update BaseRateOutputWithFuel set generalFraction = 0, generalFractionRate = 0;
+-- apply generalfuelratio to baserateoutputwithfuel
+alter table generalfuelratio add key (fueltypeid, fuelformulationid, sourcetypeid, polprocessid);
 
--- @algorithm generalFraction = ACFactor[hourID,sourceTypeID,modelYearID].
--- @condition Not Start Exhaust (2).
--- @input zoneACFactor
--- @output BaseRateOutputWithFuel
-update BaseRateOutputWithFuel, zoneACFactor
-set generalFraction = ACFactor
-where BaseRateOutputWithFuel.hourID = zoneACFactor.hourID
-and BaseRateOutputWithFuel.sourceTypeID = zoneACFactor.sourceTypeID
-and BaseRateOutputWithFuel.modelYearID = zoneACFactor.modelYearID;
+-- @algorithm apply generalfuelratio to baserateoutputwithfuel. rate = rate * fueleffectratio.
+-- fueleffectratio is the gpa-weighted generalfuelratio.
+update baserateoutputwithfuel, generalfuelratio
+set meanbaserate=meanbaserate*fueleffectratio, meanbaserateim=meanbaserateim*fueleffectratio,
+	emissionrate=emissionrate*fueleffectratio, emissionrateim=emissionrateim*fueleffectratio,
+	meanbaserateacadj=meanbaserateacadj*fueleffectratio, meanbaserateimacadj=meanbaserateimacadj*fueleffectratio,
+	emissionrateacadj=emissionrateacadj*fueleffectratio, emissionrateimacadj=emissionrateimacadj*fueleffectratio
+where generalfuelratio.fueltypeid = baserateoutputwithfuel.fueltypeid
+and generalfuelratio.fuelformulationid = baserateoutputwithfuel.fuelformulationid
+and generalfuelratio.polprocessid = baserateoutputwithfuel.polprocessid
+and generalfuelratio.minmodelyearid <= baserateoutputwithfuel.modelyearid
+and generalfuelratio.maxmodelyearid >= baserateoutputwithfuel.modelyearid
+and generalfuelratio.minageid <= baserateoutputwithfuel.yearid - baserateoutputwithfuel.modelyearid
+and generalfuelratio.maxageid >= baserateoutputwithfuel.yearid - baserateoutputwithfuel.modelyearid
+and generalfuelratio.sourcetypeid = baserateoutputwithfuel.sourcetypeid;
 
--- @algorithm meanBaseRate = meanBaseRate + (meanBaseRateACAdj * generalFraction[hourID,sourceTypeID,modelYearID]).
--- meanBaseRateIM = meanBaseRateIM + (meanBaseRateIMACAdj * generalFraction[hourID,sourceTypeID,modelYearID]).
--- emissionRate = emissionRate + (emissionRateACAdj * generalFraction[hourID,sourceTypeID,modelYearID]).
--- emissionRateIM = emissionRateIM + (emissionRateIMACAdj * generalFraction[hourID,sourceTypeID,modelYearID]).
--- @condition Not Start Exhaust (2).
-update BaseRateOutputWithFuel
-set meanBaseRate = meanBaseRate + (meanBaseRateACAdj*generalFraction),
-	meanBaseRateIM = meanBaseRateIM + (meanBaseRateIMACAdj*generalFraction),
-	emissionRate = emissionRate + (emissionRateACAdj*generalFraction),
-	emissionRateIM = emissionRateIM + (emissionRateIMACAdj*generalFraction)
-where generalFraction <> 0;
+-- create table step2 select * from baserateoutputwithfuel;
 
--- create table step6_BaseRateOutputWithFuel select * from BaseRateOutputWithFuel
+-- section process1_2
+-- @algorithm apply the county's gpafract to the criteriaratio fuel adjustment.
+-- criteria ratio = ifnull(ratio,1)+gpafract*(ifnull(ratiogpa,1)-ifnull(ratio,1))
+-- @condition running exhaust (1) and start exhaust (2).
+update criteriaratio, county
+set ratio=ifnull(ratio,1)+gpafract*(ifnull(ratiogpa,1)-ifnull(ratio,1));
 
--- End Section NotProcess2
+alter table criteriaratio add key speed1 (fueltypeid,fuelformulationid,polprocessid,sourcetypeid,modelyearid,ageid);
+analyze table criteriaratio;
 
--- @algorithm Apply I/M programs to BaseRateOutputWithFuel.
--- meanBaseRate=meanBaseRateIM*IMAdjustFract + meanBaseRate*(1-IMAdjustFract).
--- emissionRate=emissionRateIM*IMAdjustFract + emissionRate*(1-IMAdjustFract).
--- @input IMCoverageMergedUngrouped
--- @output BaseRateOutputWithFuel
-update BaseRateOutputWithFuel, IMCoverageMergedUngrouped
+-- @algorithm apply criteriaratio to baserateoutputwithfuel. 
+-- rate = rate * criteria ratio[fueltypeid,fuelformulationid,polprocessid,sourcetypeid,modelyearid,ageid]
+-- @condition running exhaust (1) and start exhaust (2).
+update baserateoutputwithfuel, criteriaratio
+set meanbaserate=meanbaserate*ratio, meanbaserateim=meanbaserateim*ratio,
+	emissionrate=emissionrate*ratio, emissionrateim=emissionrateim*ratio,
+	meanbaserateacadj=meanbaserateacadj*ratio, meanbaserateimacadj=meanbaserateimacadj*ratio,
+	emissionrateacadj=emissionrateacadj*ratio, emissionrateimacadj=emissionrateimacadj*ratio
+where criteriaratio.fueltypeid = baserateoutputwithfuel.fueltypeid
+and criteriaratio.fuelformulationid = baserateoutputwithfuel.fuelformulationid
+and criteriaratio.polprocessid = baserateoutputwithfuel.polprocessid
+and criteriaratio.sourcetypeid = baserateoutputwithfuel.sourcetypeid
+and criteriaratio.modelyearid = baserateoutputwithfuel.modelyearid
+and criteriaratio.ageid = baserateoutputwithfuel.yearid - baserateoutputwithfuel.modelyearid;
+
+-- create table step3 select * from baserateoutputwithfuel;
+
+-- end section process1_2
+
+-- apply temperature effects
+-- section notprocess2
+alter table baserateoutputwithfuel add column temperature float null;
+alter table baserateoutputwithfuel add column specifichumidity float null;
+alter table baserateoutputwithfuel add column k float null;
+alter table baserateoutputwithfuel add column heatindex float null;
+
+-- @algorithm calculate humidity adjustment factor k.
+-- k = 1.0 - ((greatest(21.0, least(specifichumidity, 124.0))) - 75.0) * humiditycorrectioncoeff
+-- @condition not start exhaust (2).
+update baserateoutputwithfuel, zonemonthhour, fueltype
+set baserateoutputwithfuel.temperature = zonemonthhour.temperature,
+	baserateoutputwithfuel.specifichumidity = zonemonthhour.specifichumidity,
+	baserateoutputwithfuel.k = 1.0 - ((greatest(21.0, least(zonemonthhour.specifichumidity, 124.0))) - 75.0) * fueltype.humiditycorrectioncoeff,
+	baserateoutputwithfuel.heatindex = zonemonthhour.heatindex
+where baserateoutputwithfuel.zoneid = zonemonthhour.zoneid
+and baserateoutputwithfuel.monthid = zonemonthhour.monthid
+and baserateoutputwithfuel.hourid = zonemonthhour.hourid
+and baserateoutputwithfuel.fueltypeid = fueltype.fueltypeid;
+
+-- create table step4 select * from baserateoutputwithfuel;
+
+-- end section notprocess2
+
+-- @algorithm apply temperature adjustment.
+-- for processes (1,2) and pollutants (118,112): rate=rate*exp((case when temperature <= 72.0 then tempadjustterma*(72.0-temperature) else 0 end)).
+-- for all others: rate=rate*((1.0 + (temperature-75)*(tempadjustterma + (temperature-75)*tempadjusttermb))*if(baserateoutputwithfuel.processid in (1,90,91),if(baserateoutputwithfuel.pollutantid=3,k,1.0),1.0)).
+-- @input temperatureadjustment
+-- @output baserateoutputwithfuel
+update baserateoutputwithfuel, temperatureadjustment
+set 
+	meanbaserate=meanbaserate*
+		case when (processid in (1,2) and pollutantid in (118,112) and modelyearid between minmodelyearid and maxmodelyearid) then
+			exp((case when temperature <= 72.0 then tempadjustterma*(72.0-temperature) else 0 end))
+		else
+			(1.0 + (temperature-75)*(tempadjustterma + (temperature-75)*tempadjusttermb))
+			*if(baserateoutputwithfuel.processid in (1,90,91),if(baserateoutputwithfuel.pollutantid=3,k,1.0),1.0)
+		end,
+	meanbaserateim=meanbaserateim*
+		case when (processid in (1,2) and pollutantid in (118,112) and modelyearid between minmodelyearid and maxmodelyearid) then
+			exp((case when temperature <= 72.0 then tempadjustterma*(72.0-temperature) else 0 end))
+		else
+			(1.0 + (temperature-75)*(tempadjustterma + (temperature-75)*tempadjusttermb))
+			*if(baserateoutputwithfuel.processid in (1,90,91),if(baserateoutputwithfuel.pollutantid=3,k,1.0),1.0)
+		end,
+	emissionrate=emissionrate*
+		case when (processid in (1,2) and pollutantid in (118,112) and modelyearid between minmodelyearid and maxmodelyearid) then
+			exp((case when temperature <= 72.0 then tempadjustterma*(72.0-temperature) else 0 end))
+		else
+			(1.0 + (temperature-75)*(tempadjustterma + (temperature-75)*tempadjusttermb))
+			*if(baserateoutputwithfuel.processid in (1,90,91),if(baserateoutputwithfuel.pollutantid=3,k,1.0),1.0)
+		end,
+	emissionrateim=emissionrateim*
+		case when (processid in (1,2) and pollutantid in (118,112) and modelyearid between minmodelyearid and maxmodelyearid) then
+			exp((case when temperature <= 72.0 then tempadjustterma*(72.0-temperature) else 0 end))
+		else
+			(1.0 + (temperature-75)*(tempadjustterma + (temperature-75)*tempadjusttermb))
+			*if(baserateoutputwithfuel.processid in (1,90,91),if(baserateoutputwithfuel.pollutantid=3,k,1.0),1.0)
+		end,
+	meanbaserateacadj=meanbaserateacadj*
+		case when (processid in (1,2) and pollutantid in (118,112) and modelyearid between minmodelyearid and maxmodelyearid) then
+			exp((case when temperature <= 72.0 then tempadjustterma*(72.0-temperature) else 0 end))
+		else
+			(1.0 + (temperature-75)*(tempadjustterma + (temperature-75)*tempadjusttermb))
+			*if(baserateoutputwithfuel.processid in (1,90,91),if(baserateoutputwithfuel.pollutantid=3,k,1.0),1.0)
+		end,
+	meanbaserateimacadj=meanbaserateimacadj*
+		case when (processid in (1,2) and pollutantid in (118,112) and modelyearid between minmodelyearid and maxmodelyearid) then
+			exp((case when temperature <= 72.0 then tempadjustterma*(72.0-temperature) else 0 end))
+		else
+			(1.0 + (temperature-75)*(tempadjustterma + (temperature-75)*tempadjusttermb))
+			*if(baserateoutputwithfuel.processid in (1,90,91),if(baserateoutputwithfuel.pollutantid=3,k,1.0),1.0)
+		end,
+	emissionrateacadj=emissionrateacadj*
+		case when (processid in (1,2) and pollutantid in (118,112) and modelyearid between minmodelyearid and maxmodelyearid) then
+			exp((case when temperature <= 72.0 then tempadjustterma*(72.0-temperature) else 0 end))
+		else
+			(1.0 + (temperature-75)*(tempadjustterma + (temperature-75)*tempadjusttermb))
+			*if(baserateoutputwithfuel.processid in (1,90,91),if(baserateoutputwithfuel.pollutantid=3,k,1.0),1.0)
+		end,
+	emissionrateimacadj=emissionrateimacadj*
+		case when (processid in (1,2) and pollutantid in (118,112) and modelyearid between minmodelyearid and maxmodelyearid) then
+			exp((case when temperature <= 72.0 then tempadjustterma*(72.0-temperature) else 0 end))
+		else
+			(1.0 + (temperature-75)*(tempadjustterma + (temperature-75)*tempadjusttermb))
+			*if(baserateoutputwithfuel.processid in (1,90,91),if(baserateoutputwithfuel.pollutantid=3,k,1.0),1.0)
+		end
+where baserateoutputwithfuel.polprocessid = temperatureadjustment.polprocessid
+and baserateoutputwithfuel.fueltypeid = temperatureadjustment.fueltypeid 
+and modelyearid between temperatureadjustment.minmodelyearid and temperatureadjustment.maxmodelyearid;
+
+-- create table step5_baserateoutputwithfuel select * from baserateoutputwithfuel
+
+-- section notprocess2
+-- apply air conditioning to baserateoutputwithfuel
+-- build the ac update in two steps.  first set the zoneacfactor (hour, source, modelyear).
+-- then multiply the factor by the full ac adjustment addition (i.e. fullacadjustment-1).
+-- when all done, change the emissions for any non-zero factor.
+update baserateoutputwithfuel set generalfraction = 0, generalfractionrate = 0;
+
+-- @algorithm generalfraction = acfactor[hourid,sourcetypeid,modelyearid].
+-- @condition not start exhaust (2).
+-- @input zoneacfactor
+-- @output baserateoutputwithfuel
+update baserateoutputwithfuel, zoneacfactor
+set generalfraction = acfactor
+where baserateoutputwithfuel.hourid = zoneacfactor.hourid
+and baserateoutputwithfuel.sourcetypeid = zoneacfactor.sourcetypeid
+and baserateoutputwithfuel.modelyearid = zoneacfactor.modelyearid;
+
+-- @algorithm meanbaserate = meanbaserate + (meanbaserateacadj * generalfraction[hourid,sourcetypeid,modelyearid]).
+-- meanbaserateim = meanbaserateim + (meanbaserateimacadj * generalfraction[hourid,sourcetypeid,modelyearid]).
+-- emissionrate = emissionrate + (emissionrateacadj * generalfraction[hourid,sourcetypeid,modelyearid]).
+-- emissionrateim = emissionrateim + (emissionrateimacadj * generalfraction[hourid,sourcetypeid,modelyearid]).
+-- @condition not start exhaust (2).
+update baserateoutputwithfuel
+set meanbaserate = meanbaserate + (meanbaserateacadj*generalfraction),
+	meanbaserateim = meanbaserateim + (meanbaserateimacadj*generalfraction),
+	emissionrate = emissionrate + (emissionrateacadj*generalfraction),
+	emissionrateim = emissionrateim + (emissionrateimacadj*generalfraction)
+where generalfraction <> 0;
+
+-- create table step6_baserateoutputwithfuel select * from baserateoutputwithfuel
+
+-- end section notprocess2
+
+-- @algorithm apply i/m programs to baserateoutputwithfuel.
+-- meanbaserate=meanbaserateim*imadjustfract + meanbaserate*(1-imadjustfract).
+-- emissionrate=emissionrateim*imadjustfract + emissionrate*(1-imadjustfract).
+-- @input imcoveragemergedungrouped
+-- @output baserateoutputwithfuel
+update baserateoutputwithfuel, imcoveragemergedungrouped
 set
-	meanBaseRate=GREATEST(meanBaseRateIM*IMAdjustFract + meanBaseRate*(1.0-IMAdjustFract),0.0),
-	emissionRate=GREATEST(emissionRateIM*IMAdjustFract + emissionRate*(1.0-IMAdjustFract),0.0)
-where BaseRateOutputWithFuel.processID = IMCoverageMergedUngrouped.processID
-	and BaseRateOutputWithFuel.pollutantID = IMCoverageMergedUngrouped.pollutantID
-	and BaseRateOutputWithFuel.modelYearID = IMCoverageMergedUngrouped.modelYearID
-	and BaseRateOutputWithFuel.fuelTypeID = IMCoverageMergedUngrouped.fuelTypeID
-	and BaseRateOutputWithFuel.sourceTypeID = IMCoverageMergedUngrouped.sourceTypeID;
+	meanbaserate=greatest(meanbaserateim*imadjustfract + meanbaserate*(1.0-imadjustfract),0.0),
+	emissionrate=greatest(emissionrateim*imadjustfract + emissionrate*(1.0-imadjustfract),0.0)
+where baserateoutputwithfuel.processid = imcoveragemergedungrouped.processid
+	and baserateoutputwithfuel.pollutantid = imcoveragemergedungrouped.pollutantid
+	and baserateoutputwithfuel.modelyearid = imcoveragemergedungrouped.modelyearid
+	and baserateoutputwithfuel.fueltypeid = imcoveragemergedungrouped.fueltypeid
+	and baserateoutputwithfuel.sourcetypeid = imcoveragemergedungrouped.sourcetypeid;
 
--- create table step8 select * from BaseRateOutputWithFuel;
+-- create table step8 select * from baserateoutputwithfuel;
 
--- Section Process1_2
--- Handle E85 THC that is created from E10's RVP instead of E85's RVP.
+-- section process1_2
+-- handle e85 thc that is created from e10'S RVP INSTEAD OF E85's rvp.
 
--- @algorithm Handle E85 THC that is created from E10's RVP instead of E85's RVP.
--- Weight the fuel effect ratio by the county's GPA fraction
--- alt criteria ratio=ifnull(ratio,1)+GPAFract*(ifnull(ratioGPA,1)-ifnull(ratio,1))
--- @condition Running Exhaust (1) and Start Exhaust (2).
--- @input County
--- @output altCriteriaRatio
-update altCriteriaRatio, County
-set ratio=ifnull(ratio,1)+GPAFract*(ifnull(ratioGPA,1)-ifnull(ratio,1));
+-- @algorithm handle e85 thc that is created from e10'S RVP INSTEAD OF E85's rvp.
+-- weight the fuel effect ratio by the county's gpa fraction
+-- alt criteria ratio=ifnull(ratio,1)+gpafract*(ifnull(ratiogpa,1)-ifnull(ratio,1))
+-- @condition running exhaust (1) and start exhaust (2).
+-- @input county
+-- @output altcriteriaratio
+update altcriteriaratio, county
+set ratio=ifnull(ratio,1)+gpafract*(ifnull(ratiogpa,1)-ifnull(ratio,1));
 
--- @algorithm Determine the scaling effect of E10-RVP-based fuel effects to E85-RVP-based fuel effects.
+-- @algorithm determine the scaling effect of e10-rvp-based fuel effects to e85-rvp-based fuel effects.
 -- alt criteria ratio = alt criteria ratio / criteria ratio.
--- @condition Running Exhaust (1) and Start Exhaust (2).
--- @input criteriaRatio
--- @output altCriteriaRatio
-update altCriteriaRatio, criteriaRatio
-set altCriteriaRatio.ratio = case when criteriaRatio.ratio > 0 then altCriteriaRatio.ratio / criteriaRatio.ratio else 0 end
-where altCriteriaRatio.fuelTypeID = criteriaRatio.fuelTypeID
-and altCriteriaRatio.fuelFormulationID = criteriaRatio.fuelFormulationID
-and altCriteriaRatio.polProcessID = criteriaRatio.polProcessID
-and altCriteriaRatio.sourceTypeID = criteriaRatio.sourceTypeID
-and altCriteriaRatio.modelYearID = criteriaRatio.modelYearID
-and altCriteriaRatio.ageID = criteriaRatio.ageID;
+-- @condition running exhaust (1) and start exhaust (2).
+-- @input criteriaratio
+-- @output altcriteriaratio
+update altcriteriaratio, criteriaratio
+set altcriteriaratio.ratio = case when criteriaratio.ratio > 0 then altcriteriaratio.ratio / criteriaratio.ratio else 0 end
+where altcriteriaratio.fueltypeid = criteriaratio.fueltypeid
+and altcriteriaratio.fuelformulationid = criteriaratio.fuelformulationid
+and altcriteriaratio.polprocessid = criteriaratio.polprocessid
+and altcriteriaratio.sourcetypeid = criteriaratio.sourcetypeid
+and altcriteriaratio.modelyearid = criteriaratio.modelyearid
+and altcriteriaratio.ageid = criteriaratio.ageid;
 
-alter table altCriteriaRatio add key speed1 (fuelTypeID,fuelFormulationID,polProcessID,sourceTypeID,modelYearID,ageID);
-analyze table altCriteriaRatio;
+alter table altcriteriaratio add key speed1 (fueltypeid,fuelformulationid,polprocessid,sourcetypeid,modelyearid,ageid);
+analyze table altcriteriaratio;
 
--- @algorithm Make THC records from the E10 RVP by using the E85-based THC.
--- The output pollutant is 10001.
+-- @algorithm make thc records from the e10 rvp by using the e85-based thc.
+-- the output pollutant is 10001.
 -- rate for pollutant 10001 = rate * alt criteria ratio.
--- @condition Running Exhaust (1) and Start Exhaust (2).
-insert into BaseRateOutputWithFuel (movesRunID, iterationID,
-	zoneID, 
-	sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID, hourID, dayID,
-	pollutantID, processID,
-	polProcessID,
-	modelYearID, 
-	yearID, monthID,
-	fuelTypeID,
-	fuelSubtypeID,
-	fuelFormulationID,
-	fuelMarketShare,
-	regClassID,
-	opModeID, generalFraction, generalFractionRate,
-	meanBaseRate,
-	emissionRate)
-select b.movesRunID, b.iterationID,
-	b.zoneID, 
-	b.sourceTypeID, b.roadTypeID, b.avgSpeedBinID, b.hourDayID, b.hourID, b.dayID,
-	(10000 + b.pollutantID) as pollutantID, b.processID,
-	((10000 + b.pollutantID)*100 + b.processID) as polProcessID,
-	b.modelYearID, 
-	b.yearID, b.monthID,
-	b.fuelTypeID,
-	b.fuelSubtypeID,
-	b.fuelFormulationID,
-	b.fuelMarketShare,
-	b.regClassID,
-	b.opModeID, b.generalFraction, b.generalFractionRate,
-	meanBaseRate*ratio,
-	emissionRate*ratio
-from BaseRateOutputWithFuel b
-inner join altCriteriaRatio a on (
-	b.fuelTypeID = a.fuelTypeID
-	and b.fuelFormulationID = a.fuelFormulationID
-	and b.polProcessID = a.polProcessID
-	and b.sourceTypeID = a.sourceTypeID
-	and b.modelYearID = a.modelYearID
-	and a.ageID = b.yearID - b.modelYearID)
-where b.fuelSubtypeID in (51,52)
-and b.modelYearID >= 2001;
+-- @condition running exhaust (1) and start exhaust (2).
+insert into baserateoutputwithfuel (movesrunid, iterationid,
+	zoneid, 
+	sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, hourid, dayid,
+	pollutantid, processid,
+	polprocessid,
+	modelyearid, 
+	yearid, monthid,
+	fueltypeid,
+	fuelsubtypeid,
+	fuelformulationid,
+	fuelmarketshare,
+	regclassid,
+	opmodeid, generalfraction, generalfractionrate,
+	meanbaserate,
+	emissionrate)
+select b.movesrunid, b.iterationid,
+	b.zoneid, 
+	b.sourcetypeid, b.roadtypeid, b.avgspeedbinid, b.hourdayid, b.hourid, b.dayid,
+	(10000 + b.pollutantid) as pollutantid, b.processid,
+	((10000 + b.pollutantid)*100 + b.processid) as polprocessid,
+	b.modelyearid, 
+	b.yearid, b.monthid,
+	b.fueltypeid,
+	b.fuelsubtypeid,
+	b.fuelformulationid,
+	b.fuelmarketshare,
+	b.regclassid,
+	b.opmodeid, b.generalfraction, b.generalfractionrate,
+	meanbaserate*ratio,
+	emissionrate*ratio
+from baserateoutputwithfuel b
+inner join altcriteriaratio a on (
+	b.fueltypeid = a.fueltypeid
+	and b.fuelformulationid = a.fuelformulationid
+	and b.polprocessid = a.polprocessid
+	and b.sourcetypeid = a.sourcetypeid
+	and b.modelyearid = a.modelyearid
+	and a.ageid = b.yearid - b.modelyearid)
+where b.fuelsubtypeid in (51,52)
+and b.modelyearid >= 2001;
 
--- End Section Process1_2
+-- end section process1_2
 
--- Section EmissionRateAdjustment
+-- section emissionrateadjustment
 
--- @algorithm emissionRate=emissionRate*EmissionRateAdjustment,
--- meanbaserate=meanbaserate*EmissionRateAdjustment
-update BaseRateOutputWithFuel, EmissionRateAdjustmentWorker
+-- @algorithm emissionrate=emissionrate*emissionrateadjustment,
+-- meanbaserate=meanbaserate*emissionrateadjustment
+update baserateoutputwithfuel, emissionrateadjustmentworker
 set
-	emissionRate=emissionRate*EmissionRateAdjustment,
-	meanbaserate=meanbaserate*EmissionRateAdjustment
-where BaseRateOutputWithFuel.polprocessID = EmissionRateAdjustmentWorker.polprocessID
-	and BaseRateOutputWithFuel.sourceTypeID = EmissionRateAdjustmentWorker.sourceTypeID
-	and BaseRateOutputWithFuel.fuelTypeID = EmissionRateAdjustmentWorker.fuelTypeID
-	and BaseRateOutputWithFuel.regClassID = EmissionRateAdjustmentWorker.regClassID
-	and BaseRateOutputWithFuel.modelYearID = EmissionRateAdjustmentWorker.modelYearID;
+	emissionrate=emissionrate*emissionrateadjustment,
+	meanbaserate=meanbaserate*emissionrateadjustment
+where baserateoutputwithfuel.polprocessid = emissionrateadjustmentworker.polprocessid
+	and baserateoutputwithfuel.sourcetypeid = emissionrateadjustmentworker.sourcetypeid
+	and baserateoutputwithfuel.fueltypeid = emissionrateadjustmentworker.fueltypeid
+	and baserateoutputwithfuel.regclassid = emissionrateadjustmentworker.regclassid
+	and baserateoutputwithfuel.modelyearid = emissionrateadjustmentworker.modelyearid;
 
--- End Section EmissionRateAdjustment
+-- end section emissionrateadjustment
 
-alter table BaseRateOutputWithFuel add key (
-	sourceTypeID, avgSpeedBinID, hourDayID,
-	pollutantID,
-	modelYearID, 
-	fuelTypeID,
-	regClassID);
+alter table baserateoutputwithfuel add key (
+	sourcetypeid, avgspeedbinid, hourdayid,
+	pollutantid,
+	modelyearid, 
+	fueltypeid,
+	regclassid);
 
-analyze table BaseRateOutputWithFuel;
+analyze table baserateoutputwithfuel;
 
--- @algorithm Remove fuel formulation and opModeID from BaseRateOutputWithFuel, filling BaseRateOutput.
--- Note: This top-level calculator executes at the Month level. That means there will be exactly one
+-- @algorithm remove fuel formulation and opmodeid from baserateoutputwithfuel, filling baserateoutput.
+-- note: this top-level calculator executes at the month level. that means there will be exactly one
 -- distinct value in each of these columns:
--- processID, stateID, countyID, zoneID, linkID, roadtypeID, yearID, monthID.
--- As such, these columns do not need to be indexed or included in a GROUP BY.
-insert into BaseRateOutput (movesRunID, iterationID,
-	zoneID, 
-	sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID,
-	pollutantID, processID,
-	modelYearID, 
-	yearID, monthID,
-	fuelTypeID,
-	regClassID,
-	meanBaseRate,
-	emissionRate)
+-- processid, stateid, countyid, zoneid, linkid, roadtypeid, yearid, monthid.
+-- as such, these columns do not need to be indexed or included in a group by.
+insert into baserateoutput (movesrunid, iterationid,
+	zoneid, 
+	sourcetypeid, roadtypeid, avgspeedbinid, hourdayid,
+	pollutantid, processid,
+	modelyearid, 
+	yearid, monthid,
+	fueltypeid,
+	regclassid,
+	meanbaserate,
+	emissionrate)
 select
-	movesRunID, iterationID,
-	zoneID, 
-	sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID,
-	pollutantID, processID,
-	modelYearID, 
-	yearID, monthID,
-	fuelTypeID,
-	regClassID,
-	sum(fuelMarketShare*meanBaseRate) as meanBaseRate,
-	sum(fuelMarketShare*emissionRate) as emissionRate
-from BaseRateOutputWithFuel
+	movesrunid, iterationid,
+	zoneid, 
+	sourcetypeid, roadtypeid, avgspeedbinid, hourdayid,
+	pollutantid, processid,
+	modelyearid, 
+	yearid, monthid,
+	fueltypeid,
+	regclassid,
+	sum(fuelmarketshare*meanbaserate) as meanbaserate,
+	sum(fuelmarketshare*emissionrate) as emissionrate
+from baserateoutputwithfuel
 group by 
-	sourceTypeID, avgSpeedBinID, hourDayID,
-	pollutantID,
-	modelYearID, 
-	fuelTypeID,
-	regClassID;
+	sourcetypeid, avgspeedbinid, hourdayid,
+	pollutantid,
+	modelyearid, 
+	fueltypeid,
+	regclassid;
 
--- Section GetActivity
--- @algorithm Ensure all activity slots have data. Use a default value of 0
+-- section getactivity
+-- @algorithm ensure all activity slots have data. use a default value of 0
 -- when not provided by the input table.
-insert ignore into universalActivity (hourDayID, modelYearID, sourceTypeID, activity)
-select hourDayID, modelYearID, sourceTypeID, 0
-from RunSpecHourDay, RunSpecModelyearAge, RunSpecSourceType;
--- End Section GetActivity
+insert ignore into universalactivity (hourdayid, modelyearid, sourcetypeid, activity)
+select hourdayid, modelyearid, sourcetypeid, 0
+from runspechourday, runspecmodelyearage, runspecsourcetype;
+-- end section getactivity
 
--- Section AggregateSMFR
-drop table if exists activityTotal;
-drop table if exists activityDetail;
+-- section aggregatesmfr
+drop table if exists activitytotal;
+drop table if exists activitydetail;
 
-create table if not exists activityDetail (
-	hourDayID smallint not null,
-	modelYearID smallint not null,
-	sourceTypeID smallint not null,
-	fuelTypeID smallint not null,
-	regClassID smallint not null,
+create table if not exists activitydetail (
+	hourdayid smallint not null,
+	modelyearid smallint not null,
+	sourcetypeid smallint not null,
+	fueltypeid smallint not null,
+	regclassid smallint not null,
 	activity double,
-	activityRates double,
-	primary key (sourceTypeID, hourDayID, modelYearID, fuelTypeID, regClassID),
-	key (hourDayID, modelYearID, fuelTypeID, regClassID)
+	activityrates double,
+	primary key (sourcetypeid, hourdayid, modelyearid, fueltypeid, regclassid),
+	key (hourdayid, modelyearid, fueltypeid, regclassid)
 );
 
-insert into activityDetail(hourDayID,modelYearID,sourceTypeID,fuelTypeID,regClassID,activity,activityRates)
-select u.hourDayID,u.modelYearID,u.sourceTypeID,fuelTypeID,regClassID,
-	sum(activity*sbdTotal) as activity,
-	sum(activity*sbdTotal) as activityRates
-from smfrSBDSummary s
-inner join universalActivity u using (sourceTypeID, modelYearID)
-group by u.sourceTypeID, u.hourDayID, u.modelYearID, fuelTypeID, regClassID
+insert into activitydetail(hourdayid,modelyearid,sourcetypeid,fueltypeid,regclassid,activity,activityrates)
+select u.hourdayid,u.modelyearid,u.sourcetypeid,fueltypeid,regclassid,
+	sum(activity*sbdtotal) as activity,
+	sum(activity*sbdtotal) as activityrates
+from smfrsbdsummary s
+inner join universalactivity u using (sourcetypeid, modelyearid)
+group by u.sourcetypeid, u.hourdayid, u.modelyearid, fueltypeid, regclassid
 order by null;
 
--- Section AdjustAPUEmissionRate
+-- section adjustapuemissionrate
 
--- @algorithm When aggregating APU emission rates to remove source type, model year, fuel type, or regclass,
--- the activity used to weight the rates must be adjusted. The input activity includes extended idling
--- and instead must be restricted to just hours spent using a diesel APU. This is a model year-based effect.
-update activityDetail, apuEmissionRateFraction
-	set activityRates = activityRates / hourFractionAdjust
-where apuEmissionRateFraction.modelYearID = activityDetail.modelYearID
-and hourFractionAdjust != 0;
--- End Section AdjustAPUEmissionRate
+-- @algorithm when aggregating apu emission rates to remove source type, model year, fuel type, or regclass,
+-- the activity used to weight the rates must be adjusted. the input activity includes extended idling
+-- and instead must be restricted to just hours spent using a diesel apu. this is a model year-based effect.
+update activitydetail, apuemissionratefraction
+	set activityrates = activityrates / hourfractionadjust
+where apuemissionratefraction.modelyearid = activitydetail.modelyearid
+and hourfractionadjust != 0;
+-- end section adjustapuemissionrate
 
-create table activityTotal (
-	hourDayID smallint not null,
-	sourceTypeID smallint not null,
-	modelYearID smallint not null,
-	fuelTypeID smallint not null,
-	regClassID smallint not null,
-	activityTotal double,
-	activityRatesTotal double,
-	primary key (hourDayID, modelYearID, sourceTypeID, fuelTypeID, regClassID),
-	key (hourDayID, sourceTypeID, modelYearID, fuelTypeID, regClassID)
+create table activitytotal (
+	hourdayid smallint not null,
+	sourcetypeid smallint not null,
+	modelyearid smallint not null,
+	fueltypeid smallint not null,
+	regclassid smallint not null,
+	activitytotal double,
+	activityratestotal double,
+	primary key (hourdayid, modelyearid, sourcetypeid, fueltypeid, regclassid),
+	key (hourdayid, sourcetypeid, modelyearid, fueltypeid, regclassid)
 );
 
-insert into activityTotal (hourDayID,sourceTypeID,modelYearID,fuelTypeID,regClassID,activityTotal,activityRatesTotal)
-select hourDayID
-	##activityTotalSelect##
-	, sum(activity) as activityTotal
-	, sum(activityRates) as activityRatesTotal
-from activityDetail u
-group by hourDayID
-	##activityTotalGroup##
+insert into activitytotal (hourdayid,sourcetypeid,modelyearid,fueltypeid,regclassid,activitytotal,activityratestotal)
+select hourdayid
+	##activitytotalselect##
+	, sum(activity) as activitytotal
+	, sum(activityrates) as activityratestotal
+from activitydetail u
+group by hourdayid
+	##activitytotalgroup##
 order by null;
 
-drop table if exists activityWeight;
+drop table if exists activityweight;
 
-create table if not exists activityWeight (
-	hourDayID smallint not null,
-	sourceTypeID smallint not null,
-	modelYearID smallint not null,
-	fuelTypeID smallint not null,
-	regClassID smallint not null,
-	smfrFraction double,
-	smfrRatesFraction double,
-	primary key (sourceTypeID, hourDayID, modelYearID, fuelTypeID, regClassID),
-	key (modelYearID, sourceTypeID, hourDayID, fuelTypeID, regClassID),
-	key (hourDayID, sourceTypeID, modelYearID, fuelTypeID, regClassID)
+create table if not exists activityweight (
+	hourdayid smallint not null,
+	sourcetypeid smallint not null,
+	modelyearid smallint not null,
+	fueltypeid smallint not null,
+	regclassid smallint not null,
+	smfrfraction double,
+	smfrratesfraction double,
+	primary key (sourcetypeid, hourdayid, modelyearid, fueltypeid, regclassid),
+	key (modelyearid, sourcetypeid, hourdayid, fueltypeid, regclassid),
+	key (hourdayid, sourcetypeid, modelyearid, fueltypeid, regclassid)
 );
 
--- @algorithm When aggregating rates to remove source type, model year, fuel type, or regclass, calculate an activity distribution.
--- smfrFraction[sourceTypeID,modelYearID,hourDayID,fuelTypeID,regClassID] = activity[sourceTypeID,modelYearID,hourDayID,fuelTypeID,regClassID] / activityTotal[aggregated]
-insert into activityWeight (hourDayID,sourceTypeID,modelYearID,fuelTypeID,regClassID,smfrFraction,smfrRatesFraction)
-select u.hourDayID, u.sourceTypeID, u.modelYearID, u.fuelTypeID, u.regClassID,
-	case when activityTotal > 0 then activity/activityTotal else 0.0 end as smfrFraction,
-	case when activityRatesTotal > 0 then activityRates/activityRatesTotal else 0.0 end as smfrRatesFraction
-from activityDetail u
-inner join activityTotal t using (hourDayID
-	##activityWeightJoin##
+-- @algorithm when aggregating rates to remove source type, model year, fuel type, or regclass, calculate an activity distribution.
+-- smfrfraction[sourcetypeid,modelyearid,hourdayid,fueltypeid,regclassid] = activity[sourcetypeid,modelyearid,hourdayid,fueltypeid,regclassid] / activitytotal[aggregated]
+insert into activityweight (hourdayid,sourcetypeid,modelyearid,fueltypeid,regclassid,smfrfraction,smfrratesfraction)
+select u.hourdayid, u.sourcetypeid, u.modelyearid, u.fueltypeid, u.regclassid,
+	case when activitytotal > 0 then activity/activitytotal else 0.0 end as smfrfraction,
+	case when activityratestotal > 0 then activityrates/activityratestotal else 0.0 end as smfrratesfraction
+from activitydetail u
+inner join activitytotal t using (hourdayid
+	##activityweightjoin##
 );
 
--- Section AdjustEmissionRateOnly
--- @algorithm When aggregating rates to remove source type, model year, fuel type, or regclass, weight emissions by the activity distribution.
--- BaseRateOutput = BaseRateOutput * smfrFraction[sourceTypeID,modelYearID,hourDayID,fuelTypeID,regClassID]
-update BaseRateOutput, activityWeight
+-- section adjustemissionrateonly
+-- @algorithm when aggregating rates to remove source type, model year, fuel type, or regclass, weight emissions by the activity distribution.
+-- baserateoutput = baserateoutput * smfrfraction[sourcetypeid,modelyearid,hourdayid,fueltypeid,regclassid]
+update baserateoutput, activityweight
 set
-	emissionRate=emissionRate*smfrRatesFraction
-where BaseRateOutput.modelYearID = activityWeight.modelYearID
-	and BaseRateOutput.sourceTypeID = activityWeight.sourceTypeID
-	and BaseRateOutput.hourDayID = activityWeight.hourDayID
-	and BaseRateOutput.fuelTypeID = activityWeight.fuelTypeID
-	and BaseRateOutput.regClassID = activityWeight.regClassID;
--- End Section AdjustEmissionRateOnly
+	emissionrate=emissionrate*smfrratesfraction
+where baserateoutput.modelyearid = activityweight.modelyearid
+	and baserateoutput.sourcetypeid = activityweight.sourcetypeid
+	and baserateoutput.hourdayid = activityweight.hourdayid
+	and baserateoutput.fueltypeid = activityweight.fueltypeid
+	and baserateoutput.regclassid = activityweight.regclassid;
+-- end section adjustemissionrateonly
 
--- Section AdjustMeanBaseRateAndEmissionRate
--- @algorithm When aggregating rates to remove source type, model year, fuel type, or regclass, weight emissions by the activity distribution.
--- BaseRateOutput = BaseRateOutput * smfrFraction[sourceTypeID,modelYearID,hourDayID,fuelTypeID,regClassID]
-update BaseRateOutput, activityWeight
+-- section adjustmeanbaserateandemissionrate
+-- @algorithm when aggregating rates to remove source type, model year, fuel type, or regclass, weight emissions by the activity distribution.
+-- baserateoutput = baserateoutput * smfrfraction[sourcetypeid,modelyearid,hourdayid,fueltypeid,regclassid]
+update baserateoutput, activityweight
 set
-	meanBaseRate=meanBaseRate*smfrFraction,
-	emissionRate=emissionRate*smfrRatesFraction
-where BaseRateOutput.modelYearID = activityWeight.modelYearID
-	and BaseRateOutput.sourceTypeID = activityWeight.sourceTypeID
-	and BaseRateOutput.hourDayID = activityWeight.hourDayID
-	and BaseRateOutput.fuelTypeID = activityWeight.fuelTypeID
-	and BaseRateOutput.regClassID = activityWeight.regClassID;
--- End Section AdjustMeanBaseRateAndEmissionRate
+	meanbaserate=meanbaserate*smfrfraction,
+	emissionrate=emissionrate*smfrratesfraction
+where baserateoutput.modelyearid = activityweight.modelyearid
+	and baserateoutput.sourcetypeid = activityweight.sourcetypeid
+	and baserateoutput.hourdayid = activityweight.hourdayid
+	and baserateoutput.fueltypeid = activityweight.fueltypeid
+	and baserateoutput.regclassid = activityweight.regclassid;
+-- end section adjustmeanbaserateandemissionrate
 
--- End Section AggregateSMFR
+-- end section aggregatesmfr
 
--- Section ApplyActivity
+-- section applyactivity
 
--- @algorithm When creating an inventory or certain rates, convert BaseRateOutput to an inventory.
--- BaseRateOutput.meanBaseRate = BaseRateOutput.meanBaseRate * activity[processID,hourDayID,modelYearID,sourceTypeID(,month,year,location)]
-update BaseRateOutput, universalActivity
+-- @algorithm when creating an inventory or certain rates, convert baserateoutput to an inventory.
+-- baserateoutput.meanbaserate = baserateoutput.meanbaserate * activity[processid,hourdayid,modelyearid,sourcetypeid(,month,year,location)]
+update baserateoutput, universalactivity
 set
-	meanBaseRate=meanBaseRate*activity
-where BaseRateOutput.processID = ##context.iterProcess.databaseKey##
-	and BaseRateOutput.hourDayID = universalActivity.hourDayID
-	and BaseRateOutput.modelYearID = universalActivity.modelYearID
-	and BaseRateOutput.sourceTypeID = universalActivity.sourceTypeID;
+	meanbaserate=meanbaserate*activity
+where baserateoutput.processid = ##context.iterprocess.databasekey##
+	and baserateoutput.hourdayid = universalactivity.hourdayid
+	and baserateoutput.modelyearid = universalactivity.modelyearid
+	and baserateoutput.sourcetypeid = universalactivity.sourcetypeid;
 
--- End Section ApplyActivity
+-- end section applyactivity
 
--- ***************GOLANG TODO*****************
--- ***************GOLANG TODO*****************
--- ***************GOLANG TODO*****************
+-- ***************golang todo*****************
+-- ***************golang todo*****************
+-- ***************golang todo*****************
 
--- @algorithm Populate MOVESWorkerOutput from BaseRateOutput.
-insert into MOVESWorkerOutput (movesRunID, iterationID,
-	zoneID, linkID, countyID, stateID,
-	sourceTypeID, SCC, roadTypeID,
-	hourID, dayID,
-	pollutantID, processID,
-	modelYearID, 
-	yearID, monthID,
-	fuelTypeID,
-	regClassID,
-	emissionQuant,
-	emissionRate)
-select movesRunID, iterationID,
-	zoneID, 
-	##context.iterLocation.linkRecordID## as linkID, 
-	##context.iterLocation.countyRecordID## as countyID, 
-	##context.iterLocation.stateRecordID## as stateID,
-	sourceTypeID, SCC, roadTypeID, 
-	floor(hourDayID/10) as hourID, mod(hourDayID,10) as dayID,
-	pollutantID, processID,
-	modelYearID, 
-	yearID, monthID,
-	fuelTypeID,
-	regClassID,
-	meanBaseRate as emissionQuant,
-	emissionRate
-from BaseRateOutput;
+-- @algorithm populate movesworkeroutput from baserateoutput.
+insert into movesworkeroutput (movesrunid, iterationid,
+	zoneid, linkid, countyid, stateid,
+	sourcetypeid, scc, roadtypeid,
+	hourid, dayid,
+	pollutantid, processid,
+	modelyearid, 
+	yearid, monthid,
+	fueltypeid,
+	regclassid,
+	emissionquant,
+	emissionrate)
+select movesrunid, iterationid,
+	zoneid, 
+	##context.iterlocation.linkrecordid## as linkid, 
+	##context.iterlocation.countyrecordid## as countyid, 
+	##context.iterlocation.staterecordid## as stateid,
+	sourcetypeid, scc, roadtypeid, 
+	floor(hourdayid/10) as hourid, mod(hourdayid,10) as dayid,
+	pollutantid, processid,
+	modelyearid, 
+	yearid, monthid,
+	fueltypeid,
+	regclassid,
+	meanbaserate as emissionquant,
+	emissionrate
+from baserateoutput;
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
-drop table if exists tempBaseRateOutput;
-drop table if exists BaseRateOutputWithFuel;
-drop table if exists IMCoverageMergedUngrouped;
-drop table if exists zoneACFactor;
-drop table if exists LocalFuelSupply;
-drop table if exists modelYearWeight;
-drop table if exists vmtByMYRoadHourFraction;
-drop table if exists activityTotal;
-drop table if exists activityWeight;
-drop table if exists apuEmissionRateFraction;
+-- section cleanup
+drop table if exists tempbaserateoutput;
+drop table if exists baserateoutputwithfuel;
+drop table if exists imcoveragemergedungrouped;
+drop table if exists zoneacfactor;
+drop table if exists localfuelsupply;
+drop table if exists modelyearweight;
+drop table if exists vmtbymyroadhourfraction;
+drop table if exists activitytotal;
+drop table if exists activityweight;
+drop table if exists apuemissionratefraction;
 
 drop table if exists step1;
 drop table if exists step2;
@@ -1445,90 +1445,90 @@ drop table if exists step6;
 drop table if exists step7;
 drop table if exists step8;
 
--- End Section Cleanup
+-- end section cleanup
 
--- Section Final Cleanup
+-- section final cleanup
 
--- Remove any debugging pollutants.
-delete from MOVESWorkerOutput where pollutantID >= 10000;
-delete from BaseRateOutput where pollutantID >= 10000;
+-- remove any debugging pollutants.
+delete from movesworkeroutput where pollutantid >= 10000;
+delete from baserateoutput where pollutantid >= 10000;
 
--- Section HasChainedCalculators
--- @algorithm When chained calculators are used, data must be moved back from MOVESWorkerOutput.
--- avgSpeedBinID must be recovered in this process.
--- @condition Chained calculators are present.
+-- section haschainedcalculators
+-- @algorithm when chained calculators are used, data must be moved back from movesworkeroutput.
+-- avgspeedbinid must be recovered in this process.
+-- @condition chained calculators are present.
 
--- @algorithm Remove entries from BaseRateOutput. These will be reinserted later along with
+-- @algorithm remove entries from baserateoutput. these will be reinserted later along with
 -- the results from chained calculators.
--- @condition Chained calculators are present.
-truncate table BaseRateOutput;
+-- @condition chained calculators are present.
+truncate table baserateoutput;
 
--- Section Rates
--- Section NotProject
--- @algorithm Populate BaseRateOutput from MOVESWorkerOutput.
--- @condition Non-Project domain rates chained calculators are present.
-insert into BaseRateOutput(MOVESRunID,iterationID,
-	zoneID,linkID,sourceTypeID,SCC,roadTypeID,
-	avgSpeedBinID,
-	monthID,
-	hourDayID,
-	pollutantID,processID,modelYearID,yearID,fuelTypeID,regClassID,
-	meanBaseRate,emissionRate)
-select MOVESRunID,iterationID,
-	zoneID,linkID,sourceTypeID,SCC,roadTypeID,
-	mod(linkID,100) as avgSpeedBinID,
-	monthID,
-	(hourID*10 + dayID) as hourDayID,
-	pollutantID,processID,modelYearID,yearID,fuelTypeID,regClassID,
-	emissionQuant as meanBaseRate,emissionRate
-from MOVESWorkerOutput;
--- End Section NotProject
+-- section rates
+-- section notproject
+-- @algorithm populate baserateoutput from movesworkeroutput.
+-- @condition non-project domain rates chained calculators are present.
+insert into baserateoutput(movesrunid,iterationid,
+	zoneid,linkid,sourcetypeid,scc,roadtypeid,
+	avgspeedbinid,
+	monthid,
+	hourdayid,
+	pollutantid,processid,modelyearid,yearid,fueltypeid,regclassid,
+	meanbaserate,emissionrate)
+select movesrunid,iterationid,
+	zoneid,linkid,sourcetypeid,scc,roadtypeid,
+	mod(linkid,100) as avgspeedbinid,
+	monthid,
+	(hourid*10 + dayid) as hourdayid,
+	pollutantid,processid,modelyearid,yearid,fueltypeid,regclassid,
+	emissionquant as meanbaserate,emissionrate
+from movesworkeroutput;
+-- end section notproject
 
--- Section Project
--- @algorithm Populate BaseRateOutput from MOVESWorkerOutput. avgSpeedBinID is always 0 in project mode.
--- @condition Project domain rates chained calculators are present.
-insert into BaseRateOutput(MOVESRunID,iterationID,
-	zoneID,linkID,sourceTypeID,SCC,roadTypeID,
-	avgSpeedBinID,
-	monthID,
-	hourDayID,
-	pollutantID,processID,modelYearID,yearID,fuelTypeID,regClassID,
-	meanBaseRate,emissionRate)
-select MOVESRunID,iterationID,
-	zoneID,linkID,sourceTypeID,SCC,roadTypeID,
-	0 as avgSpeedBinID,
-	monthID,
-	(hourID*10 + dayID) as hourDayID,
-	pollutantID,processID,modelYearID,yearID,fuelTypeID,regClassID,
-	emissionQuant as meanBaseRate,emissionRate
-from MOVESWorkerOutput;
--- End Section Project
--- End Section Rates
+-- section project
+-- @algorithm populate baserateoutput from movesworkeroutput. avgspeedbinid is always 0 in project mode.
+-- @condition project domain rates chained calculators are present.
+insert into baserateoutput(movesrunid,iterationid,
+	zoneid,linkid,sourcetypeid,scc,roadtypeid,
+	avgspeedbinid,
+	monthid,
+	hourdayid,
+	pollutantid,processid,modelyearid,yearid,fueltypeid,regclassid,
+	meanbaserate,emissionrate)
+select movesrunid,iterationid,
+	zoneid,linkid,sourcetypeid,scc,roadtypeid,
+	0 as avgspeedbinid,
+	monthid,
+	(hourid*10 + dayid) as hourdayid,
+	pollutantid,processid,modelyearid,yearid,fueltypeid,regclassid,
+	emissionquant as meanbaserate,emissionrate
+from movesworkeroutput;
+-- end section project
+-- end section rates
 
--- Section Inventory
--- @algorithm Populate BaseRateOutput from MOVESWorkerOutput. avgSpeedBinID is always 0 in inventory mode.
--- @condition Inventory chained calculators are present.
-insert into BaseRateOutput(MOVESRunID,iterationID,
-	zoneID,linkID,sourceTypeID,SCC,roadTypeID,
-	avgSpeedBinID,
-	monthID,
-	hourDayID,
-	pollutantID,processID,modelYearID,yearID,fuelTypeID,regClassID,
-	meanBaseRate,emissionRate)
-select MOVESRunID,iterationID,
-	zoneID,linkID,sourceTypeID,SCC,roadTypeID,
-	0 as avgSpeedBinID,
-	monthID,
-	(hourID*10 + dayID) as hourDayID,
-	pollutantID,processID,modelYearID,yearID,fuelTypeID,regClassID,
-	emissionQuant as meanBaseRate,emissionRate
-from MOVESWorkerOutput;
--- End Section Inventory
--- End Section HasChainedCalculators
+-- section inventory
+-- @algorithm populate baserateoutput from movesworkeroutput. avgspeedbinid is always 0 in inventory mode.
+-- @condition inventory chained calculators are present.
+insert into baserateoutput(movesrunid,iterationid,
+	zoneid,linkid,sourcetypeid,scc,roadtypeid,
+	avgspeedbinid,
+	monthid,
+	hourdayid,
+	pollutantid,processid,modelyearid,yearid,fueltypeid,regclassid,
+	meanbaserate,emissionrate)
+select movesrunid,iterationid,
+	zoneid,linkid,sourcetypeid,scc,roadtypeid,
+	0 as avgspeedbinid,
+	monthid,
+	(hourid*10 + dayid) as hourdayid,
+	pollutantid,processid,modelyearid,yearid,fueltypeid,regclassid,
+	emissionquant as meanbaserate,emissionrate
+from movesworkeroutput;
+-- end section inventory
+-- end section haschainedcalculators
 
--- Section HasNoChainedCalculators
-update BaseRateOutput set linkID=##context.iterLocation.linkRecordID##
-where linkID is null or linkID=0;
--- End Section HasNoChainedCalculators
+-- section hasnochainedcalculators
+update baserateoutput set linkid=##context.iterlocation.linkrecordid##
+where linkid is null or linkid=0;
+-- end section hasnochainedcalculators
 
--- End Section Final Cleanup
+-- end section final cleanup

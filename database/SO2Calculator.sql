@@ -1,312 +1,312 @@
--- Version 2014-05-31
+-- version 2014-05-31
 
 -- @algorithm
--- @owner SO2 Calculator
+-- @owner so2 calculator
 -- @calculator
 
--- Section Create Remote Tables for Extracted Data
+-- section create remote tables for extracted data
 
-drop table if exists so2RunSpecModelYear;
-create table if not exists so2RunSpecModelYear (
-	modelYearID smallint not null primary key
+drop table if exists so2runspecmodelyear;
+create table if not exists so2runspecmodelyear (
+	modelyearid smallint not null primary key
 );
-truncate so2RunSpecModelYear;
+truncate so2runspecmodelyear;
 
-drop table if exists so2PMOneCountyYearGeneralFuelRatio;
-create table if not exists so2PMOneCountyYearGeneralFuelRatio (
-	fuelTypeID int not null,
-	sourceTypeID int not null,
-	monthID int not null,
-	pollutantID int not null,
-	processID int not null,
-	modelYearID int not null,
-	yearID int not null,
-	fuelEffectRatio double not null default '0',
-	primary key (fuelTypeID, sourceTypeID, monthID, pollutantID, modelYearID, yearID)
+drop table if exists so2pmonecountyyeargeneralfuelratio;
+create table if not exists so2pmonecountyyeargeneralfuelratio (
+	fueltypeid int not null,
+	sourcetypeid int not null,
+	monthid int not null,
+	pollutantid int not null,
+	processid int not null,
+	modelyearid int not null,
+	yearid int not null,
+	fueleffectratio double not null default '0',
+	primary key (fueltypeid, sourcetypeid, monthid, pollutantid, modelyearid, yearid)
 );
-truncate so2PMOneCountyYearGeneralFuelRatio;
+truncate so2pmonecountyyeargeneralfuelratio;
 
-DROP TABLE IF EXISTS SO2CopyOfMonthOfAnyYear;
-CREATE TABLE SO2CopyOfMonthOfAnyYear (
-	monthID 		smallint(6),
-	monthGroupID 	smallint(6)
-);
-
-DROP TABLE IF EXISTS SO2CopyOfPPA;
-CREATE TABLE SO2CopyOfPPA (
-	polProcessID	int,
-	processID		SMALLINT(6),	
-	pollutantID		SMALLINT(6)
+drop table if exists so2copyofmonthofanyyear;
+create table so2copyofmonthofanyyear (
+	monthid 		smallint(6),
+	monthgroupid 	smallint(6)
 );
 
-DROP TABLE IF EXISTS SO2CopyOfYear;
-CREATE TABLE SO2CopyOfYear (
-       yearID        SMALLINT(6),
-       isBaseYear    CHAR(1),
-       fuelYearID    SMALLINT(6)
+drop table if exists so2copyofppa;
+create table so2copyofppa (
+	polprocessid	int,
+	processid		smallint(6),	
+	pollutantid		smallint(6)
 );
 
-DROP TABLE IF EXISTS SO2CopyOfFuelFormulation;
-CREATE TABLE SO2CopyOfFuelFormulation (
-       fuelFormulationID        SMALLINT(6),
-       fuelSubtypeID    		SMALLINT(6),
-       sulfurLevel  			FLOAT,
-       primary key (fuelFormulationID),
-       key (fuelFormulationID, fuelSubtypeID),
-       key (fuelSubtypeID, fuelFormulationID)
+drop table if exists so2copyofyear;
+create table so2copyofyear (
+       yearid        smallint(6),
+       isbaseyear    char(1),
+       fuelyearid    smallint(6)
 );
 
-DROP TABLE IF EXISTS SO2CopyOfFuelSupply;
-CREATE TABLE SO2CopyOfFuelSupply (
-	fuelRegionID			int(11),
-	fuelYearID				smallint(6),
-	monthGroupID			smallint(6),
-	fuelFormulationID		smallint(6),
-	marketShare				float,
-	marketShareCV 			float
+drop table if exists so2copyoffuelformulation;
+create table so2copyoffuelformulation (
+       fuelformulationid        smallint(6),
+       fuelsubtypeid    		smallint(6),
+       sulfurlevel  			float,
+       primary key (fuelformulationid),
+       key (fuelformulationid, fuelsubtypeid),
+       key (fuelsubtypeid, fuelformulationid)
 );
 
-DROP TABLE IF EXISTS SO2CopyOfFuelType;
-CREATE TABLE SO2CopyOfFuelType (
-       fuelTypeID        SMALLINT(6),
-       primary key (fuelTypeID)
+drop table if exists so2copyoffuelsupply;
+create table so2copyoffuelsupply (
+	fuelregionid			int(11),
+	fuelyearid				smallint(6),
+	monthgroupid			smallint(6),
+	fuelformulationid		smallint(6),
+	marketshare				float,
+	marketsharecv 			float
 );
 
-DROP TABLE IF EXISTS SO2CopyOfFuelSubType;
-CREATE TABLE SO2CopyOfFuelSubType (
-	   fuelSubTypeID	 SMALLINT(6),
-       fuelTypeID        SMALLINT(6),
-       energyContent	 FLOAT,
-       primary key (fuelSubTypeID),
-       key (fuelTypeID, fuelSubTypeID),
-       key (fuelSubTypeID, fuelTypeID)
+drop table if exists so2copyoffueltype;
+create table so2copyoffueltype (
+       fueltypeid        smallint(6),
+       primary key (fueltypeid)
 );
 
-DROP TABLE IF EXISTS CopyOfSO2EmissionRate;
-CREATE TABLE CopyOfSO2EmissionRate (
-	polProcessID		int,
-	fuelTypeID			smallint(6),
-	modelYearGroupID	int(11),
-	meanBaseRate 		float,
-	meanBaseRateCV		float,
-	dataSourceId		smallint(6)
+drop table if exists so2copyoffuelsubtype;
+create table so2copyoffuelsubtype (
+	   fuelsubtypeid	 smallint(6),
+       fueltypeid        smallint(6),
+       energycontent	 float,
+       primary key (fuelsubtypeid),
+       key (fueltypeid, fuelsubtypeid),
+       key (fuelsubtypeid, fueltypeid)
 );
 
--- End Section Create Remote Tables for Extracted Data
+drop table if exists copyofso2emissionrate;
+create table copyofso2emissionrate (
+	polprocessid		int,
+	fueltypeid			smallint(6),
+	modelyeargroupid	int(11),
+	meanbaserate 		float,
+	meanbaseratecv		float,
+	datasourceid		smallint(6)
+);
 
--- Section Extract Data
+-- end section create remote tables for extracted data
+
+-- section extract data
 
 cache select *
-	into outfile '##so2RunSpecModelYear##'
-from RunSpecModelYear;
+	into outfile '##so2runspecmodelyear##'
+from runspecmodelyear;
 
-cache select gfr.fuelTypeID, gfr.sourceTypeID, may.monthID, gfr.pollutantID, gfr.processID, mya.modelYearID, mya.yearID,
-	sum((ifnull(fuelEffectRatio,1)+GPAFract*(ifnull(fuelEffectRatioGPA,1)-ifnull(fuelEffectRatio,1)))*marketShare) as fuelEffectRatio
-	INTO OUTFILE '##so2PMOneCountyYearGeneralFuelRatio##'
-from RunSpecMonthGroup rsmg
-inner join RunSpecModelYearAge mya on (mya.yearID = ##context.year##)
-inner join County c on (c.countyID = ##context.iterLocation.countyRecordID##)
-inner join Year y on (y.yearID = mya.yearID)
-inner join FuelSupply fs on (fs.fuelRegionID = ##context.fuelRegionID##
-	and fs.fuelYearID = y.fuelYearID
-	and fs.monthGroupID = rsmg.monthGroupID)
-inner join MonthOfAnyYear may on (may.monthGroupID = fs.monthGroupID)
-inner join RunSpecSourceFuelType rssf
-inner join generalFuelRatio gfr on (gfr.fuelFormulationID = fs.fuelFormulationID
-	and gfr.pollutantID = 31
-	and gfr.processID = ##context.iterProcess.databaseKey##
-	and gfr.minModelYearID <= mya.modelYearID
-	and gfr.maxModelYearID >= mya.modelYearID
-	and gfr.minAgeID <= mya.ageID
-	and gfr.maxAgeID >= mya.ageID
-	and gfr.fuelTypeID = rssf.fuelTypeID
-	and gfr.sourceTypeID = rssf.sourceTypeID)
-group by gfr.fuelTypeID, gfr.sourceTypeID, may.monthID, gfr.pollutantID, gfr.processID, mya.modelYearID, mya.yearID;
+cache select gfr.fueltypeid, gfr.sourcetypeid, may.monthid, gfr.pollutantid, gfr.processid, mya.modelyearid, mya.yearid,
+	sum((ifnull(fueleffectratio,1)+gpafract*(ifnull(fueleffectratiogpa,1)-ifnull(fueleffectratio,1)))*marketshare) as fueleffectratio
+	into outfile '##so2pmonecountyyeargeneralfuelratio##'
+from runspecmonthgroup rsmg
+inner join runspecmodelyearage mya on (mya.yearid = ##context.year##)
+inner join county c on (c.countyid = ##context.iterlocation.countyrecordid##)
+inner join year y on (y.yearid = mya.yearid)
+inner join fuelsupply fs on (fs.fuelregionid = ##context.fuelregionid##
+	and fs.fuelyearid = y.fuelyearid
+	and fs.monthgroupid = rsmg.monthgroupid)
+inner join monthofanyyear may on (may.monthgroupid = fs.monthgroupid)
+inner join runspecsourcefueltype rssf
+inner join generalfuelratio gfr on (gfr.fuelformulationid = fs.fuelformulationid
+	and gfr.pollutantid = 31
+	and gfr.processid = ##context.iterprocess.databasekey##
+	and gfr.minmodelyearid <= mya.modelyearid
+	and gfr.maxmodelyearid >= mya.modelyearid
+	and gfr.minageid <= mya.ageid
+	and gfr.maxageid >= mya.ageid
+	and gfr.fueltypeid = rssf.fueltypeid
+	and gfr.sourcetypeid = rssf.sourcetypeid)
+group by gfr.fueltypeid, gfr.sourcetypeid, may.monthid, gfr.pollutantid, gfr.processid, mya.modelyearid, mya.yearid;
 
-cache SELECT 	MonthOfAnyYear.monthID, 
-		MonthOfAnyYear.monthGroupID 
-INTO OUTFILE '##SO2CopyOfMonthOfAnyYear##'  
-FROM MonthOfAnyYear  INNER JOIN runspecmonth 
-ON		MonthOfAnyYear.monthID = runspecmonth.monthID;
+cache select 	monthofanyyear.monthid, 
+		monthofanyyear.monthgroupid 
+into outfile '##so2copyofmonthofanyyear##'  
+from monthofanyyear  inner join runspecmonth 
+on		monthofanyyear.monthid = runspecmonth.monthid;
 
-cache SELECT yearID, isBaseYear, fuelYearID INTO OUTFILE '##SO2CopyOfYear##'  FROM Year WHERE YearID = ##context.year##;
+cache select yearid, isbaseyear, fuelyearid into outfile '##so2copyofyear##'  from year where yearid = ##context.year##;
 
-cache SELECT 	fuelFormulationID, 
-		fuelSubTypeID, 
-		sulfurLevel 
-INTO OUTFILE 		'##SO2CopyOfFuelFormulation##'  
-FROM FuelFormulation;
+cache select 	fuelformulationid, 
+		fuelsubtypeid, 
+		sulfurlevel 
+into outfile 		'##so2copyoffuelformulation##'  
+from fuelformulation;
 
-cache SELECT FuelSupply.*  INTO OUTFILE '##SO2CopyOfFuelSupply##'  
-	FROM FuelSupply
-	INNER JOIN Year ON FuelSupply.fuelYearID = Year.fuelYearID 
-		AND Year.yearID = ##context.year##    
-	WHERE fuelRegionID = ##context.fuelRegionID##;
+cache select fuelsupply.*  into outfile '##so2copyoffuelsupply##'  
+	from fuelsupply
+	inner join year on fuelsupply.fuelyearid = year.fuelyearid 
+		and year.yearid = ##context.year##    
+	where fuelregionid = ##context.fuelregionid##;
 
-cache SELECT fuelTypeID INTO OUTFILE '##SO2CopyOfFuelType##'
-	FROM FuelType;
+cache select fueltypeid into outfile '##so2copyoffueltype##'
+	from fueltype;
 
-cache SELECT  fuelSubTypeID, fuelTypeID, energyContent INTO OUTFILE '##SO2CopyOfFuelSubType##'
-	FROM FuelSubType;
+cache select  fuelsubtypeid, fueltypeid, energycontent into outfile '##so2copyoffuelsubtype##'
+	from fuelsubtype;
 
-cache SELECT 	*  INTO OUTFILE '##CopyOfSO2EmissionRate##'  FROM SulfateEmissionRate 
-	WHERE polProcessID IN (3101, 3102, 3190, 3191);
+cache select 	*  into outfile '##copyofso2emissionrate##'  from sulfateemissionrate 
+	where polprocessid in (3101, 3102, 3190, 3191);
 
-cache SELECT polProcessID,processID,pollutantID
-INTO OUTFILE '##SO2CopyOfPPA##' FROM pollutantprocessassoc 
-WHERE processID=##context.iterProcess.databaseKey## 
-AND pollutantID=31;
+cache select polprocessid,processid,pollutantid
+into outfile '##so2copyofppa##' from pollutantprocessassoc 
+where processid=##context.iterprocess.databasekey## 
+and pollutantid=31;
 
--- End Section Extract Data
+-- end section extract data
 
--- Section Local Data Removal
--- End Section Local Data Removal
+-- section local data removal
+-- end section local data removal
 
--- Section Processing
+-- section processing
 
-DROP TABLE IF EXISTS SO2FuelCalculation1;
-CREATE TABLE SO2FuelCalculation1 (
-	countyID				INT(11),
-	yearID					SMALLINT(6),
-	monthGroupID			SMALLINT(6),
-	fuelTypeID				SMALLINT(6), 
-	energyContent			FLOAT,
-	WsulfurLevel			FLOAT
+drop table if exists so2fuelcalculation1;
+create table so2fuelcalculation1 (
+	countyid				int(11),
+	yearid					smallint(6),
+	monthgroupid			smallint(6),
+	fueltypeid				smallint(6), 
+	energycontent			float,
+	wsulfurlevel			float
 );
 
--- @algorithm energyContent = sum(marketShare * energyContent) across the fuel supply.
--- WsulfurLevel = sum(marketShare * sulfurLevel) across the fuel supply.
-INSERT INTO SO2FuelCalculation1 (
-	countyID,
-	yearID,
-	monthGroupID,
-	fuelTypeID, 
-	energyContent,
-	WsulfurLevel   ) 
-SELECT 
-	##context.iterLocation.countyRecordID## as countyID, 
-	y.yearID,
-	fs.monthGroupID,
-	ft.fuelTypeID, 
-	sum(fs.marketShare * fst.energyContent) as energyContent,
-	sum(fs.marketShare * ff.sulfurLevel) as WsulfurLevel  
-FROM SO2CopyOfFuelSupply fs 
-	INNER JOIN SO2CopyOfFuelFormulation ff 		ON fs.fuelFormulationID = ff.fuelFormulationID 
-	INNER JOIN SO2CopyOfFuelSubType fst 		ON fst.fuelSubTypeID = ff.fuelSubTypeID 
-	INNER JOIN SO2CopyOfFuelType ft 			ON fst.fuelTypeID = ft.fuelTypeID 
-	INNER JOIN SO2CopyOfYear y 					ON y.fuelYearID = fs.fuelYearID 
-GROUP BY fs.fuelRegionID, y.yearID, fs.monthGroupID, fst.fuelTypeID;
+-- @algorithm energycontent = sum(marketshare * energycontent) across the fuel supply.
+-- wsulfurlevel = sum(marketshare * sulfurlevel) across the fuel supply.
+insert into so2fuelcalculation1 (
+	countyid,
+	yearid,
+	monthgroupid,
+	fueltypeid, 
+	energycontent,
+	wsulfurlevel   ) 
+select 
+	##context.iterlocation.countyrecordid## as countyid, 
+	y.yearid,
+	fs.monthgroupid,
+	ft.fueltypeid, 
+	sum(fs.marketshare * fst.energycontent) as energycontent,
+	sum(fs.marketshare * ff.sulfurlevel) as wsulfurlevel  
+from so2copyoffuelsupply fs 
+	inner join so2copyoffuelformulation ff 		on fs.fuelformulationid = ff.fuelformulationid 
+	inner join so2copyoffuelsubtype fst 		on fst.fuelsubtypeid = ff.fuelsubtypeid 
+	inner join so2copyoffueltype ft 			on fst.fueltypeid = ft.fueltypeid 
+	inner join so2copyofyear y 					on y.fuelyearid = fs.fuelyearid 
+group by fs.fuelregionid, y.yearid, fs.monthgroupid, fst.fueltypeid;
 
-create index index1 on SO2FuelCalculation1 (countyID, yearID, monthGroupID, fuelTypeID);
+create index index1 on so2fuelcalculation1 (countyid, yearid, monthgroupid, fueltypeid);
 
-DROP TABLE IF EXISTS SO2FuelCalculation2;
-CREATE TABLE SO2FuelCalculation2 (
-	polProcessID			int,
-	processID				SMALLINT(6),
-	pollutantID				SMALLINT(6),
-	fuelTypeID				SMALLINT(6),
-	modelYearID				SMALLINT(6),
-	meanBaseRate			FLOAT
+drop table if exists so2fuelcalculation2;
+create table so2fuelcalculation2 (
+	polprocessid			int,
+	processid				smallint(6),
+	pollutantid				smallint(6),
+	fueltypeid				smallint(6),
+	modelyearid				smallint(6),
+	meanbaserate			float
 );
 
-alter table CopyOfSO2EmissionRate add column minModelYearID smallint null;
-alter table CopyOfSO2EmissionRate add column maxModelYearID smallint null;
+alter table copyofso2emissionrate add column minmodelyearid smallint null;
+alter table copyofso2emissionrate add column maxmodelyearid smallint null;
 
-update CopyOfSO2EmissionRate set
-	minModelYearID = floor(modelYearGroupID / 10000),
-	maxModelYearID = mod(modelYearGroupID, 10000);
+update copyofso2emissionrate set
+	minmodelyearid = floor(modelyeargroupid / 10000),
+	maxmodelyearid = mod(modelyeargroupid, 10000);
 
-INSERT INTO SO2FuelCalculation2 (
-	polProcessID,
-	processID,
-	pollutantID,
-	fuelTypeID,
-	modelYearID,
-	meanBaseRate     ) 
-SELECT 
-	ser.polProcessID,
-	ppa.processID,
-	ppa.pollutantID,
-	ser.fuelTypeID,
-	rsmy.modelYearID,
-	ser.meanBaseRate 
-FROM 	CopyOfSO2EmissionRate ser  
-	INNER JOIN 	SO2CopyOfPPA  ppa 	 	ON ser.polProcessID = ppa.polProcessID
-	INNER JOIN  so2RunSpecModelYear rsmy ON (
-		rsmy.modelYearID >= ser.minModelYearID
-		and rsmy.modelYearID <= ser.maxModelYearID
+insert into so2fuelcalculation2 (
+	polprocessid,
+	processid,
+	pollutantid,
+	fueltypeid,
+	modelyearid,
+	meanbaserate     ) 
+select 
+	ser.polprocessid,
+	ppa.processid,
+	ppa.pollutantid,
+	ser.fueltypeid,
+	rsmy.modelyearid,
+	ser.meanbaserate 
+from 	copyofso2emissionrate ser  
+	inner join 	so2copyofppa  ppa 	 	on ser.polprocessid = ppa.polprocessid
+	inner join  so2runspecmodelyear rsmy on (
+		rsmy.modelyearid >= ser.minmodelyearid
+		and rsmy.modelyearid <= ser.maxmodelyearid
 	);
 
-create index index1 on SO2FuelCalculation2 (processID, pollutantID, modelYearID, fuelTypeID);
+create index index1 on so2fuelcalculation2 (processid, pollutantid, modelyearid, fueltypeid);
 
-DROP TABLE IF EXISTS SO2MOVESOutputTemp1;
+drop table if exists so2movesoutputtemp1;
 
--- @algorithm SO2 (31) = (meanBaseRate * WsulfurLevel * Total Energy Consumption (91)) / energyContent.
-CREATE TABLE SO2MOVESOutputTemp1
-SELECT 
-	mwo.MOVESRunID, mwo.iterationID, mwo.yearID, mwo.monthID, mwo.dayID, 
-	mwo.hourID, mwo.stateID, mwo.countyID, mwo.zoneID, 
-	mwo.linkID, fc2.pollutantID, fc2.processID, 
-	mwo.sourceTypeID, mwo.regClassID, mwo.fuelTypeID, mwo.modelYearID, 
-	mwo.roadTypeID, mwo.SCC,
-	mwo.emissionQuant as energy,
-	mwo.emissionRate as energyRate,
-	fc1.WsulfurLevel,
-	fc1.energyContent,
-	fc2.meanBaseRate,
-	( (fc2.meanBaseRate * fc1.WsulfurLevel * mwo.emissionQuant ) / fc1.energyContent ) as emissionQuant,
-	( (fc2.meanBaseRate * fc1.WsulfurLevel * mwo.emissionRate )  / fc1.energyContent ) as emissionRate
-FROM
-	MOVESWorkerOutput mwo, SO2fuelcalculation1 fc1, SO2fuelcalculation2 fc2, SO2copyOfMonthOfAnyYear may  
-WHERE 
-	mwo.countyID			=	fc1.countyID 		AND
-	mwo.yearID				=	fc1.yearID			AND 
-	mwo.monthID				= 	may.monthID			AND
-	fc1.monthGroupID		=	may.monthGroupID 	AND  
-	mwo.fuelTypeID			=	fc1.fuelTypeID		AND 
-	mwo.fuelTypeID			=	fc2.fuelTypeID		AND 
-	mwo.modelyearID			=	fc2.modelyearID		AND
-	mwo.pollutantID = 91 	AND
-	mwo.processID = ##context.iterProcess.databaseKey##;
+-- @algorithm so2 (31) = (meanbaserate * wsulfurlevel * total energy consumption (91)) / energycontent.
+create table so2movesoutputtemp1
+select 
+	mwo.movesrunid, mwo.iterationid, mwo.yearid, mwo.monthid, mwo.dayid, 
+	mwo.hourid, mwo.stateid, mwo.countyid, mwo.zoneid, 
+	mwo.linkid, fc2.pollutantid, fc2.processid, 
+	mwo.sourcetypeid, mwo.regclassid, mwo.fueltypeid, mwo.modelyearid, 
+	mwo.roadtypeid, mwo.scc,
+	mwo.emissionquant as energy,
+	mwo.emissionrate as energyrate,
+	fc1.wsulfurlevel,
+	fc1.energycontent,
+	fc2.meanbaserate,
+	( (fc2.meanbaserate * fc1.wsulfurlevel * mwo.emissionquant ) / fc1.energycontent ) as emissionquant,
+	( (fc2.meanbaserate * fc1.wsulfurlevel * mwo.emissionrate )  / fc1.energycontent ) as emissionrate
+from
+	movesworkeroutput mwo, so2fuelcalculation1 fc1, so2fuelcalculation2 fc2, so2copyofmonthofanyyear may  
+where 
+	mwo.countyid			=	fc1.countyid 		and
+	mwo.yearid				=	fc1.yearid			and 
+	mwo.monthid				= 	may.monthid			and
+	fc1.monthgroupid		=	may.monthgroupid 	and  
+	mwo.fueltypeid			=	fc1.fueltypeid		and 
+	mwo.fueltypeid			=	fc2.fueltypeid		and 
+	mwo.modelyearid			=	fc2.modelyearid		and
+	mwo.pollutantid = 91 	and
+	mwo.processid = ##context.iterprocess.databasekey##;
 
--- @algorithm Apply general fuel effects.
--- emissionQuant = emissionQuant * fuelEffectRatio.
-update SO2MOVESOutputTemp1, so2PMOneCountyYearGeneralFuelRatio set 
-	emissionQuant=emissionQuant*fuelEffectRatio,
-	emissionRate =emissionRate *fuelEffectRatio
-where so2PMOneCountyYearGeneralFuelRatio.fuelTypeID = SO2MOVESOutputTemp1.fuelTypeID
-and so2PMOneCountyYearGeneralFuelRatio.sourceTypeID = SO2MOVESOutputTemp1.sourceTypeID
-and so2PMOneCountyYearGeneralFuelRatio.monthID 		= SO2MOVESOutputTemp1.monthID
-and so2PMOneCountyYearGeneralFuelRatio.pollutantID 	= SO2MOVESOutputTemp1.pollutantID
-and so2PMOneCountyYearGeneralFuelRatio.processID 	= SO2MOVESOutputTemp1.processID
-and so2PMOneCountyYearGeneralFuelRatio.modelYearID 	= SO2MOVESOutputTemp1.modelYearID
-and so2PMOneCountyYearGeneralFuelRatio.yearID 		= SO2MOVESOutputTemp1.yearID;
+-- @algorithm apply general fuel effects.
+-- emissionquant = emissionquant * fueleffectratio.
+update so2movesoutputtemp1, so2pmonecountyyeargeneralfuelratio set 
+	emissionquant=emissionquant*fueleffectratio,
+	emissionrate =emissionrate *fueleffectratio
+where so2pmonecountyyeargeneralfuelratio.fueltypeid = so2movesoutputtemp1.fueltypeid
+and so2pmonecountyyeargeneralfuelratio.sourcetypeid = so2movesoutputtemp1.sourcetypeid
+and so2pmonecountyyeargeneralfuelratio.monthid 		= so2movesoutputtemp1.monthid
+and so2pmonecountyyeargeneralfuelratio.pollutantid 	= so2movesoutputtemp1.pollutantid
+and so2pmonecountyyeargeneralfuelratio.processid 	= so2movesoutputtemp1.processid
+and so2pmonecountyyeargeneralfuelratio.modelyearid 	= so2movesoutputtemp1.modelyearid
+and so2pmonecountyyeargeneralfuelratio.yearid 		= so2movesoutputtemp1.yearid;
 
-INSERT INTO MOVESWorkerOutput ( 
-	MOVESRunID,iterationID,yearID,monthID,dayID,hourID,stateID,countyID,zoneID, 
-	linkID,pollutantID,processID,sourceTypeID,regClassID,fuelTypeID,modelYearID, 
-	roadTypeID,SCC,emissionQuant,emissionRate) 
-SELECT 
-	MOVESRunID,iterationID, yearID,monthID,dayID,hourID,stateID,countyID,zoneID, 
-	linkID,pollutantID,processID,sourceTypeID,regClassID,fuelTypeID,modelYearID, 
-	roadTypeID,SCC,emissionQuant,emissionRate
-FROM SO2MOVESOutputTemp1;
+insert into movesworkeroutput ( 
+	movesrunid,iterationid,yearid,monthid,dayid,hourid,stateid,countyid,zoneid, 
+	linkid,pollutantid,processid,sourcetypeid,regclassid,fueltypeid,modelyearid, 
+	roadtypeid,scc,emissionquant,emissionrate) 
+select 
+	movesrunid,iterationid, yearid,monthid,dayid,hourid,stateid,countyid,zoneid, 
+	linkid,pollutantid,processid,sourcetypeid,regclassid,fueltypeid,modelyearid, 
+	roadtypeid,scc,emissionquant,emissionrate
+from so2movesoutputtemp1;
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
+-- section cleanup
 
-DROP TABLE IF EXISTS SO2MOVESOutputTemp1;
-DROP TABLE IF EXISTS SO2FuelCalculation1;
-DROP TABLE IF EXISTS SO2FuelCalculation2;
-DROP TABLE IF EXISTS SO2CopyOfMonthOfAnyYear;
-DROP TABLE IF EXISTS SO2CopyOfPPA;
-DROP TABLE IF EXISTS SO2CopyOfYear;
-DROP TABLE IF EXISTS SO2CopyOfFuelFormulation;
-DROP TABLE IF EXISTS SO2CopyOfFuelSupply;
-DROP TABLE IF EXISTS SO2CopyOfFuelType;
-DROP TABLE IF EXISTS SO2CopyOfFuelSubType;
-DROP TABLE IF EXISTS CopyOfSO2EmissionRate;
-DROP TABLE IF EXISTS so2RunSpecModelYear;
+drop table if exists so2movesoutputtemp1;
+drop table if exists so2fuelcalculation1;
+drop table if exists so2fuelcalculation2;
+drop table if exists so2copyofmonthofanyyear;
+drop table if exists so2copyofppa;
+drop table if exists so2copyofyear;
+drop table if exists so2copyoffuelformulation;
+drop table if exists so2copyoffuelsupply;
+drop table if exists so2copyoffueltype;
+drop table if exists so2copyoffuelsubtype;
+drop table if exists copyofso2emissionrate;
+drop table if exists so2runspecmodelyear;
 
--- End Section Cleanup
+-- end section cleanup

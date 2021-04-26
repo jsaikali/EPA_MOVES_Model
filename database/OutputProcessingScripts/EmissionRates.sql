@@ -1,83 +1,83 @@
--- This MySQL script produces an output table which reports your
--- onroad emission results in units of mass per distance.  This is done
+-- this mysql script produces an output table which reports your
+-- onroad emission results in units of mass per distance.  this is done
 -- by joining the activity table with the inventory output results.
--- Version 20091191 djb.
--- Updated 20150602 kjr.
--- The MySQL table produced is called: MovesRates
--- This script requires that users check the "Distance Traveled"
--- check box General Output panel of the MOVES graphical user
--- interface.  Users must also select
--- the Inventory calculation type in the Scale panel.
+-- version 20091191 djb.
+-- updated 20150602 kjr.
+-- the mysql table produced is called: movesrates
+-- this script requires that users check the "distance traveled"
+-- check box general output panel of the moves graphical user
+-- interface.  users must also select
+-- the inventory calculation type in the scale panel.
 -- **************************************************************
--- Only onroad emission rates will be calculated. (No Nonroad)
--- The user *must* select Distance Traveled.
--- The user *must* select Inventory calculation type.
+-- only onroad emission rates will be calculated. (no nonroad)
+-- the user *must* select distance traveled.
+-- the user *must* select inventory calculation type.
 -- **************************************************************
 --
 --
 --
---  create outputTemp   from movesOutput,
---  create activityTemp from movesActivityOutput,
+--  create outputtemp   from movesoutput,
+--  create activitytemp from movesactivityoutput,
 --
---  update to zero 15 fields of outputTemp,
---  update to zero 15 fields of activityTemp,
+--  update to zero 15 fields of outputtemp,
+--  update to zero 15 fields of activitytemp,
 --
---  create distanceTemp SUM from ActivityTemp,
+--  create distancetemp sum from activitytemp,
 --
---  insert SUM into ActivityTemp from distanceTemp (roadType = 0 )
---    "      "   "        "        "      "        (roadType = 1 )
+--  insert sum into activitytemp from distancetemp (roadtype = 0 )
+--    "      "   "        "        "      "        (roadtype = 1 )
 --
---  add master key to outputTemp,
---  add master key to ActivityTemp,
+--  add master key to outputtemp,
+--  add master key to activitytemp,
 --
---  join into movesRates from outputTemp,
---                            activityTemp,
+--  join into movesrates from outputtemp,
+--                            activitytemp,
 --                            using master key,
---                            and activityType = 1
+--                            and activitytype = 1
 --                           (with rate calculation)
 --
--- drop table outputTemp,
--- drop table activityTemp,
--- drop DistanceTemp.
+-- drop table outputtemp,
+-- drop table activitytemp,
+-- drop distancetemp.
 --
 --
 
-FLUSH TABLES ;
+flush tables ;
 
--- Create the table to hold the calculation results.
-DROP TABLE IF EXISTS MOVESRates;
-CREATE TABLE `MOVESRates` (
-  `MasterKey`   char(60)                default NULL,
-  `MOVESRunID`  smallint(5) unsigned        NOT NULL,  -- mas key
-  `iterationID` smallint(5) unsigned    default  '1',  -- mas key
-  `yearID`      smallint(5) unsigned    default NULL,  -- mas key
-  `monthID`     smallint(5) unsigned    default NULL,  -- mas key
-  `dayID`       smallint(5) unsigned    default NULL,  -- mas key
-  `hourID`      smallint(5) unsigned    default NULL,  -- mas key
-  `stateID`     smallint(5) unsigned    default NULL,  -- mas key
-  `countyID`    int(10)     unsigned    default NULL,  -- mas key
-  `zoneID`      int(10)     unsigned    default NULL,  -- mas key
-  `linkID`      int(10)     unsigned    default NULL,  -- mas key
-  `pollutantID` smallint(5) unsigned    default NULL,
-  `processID`      smallint(5) unsigned default NULL,
-  `sourceTypeID`   smallint(5) unsigned default NULL,  -- mas key
-  `regClassId`     smallint(5) unsigned default NULL,  -- mas key
-  `fuelTypeID`     smallint(5) unsigned default NULL,  -- mas key
-  `modelYearID`    smallint(5) unsigned default NULL,  -- mas key
-  `roadTypeID`     smallint(5) unsigned default NULL,  -- mas key
-  `SCC`            char(10)             default NULL,  -- mas key
-  `emissionQuant`  double               default NULL,
-  `activityTypeID` smallint(6)              NOT NULL,
-  `activity`       double               default NULL,
-  `emissionRate`   double               default NULL,
-  `massUnits`      char(5)              default NULL,
-  `distanceUnits`  char(5)              default NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1
+-- create the table to hold the calculation results.
+drop table if exists movesrates;
+create table `movesrates` (
+  `masterkey`   char(60)                default null,
+  `movesrunid`  smallint(5) unsigned        not null,  -- mas key
+  `iterationid` smallint(5) unsigned    default  '1',  -- mas key
+  `yearid`      smallint(5) unsigned    default null,  -- mas key
+  `monthid`     smallint(5) unsigned    default null,  -- mas key
+  `dayid`       smallint(5) unsigned    default null,  -- mas key
+  `hourid`      smallint(5) unsigned    default null,  -- mas key
+  `stateid`     smallint(5) unsigned    default null,  -- mas key
+  `countyid`    int(10)     unsigned    default null,  -- mas key
+  `zoneid`      int(10)     unsigned    default null,  -- mas key
+  `linkid`      int(10)     unsigned    default null,  -- mas key
+  `pollutantid` smallint(5) unsigned    default null,
+  `processid`      smallint(5) unsigned default null,
+  `sourcetypeid`   smallint(5) unsigned default null,  -- mas key
+  `regclassid`     smallint(5) unsigned default null,  -- mas key
+  `fueltypeid`     smallint(5) unsigned default null,  -- mas key
+  `modelyearid`    smallint(5) unsigned default null,  -- mas key
+  `roadtypeid`     smallint(5) unsigned default null,  -- mas key
+  `scc`            char(10)             default null,  -- mas key
+  `emissionquant`  double               default null,
+  `activitytypeid` smallint(6)              not null,
+  `activity`       double               default null,
+  `emissionrate`   double               default null,
+  `massunits`      char(5)              default null,
+  `distanceunits`  char(5)              default null
+) engine=myisam default charset=latin1 delay_key_write=1
  ;
 
--- Check to see that there is activity output in the table.
+-- check to see that there is activity output in the table.
 
--- Create copies of the results tables.
+-- create copies of the results tables.
 drop   table if exists outputtemp ;
 create table outputtemp select * from movesoutput ;
 
@@ -87,316 +87,316 @@ create table activitytemp select * from movesactivityoutput;
 
 
 
--- Eliminate any NULL values. NULL values prevent joining of the tables.
+-- eliminate any null values. null values prevent joining of the tables.
 update outputtemp   set movesrunid  =0 where isnull(movesrunid) ;
-update outputtemp   set iterationID =0 where isnull(iterationID) ;
-update outputtemp   set yearID      =0 where isnull(yearID) ;
-update outputtemp   set monthID     =0 where isnull(monthID) ;
-update outputtemp   set dayID       =0 where isnull(dayID) ;
-update outputtemp   set hourID      =0 where isnull(hourID) ;
-update outputtemp   set stateID     =0 where isnull(stateID) ;
-update outputtemp   set countyID    =0 where isnull(countyID) ;
-update outputtemp   set zoneID      =0 where isnull(zoneID) ;
-update outputtemp   set linkID      =0 where isnull(linkID) ;
-update outputtemp   set sourceTypeID=0 where isnull(sourceTypeID) ;
-update outputtemp   set regClassId  =0 where isnull(regClassId  ) ;
-update outputtemp   set fuelTypeID  =0 where isnull(fuelTypeID) ;
-update outputtemp   set modelYearID =0 where isnull(modelYearID) ;
-update outputtemp   set roadTypeID  =0 where isnull(roadTypeID) ;
-update outputtemp   set SCC         =0 where isnull(SCC) ;
+update outputtemp   set iterationid =0 where isnull(iterationid) ;
+update outputtemp   set yearid      =0 where isnull(yearid) ;
+update outputtemp   set monthid     =0 where isnull(monthid) ;
+update outputtemp   set dayid       =0 where isnull(dayid) ;
+update outputtemp   set hourid      =0 where isnull(hourid) ;
+update outputtemp   set stateid     =0 where isnull(stateid) ;
+update outputtemp   set countyid    =0 where isnull(countyid) ;
+update outputtemp   set zoneid      =0 where isnull(zoneid) ;
+update outputtemp   set linkid      =0 where isnull(linkid) ;
+update outputtemp   set sourcetypeid=0 where isnull(sourcetypeid) ;
+update outputtemp   set regclassid  =0 where isnull(regclassid  ) ;
+update outputtemp   set fueltypeid  =0 where isnull(fueltypeid) ;
+update outputtemp   set modelyearid =0 where isnull(modelyearid) ;
+update outputtemp   set roadtypeid  =0 where isnull(roadtypeid) ;
+update outputtemp   set scc         =0 where isnull(scc) ;
 
 update activitytemp set movesrunid  =0 where isnull(movesrunid) ;
-update activitytemp set iterationID =0 where isnull(iterationID) ;
-update activitytemp set yearID      =0 where isnull(yearID) ;
-update activitytemp set monthID     =0 where isnull(monthID) ;
-update activitytemp set dayID       =0 where isnull(dayID) ;
-update activitytemp set hourID      =0 where isnull(hourID) ;
-update activitytemp set stateID     =0 where isnull(stateID) ;
-update activitytemp set countyID    =0 where isnull(countyID) ;
-update activitytemp set zoneID      =0 where isnull(zoneID) ;
-update activitytemp set linkID      =0 where isnull(linkID) ;
-update activitytemp set sourceTypeID=0 where isnull(sourceTypeID) ;
-update activitytemp set regClassId  =0 where isnull(regClassId  ) ;
-update activitytemp set fuelTypeID  =0 where isnull(fuelTypeID) ;
-update activitytemp set modelYearID =0 where isnull(modelYearID) ;
-update activitytemp set roadTypeID  =0 where isnull(roadTypeID) ;
-update activitytemp set SCC         =0 where isnull(SCC) ;
-update activitytemp set SCC         =0 where SCC="NOTHING" ;
+update activitytemp set iterationid =0 where isnull(iterationid) ;
+update activitytemp set yearid      =0 where isnull(yearid) ;
+update activitytemp set monthid     =0 where isnull(monthid) ;
+update activitytemp set dayid       =0 where isnull(dayid) ;
+update activitytemp set hourid      =0 where isnull(hourid) ;
+update activitytemp set stateid     =0 where isnull(stateid) ;
+update activitytemp set countyid    =0 where isnull(countyid) ;
+update activitytemp set zoneid      =0 where isnull(zoneid) ;
+update activitytemp set linkid      =0 where isnull(linkid) ;
+update activitytemp set sourcetypeid=0 where isnull(sourcetypeid) ;
+update activitytemp set regclassid  =0 where isnull(regclassid  ) ;
+update activitytemp set fueltypeid  =0 where isnull(fueltypeid) ;
+update activitytemp set modelyearid =0 where isnull(modelyearid) ;
+update activitytemp set roadtypeid  =0 where isnull(roadtypeid) ;
+update activitytemp set scc         =0 where isnull(scc) ;
+update activitytemp set scc         =0 where scc="NOTHING" ;
 
--- Alter the SCC values to eliminate the text suffix.
-update outputtemp   set scc=concat(mid(SCC,1,9),"0");
-update activitytemp set scc=concat(mid(SCC,1,9),"0");
+-- alter the scc values to eliminate the text suffix.
+update outputtemp   set scc=concat(mid(scc,1,9),"0");
+update activitytemp set scc=concat(mid(scc,1,9),"0");
 
--- Create a table with the distance summed over road type.
+-- create a table with the distance summed over road type.
 drop table if exists distancetemp;
 create table distancetemp
 select
-	a.MOVESRunID,
-	a.iterationID,
-	a.yearID,
-	a.monthID,
+	a.movesrunid,
+	a.iterationid,
+	a.yearid,
+	a.monthid,
 
-	a.dayID,
-	a.hourID,
-	a.stateID,
-	a.countyID,
+	a.dayid,
+	a.hourid,
+	a.stateid,
+	a.countyid,
 
-	a.zoneID,
-	a.linkID,
-	a.sourceTypeID,
-  a.regClassId,
+	a.zoneid,
+	a.linkid,
+	a.sourcetypeid,
+  a.regclassid,
 
-	a.fuelTypeID,
-	a.modelYearID,
-	concat(mid(a.SCC,1,7),"000") as SCC,
-	a.activityTypeID,
+	a.fueltypeid,
+	a.modelyearid,
+	concat(mid(a.scc,1,7),"000") as scc,
+	a.activitytypeid,
 
 	sum(a.activity) as activitysum
 
 from	activitytemp as a
 group by
-	a.MOVESRunID,
-	a.iterationID,
-	a.yearID,
-	a.monthID,
+	a.movesrunid,
+	a.iterationid,
+	a.yearid,
+	a.monthid,
 
-	a.dayID,
-	a.hourID,
-	a.stateID,
-	a.countyID,
+	a.dayid,
+	a.hourid,
+	a.stateid,
+	a.countyid,
 
-	a.zoneID,
-	a.linkID,
-	a.sourceTypeID,
-  a.regClassId,
+	a.zoneid,
+	a.linkid,
+	a.sourcetypeid,
+  a.regclassid,
 
-	a.fuelTypeID,
-	a.modelYearID,
-	concat(mid(a.SCC,1,7),"000"),
-	a.activityTypeID;
+	a.fueltypeid,
+	a.modelyearid,
+	concat(mid(a.scc,1,7),"000"),
+	a.activitytypeid;
 
 
--- Set the distance for RoadTypeID=1 to be the distance sum.
--- SCC case: RoadTypeID=1 and SCC=SCC with 00 road type.
--- Records without SCC will also be added, but will not match
+-- set the distance for roadtypeid=1 to be the distance sum.
+-- scc case: roadtypeid=1 and scc=scc with 00 road type.
+-- records without scc will also be added, but will not match
 -- with the emission output records and will be ignored.
 
 
--- Updated for MOVES 2014:
---   (for user having selected SCC output):
---   include roadtypeId,
---   and used New SCC definition.
+-- updated for moves 2014:
+--   (for user having selected scc output):
+--   include roadtypeid,
+--   and used new scc definition.
 
 insert into activitytemp (
-	MOVESRunID,
-	iterationID,
-	yearID,
-	monthID,
-	dayID,
-	hourID,
-	stateID,
-	countyID,
-	zoneID,
-	linkID,
-	sourceTypeID,
-  regClassId,
-	fuelTypeID,
-	modelYearID,
-	roadTypeID,
-	SCC,
-	activityTypeID,
+	movesrunid,
+	iterationid,
+	yearid,
+	monthid,
+	dayid,
+	hourid,
+	stateid,
+	countyid,
+	zoneid,
+	linkid,
+	sourcetypeid,
+  regclassid,
+	fueltypeid,
+	modelyearid,
+	roadtypeid,
+	scc,
+	activitytypeid,
 	activity,
-	activityMean,
-	activitySigma )
+	activitymean,
+	activitysigma )
 select
-	MOVESRunID,
-	iterationID,
-	yearID,
-	monthID,
-	dayID,
-	hourID,
-	stateID,
-	countyID,
-	zoneID,
-	linkID,
-	sourceTypeID,
-  regClassId,
-	fuelTypeID,
-	modelYearID,
-	1 as roadTypeID,                     -- for MOVES 2014 SCC now includes roadTypeId
-	concat(mid(SCC,1,6),'0100') as SCC,  -- for MOVES 2014 (new) SCC
-	activityTypeID,
+	movesrunid,
+	iterationid,
+	yearid,
+	monthid,
+	dayid,
+	hourid,
+	stateid,
+	countyid,
+	zoneid,
+	linkid,
+	sourcetypeid,
+  regclassid,
+	fueltypeid,
+	modelyearid,
+	1 as roadtypeid,                     -- for moves 2014 scc now includes roadtypeid
+	concat(mid(scc,1,6),'0100') as scc,  -- for moves 2014 (new) scc
+	activitytypeid,
 	activitysum as activity,
-	0.0 as activityMean,
-	0.0 as activitySigma
+	0.0 as activitymean,
+	0.0 as activitysigma
 from	distancetemp;
 
 
--- Set the distance for RoadTypeID=1 to be the distance sum.
--- Source type case: RoadTypeID=1 and SCC='00'.
--- Where SCC is not selected
+-- set the distance for roadtypeid=1 to be the distance sum.
+-- source type case: roadtypeid=1 and scc='00'.
+-- where scc is not selected
 
 insert into activitytemp (
-	MOVESRunID,
-	iterationID,
-	yearID,
-	monthID,
-	dayID,
-	hourID,
-	stateID,
-	countyID,
-	zoneID,
-	linkID,
-	sourceTypeID,
-  regClassId,
-	fuelTypeID,
-	modelYearID,
-	roadTypeID,
-	SCC,
-	activityTypeID,
+	movesrunid,
+	iterationid,
+	yearid,
+	monthid,
+	dayid,
+	hourid,
+	stateid,
+	countyid,
+	zoneid,
+	linkid,
+	sourcetypeid,
+  regclassid,
+	fueltypeid,
+	modelyearid,
+	roadtypeid,
+	scc,
+	activitytypeid,
 	activity,
-	activityMean,
-	activitySigma )
+	activitymean,
+	activitysigma )
 select
-	MOVESRunID,
-	iterationID,
-	yearID,
-	monthID,
-	dayID,
-	hourID,
-	stateID,
-	countyID,
-	zoneID,
-	linkID,
-	sourceTypeID,
-  regClassId,
-	fuelTypeID,
-	modelYearID,
-	1 as roadTypeID,
-	'00' as SCC,         -- MOVES 2014 uses '00' for no SCC usage
-	activityTypeID,
+	movesrunid,
+	iterationid,
+	yearid,
+	monthid,
+	dayid,
+	hourid,
+	stateid,
+	countyid,
+	zoneid,
+	linkid,
+	sourcetypeid,
+  regclassid,
+	fueltypeid,
+	modelyearid,
+	1 as roadtypeid,
+	'00' as scc,         -- moves 2014 uses '00' for no scc usage
+	activitytypeid,
 	activitysum as activity,
-	0.0 as activityMean,
-	0.0 as activitySigma
+	0.0 as activitymean,
+	0.0 as activitysigma
 from	distancetemp;
 
 
--- Add master keys to each table for joining.
-alter table outputtemp add MasterKey char(60) default null ;
-update outputtemp set MasterKey=concat_ws(",",
-	MOVESRunID,
-	iterationID,
-	yearID,
-	monthID,
-	dayID,
-	hourID,
-	stateID,
-	countyID,
-	zoneID,
-	linkID,
-	sourceTypeID,
-  regClassId,
-	fuelTypeID,
-	modelYearID,
-	roadTypeID,
-	mid(SCC,1,8) );
+-- add master keys to each table for joining.
+alter table outputtemp add masterkey char(60) default null ;
+update outputtemp set masterkey=concat_ws(",",
+	movesrunid,
+	iterationid,
+	yearid,
+	monthid,
+	dayid,
+	hourid,
+	stateid,
+	countyid,
+	zoneid,
+	linkid,
+	sourcetypeid,
+  regclassid,
+	fueltypeid,
+	modelyearid,
+	roadtypeid,
+	mid(scc,1,8) );
 
 
 
-CREATE INDEX index1 ON outputtemp (MasterKey) ;
+create index index1 on outputtemp (masterkey) ;
 
-alter table activitytemp add MasterKey char(60) default null ;
-update activitytemp set MasterKey=concat_ws(",",
-	MOVESRunID,
-	iterationID,
-	yearID,
-	monthID,
-	dayID,
-	hourID,
-	stateID,
-	countyID,
-	zoneID,
-	linkID,
-	sourceTypeID,
-  regClassId,
-	fuelTypeID,
-	modelYearID,
-	roadTypeID,
-	mid(SCC,1,8) );
+alter table activitytemp add masterkey char(60) default null ;
+update activitytemp set masterkey=concat_ws(",",
+	movesrunid,
+	iterationid,
+	yearid,
+	monthid,
+	dayid,
+	hourid,
+	stateid,
+	countyid,
+	zoneid,
+	linkid,
+	sourcetypeid,
+  regclassid,
+	fueltypeid,
+	modelyearid,
+	roadtypeid,
+	mid(scc,1,8) );
 
-CREATE INDEX index1 ON activitytemp (MasterKey) ;
+create index index1 on activitytemp (masterkey) ;
 
 
--- Join the tables.
+-- join the tables.
 truncate movesrates;
 insert into movesrates (
-	MasterKey,
-	MOVESRunID,
-	iterationID,
-	yearID,
-	monthID,
-	dayID,
-	hourID,
-	stateID,
-	countyID,
-	zoneID,
-	linkID,
-	pollutantID,
-	processID,
-	sourceTypeID,
-  regClassId,
-	fuelTypeID,
-	modelYearID,
-	roadTypeID,
-	SCC,
-	emissionQuant,
-	activityTypeID,
+	masterkey,
+	movesrunid,
+	iterationid,
+	yearid,
+	monthid,
+	dayid,
+	hourid,
+	stateid,
+	countyid,
+	zoneid,
+	linkid,
+	pollutantid,
+	processid,
+	sourcetypeid,
+  regclassid,
+	fueltypeid,
+	modelyearid,
+	roadtypeid,
+	scc,
+	emissionquant,
+	activitytypeid,
 	activity,
-	emissionRate )
+	emissionrate )
 select
-	a.MasterKey,
-	a.MOVESRunID,
-	a.iterationID,
-	a.yearID,
-	a.monthID,
-	a.dayID,
-	a.hourID,
-	a.stateID,
-	a.countyID,
-	a.zoneID,
-	a.linkID,
-	a.pollutantID,
-	a.processID,
-	a.sourceTypeID,
-  a.regClassId,
-	a.fuelTypeID,
-	a.modelYearID,
-	a.roadTypeID,
-	a.SCC,
-	a.emissionQuant,
-	b.activityTypeID,
+	a.masterkey,
+	a.movesrunid,
+	a.iterationid,
+	a.yearid,
+	a.monthid,
+	a.dayid,
+	a.hourid,
+	a.stateid,
+	a.countyid,
+	a.zoneid,
+	a.linkid,
+	a.pollutantid,
+	a.processid,
+	a.sourcetypeid,
+  a.regclassid,
+	a.fueltypeid,
+	a.modelyearid,
+	a.roadtypeid,
+	a.scc,
+	a.emissionquant,
+	b.activitytypeid,
 	b.activity,
-	(a.emissionquant/b.activity) as emissionRate
+	(a.emissionquant/b.activity) as emissionrate
 from
 	outputtemp as a,
 	activitytemp as b
 where
-	a.MasterKey = b.MasterKey
-and b.activityTypeID = 1;
+	a.masterkey = b.masterkey
+and b.activitytypeid = 1;
 
 
 
 
--- Eliminate the temporary tables.
+-- eliminate the temporary tables.
 drop table outputtemp ;
 drop table activitytemp ;
 drop table distancetemp ;
 
--- Add the units to the table.
+-- add the units to the table.
 update movesrates, movesrun set
 	movesrates.distanceunits=movesrun.distanceunits,
 	movesrates.massunits=movesrun.massunits
 where
 	movesrates.movesrunid=movesrun.movesrunid;
 
-FLUSH TABLES;
+flush tables;

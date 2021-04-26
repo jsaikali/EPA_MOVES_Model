@@ -1,164 +1,164 @@
--- Author Wesley Faler
--- Author Don Smith
--- Version 2014-04-08
+-- author wesley faler
+-- author don smith
+-- version 2014-04-08
 
-drop procedure if exists spCheckZoneImporter;
+drop procedure if exists spcheckzoneimporter;
 
-BeginBlock
-create procedure spCheckZoneImporter()
+beginblock
+create procedure spcheckzoneimporter()
 begin
-	-- Mode 0 is run after importing
-	-- Mode 1 is run to check overall success/failure
+	-- mode 0 is run after importing
+	-- mode 1 is run to check overall success/failure
 	declare mode int default ##mode##;
-	declare isOk int default 1;
-	declare howMany int default 0;
+	declare isok int default 1;
+	declare howmany int default 0;
 
-	-- Scale 0 is national
-	-- Scale 1 is single county
-	-- Scale 2 is project domain
+	-- scale 0 is national
+	-- scale 1 is single county
+	-- scale 2 is project domain
 	declare scale int default ##scale##;
 
-	-- Rate 0 is Inventory
-	-- Rate 1 is Rates
+	-- rate 0 is inventory
+	-- rate 1 is rates
 	declare rate int default ##rate##;
 
-	declare desiredAllocFactor double default 1;
-	declare howManyZones int default 0;
+	declare desiredallocfactor double default 1;
+	declare howmanyzones int default 0;
 
-	-- Build links for imported zones but not for the Project domain (scale=2)
+	-- build links for imported zones but not for the project domain (scale=2)
 	if(scale <> 2) then
-		delete from Link;
+		delete from link;
 
-		insert ignore into Link (linkID, countyID, zoneID, roadTypeID)
-		select (z.zoneID*10 + roadTypeID) as linkID, z.countyID, z.zoneID, roadTypeID
-		from ##defaultDatabase##.roadType, Zone z;
+		insert ignore into link (linkid, countyid, zoneid, roadtypeid)
+		select (z.zoneid*10 + roadtypeid) as linkid, z.countyid, z.zoneid, roadtypeid
+		from ##defaultdatabase##.roadtype, zone z;
 	end if;
 
-	-- Complain if alloc factors are not 1.0.
-	set howManyZones=0;
-	select count(*) into howManyZones from Zone z inner join County c on c.countyID=z.countyID;
-	set howManyZones=ifnull(howManyZones,0);
-	if(howManyZones > 0) then
-		set desiredAllocFactor = 1.0;
+	-- complain if alloc factors are not 1.0.
+	set howmanyzones=0;
+	select count(*) into howmanyzones from zone z inner join county c on c.countyid=z.countyid;
+	set howmanyzones=ifnull(howmanyzones,0);
+	if(howmanyzones > 0) then
+		set desiredallocfactor = 1.0;
 	else
-		insert into importTempMessages (message)
-		select concat('ERROR: No Zones imported for County ',countyID) as errorMessage
-		from County;
+		insert into importtempmessages (message)
+		select concat('error: no zones imported for county ',countyid) as errormessage
+		from county;
 	end if;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Zone startAllocFactor is not ',round(desiredAllocFactor,4),' but instead ',round(sum(startAllocFactor),4)) as errorMessage
-	from Zone
-	having round(sum(startAllocFactor),4) <> round(desiredAllocFactor,4);
+	insert into importtempmessages (message)
+	select concat('error: zone startallocfactor is not ',round(desiredallocfactor,4),' but instead ',round(sum(startallocfactor),4)) as errormessage
+	from zone
+	having round(sum(startallocfactor),4) <> round(desiredallocfactor,4);
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Zone idleAllocFactor is not ',round(desiredAllocFactor,4),' but instead ',round(sum(idleAllocFactor),4)) as errorMessage
-	from Zone
-	having round(sum(idleAllocFactor),4) <> round(desiredAllocFactor,4);
+	insert into importtempmessages (message)
+	select concat('error: zone idleallocfactor is not ',round(desiredallocfactor,4),' but instead ',round(sum(idleallocfactor),4)) as errormessage
+	from zone
+	having round(sum(idleallocfactor),4) <> round(desiredallocfactor,4);
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Zone SHPAllocFactor is not ',round(desiredAllocFactor,4),' but instead ',round(sum(SHPAllocFactor),4)) as errorMessage
-	from Zone
-	having round(sum(SHPAllocFactor),4) <> round(desiredAllocFactor,4);
+	insert into importtempmessages (message)
+	select concat('error: zone shpallocfactor is not ',round(desiredallocfactor,4),' but instead ',round(sum(shpallocfactor),4)) as errormessage
+	from zone
+	having round(sum(shpallocfactor),4) <> round(desiredallocfactor,4);
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Road type ',roadTypeID,' SHOAllocFactor is not ',round(desiredAllocFactor,4),' but instead ',round(sum(SHOAllocFactor),4)) as errorMessage
-	from ZoneRoadType
-	group by roadTypeID
-	having round(sum(SHOAllocFactor),4) <> round(desiredAllocFactor,4);
+	insert into importtempmessages (message)
+	select concat('error: road type ',roadtypeid,' shoallocfactor is not ',round(desiredallocfactor,4),' but instead ',round(sum(shoallocfactor),4)) as errormessage
+	from zoneroadtype
+	group by roadtypeid
+	having round(sum(shoallocfactor),4) <> round(desiredallocfactor,4);
 
-	-- Complain if sums exceed 1.0000
-	insert into importTempMessages (message)
-	select concat('ERROR: Zone startAllocFactor exceeds 1.0, being instead ',round(sum(startAllocFactor),4)) as errorMessage
-	from Zone
-	having round(sum(startAllocFactor),4) > 1.0000;
+	-- complain if sums exceed 1.0000
+	insert into importtempmessages (message)
+	select concat('error: zone startallocfactor exceeds 1.0, being instead ',round(sum(startallocfactor),4)) as errormessage
+	from zone
+	having round(sum(startallocfactor),4) > 1.0000;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Zone idleAllocFactor exceeds 1.0, being instead ',round(sum(idleAllocFactor),4)) as errorMessage
-	from Zone
-	having round(sum(idleAllocFactor),4) > 1.0000;
+	insert into importtempmessages (message)
+	select concat('error: zone idleallocfactor exceeds 1.0, being instead ',round(sum(idleallocfactor),4)) as errormessage
+	from zone
+	having round(sum(idleallocfactor),4) > 1.0000;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Zone SHPAllocFactor exceeds 1.0, being instead ',round(sum(SHPAllocFactor),4)) as errorMessage
-	from Zone
-	having round(sum(SHPAllocFactor),4) > 1.0000;
+	insert into importtempmessages (message)
+	select concat('error: zone shpallocfactor exceeds 1.0, being instead ',round(sum(shpallocfactor),4)) as errormessage
+	from zone
+	having round(sum(shpallocfactor),4) > 1.0000;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Road type ',roadTypeID,' SHOAllocFactor exceeds 1.0, being instead ',round(sum(SHOAllocFactor),4)) as errorMessage
-	from ZoneRoadType
-	group by roadTypeID
-	having round(sum(SHOAllocFactor),4) > 1.0000;
+	insert into importtempmessages (message)
+	select concat('error: road type ',roadtypeid,' shoallocfactor exceeds 1.0, being instead ',round(sum(shoallocfactor),4)) as errormessage
+	from zoneroadtype
+	group by roadtypeid
+	having round(sum(shoallocfactor),4) > 1.0000;
 
-	-- Complain if sums are 0.0 or less
-	insert into importTempMessages (message)
-	select concat('ERROR: Zone startAllocFactor should not be zero, being instead ',round(sum(startAllocFactor),4)) as errorMessage
-	from Zone
-	having round(sum(startAllocFactor),4) <= 0.0000;
+	-- complain if sums are 0.0 or less
+	insert into importtempmessages (message)
+	select concat('error: zone startallocfactor should not be zero, being instead ',round(sum(startallocfactor),4)) as errormessage
+	from zone
+	having round(sum(startallocfactor),4) <= 0.0000;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Zone idleAllocFactor should not be zero, being instead ',round(sum(idleAllocFactor),4)) as errorMessage
-	from Zone
-	having round(sum(idleAllocFactor),4) <= 0.0000;
+	insert into importtempmessages (message)
+	select concat('error: zone idleallocfactor should not be zero, being instead ',round(sum(idleallocfactor),4)) as errormessage
+	from zone
+	having round(sum(idleallocfactor),4) <= 0.0000;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Zone SHPAllocFactor should not be zero, being instead ',round(sum(SHPAllocFactor),4)) as errorMessage
-	from Zone
-	having round(sum(SHPAllocFactor),4) <= 0.0000;
+	insert into importtempmessages (message)
+	select concat('error: zone shpallocfactor should not be zero, being instead ',round(sum(shpallocfactor),4)) as errormessage
+	from zone
+	having round(sum(shpallocfactor),4) <= 0.0000;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Road type ',roadTypeID,' SHOAllocFactor should not be zero, being instead ',round(sum(SHOAllocFactor),4)) as errorMessage
-	from ZoneRoadType
-	group by roadTypeID
-	having round(sum(SHOAllocFactor),4) <= 0.0000;
+	insert into importtempmessages (message)
+	select concat('error: road type ',roadtypeid,' shoallocfactor should not be zero, being instead ',round(sum(shoallocfactor),4)) as errormessage
+	from zoneroadtype
+	group by roadtypeid
+	having round(sum(shoallocfactor),4) <= 0.0000;
 
-	-- Complain about negative allocation factors
-	insert into importTempMessages (message)
-	select concat('ERROR: Zone ',zoneID,' startAllocFactor is negative, being ',round(startAllocFactor,4)) as errorMessage
-	from Zone
-	where round(startAllocFactor,4) < 0.0000;
+	-- complain about negative allocation factors
+	insert into importtempmessages (message)
+	select concat('error: zone ',zoneid,' startallocfactor is negative, being ',round(startallocfactor,4)) as errormessage
+	from zone
+	where round(startallocfactor,4) < 0.0000;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Zone ',zoneID,' idleAllocFactor is negative, being ',round(idleAllocFactor,4)) as errorMessage
-	from Zone
-	where round(idleAllocFactor,4) < 0.0000;
+	insert into importtempmessages (message)
+	select concat('error: zone ',zoneid,' idleallocfactor is negative, being ',round(idleallocfactor,4)) as errormessage
+	from zone
+	where round(idleallocfactor,4) < 0.0000;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Zone ',zoneID,' SHPAllocFactor is negative, being ',round(SHPAllocFactor,4)) as errorMessage
-	from Zone
-	where round(SHPAllocFactor,4) < 0.0000;
+	insert into importtempmessages (message)
+	select concat('error: zone ',zoneid,' shpallocfactor is negative, being ',round(shpallocfactor,4)) as errormessage
+	from zone
+	where round(shpallocfactor,4) < 0.0000;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Zone ',zoneID,' Road type ',roadTypeID,' SHOAllocFactor is negative, being ',round(SHOAllocFactor,4)) as errorMessage
-	from ZoneRoadType
-	where round(SHOAllocFactor,4) < 0.0000;
+	insert into importtempmessages (message)
+	select concat('error: zone ',zoneid,' road type ',roadtypeid,' shoallocfactor is negative, being ',round(shoallocfactor,4)) as errormessage
+	from zoneroadtype
+	where round(shoallocfactor,4) < 0.0000;
 
-	-- ZoneRoadType table should not be empty
-	insert into importTempMessages (message)
-	select concat('ERROR: ZoneRoadType references ',zrtZoneCount,' zones but should reference ',zoneCount,' instead') as errorMessage
+	-- zoneroadtype table should not be empty
+	insert into importtempmessages (message)
+	select concat('error: zoneroadtype references ',zrtzonecount,' zones but should reference ',zonecount,' instead') as errormessage
 	from (
-	select (select count(*) from zone) as zoneCount,
-		(select count(distinct zoneID)
-		from zoneRoadType
-		inner join zone using (zoneID)) as zrtZoneCount
-	) T
-	where zoneCount <> zrtZoneCount;
+	select (select count(*) from zone) as zonecount,
+		(select count(distinct zoneid)
+		from zoneroadtype
+		inner join zone using (zoneid)) as zrtzonecount
+	) t
+	where zonecount <> zrtzonecount;
 
-	if(isOk=1) then
-		set howMany=0;
-		select count(*) into howMany from importTempMessages where message like 'ERROR: %';
-		set howMany=ifnull(howMany,0);
-		if(howMany > 0) then
-			set isOk=0;
+	if(isok=1) then
+		set howmany=0;
+		select count(*) into howmany from importtempmessages where message like 'error: %';
+		set howmany=ifnull(howmany,0);
+		if(howmany > 0) then
+			set isok=0;
 		end if;
 	end if;
 
-	-- Insert 'NOT_READY' or 'OK' to indicate iconic success
+	-- insert 'not_ready' or 'ok' to indicate iconic success
 	if(mode = 1) then
-		insert into importTempMessages (message) values (case when isOk=1 then 'OK' else 'NOT_READY' end);
+		insert into importtempmessages (message) values (case when isok=1 then 'OK' else 'NOT_READY' end);
 	end if;
 
 end
-EndBlock
+endblock
 
-call spCheckZoneImporter();
-drop procedure if exists spCheckZoneImporter;
+call spcheckzoneimporter();
+drop procedure if exists spcheckzoneimporter;

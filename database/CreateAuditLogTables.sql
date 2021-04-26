@@ -1,11 +1,11 @@
--- Version 2008-05-22
--- Create tables for tracking imports and database changes.
+-- version 2008-05-22
+-- create tables for tracking imports and database changes.
 
-create table if not exists auditLog (
-	whenHappened datetime not null,
-	importerName varchar(100) not null,
-	briefDescription varchar(100) null,
-	fullDescription varchar(4096) null,
-	key logByDate (whenHappened),
-	key logByImporter (importerName)
+create table if not exists auditlog (
+	whenhappened datetime not null,
+	importername varchar(100) not null,
+	briefdescription varchar(100) null,
+	fulldescription varchar(4096) null,
+	key logbydate (whenhappened),
+	key logbyimporter (importername)
 );

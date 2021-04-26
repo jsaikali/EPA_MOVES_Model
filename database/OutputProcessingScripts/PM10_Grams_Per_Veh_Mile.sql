@@ -7,21 +7,21 @@
 -- the MOVES RunSpec and importing the appropriate inputs
 --
 
-Drop   table if exists pm10_grams_per_veh_mile;
-Create table pm10_grams_per_veh_mile
-Select   movesRunId,
-         yearId,
-         monthId,
-         hourId,
-         linkId,
+drop   table if exists pm10_grams_per_veh_mile;
+create table pm10_grams_per_veh_mile
+select   movesrunid,
+         yearid,
+         monthid,
+         hourid,
+         linkid,
          'Total PM10' as pollutant,
-         sum(rateperdistance) as GramsPerVehMile
-From     rateperdistance
-where    pollutantId in (100,106,107)
-Group by movesRunId,
-         yearId,
-         monthId,
-         hourId,
-         linkId;
+         sum(rateperdistance) as gramspervehmile
+from     rateperdistance
+where    pollutantid in (100,106,107)
+group by movesrunid,
+         yearid,
+         monthid,
+         hourid,
+         linkid;
 
 

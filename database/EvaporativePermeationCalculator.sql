@@ -1,646 +1,646 @@
--- Author Wesley Faler
--- Author Ed Campbell
--- Version 2014-04-28
+-- author wesley faler
+-- author ed campbell
+-- version 2014-04-28
 
 -- @algorithm
--- @owner Evaporative Permeation Calculator
+-- @owner evaporative permeation calculator
 -- @calculator
 
--- Section Create Remote Tables for Extracted Data
+-- section create remote tables for extracted data
 
-##create.AgeCategory##;
-TRUNCATE AgeCategory;
+##create.agecategory##;
+truncate agecategory;
 
-##create.AverageTankTemperature##;
-TRUNCATE AverageTankTemperature;
+##create.averagetanktemperature##;
+truncate averagetanktemperature;
 
-##create.County##;
-TRUNCATE County;
+##create.county##;
+truncate county;
 
-##create.EmissionRateByAge##;
-TRUNCATE EmissionRateByAge;
+##create.emissionratebyage##;
+truncate emissionratebyage;
 
-##create.ETOHBin##;
-TRUNCATE ETOHBin;
+##create.etohbin##;
+truncate etohbin;
 
-##create.FuelSupply##;
-TRUNCATE FuelSupply;
+##create.fuelsupply##;
+truncate fuelsupply;
 
-##create.FuelSubType##;
-TRUNCATE FuelSubType;
+##create.fuelsubtype##;
+truncate fuelsubtype;
 
-##create.FuelFormulation##;
-TRUNCATE FuelFormulation;
+##create.fuelformulation##;
+truncate fuelformulation;
 
-##create.HCPermeationCoeff##;
-TRUNCATE HCPermeationCoeff;
+##create.hcpermeationcoeff##;
+truncate hcpermeationcoeff;
 
-##create.HourDay##;
-TRUNCATE HourDay;
+##create.hourday##;
+truncate hourday;
 
-##create.Link##;
-TRUNCATE Link;
+##create.link##;
+truncate link;
 
-##create.ModelYear##;
-TRUNCATE ModelYear;
+##create.modelyear##;
+truncate modelyear;
 
-##create.OpModeDistribution##;
-TRUNCATE OpModeDistribution;
+##create.opmodedistribution##;
+truncate opmodedistribution;
 
-##create.PollutantProcessAssoc##;
-TRUNCATE PollutantProcessAssoc;
+##create.pollutantprocessassoc##;
+truncate pollutantprocessassoc;
 
-##create.PollutantProcessModelYear##;
-TRUNCATE PollutantProcessModelYear;
+##create.pollutantprocessmodelyear##;
+truncate pollutantprocessmodelyear;
 
-##create.PollutantProcessMappedModelYear##;
-TRUNCATE PollutantProcessMappedModelYear;
+##create.pollutantprocessmappedmodelyear##;
+truncate pollutantprocessmappedmodelyear;
 
-##create.RunSpecSourceType##;
-TRUNCATE RunSpecSourceType;
+##create.runspecsourcetype##;
+truncate runspecsourcetype;
 
-##create.SourceBinDistribution##;
-TRUNCATE SourceBinDistribution;
+##create.sourcebindistribution##;
+truncate sourcebindistribution;
 
-##create.SourceBin##;
-TRUNCATE SourceBin;
+##create.sourcebin##;
+truncate sourcebin;
 
-##create.SourceHours##;
-TRUNCATE SourceHours;
+##create.sourcehours##;
+truncate sourcehours;
 
-##create.SourceTypeModelYear##;
-TRUNCATE SourceTypeModelYear;
+##create.sourcetypemodelyear##;
+truncate sourcetypemodelyear;
 
-##create.SourceTypeModelYearGroup##;
-TRUNCATE SourceTypeModelYearGroup;
+##create.sourcetypemodelyeargroup##;
+truncate sourcetypemodelyeargroup;
 
-##create.TemperatureAdjustment##;
-TRUNCATE TemperatureAdjustment;
+##create.temperatureadjustment##;
+truncate temperatureadjustment;
 
-##create.Year##;
-TRUNCATE Year;
+##create.year##;
+truncate year;
 
--- Section WithRegClassID
-##create.RegClassSourceTypeFraction##;
-TRUNCATE TABLE RegClassSourceTypeFraction;
--- End Section WithRegClassID
+-- section withregclassid
+##create.regclasssourcetypefraction##;
+truncate table regclasssourcetypefraction;
+-- end section withregclassid
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
--- CREATE TABLE IF NOT EXISTS EventLog (eventRowID INTEGER UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (eventRowID), eventTime DATETIME, eventName VARCHAR(120));
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'Extracting Data';
+-- section extract data
+-- create table if not exists eventlog (eventrowid integer unsigned not null auto_increment, primary key (eventrowid), eventtime datetime, eventname varchar(120));
+-- insert into eventlog (eventtime, eventname) select now(), 'extracting data';
 
-cache SELECT * INTO OUTFILE '##AgeCategory##'
-FROM AgeCategory;
+cache select * into outfile '##agecategory##'
+from agecategory;
 
-cache SELECT * INTO OUTFILE '##AverageTankTemperature##' FROM AverageTankTemperature
-WHERE zoneID = ##context.iterLocation.zoneRecordID##
-AND monthID = ##context.monthID##;
+cache select * into outfile '##averagetanktemperature##' from averagetanktemperature
+where zoneid = ##context.iterlocation.zonerecordid##
+and monthid = ##context.monthid##;
 
-cache SELECT * INTO OUTFILE '##County##'
-FROM County
-WHERE countyID = ##context.iterLocation.countyRecordID##;
+cache select * into outfile '##county##'
+from county
+where countyid = ##context.iterlocation.countyrecordid##;
 
-cache SELECT DISTINCT EmissionRateByAge.* INTO OUTFILE '##EmissionRateByAge##'
-FROM EmissionRateByAge, SourceBinDistribution, SourceTypeModelYear, SourceBin, RunSpecSourceFuelType
-WHERE RunSpecSourceFuelType.fuelTypeID = SourceBin.fuelTypeID
-AND EmissionRateByAge.polProcessID = SourceBinDistribution.polProcessID
-AND EmissionRateByAge.sourceBinID = SourceBin.sourceBinID
-AND EmissionRateByAge.sourceBinID = SourceBinDistribution.sourceBinID
-AND SourceBin.sourceBinID = SourceBinDistribution.sourceBinID
-AND RunSpecSourceFuelType.sourceTypeID = SourceTypeModelYear.sourceTypeID
-AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
-AND SourceTypeModelYear.modelYearID <= ##context.year##
-AND SourceTypeModelYear.modelYearID >= ##context.year## - 30
-AND EmissionRateByAge.polProcessID IN (##pollutantProcessIDs##);
+cache select distinct emissionratebyage.* into outfile '##emissionratebyage##'
+from emissionratebyage, sourcebindistribution, sourcetypemodelyear, sourcebin, runspecsourcefueltype
+where runspecsourcefueltype.fueltypeid = sourcebin.fueltypeid
+and emissionratebyage.polprocessid = sourcebindistribution.polprocessid
+and emissionratebyage.sourcebinid = sourcebin.sourcebinid
+and emissionratebyage.sourcebinid = sourcebindistribution.sourcebinid
+and sourcebin.sourcebinid = sourcebindistribution.sourcebinid
+and runspecsourcefueltype.sourcetypeid = sourcetypemodelyear.sourcetypeid
+and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+and sourcetypemodelyear.modelyearid <= ##context.year##
+and sourcetypemodelyear.modelyearid >= ##context.year## - 30
+and emissionratebyage.polprocessid in (##pollutantprocessids##);
 
-cache SELECT * INTO OUTFILE '##ETOHBin##'
-FROM ETOHBin;
+cache select * into outfile '##etohbin##'
+from etohbin;
 
-cache SELECT FuelSupply.* INTO OUTFILE '##FuelSupply##'
-FROM FuelSupply
-INNER JOIN RunSpecMonthGroup ON (FuelSupply.monthGroupID = RunSpecMonthGroup.monthGroupID)
-INNER JOIN Year ON (FuelSupply.fuelYearID = Year.fuelYearID)
-INNER JOIN MonthOfAnyYear ON (MonthOfAnyYear.monthGroupID=FuelSupply.monthGroupID)
-WHERE fuelRegionID = ##context.fuelRegionID##
-AND yearID = ##context.year##
-AND monthID = ##context.monthID##;
+cache select fuelsupply.* into outfile '##fuelsupply##'
+from fuelsupply
+inner join runspecmonthgroup on (fuelsupply.monthgroupid = runspecmonthgroup.monthgroupid)
+inner join year on (fuelsupply.fuelyearid = year.fuelyearid)
+inner join monthofanyyear on (monthofanyyear.monthgroupid=fuelsupply.monthgroupid)
+where fuelregionid = ##context.fuelregionid##
+and yearid = ##context.year##
+and monthid = ##context.monthid##;
 
-cache SELECT DISTINCT FuelSubType.* INTO OUTFILE '##FuelSubType##'
-FROM FuelSubType
-INNER JOIN RunSpecFuelType ON (RunSpecFuelType.fuelTypeID = FuelSubType.fuelTypeID);
+cache select distinct fuelsubtype.* into outfile '##fuelsubtype##'
+from fuelsubtype
+inner join runspecfueltype on (runspecfueltype.fueltypeid = fuelsubtype.fueltypeid);
 
-cache SELECT ff.* INTO OUTFILE '##FuelFormulation##'
-FROM FuelFormulation ff
-INNER JOIN FuelSupply fs ON fs.fuelFormulationID = ff.fuelFormulationID
-INNER JOIN Year y ON y.fuelYearID = fs.fuelYearID
-INNER JOIN RunSpecMonthGroup rsmg ON rsmg.monthGroupID = fs.monthGroupID
-WHERE fuelRegionID = ##context.fuelRegionID## AND
-yearID = ##context.year##
-GROUP BY ff.FuelFormulationID ORDER BY NULL;
+cache select ff.* into outfile '##fuelformulation##'
+from fuelformulation ff
+inner join fuelsupply fs on fs.fuelformulationid = ff.fuelformulationid
+inner join year y on y.fuelyearid = fs.fuelyearid
+inner join runspecmonthgroup rsmg on rsmg.monthgroupid = fs.monthgroupid
+where fuelregionid = ##context.fuelregionid## and
+yearid = ##context.year##
+group by ff.fuelformulationid order by null;
 
-cache SELECT * INTO OUTFILE '##HCPermeationCoeff##'
-FROM HCPermeationCoeff
-WHERE polProcessID IN (##pollutantProcessIDs##);
+cache select * into outfile '##hcpermeationcoeff##'
+from hcpermeationcoeff
+where polprocessid in (##pollutantprocessids##);
 
-cache SELECT DISTINCT HourDay.* INTO OUTFILE '##HourDay##'
-FROM HourDay,RunSpecHour,RunSpecDay
-WHERE HourDay.dayID = RunSpecDay.dayID
-AND HourDay.hourID = RunSpecHour.hourID;
+cache select distinct hourday.* into outfile '##hourday##'
+from hourday,runspechour,runspecday
+where hourday.dayid = runspecday.dayid
+and hourday.hourid = runspechour.hourid;
 
-cache SELECT Link.* INTO OUTFILE '##Link##'
-FROM Link WHERE linkID = ##context.iterLocation.linkRecordID##;
+cache select link.* into outfile '##link##'
+from link where linkid = ##context.iterlocation.linkrecordid##;
 
-cache SELECT * INTO OUTFILE '##ModelYear##'
-FROM ModelYear
-WHERE modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30;
+cache select * into outfile '##modelyear##'
+from modelyear
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30;
 
-cache SELECT OpModeDistribution.* INTO OUTFILE '##OpModeDistribution##'
-FROM OpModeDistribution, RunSpecSourceType
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND linkID = ##context.iterLocation.linkRecordID##
-AND RunSpecSourceType.sourceTypeID = OpModeDistribution.sourceTypeID;
+cache select opmodedistribution.* into outfile '##opmodedistribution##'
+from opmodedistribution, runspecsourcetype
+where polprocessid in (##pollutantprocessids##)
+and linkid = ##context.iterlocation.linkrecordid##
+and runspecsourcetype.sourcetypeid = opmodedistribution.sourcetypeid;
 
-cache SELECT * INTO OUTFILE '##PollutantProcessAssoc##'
-FROM PollutantProcessAssoc
-WHERE processID=##context.iterProcess.databaseKey##;
+cache select * into outfile '##pollutantprocessassoc##'
+from pollutantprocessassoc
+where processid=##context.iterprocess.databasekey##;
 
-cache SELECT * INTO OUTFILE '##PollutantProcessModelYear##'
-FROM PollutantProcessModelYear
-WHERE modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND polProcessID IN (##pollutantProcessIDs##);
+cache select * into outfile '##pollutantprocessmodelyear##'
+from pollutantprocessmodelyear
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and polprocessid in (##pollutantprocessids##);
 
-cache SELECT * INTO OUTFILE '##PollutantProcessMappedModelYear##'
-FROM PollutantProcessMappedModelYear
-WHERE modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND polProcessID IN (##pollutantProcessIDs##);
+cache select * into outfile '##pollutantprocessmappedmodelyear##'
+from pollutantprocessmappedmodelyear
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and polprocessid in (##pollutantprocessids##);
 
-cache SELECT * INTO OUTFILE '##RunSpecSourceType##'
-FROM RunSpecSourceType;
+cache select * into outfile '##runspecsourcetype##'
+from runspecsourcetype;
 
-cache SELECT DISTINCT SourceBinDistribution.* INTO OUTFILE '##SourceBinDistribution##'
-FROM sourceBinDistributionFuelUsage_##context.iterProcess.databaseKey##_##context.iterLocation.countyRecordID##_##context.year## as SourceBinDistribution, 
-SourceTypeModelYear, SourceBin, RunSpecSourceFuelType
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
-AND SourceTypeModelYear.modelYearID <= ##context.year##
-AND SourceTypeModelYear.modelYearID >= ##context.year## - 30
-AND SourceTypeModelYear.sourceTypeID = RunSpecSourceFuelType.sourceTypeID
-AND SourceBinDistribution.SourceBinID = SourceBin.SourceBinID
-AND SourceBin.fuelTypeID = RunSpecSourceFuelType.fuelTypeID;
+cache select distinct sourcebindistribution.* into outfile '##sourcebindistribution##'
+from sourcebindistributionfuelusage_##context.iterprocess.databasekey##_##context.iterlocation.countyrecordid##_##context.year## as sourcebindistribution, 
+sourcetypemodelyear, sourcebin, runspecsourcefueltype
+where polprocessid in (##pollutantprocessids##)
+and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+and sourcetypemodelyear.modelyearid <= ##context.year##
+and sourcetypemodelyear.modelyearid >= ##context.year## - 30
+and sourcetypemodelyear.sourcetypeid = runspecsourcefueltype.sourcetypeid
+and sourcebindistribution.sourcebinid = sourcebin.sourcebinid
+and sourcebin.fueltypeid = runspecsourcefueltype.fueltypeid;
 
-cache SELECT SourceBin.* INTO OUTFILE '##SourceBin##'
-FROM RunSpecFuelType
-INNER JOIN SourceBin ON (SourceBin.fuelTypeID = RunSpecFuelType.fuelTypeID);
+cache select sourcebin.* into outfile '##sourcebin##'
+from runspecfueltype
+inner join sourcebin on (sourcebin.fueltypeid = runspecfueltype.fueltypeid);
 
-cache SELECT * INTO OUTFILE '##SourceHours##' FROM SourceHours
-WHERE monthID = ##context.monthID##
-AND yearID = ##context.year##
-AND linkID = ##context.iterLocation.linkRecordID##;
+cache select * into outfile '##sourcehours##' from sourcehours
+where monthid = ##context.monthid##
+and yearid = ##context.year##
+and linkid = ##context.iterlocation.linkrecordid##;
 
-cache SELECT SourceTypeModelYear.* INTO OUTFILE '##SourceTypeModelYear##'
-FROM SourceTypeModelYear,RunSpecSourceType
-WHERE SourceTypeModelYear.sourceTypeID = RunSpecSourceType.sourceTypeID
-AND modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30;
+cache select sourcetypemodelyear.* into outfile '##sourcetypemodelyear##'
+from sourcetypemodelyear,runspecsourcetype
+where sourcetypemodelyear.sourcetypeid = runspecsourcetype.sourcetypeid
+and modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30;
 
-cache SELECT SourceTypeModelYearGroup.* INTO OUTFILE '##SourceTypeModelYearGroup##'
-FROM SourceTypeModelYearGroup,RunSpecSourceType
-WHERE SourceTypeModelYearGroup.sourceTypeID = RunSpecSourceType.sourceTypeID;
+cache select sourcetypemodelyeargroup.* into outfile '##sourcetypemodelyeargroup##'
+from sourcetypemodelyeargroup,runspecsourcetype
+where sourcetypemodelyeargroup.sourcetypeid = runspecsourcetype.sourcetypeid;
 
-cache SELECT DISTINCT TemperatureAdjustment.* INTO OUTFILE '##TemperatureAdjustment##'
-FROM TemperatureAdjustment
-INNER JOIN RunSpecFuelType ON (RunSpecFuelType.fuelTypeID = TemperatureAdjustment.fuelTypeID)
-WHERE polProcessID IN (##pollutantProcessIDs##);
+cache select distinct temperatureadjustment.* into outfile '##temperatureadjustment##'
+from temperatureadjustment
+inner join runspecfueltype on (runspecfueltype.fueltypeid = temperatureadjustment.fueltypeid)
+where polprocessid in (##pollutantprocessids##);
 
-cache SELECT Year.* INTO OUTFILE '##Year##'
-FROM Year
-WHERE yearID = ##context.year##;
+cache select year.* into outfile '##year##'
+from year
+where yearid = ##context.year##;
 
--- Section WithRegClassID
+-- section withregclassid
 cache select *
-into outfile '##RegClassSourceTypeFraction##'
-from RegClassSourceTypeFraction
-where modelYearID <= ##context.year##
-and modelYearID >= ##context.year## - 30;
--- End Section WithRegClassID
+into outfile '##regclasssourcetypefraction##'
+from regclasssourcetypefraction
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30;
+-- end section withregclassid
 
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'End Extracting Data';
+-- insert into eventlog (eventtime, eventname) select now(), 'end extracting data';
 
--- End Section Extract Data
+-- end section extract data
 
--- Section Processing
+-- section processing
 
--- Create tables needed for processing
--- CREATE TABLE IF NOT EXISTS EventLog (eventRowID INTEGER UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (eventRowID), eventTime DATETIME, eventName VARCHAR(120));
+-- create tables needed for processing
+-- create table if not exists eventlog (eventrowid integer unsigned not null auto_increment, primary key (eventrowid), eventtime datetime, eventname varchar(120));
 
-DROP TABLE IF EXISTS SourceBinDistributionByAge;
-CREATE TABLE SourceBinDistributionByAge (
-	sourceTypeID SMALLINT NOT NULL,
-	modelYearID SMALLINT NOT NULL,
-	ageGroupID SMALLINT NOT NULL,
-	polProcessID int NOT NULL,
-	sourceBinID	BIGINT NOT NULL,
-	sourceBinActivityFraction FLOAT
+drop table if exists sourcebindistributionbyage;
+create table sourcebindistributionbyage (
+    sourcetypeid smallint not null,
+    modelyearid smallint not null,
+    agegroupid smallint not null,
+    polprocessid int not null,
+    sourcebinid bigint not null,
+    sourcebinactivityfraction float
 );
-	
-CREATE UNIQUE INDEX XPKSourceBinDistributionByAge ON SourceBinDistributionByAge (
-	sourceTypeID ASC,
-	modelYearID ASC,
-	ageGroupID ASC,
-	polProcessID ASC,
-	sourceBinID	ASC
-);
-
-DROP TABLE IF EXISTS SBWeightedPermeationRate;
-CREATE TABLE SBWeightedPermeationRate (
-	zoneID BIGINT NOT NULL, 
-	yearID SMALLINT NOT NULL, 
-	polProcessID int NOT NULL,
-	sourceTypeID SMALLINT NOT NULL, 
-	regClassID SMALLINT NOT NULL,
-	modelYearID SMALLINT NOT NULL, 
-	fuelTypeID SMALLINT NOT NULL,
-	meanBaseRate FLOAT
+    
+create unique index xpksourcebindistributionbyage on sourcebindistributionbyage (
+    sourcetypeid asc,
+    modelyearid asc,
+    agegroupid asc,
+    polprocessid asc,
+    sourcebinid asc
 );
 
-CREATE UNIQUE INDEX XPKSBWeightedPermeationRate ON SBWeightedPermeationRate (
-	zoneID ASC, 
-	yearID ASC, 
-	polProcessID ASC,
-	sourceTypeID ASC, 
-	regClassID ASC,
-	modelYearID ASC, 
-	fuelTypeID ASC
+drop table if exists sbweightedpermeationrate;
+create table sbweightedpermeationrate (
+    zoneid bigint not null, 
+    yearid smallint not null, 
+    polprocessid int not null,
+    sourcetypeid smallint not null, 
+    regclassid smallint not null,
+    modelyearid smallint not null, 
+    fueltypeid smallint not null,
+    meanbaserate float
 );
 
-DROP TABLE IF EXISTS TemperatureAdjustByOpMode;
-CREATE TABLE TemperatureAdjustByOpMode (
-    zoneID	INTEGER NOT NULL,
-    monthID	SMALLINT NOT NULL,
-    hourDayID SMALLINT NOT NULL,
-    tankTemperatureGroupID SMALLINT NOT NULL,
-    opModeID SMALLINT NOT NULL,
-    polProcessID int NOT NULL,
-    fuelTypeID SMALLINT NOT NULL,
-    modelYearID SMALLINT NOT NULL,
-    temperatureAdjustByOpMode	FLOAT
+create unique index xpksbweightedpermeationrate on sbweightedpermeationrate (
+    zoneid asc, 
+    yearid asc, 
+    polprocessid asc,
+    sourcetypeid asc, 
+    regclassid asc,
+    modelyearid asc, 
+    fueltypeid asc
 );
 
-DROP TABLE IF EXISTS WeightedTemperatureAdjust;
-CREATE TABLE WeightedTemperatureAdjust (
-    linkID INTEGER NOT NULL,
-    monthID SMALLINT NOT NULL,
-    hourDayID SMALLINT NOT NULL,
-    tankTemperatureGroupID SMALLINT NOT NULL,
-    sourceTypeID SMALLINT NOT NULL,
-    polProcessID int NOT NULL,
-    fuelTypeID SMALLINT NOT NULL,
-    modelYearID SMALLINT NOT NULL,
-    weightedTemperatureAdjust FLOAT
+drop table if exists temperatureadjustbyopmode;
+create table temperatureadjustbyopmode (
+    zoneid  integer not null,
+    monthid smallint not null,
+    hourdayid smallint not null,
+    tanktemperaturegroupid smallint not null,
+    opmodeid smallint not null,
+    polprocessid int not null,
+    fueltypeid smallint not null,
+    modelyearid smallint not null,
+    temperatureadjustbyopmode   float
 );
 
-CREATE UNIQUE INDEX XPKWeightedTemperatureAdjust ON WeightedTemperatureAdjust (
-    linkID ASC,
-    monthID ASC,
-    hourDayID ASC,
-    tankTemperatureGroupID ASC,
-    sourceTypeID ASC,
-    polProcessID ASC,
-    fuelTypeID ASC,
-    modelYearID ASC
+drop table if exists weightedtemperatureadjust;
+create table weightedtemperatureadjust (
+    linkid integer not null,
+    monthid smallint not null,
+    hourdayid smallint not null,
+    tanktemperaturegroupid smallint not null,
+    sourcetypeid smallint not null,
+    polprocessid int not null,
+    fueltypeid smallint not null,
+    modelyearid smallint not null,
+    weightedtemperatureadjust float
 );
 
-DROP TABLE IF EXISTS WeightedFuelAdjustment;
-CREATE TABLE WeightedFuelAdjustment (
-    countyID INTEGER NOT NULL,
-    fuelYearID	SMALLINT NOT NULL,
-    monthGroupID SMALLINT NOT NULL,
-    polProcessID int NOT NULL,
-    modelYearID SMALLINT NOT NULL,
-    sourceTypeID SMALLINT NOT NULL,
-	fuelTypeID SMALLINT NOT NULL,
-    weightedFuelAdjustment FLOAT
+create unique index xpkweightedtemperatureadjust on weightedtemperatureadjust (
+    linkid asc,
+    monthid asc,
+    hourdayid asc,
+    tanktemperaturegroupid asc,
+    sourcetypeid asc,
+    polprocessid asc,
+    fueltypeid asc,
+    modelyearid asc
 );
 
-CREATE UNIQUE INDEX XPKWeightedFuelAdjustment ON WeightedFuelAdjustment (
-    countyID ASC,
-    fuelYearID	ASC,
-    monthGroupID ASC,
-    polProcessID ASC,
-    modelYearID ASC,
-    fuelTypeID ASC,
-    sourceTypeID ASC
+drop table if exists weightedfueladjustment;
+create table weightedfueladjustment (
+    countyid integer not null,
+    fuelyearid  smallint not null,
+    monthgroupid smallint not null,
+    polprocessid int not null,
+    modelyearid smallint not null,
+    sourcetypeid smallint not null,
+    fueltypeid smallint not null,
+    weightedfueladjustment float
 );
 
-DROP TABLE IF EXISTS FuelAdjustedEmissionRate;
-CREATE TABLE FuelAdjustedEmissionRate (
-    zoneID INTEGER NOT NULL,
-	yearID SMALLINT NOT NULL,
-    polProcessID int NOT NULL,
-    sourceTypeID SMALLINT NOT NULL,
-	regClassID SMALLINT NOT NULL,
-    modelYearID	SMALLINT NOT NULL,
-	fuelTypeID	SMALLINT NOT NULL,
-    fuelAdjustedEmissionRate FLOAT
+create unique index xpkweightedfueladjustment on weightedfueladjustment (
+    countyid asc,
+    fuelyearid  asc,
+    monthgroupid asc,
+    polprocessid asc,
+    modelyearid asc,
+    fueltypeid asc,
+    sourcetypeid asc
 );
 
-CREATE UNIQUE INDEX XPKFuelAdjustedEmissionRate ON FuelAdjustedEmissionRate (
-    zoneID ASC,
-	yearID ASC,
-    polProcessID ASC,
-    sourceTypeID ASC,
-    regClassID ASC,
-    modelYearID	ASC,
-	fuelTypeID ASC
+drop table if exists fueladjustedemissionrate;
+create table fueladjustedemissionrate (
+    zoneid integer not null,
+    yearid smallint not null,
+    polprocessid int not null,
+    sourcetypeid smallint not null,
+    regclassid smallint not null,
+    modelyearid smallint not null,
+    fueltypeid  smallint not null,
+    fueladjustedemissionrate float
 );
 
-DROP TABLE IF EXISTS FuelAdjustedEmissionQuant;
-CREATE TABLE FuelAdjustedEmissionQuant (
-    linkID INTEGER NOT NULL,
-    hourDayID SMALLINT NOT NULL,
-    monthID SMALLINT NOT NULL,
-    yearID SMALLINT NOT NULL,
-    modelYearID SMALLINT NOT NULL,
-    sourceTypeID SMALLINT NOT NULL,
-    regClassID SMALLINT NOT NULL,
-    polProcessID int NOT NULL,
-    fuelTypeID SMALLINT NOT NULL,
-    fuelAdjustedEmissionQuant FLOAT
+create unique index xpkfueladjustedemissionrate on fueladjustedemissionrate (
+    zoneid asc,
+    yearid asc,
+    polprocessid asc,
+    sourcetypeid asc,
+    regclassid asc,
+    modelyearid asc,
+    fueltypeid asc
 );
 
-CREATE UNIQUE INDEX XPKFuelAdjustedEmissionQuant ON FuelAdjustedEmissionQuant (
-    linkID ASC, 
-    hourDayID ASC,
-    monthID ASC, 
-    yearID ASC,
-    modelYearID ASC,
-    sourceTypeID ASC,
-    regClassID ASC,
-    polProcessID ASC,
-    fuelTypeID ASC
+drop table if exists fueladjustedemissionquant;
+create table fueladjustedemissionquant (
+    linkid integer not null,
+    hourdayid smallint not null,
+    monthid smallint not null,
+    yearid smallint not null,
+    modelyearid smallint not null,
+    sourcetypeid smallint not null,
+    regclassid smallint not null,
+    polprocessid int not null,
+    fueltypeid smallint not null,
+    fueladjustedemissionquant float
 );
 
-update FuelFormulation set ETOHVolume=0 where ETOHVolume is null;
+create unique index xpkfueladjustedemissionquant on fueladjustedemissionquant (
+    linkid asc, 
+    hourdayid asc,
+    monthid asc, 
+    yearid asc,
+    modelyearid asc,
+    sourcetypeid asc,
+    regclassid asc,
+    polprocessid asc,
+    fueltypeid asc
+);
 
-loop ##loop.sourceTypeID##;
-select sourceTypeID from RunSpecSourceType;
+update fuelformulation set etohvolume=0 where etohvolume is null;
+
+loop ##loop.sourcetypeid##;
+select sourcetypeid from runspecsourcetype;
 
 --
--- PC-1: Weight Emission Rates by Source Bin
+-- pc-1: weight emission rates by source bin
 --
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'PC-1a: Weight Emission Rates by Source Bin';
+-- insert into eventlog (eventtime, eventname) select now(), 'pc-1a: weight emission rates by source bin';
 
-TRUNCATE SourceBinDistributionByAge;
+truncate sourcebindistributionbyage;
 
--- @algorithm Add ageGroupID to SourceBinDistribution.sourceBinActivityFraction using model year and the calendar year.
-INSERT INTO SourceBinDistributionByAge (sourceTypeID, modelYearID, ageGroupID,
-	polProcessID, sourceBinID, sourceBinActivityFraction)
-SELECT sourceTypeID, modelYearID, ageGroupID, polProcessID, 
-	sourceBinID, sourceBinActivityFraction
-FROM SourceBinDistribution sbd
-INNER JOIN SourceTypeModelYear stmy ON (stmy.sourceTypeModelYearID=sbd.sourceTypeModelYearID)
-INNER JOIN AgeCategory ac ON (ac.ageID = ##context.year## - modelYearID)
-WHERE sourceTypeID = ##loop.sourceTypeID##;
+-- @algorithm add agegroupid to sourcebindistribution.sourcebinactivityfraction using model year and the calendar year.
+insert into sourcebindistributionbyage (sourcetypeid, modelyearid, agegroupid,
+    polprocessid, sourcebinid, sourcebinactivityfraction)
+select sourcetypeid, modelyearid, agegroupid, polprocessid, 
+    sourcebinid, sourcebinactivityfraction
+from sourcebindistribution sbd
+inner join sourcetypemodelyear stmy on (stmy.sourcetypemodelyearid=sbd.sourcetypemodelyearid)
+inner join agecategory ac on (ac.ageid = ##context.year## - modelyearid)
+where sourcetypeid = ##loop.sourcetypeid##;
 
-ANALYZE TABLE SourceBinDistributionByAge;
+analyze table sourcebindistributionbyage;
 
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'PC-1b: Weight Emission Rates by Source Bin';
+-- insert into eventlog (eventtime, eventname) select now(), 'pc-1b: weight emission rates by source bin';
 
-TRUNCATE SBWeightedPermeationRate;
+truncate sbweightedpermeationrate;
 
--- Section WithRegClassID
+-- section withregclassid
 
--- @algorithm SBWeightedPermeationRate.meanBaseRate = sourceBinActivityFraction * EmissionRateByAge.meanBaseRate * regClassFraction
-INSERT INTO SBWeightedPermeationRate (zoneID, yearID, polProcessID, sourceTypeID, regClassID,
-	modelYearID, fuelTypeID, meanBaseRate)
-SELECT ##context.iterLocation.zoneRecordID##, ##context.year## AS yearID, sbda.polProcessID, 
-	sbda.sourceTypeID, stf.regClassID, sbda.modelYearID, sb.fuelTypeID, 
-	SUM(sourceBinActivityFraction*meanBaseRate*stf.regClassFraction) AS meanBaseRate
-FROM SourceBinDistributionByAge sbda
-INNER JOIN EmissionRateByAge era ON (era.sourceBinID=sbda.sourceBinID AND
-	era.polProcessID=sbda.polProcessID AND era.ageGroupID=sbda.ageGroupID)
-INNER JOIN SourceBin sb ON (sb.sourceBinID=era.sourceBinID)
-inner join RegClassSourceTypeFraction stf on (
-	stf.sourceTypeID = sbda.sourceTypeID
-	and stf.fuelTypeID = sb.fuelTypeID
-	and stf.modelYearID = sbda.modelYearID)
-WHERE sbda.sourceTypeID = ##loop.sourceTypeID##
-GROUP BY sbda.polProcessID, sbda.sourceTypeID, stf.regClassID, sbda.modelYearID, sb.fuelTypeID
+-- @algorithm sbweightedpermeationrate.meanbaserate = sourcebinactivityfraction * emissionratebyage.meanbaserate * regclassfraction
+insert into sbweightedpermeationrate (zoneid, yearid, polprocessid, sourcetypeid, regclassid,
+    modelyearid, fueltypeid, meanbaserate)
+select ##context.iterlocation.zonerecordid##, ##context.year## as yearid, sbda.polprocessid, 
+    sbda.sourcetypeid, stf.regclassid, sbda.modelyearid, sb.fueltypeid, 
+    sum(sourcebinactivityfraction*meanbaserate*stf.regclassfraction) as meanbaserate
+from sourcebindistributionbyage sbda
+inner join emissionratebyage era on (era.sourcebinid=sbda.sourcebinid and
+    era.polprocessid=sbda.polprocessid and era.agegroupid=sbda.agegroupid)
+inner join sourcebin sb on (sb.sourcebinid=era.sourcebinid)
+inner join regclasssourcetypefraction stf on (
+    stf.sourcetypeid = sbda.sourcetypeid
+    and stf.fueltypeid = sb.fueltypeid
+    and stf.modelyearid = sbda.modelyearid)
+where sbda.sourcetypeid = ##loop.sourcetypeid##
+group by sbda.polprocessid, sbda.sourcetypeid, stf.regclassid, sbda.modelyearid, sb.fueltypeid
 order by null;
--- End Section WithRegClassID
+-- end section withregclassid
 
--- Section NoRegClassID
-INSERT INTO SBWeightedPermeationRate (zoneID, yearID, polProcessID, sourceTypeID, regClassID,
-	modelYearID, fuelTypeID, meanBaseRate)
-SELECT ##context.iterLocation.zoneRecordID##, ##context.year## AS yearID, sbda.polProcessID, 
-	sbda.sourceTypeID, 0 as regClassID, modelYearID, sb.fuelTypeID, 
-	SUM(sourceBinActivityFraction*meanBaseRate) AS meanBaseRate
-FROM SourceBinDistributionByAge sbda
-INNER JOIN EmissionRateByAge era ON (era.sourceBinID=sbda.sourceBinID AND
-	era.polProcessID=sbda.polProcessID AND era.ageGroupID=sbda.ageGroupID)
-INNER JOIN SourceBin sb ON (sb.sourceBinID=era.sourceBinID)
-WHERE sbda.sourceTypeID = ##loop.sourceTypeID##
-GROUP BY sbda.polProcessID, sbda.sourceTypeID, modelYearID, sb.fuelTypeID
+-- section noregclassid
+insert into sbweightedpermeationrate (zoneid, yearid, polprocessid, sourcetypeid, regclassid,
+    modelyearid, fueltypeid, meanbaserate)
+select ##context.iterlocation.zonerecordid##, ##context.year## as yearid, sbda.polprocessid, 
+    sbda.sourcetypeid, 0 as regclassid, modelyearid, sb.fueltypeid, 
+    sum(sourcebinactivityfraction*meanbaserate) as meanbaserate
+from sourcebindistributionbyage sbda
+inner join emissionratebyage era on (era.sourcebinid=sbda.sourcebinid and
+    era.polprocessid=sbda.polprocessid and era.agegroupid=sbda.agegroupid)
+inner join sourcebin sb on (sb.sourcebinid=era.sourcebinid)
+where sbda.sourcetypeid = ##loop.sourcetypeid##
+group by sbda.polprocessid, sbda.sourcetypeid, modelyearid, sb.fueltypeid
 order by null;
--- End Section NoRegClassID
+-- end section noregclassid
 
-ANALYZE TABLE SBWeightedPermeationRate;
+analyze table sbweightedpermeationrate;
 
 --
--- PC-2: Calculate weighted temperature adjustment
+-- pc-2: calculate weighted temperature adjustment
 --
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'PC-2a: Calculate weighted temperature adjustment';
+-- insert into eventlog (eventtime, eventname) select now(), 'pc-2a: calculate weighted temperature adjustment';
 
-TRUNCATE TemperatureAdjustByOpMode;
+truncate temperatureadjustbyopmode;
 
--- @algorithm temperatureAdjustByOpMode = tempAdjustTermA*EXP(tempAdjustTermB*averageTankTemperature)
-INSERT INTO TemperatureAdjustByOpMode (
-	zoneID, monthID, hourDayID, tankTemperatureGroupID, opModeID, polProcessID,
-	fuelTypeID, temperatureAdjustByOpMode,
-	modelYearID )
-SELECT zoneID, monthID, hourDayID, tankTemperatureGroupID, opModeID, polProcessID, fuelTypeID,
-	tempAdjustTermA*EXP(tempAdjustTermB*averageTankTemperature) AS temperatureAdjustByOpMode,
-	modelYearID
-FROM AverageTankTemperature
-INNER JOIN TemperatureAdjustment
-INNER JOIN ModelYear my on (modelYearID between minModelYearID and maxModelYearID);
+-- @algorithm temperatureadjustbyopmode = tempadjustterma*exp(tempadjusttermb*averagetanktemperature)
+insert into temperatureadjustbyopmode (
+    zoneid, monthid, hourdayid, tanktemperaturegroupid, opmodeid, polprocessid,
+    fueltypeid, temperatureadjustbyopmode,
+    modelyearid )
+select zoneid, monthid, hourdayid, tanktemperaturegroupid, opmodeid, polprocessid, fueltypeid,
+    tempadjustterma*exp(tempadjusttermb*averagetanktemperature) as temperatureadjustbyopmode,
+    modelyearid
+from averagetanktemperature
+inner join temperatureadjustment
+inner join modelyear my on (modelyearid between minmodelyearid and maxmodelyearid);
 
-create index ixTemperatureAdjustByOpMode1 on TemperatureAdjustByOpMode (
-	hourDayID asc,
-	polProcessID asc,
-	opModeID asc,
-	zoneID asc,
-	modelYearID asc
+create index ixtemperatureadjustbyopmode1 on temperatureadjustbyopmode (
+    hourdayid asc,
+    polprocessid asc,
+    opmodeid asc,
+    zoneid asc,
+    modelyearid asc
 );
 
 
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'PC-2b: Calculate weighted temperature adjustment';
+-- insert into eventlog (eventtime, eventname) select now(), 'pc-2b: calculate weighted temperature adjustment';
 
-TRUNCATE WeightedTemperatureAdjust;
+truncate weightedtemperatureadjust;
 
--- @algorithm weightedTemperatureAdjust = sum(temperatureAdjustByOpMode * opModeFraction) across all operating modes.
-INSERT INTO WeightedTemperatureAdjust (
-	linkID, monthID, hourDayID, tankTemperatureGroupID, sourceTypeID,
-	polProcessID, fuelTypeID, modelYearID, weightedTemperatureAdjust)
-SELECT omd.linkID, monthID, taom.hourDayID, tankTemperatureGroupID,
-	sourceTypeID, taom.polProcessID, fuelTypeID, modelYearID,
-	SUM(temperatureAdjustByOpMode*opModeFraction) AS weightedTemperatureAdjust
-FROM TemperatureAdjustByOpMode taom
-INNER JOIN OpModeDistribution omd ON (omd.hourDayID=taom.hourDayID AND
-	omd.polProcessID=taom.polProcessID AND taom.opModeID=omd.opModeID)
-INNER JOIN Link l ON (l.linkID=omd.linkID AND l.zoneID=taom.zoneID)
-WHERE sourceTypeID = ##loop.sourceTypeID##
-GROUP BY omd.linkID, monthID, taom.hourDayID, tankTemperatureGroupID,
-	sourceTypeID, taom.polProcessID, fuelTypeID, modelYearID
-ORDER BY NULL; 
+-- @algorithm weightedtemperatureadjust = sum(temperatureadjustbyopmode * opmodefraction) across all operating modes.
+insert into weightedtemperatureadjust (
+    linkid, monthid, hourdayid, tanktemperaturegroupid, sourcetypeid,
+    polprocessid, fueltypeid, modelyearid, weightedtemperatureadjust)
+select omd.linkid, monthid, taom.hourdayid, tanktemperaturegroupid,
+    sourcetypeid, taom.polprocessid, fueltypeid, modelyearid,
+    sum(temperatureadjustbyopmode*opmodefraction) as weightedtemperatureadjust
+from temperatureadjustbyopmode taom
+inner join opmodedistribution omd on (omd.hourdayid=taom.hourdayid and
+    omd.polprocessid=taom.polprocessid and taom.opmodeid=omd.opmodeid)
+inner join link l on (l.linkid=omd.linkid and l.zoneid=taom.zoneid)
+where sourcetypeid = ##loop.sourcetypeid##
+group by omd.linkid, monthid, taom.hourdayid, tanktemperaturegroupid,
+    sourcetypeid, taom.polprocessid, fueltypeid, modelyearid
+order by null; 
 
-ANALYZE TABLE WeightedTemperatureAdjust;
-
---
--- PC-3: Calculate weighted fuel adjustment
---
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'PC-3: Calculate weighted fuel adjustment';
-
-TRUNCATE WeightedFuelAdjustment;
-
--- INSERT INTO WeightedFuelAdjustment (
--- countyID, fuelYearID, monthGroupID, polProcessID, modelYearID, fuelTypeID,
--- sourceTypeID, weightedFuelAdjustment)
--- SELECT countyID, fs.fuelYearID, monthGroupID, fa.polProcessID, modelYearID, fst.fuelTypeID,
--- sourceTypeID, SUM(marketShare*fuelAdjustment) AS weightedFuelAdjustment
--- FROM FuelAdjustment fa
--- INNER JOIN PollutantProcessModelYear ppmy ON (ppmy.polProcessID=fa.polProcessID AND
--- ppmy.fuelMYGroupID=fa.fuelMYGroupid)
--- INNER JOIN FuelSupply fs ON (fs.fuelFormulationID=fa.fuelFormulationID)
--- INNER JOIN Year y ON (y.fuelYearID=fs.fuelYearID)
--- INNER JOIN FuelFormulation ff ON (ff.fuelFormulationID=fs.fuelFormulationID)
--- INNER JOIN FuelSubType fst ON (fst.fuelSubTypeID=ff.fuelSubTypeID)
--- WHERE y.yearID=??context.year??
--- AND sourceTypeID = ##loop.sourceTypeID##
--- GROUP BY countyID, fs.fuelYearID, monthGroupID, fa.polProcessID, modelYearID, fst.fuelTypeID,
--- sourceTypeID
--- ORDER BY NULL
-
--- @algorithm weightedFuelAdjustment = sum(marketShare*(fuelAdjustment+GPAFract*(fuelAdjustmentGPA-fuelAdjustment))) across fuel formulations in the fuel supply.
-INSERT INTO WeightedFuelAdjustment (
-	countyID, fuelYearID, monthGroupID, polProcessID, modelYearID, fuelTypeID,
-	sourceTypeID, weightedFuelAdjustment)
-SELECT c.countyID, fs.fuelYearID, fs.monthGroupID, fa.polProcessID, ppmy.modelYearID, fst.fuelTypeID,
-	##loop.sourceTypeID## as sourceTypeID, 
-	SUM(marketShare*(fuelAdjustment+GPAFract*(fuelAdjustmentGPA-fuelAdjustment))) AS weightedFuelAdjustment
-FROM FuelSupply fs
-INNER JOIN County c
-INNER JOIN HCPermeationCoeff fa
-INNER JOIN PollutantProcessMappedModelYear ppmy ON (ppmy.polProcessID=fa.polProcessID
-	AND ppmy.fuelMYGroupID=fa.fuelMYGroupid)
-INNER JOIN Year y ON (y.fuelYearID=fs.fuelYearID)
-INNER JOIN FuelFormulation ff ON (ff.fuelFormulationID=fs.fuelFormulationID)
-INNER JOIN ETOHBin ebin ON (ebin.etohThreshID=fa.etohThreshID
-	AND etohThreshLow <= ff.ETOHVolume AND ff.ETOHVolume < etohThreshHigh)
-INNER JOIN FuelSubType fst ON (fst.fuelSubTypeID=ff.fuelSubTypeID)
-WHERE y.yearID=##context.year##
-AND fs.fuelRegionID = ##context.fuelRegionID##
-GROUP BY c.countyID, fs.fuelYearID, fs.monthGroupID, fa.polProcessID, ppmy.modelYearID, fst.fuelTypeID, sourceTypeID
-ORDER BY NULL;
-
---AND sourceTypeID = ##loop.sourceTypeID##  -- sourceTypeID is not in any of the new tables
-
-ANALYZE TABLE WeightedFuelAdjustment;
+analyze table weightedtemperatureadjust;
 
 --
--- PC-4: Calculate Fuel Adjusted Mean Base Rate
+-- pc-3: calculate weighted fuel adjustment
 --
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'PC-4: Calculate Fuel Adjusted Mean Base Rate';
+-- insert into eventlog (eventtime, eventname) select now(), 'pc-3: calculate weighted fuel adjustment';
 
-TRUNCATE FuelAdjustedEmissionRate;
+truncate weightedfueladjustment;
 
--- @algorithm fuelAdjustedEmissionRate = SBWeightedPermeationRate.meanBaseRate * weightedFuelAdjustment
-INSERT INTO FuelAdjustedEmissionRate (zoneID, yearID, polProcessID,
-	sourceTypeID, regClassID, modelYearID, fuelTypeID, fuelAdjustedEmissionRate)
-SELECT zoneID, sbwpr.yearID, sbwpr.polProcessID, sbwpr.sourceTypeID, sbwpr.regClassID,
-	sbwpr.modelYearID, sbwpr.fuelTypeID, meanBaseRate*weightedFuelAdjustment 
-FROM SBWeightedPermeationRate sbwpr
-INNER JOIN WeightedFuelAdjustment wfa ON (wfa.polProcessID=sbwpr.polProcessID AND
-	wfa.modelYearID=sbwpr.modelYearID AND wfa.sourceTypeID=sbwpr.sourceTypeID AND
-	wfa.fuelTypeID=sbwpr.fuelTypeID)
-INNER JOIN Year y ON (y.yearID=sbwpr.yearID AND y.fuelYearID=wfa.fuelYearID)
-WHERE sbwpr.sourceTypeID = ##loop.sourceTypeID##;
+-- insert into weightedfueladjustment (
+-- countyid, fuelyearid, monthgroupid, polprocessid, modelyearid, fueltypeid,
+-- sourcetypeid, weightedfueladjustment)
+-- select countyid, fs.fuelyearid, monthgroupid, fa.polprocessid, modelyearid, fst.fueltypeid,
+-- sourcetypeid, sum(marketshare*fueladjustment) as weightedfueladjustment
+-- from fueladjustment fa
+-- inner join pollutantprocessmodelyear ppmy on (ppmy.polprocessid=fa.polprocessid and
+-- ppmy.fuelmygroupid=fa.fuelmygroupid)
+-- inner join fuelsupply fs on (fs.fuelformulationid=fa.fuelformulationid)
+-- inner join year y on (y.fuelyearid=fs.fuelyearid)
+-- inner join fuelformulation ff on (ff.fuelformulationid=fs.fuelformulationid)
+-- inner join fuelsubtype fst on (fst.fuelsubtypeid=ff.fuelsubtypeid)
+-- where y.yearid=??context.year??
+-- and sourcetypeid = ##loop.sourcetypeid##
+-- group by countyid, fs.fuelyearid, monthgroupid, fa.polprocessid, modelyearid, fst.fueltypeid,
+-- sourcetypeid
+-- order by null
 
-ANALYZE TABLE FuelAdjustedEmissionRate;
+-- @algorithm weightedfueladjustment = sum(marketshare*(fueladjustment+gpafract*(fueladjustmentgpa-fueladjustment))) across fuel formulations in the fuel supply.
+insert into weightedfueladjustment (
+    countyid, fuelyearid, monthgroupid, polprocessid, modelyearid, fueltypeid,
+    sourcetypeid, weightedfueladjustment)
+select c.countyid, fs.fuelyearid, fs.monthgroupid, fa.polprocessid, ppmy.modelyearid, fst.fueltypeid,
+    ##loop.sourcetypeid## as sourcetypeid, 
+    sum(marketshare*(fueladjustment+gpafract*(fueladjustmentgpa-fueladjustment))) as weightedfueladjustment
+from fuelsupply fs
+inner join county c
+inner join hcpermeationcoeff fa
+inner join pollutantprocessmappedmodelyear ppmy on (ppmy.polprocessid=fa.polprocessid
+    and ppmy.fuelmygroupid=fa.fuelmygroupid)
+inner join year y on (y.fuelyearid=fs.fuelyearid)
+inner join fuelformulation ff on (ff.fuelformulationid=fs.fuelformulationid)
+inner join etohbin ebin on (ebin.etohthreshid=fa.etohthreshid
+    and etohthreshlow <= ff.etohvolume and ff.etohvolume < etohthreshhigh)
+inner join fuelsubtype fst on (fst.fuelsubtypeid=ff.fuelsubtypeid)
+where y.yearid=##context.year##
+and fs.fuelregionid = ##context.fuelregionid##
+group by c.countyid, fs.fuelyearid, fs.monthgroupid, fa.polprocessid, ppmy.modelyearid, fst.fueltypeid, sourcetypeid
+order by null;
+
+--and sourcetypeid = ##loop.sourcetypeid##  -- sourcetypeid is not in any of the new tables
+
+analyze table weightedfueladjustment;
 
 --
--- PC-5: Calculate fuel adjusted emissionQuant
+-- pc-4: calculate fuel adjusted mean base rate
 --
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'PC-5: Calculate fuel adjusted emissionQuant';
+-- insert into eventlog (eventtime, eventname) select now(), 'pc-4: calculate fuel adjusted mean base rate';
 
-TRUNCATE FuelAdjustedEmissionQuant;
+truncate fueladjustedemissionrate;
 
--- @algorithm fuelAdjustedEmissionQuant = fuelAdjustedEmissionRate * sourceHours
-INSERT INTO FuelAdjustedEmissionQuant (
-	linkID, hourDayID, monthID, yearID, modelYearID,
-	sourceTypeID, regClassID, polProcessID, fuelTypeID, fuelAdjustedEmissionQuant) 
-SELECT sh.linkID, sh.hourDayID, sh.monthID, fambr.yearID, 
-	fambr.modelYearID, fambr.sourceTypeID, fambr.regClassID, fambr.polProcessID, fambr.fuelTypeID,
-	fuelAdjustedEmissionRate*sourceHours AS fuelAdjustedEmissionQuant
-FROM SourceHours sh 
-INNER JOIN FuelAdjustedEmissionRate fambr ON (fambr.yearID=sh.yearID 
-	AND fambr.modelYearID=sh.yearID-sh.ageID AND fambr.sourceTypeID=sh.sourceTypeID)
-INNER JOIN Link l ON (l.linkID=sh.linkID AND l.zoneID=fambr.zoneID)
-WHERE sh.yearID=##context.year##
-AND fambr.sourceTypeID = ##loop.sourceTypeID##;
+-- @algorithm fueladjustedemissionrate = sbweightedpermeationrate.meanbaserate * weightedfueladjustment
+insert into fueladjustedemissionrate (zoneid, yearid, polprocessid,
+    sourcetypeid, regclassid, modelyearid, fueltypeid, fueladjustedemissionrate)
+select zoneid, sbwpr.yearid, sbwpr.polprocessid, sbwpr.sourcetypeid, sbwpr.regclassid,
+    sbwpr.modelyearid, sbwpr.fueltypeid, meanbaserate*weightedfueladjustment 
+from sbweightedpermeationrate sbwpr
+inner join weightedfueladjustment wfa on (wfa.polprocessid=sbwpr.polprocessid and
+    wfa.modelyearid=sbwpr.modelyearid and wfa.sourcetypeid=sbwpr.sourcetypeid and
+    wfa.fueltypeid=sbwpr.fueltypeid)
+inner join year y on (y.yearid=sbwpr.yearid and y.fuelyearid=wfa.fuelyearid)
+where sbwpr.sourcetypeid = ##loop.sourcetypeid##;
 
-ANALYZE TABLE FuelAdjustedEmissionQuant;
+analyze table fueladjustedemissionrate;
 
 --
--- PC-6: Calculate EmissionQuant with Temperature Adjustment
+-- pc-5: calculate fuel adjusted emissionquant
 --
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'PC-6: Calculate EmissionQuant with Temperature Adjustment';
+-- insert into eventlog (eventtime, eventname) select now(), 'pc-5: calculate fuel adjusted emissionquant';
 
--- @algorithm emissionQuant = weightedTemperatureAdjust * fuelAdjustedEmissionQuant
-INSERT INTO MOVESWorkerOutput (
-	stateID, countyID, zoneID, linkID, roadTypeID, yearID, monthID, dayID, hourID,
-	pollutantID, processID, sourceTypeID, regClassID, modelYearID, fuelTypeID, SCC, emissionQuant)
-SELECT stateID, l.countyID, l.zoneID, faeq.linkID, roadTypeID, yearID, faeq.monthID, dayID, hourID, pollutantID,
-	processID, faeq.sourceTypeID, faeq.regClassID, faeq.modelYearID, faeq.fuelTypeID, NULL AS SCC, 
-	weightedTemperatureAdjust*fuelAdjustedEmissionQuant AS emissionQuant
-FROM FuelAdjustedEmissionQuant faeq 
-INNER JOIN WeightedTemperatureAdjust wta ON (
-	wta.linkID=faeq.linkID AND wta.hourDayID=faeq.hourDayID AND
-	wta.monthID=faeq.monthID AND wta.sourceTypeID=faeq.sourceTypeID AND
-	wta.polProcessID=faeq.polProcessID AND wta.fuelTypeID=faeq.fuelTypeID AND
-	wta.modelYearID=faeq.modelYearID)
-INNER JOIN PollutantProcessAssoc ppa ON (
-	ppa.polProcessID=faeq.polProcessID)
-INNER JOIN PollutantProcessModelYear ppmy ON (
-	ppmy.polProcessID=ppa.polProcessID AND
-	ppmy.modelYearID=faeq.modelYearID)
-INNER JOIN SourceTypeModelYearGroup stmyg ON (
-	stmyg.sourceTypeID=faeq.sourceTypeID AND
-	stmyg.modelYearGroupID=ppmy.modelYearGroupID AND
-	stmyg.tankTemperatureGroupID=wta.tankTemperatureGroupID)
-INNER JOIN HourDay hd ON (hd.hourDayID=faeq.hourDayID)
-INNER JOIN Link l ON (l.linkID=faeq.linkID)
-INNER JOIN County c ON (c.countyID=l.countyID)
-WHERE faeq.sourceTypeID = ##loop.sourceTypeID##;
+truncate fueladjustedemissionquant;
 
-end loop ##loop.sourceTypeID##;
+-- @algorithm fueladjustedemissionquant = fueladjustedemissionrate * sourcehours
+insert into fueladjustedemissionquant (
+    linkid, hourdayid, monthid, yearid, modelyearid,
+    sourcetypeid, regclassid, polprocessid, fueltypeid, fueladjustedemissionquant) 
+select sh.linkid, sh.hourdayid, sh.monthid, fambr.yearid, 
+    fambr.modelyearid, fambr.sourcetypeid, fambr.regclassid, fambr.polprocessid, fambr.fueltypeid,
+    fueladjustedemissionrate*sourcehours as fueladjustedemissionquant
+from sourcehours sh 
+inner join fueladjustedemissionrate fambr on (fambr.yearid=sh.yearid 
+    and fambr.modelyearid=sh.yearid-sh.ageid and fambr.sourcetypeid=sh.sourcetypeid)
+inner join link l on (l.linkid=sh.linkid and l.zoneid=fambr.zoneid)
+where sh.yearid=##context.year##
+and fambr.sourcetypeid = ##loop.sourcetypeid##;
 
-alter table TemperatureAdjustByOpMode drop index ixTemperatureAdjustByOpMode1;
+analyze table fueladjustedemissionquant;
 
--- End Section Processing
--- Section Cleanup
--- INSERT INTO EventLog (eventTime, eventName) SELECT NOW(), 'Section Cleanup';
+--
+-- pc-6: calculate emissionquant with temperature adjustment
+--
+-- insert into eventlog (eventtime, eventname) select now(), 'pc-6: calculate emissionquant with temperature adjustment';
 
-DROP TABLE IF EXISTS FuelAdjustedEmissionQuant;
-DROP TABLE IF EXISTS FuelAdjustedEmissionRate;
-DROP TABLE IF EXISTS SBWeightedPermeationRate;
-DROP TABLE IF EXISTS SourceBinDistributionByAge;
-DROP TABLE IF EXISTS TemperatureAdjustByOpMode;
-DROP TABLE IF EXISTS WeightedFuelAdjustment;
-DROP TABLE IF EXISTS WeightedTemperatureAdjust;
--- End Section Cleanup
+-- @algorithm emissionquant = weightedtemperatureadjust * fueladjustedemissionquant
+insert into movesworkeroutput (
+    stateid, countyid, zoneid, linkid, roadtypeid, yearid, monthid, dayid, hourid,
+    pollutantid, processid, sourcetypeid, regclassid, modelyearid, fueltypeid, scc, emissionquant)
+select stateid, l.countyid, l.zoneid, faeq.linkid, roadtypeid, yearid, faeq.monthid, dayid, hourid, pollutantid,
+    processid, faeq.sourcetypeid, faeq.regclassid, faeq.modelyearid, faeq.fueltypeid, null as scc, 
+    weightedtemperatureadjust*fueladjustedemissionquant as emissionquant
+from fueladjustedemissionquant faeq 
+inner join weightedtemperatureadjust wta on (
+    wta.linkid=faeq.linkid and wta.hourdayid=faeq.hourdayid and
+    wta.monthid=faeq.monthid and wta.sourcetypeid=faeq.sourcetypeid and
+    wta.polprocessid=faeq.polprocessid and wta.fueltypeid=faeq.fueltypeid and
+    wta.modelyearid=faeq.modelyearid)
+inner join pollutantprocessassoc ppa on (
+    ppa.polprocessid=faeq.polprocessid)
+inner join pollutantprocessmodelyear ppmy on (
+    ppmy.polprocessid=ppa.polprocessid and
+    ppmy.modelyearid=faeq.modelyearid)
+inner join sourcetypemodelyeargroup stmyg on (
+    stmyg.sourcetypeid=faeq.sourcetypeid and
+    stmyg.modelyeargroupid=ppmy.modelyeargroupid and
+    stmyg.tanktemperaturegroupid=wta.tanktemperaturegroupid)
+inner join hourday hd on (hd.hourdayid=faeq.hourdayid)
+inner join link l on (l.linkid=faeq.linkid)
+inner join county c on (c.countyid=l.countyid)
+where faeq.sourcetypeid = ##loop.sourcetypeid##;
+
+end loop ##loop.sourcetypeid##;
+
+alter table temperatureadjustbyopmode drop index ixtemperatureadjustbyopmode1;
+
+-- end section processing
+-- section cleanup
+-- insert into eventlog (eventtime, eventname) select now(), 'section cleanup';
+
+drop table if exists fueladjustedemissionquant;
+drop table if exists fueladjustedemissionrate;
+drop table if exists sbweightedpermeationrate;
+drop table if exists sourcebindistributionbyage;
+drop table if exists temperatureadjustbyopmode;
+drop table if exists weightedfueladjustment;
+drop table if exists weightedtemperatureadjust;
+-- end section cleanup

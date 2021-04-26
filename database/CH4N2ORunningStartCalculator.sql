@@ -1,471 +1,471 @@
--- Version 2013-09-15
+-- version 2013-09-15
 
--- Section Create Remote Tables for Extracted Data
-drop table if exists AdjustFuelSupply;
-create table AdjustFuelSupply (
-	monthID integer not null,
-	fuelTypeID integer not null,
-	fuelFormulationID integer not null,
-	marketShare double null,
+-- section create remote tables for extracted data
+drop table if exists adjustfuelsupply;
+create table adjustfuelsupply (
+	monthid integer not null,
+	fueltypeid integer not null,
+	fuelformulationid integer not null,
+	marketshare double null,
 	
-	key (monthID, fuelTypeID, fuelFormulationID),
-	key (monthID, fuelFormulationID, fuelTypeID),
-	key (fuelTypeID, fuelFormulationID, monthID),
-	key (fuelTypeID, monthID, fuelFormulationID),
-	key (fuelFormulationID, monthID, fuelTypeID),
-	key (fuelFormulationID, fuelTypeID, monthID)
-) Engine=MEMORY;
-truncate table AdjustFuelSupply;
+	key (monthid, fueltypeid, fuelformulationid),
+	key (monthid, fuelformulationid, fueltypeid),
+	key (fueltypeid, fuelformulationid, monthid),
+	key (fueltypeid, monthid, fuelformulationid),
+	key (fuelformulationid, monthid, fueltypeid),
+	key (fuelformulationid, fueltypeid, monthid)
+) engine=memory;
+truncate table adjustfuelsupply;
 
-##memory.create.County##;
-TRUNCATE TABLE County;
+##memory.create.county##;
+truncate table county;
 
-##memory.create.HourDay##;
-TRUNCATE TABLE HourDay;
+##memory.create.hourday##;
+truncate table hourday;
 
-##memory.create.Link##;
-TRUNCATE TABLE Link;
+##memory.create.link##;
+truncate table link;
 
-##memory.create.Zone##;
-TRUNCATE TABLE Zone;
+##memory.create.zone##;
+truncate table zone;
 
-##memory.create.Pollutant##;
-TRUNCATE TABLE Pollutant;
+##memory.create.pollutant##;
+truncate table pollutant;
 
-##memory.create.EmissionProcess##;
-TRUNCATE TABLE EmissionProcess;
+##memory.create.emissionprocess##;
+truncate table emissionprocess;
 
-##create.EmissionRate##;
-TRUNCATE TABLE EmissionRate;
+##create.emissionrate##;
+truncate table emissionrate;
 
-##create.SourceBin##;
-TRUNCATE TABLE SourceBin;
+##create.sourcebin##;
+truncate table sourcebin;
 
-##create.SourceBinDistribution##;
-TRUNCATE TABLE SourceBinDistribution;
+##create.sourcebindistribution##;
+truncate table sourcebindistribution;
 
-##create.SourceTypeModelYear##;
-TRUNCATE TABLE SourceTypeModelYear;
+##create.sourcetypemodelyear##;
+truncate table sourcetypemodelyear;
 
-##memory.create.PollutantProcessAssoc##;
-TRUNCATE TABLE PollutantProcessAssoc;
+##memory.create.pollutantprocessassoc##;
+truncate table pollutantprocessassoc;
 
--- Section Running Exhaust
+-- section running exhaust
 
-##create.SHO##;
-TRUNCATE TABLE SHO;
+##create.sho##;
+truncate table sho;
 
--- End Section Running Exhaust
+-- end section running exhaust
 
--- Section Start Exhaust
+-- section start exhaust
 
-##create.Starts##;
-TRUNCATE TABLE Starts;
+##create.starts##;
+truncate table starts;
 
--- End Section Start Exhaust
+-- end section start exhaust
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
+-- section extract data
 
-SELECT * INTO OUTFILE '##County##'
-FROM County
-WHERE countyID = ##context.iterLocation.countyRecordID##;
+select * into outfile '##county##'
+from county
+where countyid = ##context.iterlocation.countyrecordid##;
 
-cache SELECT MonthOfAnyYear.monthID, FuelSubtype.fuelTypeID, FuelSupply.fuelFormulationID, marketShare
-INTO OUTFILE '##AdjustFuelSupply##'
-FROM FuelSupply
-INNER JOIN RunSpecMonthGroup ON (FuelSupply.monthGroupID = RunSpecMonthGroup.monthGroupID)
-INNER JOIN Year ON (FuelSupply.fuelYearID = Year.fuelYearID)
-INNER JOIN FuelFormulation ON (FuelFormulation.fuelFormulationID = FuelSupply.fuelFormulationID)
-INNER JOIN FuelSubtype ON (FuelSubtype.fuelSubtypeID = FuelFormulation.fuelSubtypeID)
-INNER JOIN MonthOfAnyYear ON (MonthOfAnyYear.monthGroupID = FuelSupply.monthGroupID)
-WHERE FuelSupply.fuelRegionID = ##context.fuelRegionID##
-AND yearID = ##context.year##
-AND MonthOfAnyYear.monthID = ##context.monthID##;
+cache select monthofanyyear.monthid, fuelsubtype.fueltypeid, fuelsupply.fuelformulationid, marketshare
+into outfile '##adjustfuelsupply##'
+from fuelsupply
+inner join runspecmonthgroup on (fuelsupply.monthgroupid = runspecmonthgroup.monthgroupid)
+inner join year on (fuelsupply.fuelyearid = year.fuelyearid)
+inner join fuelformulation on (fuelformulation.fuelformulationid = fuelsupply.fuelformulationid)
+inner join fuelsubtype on (fuelsubtype.fuelsubtypeid = fuelformulation.fuelsubtypeid)
+inner join monthofanyyear on (monthofanyyear.monthgroupid = fuelsupply.monthgroupid)
+where fuelsupply.fuelregionid = ##context.fuelregionid##
+and yearid = ##context.year##
+and monthofanyyear.monthid = ##context.monthid##;
 
-SELECT * INTO OUTFILE '##Zone##'
-FROM Zone
-WHERE zoneID = ##context.iterLocation.zoneRecordID##;
+select * into outfile '##zone##'
+from zone
+where zoneid = ##context.iterlocation.zonerecordid##;
 
-SELECT Link.*
-INTO OUTFILE '##Link##'
-FROM Link
-WHERE linkID = ##context.iterLocation.linkRecordID##;
+select link.*
+into outfile '##link##'
+from link
+where linkid = ##context.iterlocation.linkrecordid##;
 
-cache SELECT * 
-INTO OUTFILE '##EmissionProcess##'
-FROM EmissionProcess
-WHERE processID=##context.iterProcess.databaseKey##;
+cache select * 
+into outfile '##emissionprocess##'
+from emissionprocess
+where processid=##context.iterprocess.databasekey##;
 
-cache SELECT *
-INTO OUTFILE '##Pollutant##'
-FROM Pollutant;
+cache select *
+into outfile '##pollutant##'
+from pollutant;
 
--- SELECT DISTINCT SourceBinDistribution.* INTO OUTFILE '??SourceBinDistribution??'
--- FROM SourceBinDistribution, SourceTypeModelYear, SourceBin, RunSpecSourceFuelType
--- WHERE polProcessID IN (??pollutantProcessIDs??)
--- AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
--- AND SourceTypeModelYear.modelYearID <= ??context.year??
--- AND SourceTypeModelYear.modelYearID >= ??context.year?? - 30
--- AND SourceTypeModelYear.sourceTypeID = RunSpecSourceFuelType.sourceTypeID
--- AND SourceBinDistribution.SourceBinID = SourceBin.SourceBinID
--- AND SourceBin.fuelTypeID = RunSpecSourceFuelType.fuelTypeID;
+-- select distinct sourcebindistribution.* into outfile '??sourcebindistribution??'
+-- from sourcebindistribution, sourcetypemodelyear, sourcebin, runspecsourcefueltype
+-- where polprocessid in (??pollutantprocessids??)
+-- and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+-- and sourcetypemodelyear.modelyearid <= ??context.year??
+-- and sourcetypemodelyear.modelyearid >= ??context.year?? - 30
+-- and sourcetypemodelyear.sourcetypeid = runspecsourcefueltype.sourcetypeid
+-- and sourcebindistribution.sourcebinid = sourcebin.sourcebinid
+-- and sourcebin.fueltypeid = runspecsourcefueltype.fueltypeid;
 
-cache SELECT SourceBinDistribution.* INTO OUTFILE '##SourceBinDistribution##'
-FROM sourceBinDistributionFuelUsage_##context.iterProcess.databaseKey##_##context.iterLocation.countyRecordID##_##context.year## as SourceBinDistribution, 
-SourceTypeModelYear
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
-AND SourceTypeModelYear.modelYearID <= ##context.year##
-AND SourceTypeModelYear.modelYearID >= ##context.year## - 30;
+cache select sourcebindistribution.* into outfile '##sourcebindistribution##'
+from sourcebindistributionfuelusage_##context.iterprocess.databasekey##_##context.iterlocation.countyrecordid##_##context.year## as sourcebindistribution, 
+sourcetypemodelyear
+where polprocessid in (##pollutantprocessids##)
+and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+and sourcetypemodelyear.modelyearid <= ##context.year##
+and sourcetypemodelyear.modelyearid >= ##context.year## - 30;
 
--- SELECT DISTINCT SourceBin.* 
--- INTO OUTFILE '??SourceBin??'
--- FROM SourceBinDistribution, SourceTypeModelYear, SourceBin, RunSpecSourceFuelType
--- WHERE polProcessID IN (??pollutantProcessIDs??)
--- AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
--- AND SourceTypeModelYear.modelYearID <= ??context.year??
--- AND SourceTypeModelYear.sourceTypeID = RunSpecSourceFuelType.sourceTypeID
--- AND SourceBinDistribution.SourceBinID = SourceBin.SourceBinID
--- AND SourceBin.fuelTypeID = RunSpecSourceFuelType.fuelTypeID;
+-- select distinct sourcebin.* 
+-- into outfile '??sourcebin??'
+-- from sourcebindistribution, sourcetypemodelyear, sourcebin, runspecsourcefueltype
+-- where polprocessid in (??pollutantprocessids??)
+-- and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+-- and sourcetypemodelyear.modelyearid <= ??context.year??
+-- and sourcetypemodelyear.sourcetypeid = runspecsourcefueltype.sourcetypeid
+-- and sourcebindistribution.sourcebinid = sourcebin.sourcebinid
+-- and sourcebin.fueltypeid = runspecsourcefueltype.fueltypeid;
 
-cache SELECT DISTINCT SourceBin.* INTO OUTFILE '##SourceBin##'
-FROM SourceBinDistribution, SourceTypeModelYear, SourceBin
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
-AND SourceBinDistribution.SourceBinID = SourceBin.SourceBinID
-AND SourceTypeModelYear.modelYearID <= ##context.year##
-AND SourceTypeModelYear.modelYearID >= ##context.year## - 30;
+cache select distinct sourcebin.* into outfile '##sourcebin##'
+from sourcebindistribution, sourcetypemodelyear, sourcebin
+where polprocessid in (##pollutantprocessids##)
+and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+and sourcebindistribution.sourcebinid = sourcebin.sourcebinid
+and sourcetypemodelyear.modelyearid <= ##context.year##
+and sourcetypemodelyear.modelyearid >= ##context.year## - 30;
 
--- SELECT DISTINCT EmissionRate.* 
--- INTO OUTFILE '??EmissionRate??'
--- FROM EmissionRate, SourceBinDistribution, SourceTypeModelYear, SourceBin, RunSpecSourceFuelType
--- WHERE EmissionRate.polProcessID IN (??pollutantProcessIDs??)
--- AND EmissionRate.polProcessID = SourceBinDistribution.polProcessID
--- AND EmissionRate.SourceBinID = SourceBinDistribution.SourceBinID
--- AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
--- AND SourceTypeModelYear.modelYearID <= ??context.year??
--- AND SourceTypeModelYear.sourceTypeID = RunSpecSourceFuelType.sourceTypeID
--- AND SourceBinDistribution.SourceBinID = SourceBin.SourceBinID
--- AND SourceBin.fuelTypeID = RunSpecSourceFuelType.fuelTypeID;
+-- select distinct emissionrate.* 
+-- into outfile '??emissionrate??'
+-- from emissionrate, sourcebindistribution, sourcetypemodelyear, sourcebin, runspecsourcefueltype
+-- where emissionrate.polprocessid in (??pollutantprocessids??)
+-- and emissionrate.polprocessid = sourcebindistribution.polprocessid
+-- and emissionrate.sourcebinid = sourcebindistribution.sourcebinid
+-- and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+-- and sourcetypemodelyear.modelyearid <= ??context.year??
+-- and sourcetypemodelyear.sourcetypeid = runspecsourcefueltype.sourcetypeid
+-- and sourcebindistribution.sourcebinid = sourcebin.sourcebinid
+-- and sourcebin.fueltypeid = runspecsourcefueltype.fueltypeid;
 
-cache SELECT EmissionRate.* INTO OUTFILE '##EmissionRate##'
-FROM EmissionRate
-WHERE EmissionRate.polProcessID IN (##pollutantProcessIDs##)
-AND EmissionRate.sourceBinID in (##macro.csv.all.sourceBinID##);
+cache select emissionrate.* into outfile '##emissionrate##'
+from emissionrate
+where emissionrate.polprocessid in (##pollutantprocessids##)
+and emissionrate.sourcebinid in (##macro.csv.all.sourcebinid##);
 
-cache SELECT SourceTypeModelYear.* INTO OUTFILE '##SourceTypeModelYear##'
-FROM SourceTypeModelYear
-WHERE SourceTypeModelYear.sourceTypeID in (##macro.csv.all.sourceTypeID##)
-AND modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30;
+cache select sourcetypemodelyear.* into outfile '##sourcetypemodelyear##'
+from sourcetypemodelyear
+where sourcetypemodelyear.sourcetypeid in (##macro.csv.all.sourcetypeid##)
+and modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30;
 
-cache SELECT HourDay.* INTO OUTFILE '##HourDay##'
-FROM HourDay
-WHERE hourDayID in (##macro.csv.all.hourDayID##);
+cache select hourday.* into outfile '##hourday##'
+from hourday
+where hourdayid in (##macro.csv.all.hourdayid##);
 
-cache SELECT * INTO OUTFILE '##PollutantProcessAssoc##'
-FROM PollutantProcessAssoc
-WHERE processID=##context.iterProcess.databaseKey##;
+cache select * into outfile '##pollutantprocessassoc##'
+from pollutantprocessassoc
+where processid=##context.iterprocess.databasekey##;
 
--- Section Running Exhaust
+-- section running exhaust
 
-SELECT SHO.* 
-INTO OUTFILE '##SHO##'
-FROM SHO
-WHERE yearID = ##context.year##
-AND linkID = ##context.iterLocation.linkRecordID##
-AND monthID = ##context.monthID##;
+select sho.* 
+into outfile '##sho##'
+from sho
+where yearid = ##context.year##
+and linkid = ##context.iterlocation.linkrecordid##
+and monthid = ##context.monthid##;
 
--- End Section Running Exhaust
+-- end section running exhaust
 
--- Section Start Exhaust
+-- section start exhaust
 
-SELECT Starts.* 
-INTO OUTFILE '##Starts##'
-FROM Starts
-WHERE yearID = ##context.year##
-AND zoneID = ##context.iterLocation.zoneRecordID##
-AND monthID = ##context.monthID##;
+select starts.* 
+into outfile '##starts##'
+from starts
+where yearid = ##context.year##
+and zoneid = ##context.iterlocation.zonerecordid##
+and monthid = ##context.monthid##;
 
--- End Section Start Exhaust
+-- end section start exhaust
 
--- End Section Extract Data
+-- end section extract data
 --
--- Section Processing
+-- section processing
 
-drop table if exists MOVESWorkerOutputTemp;
-create table if not exists MOVESWorkerOutputTemp (
-	yearID               SMALLINT UNSIGNED NULL,
-	monthID              SMALLINT UNSIGNED NULL,
-	dayID                SMALLINT UNSIGNED NULL,
-	hourID               SMALLINT UNSIGNED NULL,
-	stateID              SMALLINT UNSIGNED NULL,
-	countyID             INTEGER UNSIGNED NULL,
-	zoneID               INTEGER UNSIGNED NULL,
-	linkID               INTEGER UNSIGNED NULL,
-	pollutantID          SMALLINT UNSIGNED NULL,
-	processID            SMALLINT UNSIGNED NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL,
-	modelYearID          SMALLINT UNSIGNED NULL,
-	roadTypeID           SMALLINT UNSIGNED NULL,
-	SCC                  CHAR(10) NULL,
-	emissionQuant        FLOAT NULL
+drop table if exists movesworkeroutputtemp;
+create table if not exists movesworkeroutputtemp (
+	yearid               smallint unsigned null,
+	monthid              smallint unsigned null,
+	dayid                smallint unsigned null,
+	hourid               smallint unsigned null,
+	stateid              smallint unsigned null,
+	countyid             integer unsigned null,
+	zoneid               integer unsigned null,
+	linkid               integer unsigned null,
+	pollutantid          smallint unsigned null,
+	processid            smallint unsigned null,
+	sourcetypeid         smallint unsigned null,
+	fueltypeid           smallint unsigned null,
+	modelyearid          smallint unsigned null,
+	roadtypeid           smallint unsigned null,
+	scc                  char(10) null,
+	emissionquant        float null
 );
 
 
 --
--- Section Running Exhaust
+-- section running exhaust
 --
--- Calculate the Running Emissions
---  This Section originally contained a single SQL statement joining 14 tables
---   It was rewritten 10/1/2004 as a series of equivalent statements to improve performance.
+-- calculate the running emissions
+--  this section originally contained a single sql statement joining 14 tables
+--   it was rewritten 10/1/2004 as a series of equivalent statements to improve performance.
 --  
 
-DROP TABLE IF EXISTS SHO2 ;
-DROP TABLE IF EXISTS Link2 ;
-DROP TABLE IF EXISTS SHO3 ;
-DROP TABLE IF EXISTS EmissionRate2 ;
-DROP TABLE IF EXISTS SourceBinDistribution2 ;
-DROP TABLE IF EXISTS SourceBinDistribution3 ;
-DROP TABLE IF EXISTS EmissionRate3 ;
-DROP TABLE IF EXISTS WorkerOutputBySourceType ;
-CREATE TABLE SHO2 (
-	yearID SMALLINT,
-	monthID SMALLINT,
-	hourID SMALLINT,
-	dayID SMALLINT,
-	linkID INTEGER,
-	sourceTypeID SMALLINT,
-	modelYearID SMALLINT,
-	SHO FLOAT) ;
-INSERT INTO SHO2 
-	SELECT sho.yearID, sho.monthID, hd.hourID, hd.dayID, sho.linkID, 
-		sho.sourceTypeID, (sho.yearID - sho.ageID), sho.SHO
-	FROM SHO AS sho INNER JOIN HourDay AS hd USING(hourDayID);
-CREATE TABLE Link2 (
-	stateID SMALLINT,
-	countyID INTEGER,
-	zoneID INTEGER,
-	linkID INTEGER,
-	roadTypeID SMALLINT) Engine=MEMORY;
-INSERT INTO Link2
-	SELECT	c.stateID, l.countyID, l.zoneID, l.linkID, l.roadTypeID 
-	FROM County AS c INNER JOIN Link AS l USING (countyID);
-CREATE TABLE SHO3
-	SELECT sho.*, l.stateID, l.countyID, l.zoneID, l.roadTypeID 
-	FROM SHO2 AS sho INNER JOIN Link2 AS l USING(linkID) ;
-CREATE TABLE EmissionRate2
-	SELECT er.*, ppa.pollutantID, ppa.processID 
-	FROM EmissionRate AS er INNER JOIN PollutantProcessAssoc AS ppa 
-	USING (polProcessID)  
-	WHERE ppa.pollutantID = 6 AND er.opModeID >= 0 AND er.OpModeID < 100;
-CREATE TABLE SourceBinDistribution2
-	SELECT sbd.*, sb.fuelTypeID
-	FROM SourceBinDistribution AS sbd INNER JOIN SourceBin AS sb USING (sourceBinID);
-CREATE TABLE SourceBinDistribution3
-	SELECT sbd.*, stmy.sourceTypeID, stmy.modelYearID
-	FROM SourceBinDistribution2 AS sbd INNER JOIN SourceTypeModelYear AS stmy
-	USING (sourceTypeModelYearID);
-CREATE INDEX index1 ON EmissionRate2 (polProcessID, sourceBinID);
-CREATE INDEX index1 ON SourceBinDistribution3 (polProcessID, sourceBinID);
-CREATE TABLE EmissionRate3 (
-	sourceTypeID SMALLINT,
-	fuelTypeID SMALLINT,
-	modelYearID SMALLINT,
-	sourceTypeModelYearID INTEGER,
-	pollutantID SMALLINT,
-	processID SMALLINT,
-	sbafXmbr FLOAT );
-INSERT INTO EmissionRate3
-	SELECT sbd.sourceTypeID, sbd.fuelTypeID, sbd.modelYearID, sbd.sourceTypeModelYearID,
-		er.pollutantID, er.processID, 
-		sum(sbd.sourceBinActivityFraction * er.meanBaseRate) AS sbafXmbr
-	FROM SourceBinDistribution3 AS sbd INNER JOIN EmissionRate2 AS er
-			USING (polProcessID, sourceBinID) 
-	GROUP BY sbd.sourceTypeModelYearID, sbd.fuelTypeID, er.pollutantID, er.processID;
-CREATE INDEX index1 ON SHO3 (sourceTypeID, modelYearID);
-CREATE INDEX index1 ON EmissionRate3 (sourceTypeID, modelYearID);
-CREATE TABLE WorkerOutputBySourceType
-	SELECT sho.*, er.fuelTypeID, er.pollutantID, er.processID, 
-		er.sourceTypeModelYearID, er.sbafXmbr
-	FROM SHO3 AS sho INNER JOIN EmissionRate3 AS er 
-	  USING (sourceTypeID, modelYearID);
-CREATE INDEX index1 ON WorkerOutputBySourceType (sourceTypeModelYearID, fuelTypeID);
+drop table if exists sho2 ;
+drop table if exists link2 ;
+drop table if exists sho3 ;
+drop table if exists emissionrate2 ;
+drop table if exists sourcebindistribution2 ;
+drop table if exists sourcebindistribution3 ;
+drop table if exists emissionrate3 ;
+drop table if exists workeroutputbysourcetype ;
+create table sho2 (
+	yearid smallint,
+	monthid smallint,
+	hourid smallint,
+	dayid smallint,
+	linkid integer,
+	sourcetypeid smallint,
+	modelyearid smallint,
+	sho float) ;
+insert into sho2 
+	select sho.yearid, sho.monthid, hd.hourid, hd.dayid, sho.linkid, 
+		sho.sourcetypeid, (sho.yearid - sho.ageid), sho.sho
+	from sho as sho inner join hourday as hd using(hourdayid);
+create table link2 (
+	stateid smallint,
+	countyid integer,
+	zoneid integer,
+	linkid integer,
+	roadtypeid smallint) engine=memory;
+insert into link2
+	select	c.stateid, l.countyid, l.zoneid, l.linkid, l.roadtypeid 
+	from county as c inner join link as l using (countyid);
+create table sho3
+	select sho.*, l.stateid, l.countyid, l.zoneid, l.roadtypeid 
+	from sho2 as sho inner join link2 as l using(linkid) ;
+create table emissionrate2
+	select er.*, ppa.pollutantid, ppa.processid 
+	from emissionrate as er inner join pollutantprocessassoc as ppa 
+	using (polprocessid)  
+	where ppa.pollutantid = 6 and er.opmodeid >= 0 and er.opmodeid < 100;
+create table sourcebindistribution2
+	select sbd.*, sb.fueltypeid
+	from sourcebindistribution as sbd inner join sourcebin as sb using (sourcebinid);
+create table sourcebindistribution3
+	select sbd.*, stmy.sourcetypeid, stmy.modelyearid
+	from sourcebindistribution2 as sbd inner join sourcetypemodelyear as stmy
+	using (sourcetypemodelyearid);
+create index index1 on emissionrate2 (polprocessid, sourcebinid);
+create index index1 on sourcebindistribution3 (polprocessid, sourcebinid);
+create table emissionrate3 (
+	sourcetypeid smallint,
+	fueltypeid smallint,
+	modelyearid smallint,
+	sourcetypemodelyearid integer,
+	pollutantid smallint,
+	processid smallint,
+	sbafxmbr float );
+insert into emissionrate3
+	select sbd.sourcetypeid, sbd.fueltypeid, sbd.modelyearid, sbd.sourcetypemodelyearid,
+		er.pollutantid, er.processid, 
+		sum(sbd.sourcebinactivityfraction * er.meanbaserate) as sbafxmbr
+	from sourcebindistribution3 as sbd inner join emissionrate2 as er
+			using (polprocessid, sourcebinid) 
+	group by sbd.sourcetypemodelyearid, sbd.fueltypeid, er.pollutantid, er.processid;
+create index index1 on sho3 (sourcetypeid, modelyearid);
+create index index1 on emissionrate3 (sourcetypeid, modelyearid);
+create table workeroutputbysourcetype
+	select sho.*, er.fueltypeid, er.pollutantid, er.processid, 
+		er.sourcetypemodelyearid, er.sbafxmbr
+	from sho3 as sho inner join emissionrate3 as er 
+	  using (sourcetypeid, modelyearid);
+create index index1 on workeroutputbysourcetype (sourcetypemodelyearid, fueltypeid);
 
-INSERT INTO MOVESWorkerOutputTemp (
-    yearID,
-    monthID,
-    dayID,
-    hourID,
-    stateID,
-    countyID,
-    zoneID,
-    linkID,
-    pollutantID,
-    processID,
-    sourceTypeID,
-    fuelTypeID,
-    modelYearID,
-    roadTypeID,
-    emissionQuant)
-SELECT
-	wobst.yearID,
-	wobst.monthID,
-	wobst.dayID,
-	wobst.hourID,
-	wobst.stateID,
-	wobst.countyID,
-	wobst.zoneID,
-	wobst.linkID,
-	wobst.pollutantID,
-	wobst.processID,
-	wobst.sourceTypeID,
-	wobst.fuelTypeID,
-	wobst.modelYearID,
-	wobst.roadTypeID,
-	(wobst.sbafXmbr * wobst.sho)
-FROM 
-	WorkerOutputBySourceType AS wobst;
+insert into movesworkeroutputtemp (
+    yearid,
+    monthid,
+    dayid,
+    hourid,
+    stateid,
+    countyid,
+    zoneid,
+    linkid,
+    pollutantid,
+    processid,
+    sourcetypeid,
+    fueltypeid,
+    modelyearid,
+    roadtypeid,
+    emissionquant)
+select
+	wobst.yearid,
+	wobst.monthid,
+	wobst.dayid,
+	wobst.hourid,
+	wobst.stateid,
+	wobst.countyid,
+	wobst.zoneid,
+	wobst.linkid,
+	wobst.pollutantid,
+	wobst.processid,
+	wobst.sourcetypeid,
+	wobst.fueltypeid,
+	wobst.modelyearid,
+	wobst.roadtypeid,
+	(wobst.sbafxmbr * wobst.sho)
+from 
+	workeroutputbysourcetype as wobst;
 
--- End Section Running Exhaust
+-- end section running exhaust
 
 --
--- Section Start Exhaust
+-- section start exhaust
 --
 --
--- Calculate the Start Emissions
+-- calculate the start emissions
 --
 
-INSERT INTO MOVESWorkerOutputTemp (
-    yearID,
-    monthID,
-    dayID,
-    hourID,
-    stateID,
-    countyID,
-    zoneID,
-    linkID,
-    pollutantID,
-    processID,
-    sourceTypeID,
-    fuelTypeID,
-    modelYearID,
-    roadTypeID,
-    emissionQuant)
-SELECT
-	st.yearID,
-	st.monthID,
-	hd.dayID,
-	hd.hourID,
-	c.stateID,
-	c.countyID,
-	z.zoneID,
-	l.linkID,
-	ppa.pollutantID,
-	ppa.processID,
-	st.sourceTypeID,
-	sb.fuelTypeID,
-	stmy.modelYearID,
-	l.roadTypeID,
-	sum(sbd.sourceBinActivityFraction * st.starts * er.meanBaseRate)
-FROM
-	SourceBinDistribution sbd,
+insert into movesworkeroutputtemp (
+    yearid,
+    monthid,
+    dayid,
+    hourid,
+    stateid,
+    countyid,
+    zoneid,
+    linkid,
+    pollutantid,
+    processid,
+    sourcetypeid,
+    fueltypeid,
+    modelyearid,
+    roadtypeid,
+    emissionquant)
+select
+	st.yearid,
+	st.monthid,
+	hd.dayid,
+	hd.hourid,
+	c.stateid,
+	c.countyid,
+	z.zoneid,
+	l.linkid,
+	ppa.pollutantid,
+	ppa.processid,
+	st.sourcetypeid,
+	sb.fueltypeid,
+	stmy.modelyearid,
+	l.roadtypeid,
+	sum(sbd.sourcebinactivityfraction * st.starts * er.meanbaserate)
+from
+	sourcebindistribution sbd,
 	starts st,
-	emissionRate er,
+	emissionrate er,
 	county c,
 	zone z, 
 	link l,
-	PollutantProcessAssoc ppa,
-	EmissionProcess ep,
-	hourDay hd,
-	sourceTypeModelYear stmy,
-	sourceBin sb
-WHERE
-	sbd.sourceTypeModelYearID = stmy.sourceTypeModelYearID AND
-	sbd.polProcessID = ppa.polProcessID AND
-	sbd.polProcessID = er.polProcessID AND
-	sbd.sourceBinID = er.sourceBinID AND
-	sbd.sourceBinID = sb.sourceBinID AND
-	st.hourDayID = hd.hourDayID AND
-	st.ageID = (st.yearID - stmy.modelYearID) AND
-	st.zoneID = z.zoneID AND
-	st.zoneID = l.zoneID AND
-	st.sourceTypeID = stmy.sourceTypeID AND
-	er.sourceBinID = sb.sourceBinID AND
-	er.polProcessID = ppa.polProcessID AND
-	er.opModeID = 100 AND
-	c.countyID = l.countyID AND
-	c.countyID = z.countyID AND
-	z.zoneID = l.zoneID AND
-	ppa.pollutantID = 6 AND
-	ppa.processID = ep.processID AND
-	sbd.sourceBinID = sb.sourceBinID
-GROUP BY
-	st.yearID,
-	st.monthID,
-	hd.dayID,
-	hd.hourID,
-	c.stateID,
-	c.countyID,
-	z.zoneID,
-	l.linkID,
-	ppa.pollutantID,
-	ppa.processID,
-	st.sourceTypeID,
-	sb.fuelTypeID,
-	stmy.modelYearID,
-	l.roadTypeID;
+	pollutantprocessassoc ppa,
+	emissionprocess ep,
+	hourday hd,
+	sourcetypemodelyear stmy,
+	sourcebin sb
+where
+	sbd.sourcetypemodelyearid = stmy.sourcetypemodelyearid and
+	sbd.polprocessid = ppa.polprocessid and
+	sbd.polprocessid = er.polprocessid and
+	sbd.sourcebinid = er.sourcebinid and
+	sbd.sourcebinid = sb.sourcebinid and
+	st.hourdayid = hd.hourdayid and
+	st.ageid = (st.yearid - stmy.modelyearid) and
+	st.zoneid = z.zoneid and
+	st.zoneid = l.zoneid and
+	st.sourcetypeid = stmy.sourcetypeid and
+	er.sourcebinid = sb.sourcebinid and
+	er.polprocessid = ppa.polprocessid and
+	er.opmodeid = 100 and
+	c.countyid = l.countyid and
+	c.countyid = z.countyid and
+	z.zoneid = l.zoneid and
+	ppa.pollutantid = 6 and
+	ppa.processid = ep.processid and
+	sbd.sourcebinid = sb.sourcebinid
+group by
+	st.yearid,
+	st.monthid,
+	hd.dayid,
+	hd.hourid,
+	c.stateid,
+	c.countyid,
+	z.zoneid,
+	l.linkid,
+	ppa.pollutantid,
+	ppa.processid,
+	st.sourcetypeid,
+	sb.fueltypeid,
+	stmy.modelyearid,
+	l.roadtypeid;
 
--- End Section Start Exhaust
+-- end section start exhaust
 
-INSERT INTO MOVESWorkerOutput (
-    yearID,
-    monthID,
-    dayID,
-    hourID,
-    stateID,
-    countyID,
-    zoneID,
-    linkID,
-    pollutantID,
-    processID,
-    sourceTypeID,
-    fuelTypeID,
-    modelYearID,
-    roadTypeID,
-    SCC,
-    emissionQuant)
-SELECT yearID,
-    monthID,
-    dayID,
-    hourID,
-    stateID,
-    countyID,
-    zoneID,
-    linkID,
-    pollutantID,
-    processID,
-    sourceTypeID,
-    fuelTypeID,
-    modelYearID,
-    roadTypeID,
-    SCC,
-    emissionQuant
-FROM MOVESWorkerOutputTemp;
+insert into movesworkeroutput (
+    yearid,
+    monthid,
+    dayid,
+    hourid,
+    stateid,
+    countyid,
+    zoneid,
+    linkid,
+    pollutantid,
+    processid,
+    sourcetypeid,
+    fueltypeid,
+    modelyearid,
+    roadtypeid,
+    scc,
+    emissionquant)
+select yearid,
+    monthid,
+    dayid,
+    hourid,
+    stateid,
+    countyid,
+    zoneid,
+    linkid,
+    pollutantid,
+    processid,
+    sourcetypeid,
+    fueltypeid,
+    modelyearid,
+    roadtypeid,
+    scc,
+    emissionquant
+from movesworkeroutputtemp;
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
-drop table if exists MOVESWorkerOutputTemp;
-DROP TABLE IF EXISTS SHO2 ;
-DROP TABLE IF EXISTS Link2 ;
-DROP TABLE IF EXISTS SHO3 ;
-DROP TABLE IF EXISTS EmissionRate2 ;
-DROP TABLE IF EXISTS SourceBinDistribution2 ;
-DROP TABLE IF EXISTS SourceBinDistribution3 ;
-DROP TABLE IF EXISTS EmissionRate3 ;
-DROP TABLE IF EXISTS WorkerOutputBySourceType ;
--- End Section Cleanup
+-- section cleanup
+drop table if exists movesworkeroutputtemp;
+drop table if exists sho2 ;
+drop table if exists link2 ;
+drop table if exists sho3 ;
+drop table if exists emissionrate2 ;
+drop table if exists sourcebindistribution2 ;
+drop table if exists sourcebindistribution3 ;
+drop table if exists emissionrate3 ;
+drop table if exists workeroutputbysourcetype ;
+-- end section cleanup

@@ -1,50 +1,50 @@
--- Author Wesley Faler
--- Author Don Smith
--- Version 2011-08-17
+-- author wesley faler
+-- author don smith
+-- version 2011-08-17
 
-drop procedure if exists spCheckAVFTImporter;
+drop procedure if exists spcheckavftimporter;
 
-BeginBlock
-create procedure spCheckAVFTImporter()
+beginblock
+create procedure spcheckavftimporter()
 begin
-	-- Mode 0 is run after importing
-	-- Mode 1 is run to check overall success/failure
+	-- mode 0 is run after importing
+	-- mode 1 is run to check overall success/failure
 	declare mode int default ##mode##;
-	declare isOk int default 1;
-	declare howMany int default 0;
+	declare isok int default 1;
+	declare howmany int default 0;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: source type ',sourceTypeID,', model year ',modelYearID,', fuel engine fraction is more than 1.0, being ',round(sum(fuelEngFraction),4))
+	insert into importtempmessages (message)
+	select concat('error: source type ',sourcetypeid,', model year ',modelyearid,', fuel engine fraction is more than 1.0, being ',round(sum(fuelengfraction),4))
 	from avft 
-	group by sourceTypeID, modelYearID
-	having round(sum(fuelEngFraction),4) > 1.0000;
+	group by sourcetypeid, modelyearid
+	having round(sum(fuelengfraction),4) > 1.0000;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: source type ',sourceTypeID,', model year ',modelYearID,', fuel ',fuelTypeID,', engine ',engTechID,', fuel engine fraction is less than 0.0, being ',round(fuelEngFraction,4))
+	insert into importtempmessages (message)
+	select concat('error: source type ',sourcetypeid,', model year ',modelyearid,', fuel ',fueltypeid,', engine ',engtechid,', fuel engine fraction is less than 0.0, being ',round(fuelengfraction,4))
 	from avft
-	where round(fuelEngFraction,4) < 0.0000;
+	where round(fuelengfraction,4) < 0.0000;
 
-	insert into importTempMessages (message)
-	select concat('WARNING: source type ',sourceTypeID,', model year ',modelYearID,', fuel engine fraction is not 1.0 but instead ',round(sum(fuelEngFraction),4))
+	insert into importtempmessages (message)
+	select concat('warning: source type ',sourcetypeid,', model year ',modelyearid,', fuel engine fraction is not 1.0 but instead ',round(sum(fuelengfraction),4))
 	from avft 
-	group by sourceTypeID, modelYearID
-	having round(sum(fuelEngFraction),4) < 1.0000 and round(sum(fuelEngFraction),4) > 0.0000;
+	group by sourcetypeid, modelyearid
+	having round(sum(fuelengfraction),4) < 1.0000 and round(sum(fuelengfraction),4) > 0.0000;
 
-	if(isOk=1) then
-		set howMany=0;
-		select count(*) into howMany from importTempMessages where message like 'ERROR: %';
-		set howMany=ifnull(howMany,0);
-		if(howMany > 0) then
-			set isOk=0;
+	if(isok=1) then
+		set howmany=0;
+		select count(*) into howmany from importtempmessages where message like 'error: %';
+		set howmany=ifnull(howmany,0);
+		if(howmany > 0) then
+			set isok=0;
 		end if;
 	end if;
 
-	-- Insert 'NOT_READY' or 'OK' to indicate iconic success
+	-- insert 'not_ready' or 'ok' to indicate iconic success
 	if(mode = 1) then
-		insert into importTempMessages (message) values (case when isOk=1 then 'OK' else 'NOT_READY' end);
+		insert into importtempmessages (message) values (case when isok=1 then 'ok' else 'not_ready' end);
 	end if;
 end
-EndBlock
+endblock
 
-call spCheckAVFTImporter();
-drop procedure if exists spCheckAVFTImporter;
+call spcheckavftimporter();
+drop procedure if exists spcheckavftimporter;

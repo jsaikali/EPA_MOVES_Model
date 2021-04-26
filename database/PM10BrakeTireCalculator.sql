@@ -1,116 +1,116 @@
--- Author Wesley Faler
--- Version 2013-09-23
+-- author wesley faler
+-- version 2013-09-23
 
 -- @algorithm
--- @owner PM10 Brake Tire Calculator
+-- @owner pm10 brake tire calculator
 -- @calculator
 
--- Section Create Remote Tables for Extracted Data
-##create.PM10EmissionRatio##;
-TRUNCATE TABLE PM10EmissionRatio;
+-- section create remote tables for extracted data
+##create.pm10emissionratio##;
+truncate table pm10emissionratio;
 
-CREATE TABLE IF NOT EXISTS PM10PollutantProcessAssoc (
-       polProcessID         int NOT NULL,
-       processID            SMALLINT NOT NULL,
-       pollutantID          SMALLINT NOT NULL,
-	   isAffectedByExhaustIM CHAR(1) NOT NULL DEFAULT 'N',
-       isAffectedByEvapIM CHAR(1) NOT NULL DEFAULT 'N',
-       PRIMARY KEY (polProcessID, processID, pollutantID),
-       KEY (processID, pollutantID, polProcessID),
-       KEY (pollutantID, processID, polProcessID)
+create table if not exists pm10pollutantprocessassoc (
+       polprocessid         int not null,
+       processid            smallint not null,
+       pollutantid          smallint not null,
+	   isaffectedbyexhaustim char(1) not null default 'N',
+       isaffectedbyevapim char(1) not null default 'N',
+       primary key (polprocessid, processid, pollutantid),
+       key (processid, pollutantid, polprocessid),
+       key (pollutantid, processid, polprocessid)
 );
-TRUNCATE TABLE PM10PollutantProcessAssoc;
+truncate table pm10pollutantprocessassoc;
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
+-- section extract data
 
-cache select p.* into outfile '##PM10EmissionRatio##'
-from PollutantProcessAssoc ppa
-inner join PM10EmissionRatio p on (p.polProcessID=ppa.polProcessID)
-inner join RunSpecSourceFuelType r on (r.sourceTypeID=p.sourceTypeID and r.fuelTypeID=p.fuelTypeID)
-where ppa.pollutantID in (106,107)
-and ppa.processID in (##context.iterProcess.databaseKey##);
+cache select p.* into outfile '##pm10emissionratio##'
+from pollutantprocessassoc ppa
+inner join pm10emissionratio p on (p.polprocessid=ppa.polprocessid)
+inner join runspecsourcefueltype r on (r.sourcetypeid=p.sourcetypeid and r.fueltypeid=p.fueltypeid)
+where ppa.pollutantid in (106,107)
+and ppa.processid in (##context.iterprocess.databasekey##);
 
-cache select distinct ppa.polProcessID, ppa.processID, ppa.pollutantID, ppa.isAffectedByExhaustIM, ppa.isAffectedByEvapIM
-into outfile '##PM10PollutantProcessAssoc##'
-from PollutantProcessAssoc ppa
-inner join PM10EmissionRatio p on (p.polProcessID=ppa.polProcessID)
-inner join RunSpecSourceFuelType r on (r.sourceTypeID=p.sourceTypeID and r.fuelTypeID=p.fuelTypeID)
-where ppa.pollutantID in (106,107)
-and ppa.processID in (##context.iterProcess.databaseKey##);
+cache select distinct ppa.polprocessid, ppa.processid, ppa.pollutantid, ppa.isaffectedbyexhaustim, ppa.isaffectedbyevapim
+into outfile '##pm10pollutantprocessassoc##'
+from pollutantprocessassoc ppa
+inner join pm10emissionratio p on (p.polprocessid=ppa.polprocessid)
+inner join runspecsourcefueltype r on (r.sourcetypeid=p.sourcetypeid and r.fueltypeid=p.fueltypeid)
+where ppa.pollutantid in (106,107)
+and ppa.processid in (##context.iterprocess.databasekey##);
 
--- End Section Extract Data
+-- end section extract data
 
--- Section Processing
+-- section processing
 
-drop table if exists PM10BrakeTireMOVESWorkerOutputTemp;
-create table if not exists PM10BrakeTireMOVESWorkerOutputTemp (
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL DEFAULT 0,
-	iterationID			SMALLINT UNSIGNED DEFAULT 1,
-	yearID               SMALLINT UNSIGNED NULL,
-	monthID              SMALLINT UNSIGNED NULL,
-	dayID                SMALLINT UNSIGNED NULL,
-	hourID               SMALLINT UNSIGNED NULL,
-	stateID              SMALLINT UNSIGNED NULL,
-	countyID             INTEGER UNSIGNED NULL,
-	zoneID               INTEGER UNSIGNED NULL,
-	linkID               INTEGER UNSIGNED NULL,
-	pollutantID          SMALLINT UNSIGNED NULL,
-	processID            SMALLINT UNSIGNED NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL,
-	regClassID			 SMALLINT UNSIGNED NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL,
-	modelYearID          SMALLINT UNSIGNED NULL,
-	roadTypeID           SMALLINT UNSIGNED NULL,
-	SCC                  CHAR(10) NULL,
-	emissionQuant        DOUBLE NULL,
-	emissionRate		 DOUBLE NULL
+drop table if exists pm10braketiremovesworkeroutputtemp;
+create table if not exists pm10braketiremovesworkeroutputtemp (
+	movesrunid           smallint unsigned not null default 0,
+	iterationid			smallint unsigned default 1,
+	yearid               smallint unsigned null,
+	monthid              smallint unsigned null,
+	dayid                smallint unsigned null,
+	hourid               smallint unsigned null,
+	stateid              smallint unsigned null,
+	countyid             integer unsigned null,
+	zoneid               integer unsigned null,
+	linkid               integer unsigned null,
+	pollutantid          smallint unsigned null,
+	processid            smallint unsigned null,
+	sourcetypeid         smallint unsigned null,
+	regclassid			 smallint unsigned null,
+	fueltypeid           smallint unsigned null,
+	modelyearid          smallint unsigned null,
+	roadtypeid           smallint unsigned null,
+	scc                  char(10) null,
+	emissionquant        double null,
+	emissionrate		 double null
 );
 
--- @algorithm PM10 Brakewear (106) = PM2.5 Brakewear (116) * PM10PM25Ratio.
--- PM10 Tirewear (107) = PM2.5 Tirewear (117) * PM10PM25Ratio.
-insert into PM10BrakeTireMOVESWorkerOutputTemp (
-	MOVESRunID, iterationID,
-    yearID, monthID, dayID, hourID, stateID, countyID, zoneID, linkID,
-	pollutantID,
-	processID, sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC,
-	emissionQuant, emissionRate)
+-- @algorithm pm10 brakewear (106) = pm2.5 brakewear (116) * pm10pm25ratio.
+-- pm10 tirewear (107) = pm2.5 tirewear (117) * pm10pm25ratio.
+insert into pm10braketiremovesworkeroutputtemp (
+	movesrunid, iterationid,
+    yearid, monthid, dayid, hourid, stateid, countyid, zoneid, linkid,
+	pollutantid,
+	processid, sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc,
+	emissionquant, emissionrate)
 select
-	MOVESRunID, iterationID,
-    yearID, monthID, dayID, hourID, stateID, countyID, zoneID, linkID,
-	ppa.pollutantID as pollutantID,
-	mwo.processID, mwo.sourceTypeID, mwo.regClassID, mwo.fuelTypeID, modelYearID, roadTypeID, SCC,
-	(emissionQuant * PM10PM25Ratio) as emissionQuant,
-	(emissionRate * PM10PM25Ratio) as emissionRate
-from MOVESWorkerOutput mwo
-inner join PM10PollutantProcessAssoc ppa on (ppa.processID=mwo.processID)
-inner join PM10EmissionRatio r on (
-	r.polProcessID=ppa.polProcessID 
-	and r.sourceTypeID=mwo.sourceTypeID 
-	and r.fuelTypeID=mwo.fuelTypeID
-	and r.minModelYearID <= mwo.modelYearID
-	and r.maxModelYearID >= mwo.modelYearID)
-where ((mwo.pollutantID=116 and ppa.pollutantID=106)
-	or (mwo.pollutantID=117 and ppa.pollutantID=107));
+	movesrunid, iterationid,
+    yearid, monthid, dayid, hourid, stateid, countyid, zoneid, linkid,
+	ppa.pollutantid as pollutantid,
+	mwo.processid, mwo.sourcetypeid, mwo.regclassid, mwo.fueltypeid, modelyearid, roadtypeid, scc,
+	(emissionquant * pm10pm25ratio) as emissionquant,
+	(emissionrate * pm10pm25ratio) as emissionrate
+from movesworkeroutput mwo
+inner join pm10pollutantprocessassoc ppa on (ppa.processid=mwo.processid)
+inner join pm10emissionratio r on (
+	r.polprocessid=ppa.polprocessid 
+	and r.sourcetypeid=mwo.sourcetypeid 
+	and r.fueltypeid=mwo.fueltypeid
+	and r.minmodelyearid <= mwo.modelyearid
+	and r.maxmodelyearid >= mwo.modelyearid)
+where ((mwo.pollutantid=116 and ppa.pollutantid=106)
+	or (mwo.pollutantid=117 and ppa.pollutantid=107));
 
-insert into MOVESWorkerOutput (
-	MOVESRunID, iterationID,
-    yearID, monthID, dayID, hourID, stateID, countyID, zoneID, linkID,
-	pollutantID,
-	processID, sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC,
-	emissionQuant, emissionRate)
+insert into movesworkeroutput (
+	movesrunid, iterationid,
+    yearid, monthid, dayid, hourid, stateid, countyid, zoneid, linkid,
+	pollutantid,
+	processid, sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc,
+	emissionquant, emissionrate)
 select
-	MOVESRunID, iterationID,
-    yearID, monthID, dayID, hourID, stateID, countyID, zoneID, linkID,
-	pollutantID,
-	processID, sourceTypeID, regClassID, fuelTypeID, modelYearID, roadTypeID, SCC,
-	emissionQuant, emissionRate
-from PM10BrakeTireMOVESWorkerOutputTemp;
+	movesrunid, iterationid,
+    yearid, monthid, dayid, hourid, stateid, countyid, zoneid, linkid,
+	pollutantid,
+	processid, sourcetypeid, regclassid, fueltypeid, modelyearid, roadtypeid, scc,
+	emissionquant, emissionrate
+from pm10braketiremovesworkeroutputtemp;
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
-drop table if exists PM10BrakeTireMOVESWorkerOutputTemp;
-drop table if exists PM10PollutantProcessAssoc;
--- End Section Cleanup
+-- section cleanup
+drop table if exists pm10braketiremovesworkeroutputtemp;
+drop table if exists pm10pollutantprocessassoc;
+-- end section cleanup

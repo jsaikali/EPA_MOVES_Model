@@ -1,451 +1,451 @@
 /* ***********************************************************************************************************************
--- MySQL Script file to aggregate the separate hours of the day
---    out of the MOVESExecution database
---    after input databases have been merged by the InputDataManager
---    and before any MasterLoopable objects are executed.
--- An attempt is made to weight some aggregations by activity.
+-- mysql script file to aggregate the separate hours of the day
+--    out of the movesexecution database
+--    after input databases have been merged by the inputdatamanager
+--    and before any masterloopable objects are executed.
+-- an attempt is made to weight some aggregations by activity.
 --
--- Author Wesley Faler
--- Author Gwo Shyu
--- Version 2014-04-24
--- Change history:
---   Modified by Gwo Shyu, March 26, 2008 to fix the errors of duplicate entry and table existing
+-- author wesley faler
+-- author gwo shyu
+-- version 2014-04-24
+-- change history:
+--   modified by gwo shyu, march 26, 2008 to fix the errors of duplicate entry and table existing
    *********************************************************************************************************************** */
-DROP TABLE IF EXISTS HourWeighting1;
-DROP TABLE IF EXISTS HourWeighting2;
-DROP TABLE IF EXISTS HourWeighting3;
-DROP TABLE IF EXISTS HourWeighting4;
-DROP TABLE IF EXISTS OldHourDay;
-DROP TABLE IF EXISTS OldAvgSpeedDistribution;
-DROP TABLE IF EXISTS OldOpModeDistribution;
-DROP TABLE IF EXISTS OldOpModeDistribution2;
-DROP TABLE IF EXISTS OldSourceTypeHour;
-DROP TABLE IF EXISTS OldSHO;
-DROP TABLE IF EXISTS OldSourceHours;
-DROP TABLE IF EXISTS OldStarts;
-DROP TABLE IF EXISTS OldExtendedIdleHours;
-DROP TABLE IF EXISTS OldHotellingHourFraction;
-DROP TABLE IF EXISTS AggZoneMonthHour;
-DROP TABLE IF EXISTS AggMonthGroupHour;
-DROP TABLE IF EXISTS OldSampleVehicleTrip;
-DROP TABLE IF EXISTS OldStartsPerVehicle;
-DROP TABLE IF EXISTS OldStartsOpModeDistribution;
-DROP TABLE IF EXISTS OldStartsHourFraction;
-DROP TABLE IF EXISTS OldSoakActivityFraction;
-DROP TABLE IF EXISTS OldAverageTankTemperature;
+drop table if exists hourweighting1;
+drop table if exists hourweighting2;
+drop table if exists hourweighting3;
+drop table if exists hourweighting4;
+drop table if exists oldhourday;
+drop table if exists oldavgspeeddistribution;
+drop table if exists oldopmodedistribution;
+drop table if exists oldopmodedistribution2;
+drop table if exists oldsourcetypehour;
+drop table if exists oldsho;
+drop table if exists oldsourcehours;
+drop table if exists oldstarts;
+drop table if exists oldextendedidlehours;
+drop table if exists oldhotellinghourfraction;
+drop table if exists aggzonemonthhour;
+drop table if exists aggmonthgrouphour;
+drop table if exists oldsamplevehicletrip;
+drop table if exists oldstartspervehicle;
+drop table if exists oldstartsopmodedistribution;
+drop table if exists oldstartshourfraction;
+drop table if exists oldsoakactivityfraction;
+drop table if exists oldaveragetanktemperature;
 
 --
--- Create HourWeighting1 to be used to weight hourly activity 
---    by sourceTypeID, dayID, and RoadtypeID.
---    HourVMTFraction itself could be used, except that it will be modified later
+-- create hourweighting1 to be used to weight hourly activity 
+--    by sourcetypeid, dayid, and roadtypeid.
+--    hourvmtfraction itself could be used, except that it will be modified later
 -- 
--- SELECT "Making HourWeighting1" AS MARKER_POINT;
-CREATE Table HourWeighting1
-  SELECT sourceTypeID, roadTypeID, dayID, hourID, hourVMTFraction as actFract 
-    FROM HourVMTFraction;
-CREATE UNIQUE INDEX index1 ON HourWeighting1 (sourceTypeID, roadTypeID, dayID, hourID);
+-- select "making hourweighting1" as marker_point;
+create table hourweighting1
+  select sourcetypeid, roadtypeid, dayid, hourid, hourvmtfraction as actfract 
+    from hourvmtfraction;
+create unique index index1 on hourweighting1 (sourcetypeid, roadtypeid, dayid, hourid);
 
 --
--- Create HourWeighting2 to be used to weight hourly activity by
---    sourceTypeID, and dayID
+-- create hourweighting2 to be used to weight hourly activity by
+--    sourcetypeid, and dayid
 --
--- SELECT "Making HourWeighting2" AS MARKER_POINT;
--- Explicit Creation of Intermediate File Found necessary to avoid significance problems
-CREATE TABLE  HourWeighting2 (
-	sourceTypeID SMALLINT, 
-	dayID SMALLINT,
-	hourID SMALLINT,
-	actFract FLOAT);
-INSERT INTO HourWeighting2 (sourceTypeID, dayID, hourID, actFract)
-  SELECT hvmtf.sourceTypeID, dayID, hourID, 
-    ((sum(hourVMTFraction*roadTypeVMTFraction))/sum(roadTypeVMTFraction)) as actFract 
-    FROM HourVMTFraction AS hvmtf INNER JOIN RoadTypeDistribution USING (sourceTypeID, roadTypeID)
-    GROUP BY hvmtf.sourceTypeID, dayID, hourID;
-CREATE UNIQUE INDEX index1 ON HourWeighting2 (sourceTypeID, dayID, hourID);
+-- select "making hourweighting2" as marker_point;
+-- explicit creation of intermediate file found necessary to avoid significance problems
+create table  hourweighting2 (
+  sourcetypeid smallint, 
+  dayid smallint,
+  hourid smallint,
+  actfract float);
+insert into hourweighting2 (sourcetypeid, dayid, hourid, actfract)
+  select hvmtf.sourcetypeid, dayid, hourid, 
+    ((sum(hourvmtfraction*roadtypevmtfraction))/sum(roadtypevmtfraction)) as actfract 
+    from hourvmtfraction as hvmtf inner join roadtypedistribution using (sourcetypeid, roadtypeid)
+    group by hvmtf.sourcetypeid, dayid, hourid;
+create unique index index1 on hourweighting2 (sourcetypeid, dayid, hourid);
 
 --
--- Create HourWeighting3 to be used to weight hourly activity 
---    when no keys (besides hourID) are shared with HourVMTFraction
+-- create hourweighting3 to be used to weight hourly activity 
+--    when no keys (besides hourid) are shared with hourvmtfraction
 --
--- SELECT "Making HourWeighting3" AS MARKER_POINT;
--- Explicit Creation of Intermediate File Found necessary to avoid significance problems
-CREATE Table  HourWeighting3 (
-	hourID SMALLINT,
-	actFract FLOAT);
-INSERT INTO HourWeighting3
-  SELECT hourID, avg(actFract) as actFract 
-    FROM HourWeighting2
-    WHERE sourceTypeID=21 
-    GROUP BY hourID;
-CREATE UNIQUE INDEX index1 ON HourWeighting3 (hourID);
+-- select "making hourweighting3" as marker_point;
+-- explicit creation of intermediate file found necessary to avoid significance problems
+create table  hourweighting3 (
+  hourid smallint,
+  actfract float);
+insert into hourweighting3
+  select hourid, avg(actfract) as actfract 
+    from hourweighting2
+    where sourcetypeid=21 
+    group by hourid;
+create unique index index1 on hourweighting3 (hourid);
 
--- Create HourWeighting4 to be used to weight hourly activity
---  when only dayID (besides hourID) is shared with HourVMTFraction
+-- create hourweighting4 to be used to weight hourly activity
+--  when only dayid (besides hourid) is shared with hourvmtfraction
 --
-SELECT "Making HourWeighting4" AS MARKER_POINT;
-CREATE Table HourWeighting4 (
-	dayID SMALLINT,
-	hourID SMALLINT,
-	actFract FLOAT);
-INSERT INTO HourWeighting4
-  SELECT dayID, hourID, actFract 
-  FROM HourWeighting2 WHERE sourceTypeID=21;
-CREATE UNIQUE INDEX index1 ON HourWeighting4 (dayID, hourID);
+select "making hourweighting4" as marker_point;
+create table hourweighting4 (
+  dayid smallint,
+  hourid smallint,
+  actfract float);
+insert into hourweighting4
+  select dayid, hourid, actfract 
+  from hourweighting2 where sourcetypeid=21;
+create unique index index1 on hourweighting4 (dayid, hourid);
 
 --
--- HourOfAnyDay Table
+-- hourofanyday table
 --
 -- SELECT "Making HourOfAnyDay" AS MARKER_POINT;
-TRUNCATE HourOfAnyDay;
-INSERT INTO HourOfAnyDay (hourID, hourName)
-  VALUES (0, "Entire Day");
+truncate hourofanyday;
+insert into hourofanyday (hourid, hourname)
+  values (0, "Entire Day");
 
-FLUSH TABLE HourOfAnyDay;
+flush table hourofanyday;
   
 --
--- HourDay Table  (save old version as it is needed later)
+-- hourday table  (save old version as it is needed later)
 --
--- SELECT "Making HourDay" AS MARKER_POINT;
-CREATE Table OldHourDay SELECT * from HourDay;
-CREATE UNIQUE INDEX index1 ON OldHourDay(hourDayID);
-TRUNCATE HourDay;
-INSERT INTO HourDay (hourDayID, dayID, hourID)
-  SELECT dayID AS hourDayID, dayID, 0 AS hourID
-  FROM DayOfAnyWeek;
-CREATE UNIQUE INDEX index1 ON HourDay (hourDayID);
-FLUSH TABLE HourDay;
+-- select "making hourday" as marker_point;
+create table oldhourday select * from hourday;
+create unique index index1 on oldhourday(hourdayid);
+truncate hourday;
+insert into hourday (hourdayid, dayid, hourid)
+  select dayid as hourdayid, dayid, 0 as hourid
+  from dayofanyweek;
+create unique index index1 on hourday (hourdayid);
+flush table hourday;
 --
--- HourVMTFraction Table
+-- hourvmtfraction table
 --
--- SELECT "Making HourVMTFraction" AS MARKER_POINT;
-TRUNCATE HourVMTFraction;
-REPLACE INTO HourVMTFraction (sourceTypeID, roadTypeID, dayID, hourID, hourVMTFraction)
-  SELECT sourceTypeID, roadTypeID, dayID, 0 AS hourID, 1.0 AS hourVMTFraction
-  FROM HourWeighting1
-  GROUP BY sourceTypeID, roadTypeID, dayID;
-CREATE UNIQUE INDEX index1 ON HourVMTFraction (sourceTypeID, roadTypeID, dayID);  
-FLUSH TABLE HourVMTFraction;
+-- select "making hourvmtfraction" as marker_point;
+truncate hourvmtfraction;
+replace into hourvmtfraction (sourcetypeid, roadtypeid, dayid, hourid, hourvmtfraction)
+  select sourcetypeid, roadtypeid, dayid, 0 as hourid, 1.0 as hourvmtfraction
+  from hourweighting1
+  group by sourcetypeid, roadtypeid, dayid;
+create unique index index1 on hourvmtfraction (sourcetypeid, roadtypeid, dayid);  
+flush table hourvmtfraction;
 
 --
--- AvgSpeedDistribution Table
+-- avgspeeddistribution table
 --
--- SELECT "Making AvgSpeedDistribution" AS MARKER_POINT;
-CREATE TABLE OldAvgSpeedDistribution
-  SELECT sourceTypeID, roadTypeID, dayID, hourID, avgSpeedBinID, avgSpeedFraction
-  FROM AvgSpeedDistribution INNER JOIN OldHourDay USING (hourDayID);
-TRUNCATE AvgSpeedDistribution;
-INSERT INTO AvgSpeedDistribution 
-	(sourceTypeID, roadTypeID, hourDayID, avgSpeedBinID, avgSpeedFraction)
-  SELECT asd.sourceTypeID, asd.roadTypeID, asd.dayID AS hourDayID, asd.avgSpeedBinID, 
-    ((sum(asd.avgSpeedFraction*hw.actFract))/sum(hw.actFract)) AS avgSpeedFraction
-  FROM OldAvgSpeedDistribution AS asd INNER JOIN HourWeighting1 AS hw 
-      USING (sourceTypeID, roadTypeID, dayID, hourID)
-    GROUP BY sourceTypeID, roadTypeID, asd.dayID, avgSpeedBinID;
-CREATE UNIQUE INDEX index1 ON AvgSpeedDistribution 
-    (sourceTypeID, roadTypeID, hourDayID, avgSpeedBinID);
-FLUSH TABLE AvgSpeedDistribution;
+-- select "making avgspeeddistribution" as marker_point;
+create table oldavgspeeddistribution
+  select sourcetypeid, roadtypeid, dayid, hourid, avgspeedbinid, avgspeedfraction
+  from avgspeeddistribution inner join oldhourday using (hourdayid);
+truncate avgspeeddistribution;
+insert into avgspeeddistribution 
+  (sourcetypeid, roadtypeid, hourdayid, avgspeedbinid, avgspeedfraction)
+  select asd.sourcetypeid, asd.roadtypeid, asd.dayid as hourdayid, asd.avgspeedbinid, 
+    ((sum(asd.avgspeedfraction*hw.actfract))/sum(hw.actfract)) as avgspeedfraction
+  from oldavgspeeddistribution as asd inner join hourweighting1 as hw 
+      using (sourcetypeid, roadtypeid, dayid, hourid)
+    group by sourcetypeid, roadtypeid, asd.dayid, avgspeedbinid;
+create unique index index1 on avgspeeddistribution 
+    (sourcetypeid, roadtypeid, hourdayid, avgspeedbinid);
+flush table avgspeeddistribution;
 
 --
--- OpModeDistribution
+-- opmodedistribution
 --
--- SELECT "Making OpModeDistribution" AS MARKER_POINT;
-CREATE Table OldOpModeDistribution 
-  SELECT omd.*, Link.roadTypeID
-  FROM OpModeDistribution AS omd INNER JOIN Link USING (linkID);
-CREATE Table OldOpModeDistribution2
-  SELECT omd.*, OldHourDay.dayID,OldHourDay.hourID
-  FROM OldOpModeDistribution AS omd INNER JOIN OldHourDay USING (hourDayID);
-CREATE UNIQUE INDEX index1 ON OldOpModeDistribution2 (sourceTypeID, roadTypeID, dayID, hourID);
-TRUNCATE OpModeDistribution;
-INSERT INTO OpModeDistribution (sourceTypeID, hourDayID, linkID, polProcessID, opModeID, 
-    opModeFraction, opModeFractionCV, isUserInput)
-  SELECT omd.sourceTypeID, omd.dayID AS hourDayID, omd.linkID, omd.polProcessID, omd.opModeID,
-    (SUM(omd.opModeFraction * hw.actFract)/SUM(hw.actFract)) AS opModeFraction, 
-    NULL AS opModeFractionCV, "Y" AS isUserInput
-  FROM OldOpModeDistribution2 AS omd INNER JOIN HourWeighting1 AS hw
-    USING (sourceTypeID, roadTypeID, dayID, hourID )
-  GROUP BY omd.sourceTypeID, omd.dayID, omd.linkID, omd.polProcessID, omd.opModeID; 
-FLUSH TABLE OpModeDistribution;
+-- select "making opmodedistribution" as marker_point;
+create table oldopmodedistribution 
+  select omd.*, link.roadtypeid
+  from opmodedistribution as omd inner join link using (linkid);
+create table oldopmodedistribution2
+  select omd.*, oldhourday.dayid,oldhourday.hourid
+  from oldopmodedistribution as omd inner join oldhourday using (hourdayid);
+create unique index index1 on oldopmodedistribution2 (sourcetypeid, roadtypeid, dayid, hourid);
+truncate opmodedistribution;
+insert into opmodedistribution (sourcetypeid, hourdayid, linkid, polprocessid, opmodeid, 
+    opmodefraction, opmodefractioncv, isuserinput)
+  select omd.sourcetypeid, omd.dayid as hourdayid, omd.linkid, omd.polprocessid, omd.opmodeid,
+    (sum(omd.opmodefraction * hw.actfract)/sum(hw.actfract)) as opmodefraction, 
+    null as opmodefractioncv, "Y" as isuserinput
+  from oldopmodedistribution2 as omd inner join hourweighting1 as hw
+    using (sourcetypeid, roadtypeid, dayid, hourid )
+  group by omd.sourcetypeid, omd.dayid, omd.linkid, omd.polprocessid, omd.opmodeid; 
+flush table opmodedistribution;
   
 --
--- SourceTypeHour Table
+-- sourcetypehour table
 --
--- Note:  idleSHOFactors are to be summed, not averaged. 
--- SELECT "Making SourceTypeHour" AS MARKER_POINT;
-CREATE TABLE OldSourceTypeHour
-  SELECT sourceTypeID, dayID, hourID, idleSHOFactor, hotellingDist
-  FROM SourceTypeHour INNER JOIN OldHourDay USING (hourDayID);
-TRUNCATE SourceTypeHour;
-INSERT INTO SourceTypeHour 
-	(sourceTypeID, hourDayID, idleSHOFactor, hotellingDist)
-  SELECT sth.sourceTypeID, sth.dayID AS hourDayID, 
-    sum(sth.idleSHOFactor) AS idleSHOFactor, sum(sth.hotellingDist) as hotellingDist
-  FROM OldSourceTypeHour AS sth 
-  GROUP BY sourceTypeID, sth.dayID;
-CREATE UNIQUE INDEX index1 ON SourceTypeHour (sourceTypeID, hourDayID);  
-FLUSH TABLE SourceTypeHour;
+-- note:  idleshofactors are to be summed, not averaged. 
+-- select "making sourcetypehour" as marker_point;
+create table oldsourcetypehour
+  select sourcetypeid, dayid, hourid, idleshofactor, hotellingdist
+  from sourcetypehour inner join oldhourday using (hourdayid);
+truncate sourcetypehour;
+insert into sourcetypehour 
+  (sourcetypeid, hourdayid, idleshofactor, hotellingdist)
+  select sth.sourcetypeid, sth.dayid as hourdayid, 
+    sum(sth.idleshofactor) as idleshofactor, sum(sth.hotellingdist) as hotellingdist
+  from oldsourcetypehour as sth 
+  group by sourcetypeid, sth.dayid;
+create unique index index1 on sourcetypehour (sourcetypeid, hourdayid);  
+flush table sourcetypehour;
 
 --
---  SHO    
+--  sho    
 --
--- SELECT "Making SHO" AS MARKER_POINT;
-CREATE TABLE OldSHO
-  SELECT SHO.*, dayID, hourID
-  FROM SHO INNER JOIN OldHourDay USING(hourDayID);
-CREATE INDEX index10 ON OldSHO (dayID, monthID, yearID, ageID, linkID, sourceTypeID);
-TRUNCATE SHO;
-INSERT INTO SHO (hourDayID, monthID, yearID, ageID, linkID, 
-    sourceTypeID, SHO, SHOCV, distance, isUserInput)
-  SELECT dayID AS hourDayID, monthID, yearID, ageID,linkID, sourceTypeID, 
-    sum(SHO) AS SHO, NULL AS SHOCV, sum(distance) AS distance, "Y" AS isUserInput
-  FROM OldSHO 
-  GROUP BY dayID, monthID, yearID, ageID, linkID, sourceTypeID;
-FLUSH TABLE SHO;
+-- select "making sho" as marker_point;
+create table oldsho
+  select sho.*, dayid, hourid
+  from sho inner join oldhourday using(hourdayid);
+create index index10 on oldsho (dayid, monthid, yearid, ageid, linkid, sourcetypeid);
+truncate sho;
+insert into sho (hourdayid, monthid, yearid, ageid, linkid, 
+    sourcetypeid, sho, shocv, distance, isuserinput)
+  select dayid as hourdayid, monthid, yearid, ageid,linkid, sourcetypeid, 
+    sum(sho) as sho, null as shocv, sum(distance) as distance, "Y" as isuserinput
+  from oldsho 
+  group by dayid, monthid, yearid, ageid, linkid, sourcetypeid;
+flush table sho;
   
 --
---  SourceHours    
+--  sourcehours    
 --
--- SELECT "Making SourceHours" AS MARKER_POINT;
-CREATE TABLE OldSourceHours
-  SELECT SourceHours.*, dayID, hourID
-  FROM SourceHours INNER JOIN OldHourDay USING(hourDayID);
-CREATE INDEX index10 ON OldSourceHours (dayID, monthID, yearID, ageID, linkID, sourceTypeID);
-TRUNCATE SourceHours;
-INSERT INTO SourceHours (hourDayID, monthID, yearID, ageID, linkID, 
-    sourceTypeID, sourceHours, sourceHoursCV, isUserInput)
-  SELECT dayID AS hourDayID, monthID, yearID, ageID,linkID, sourceTypeID, 
-    sum(sourceHours) AS sourceHours, NULL AS sourceHoursCV,"Y" AS isUserInput
-  FROM OldSourceHours 
-  GROUP BY dayID, monthID, yearID, ageID, linkID, sourceTypeID;
-FLUSH TABLE SourceHours;
+-- select "making sourcehours" as marker_point;
+create table oldsourcehours
+  select sourcehours.*, dayid, hourid
+  from sourcehours inner join oldhourday using(hourdayid);
+create index index10 on oldsourcehours (dayid, monthid, yearid, ageid, linkid, sourcetypeid);
+truncate sourcehours;
+insert into sourcehours (hourdayid, monthid, yearid, ageid, linkid, 
+    sourcetypeid, sourcehours, sourcehourscv, isuserinput)
+  select dayid as hourdayid, monthid, yearid, ageid,linkid, sourcetypeid, 
+    sum(sourcehours) as sourcehours, null as sourcehourscv,"Y" as isuserinput
+  from oldsourcehours 
+  group by dayid, monthid, yearid, ageid, linkid, sourcetypeid;
+flush table sourcehours;
   
 --
---  Starts
+--  starts
 --
--- SELECT "Making Starts" AS MARKER_POINT;
-CREATE TABLE  OldStarts
-  SELECT Starts.*, dayID, hourID
-  FROM Starts INNER JOIN OldHourDay USING(hourDayID);
-CREATE INDEX index11 ON OldStarts (dayID, monthID, yearID, ageID, zoneID, sourceTypeID);
-TRUNCATE Starts;
-INSERT INTO Starts (hourDayID, monthID, yearID, ageID, zoneID, 
-    sourceTypeID, starts, startsCV, isUserInput)
-  SELECT dayID AS hourDayID, monthID, yearID, ageID, zoneID, sourceTypeID, 
-    sum(starts) AS starts, NULL AS startsCV, "Y" AS isUserInput
-  FROM OldStarts
-  GROUP BY dayID, monthID, yearID, ageID, zoneID, sourceTypeID;
-FLUSH TABLE Starts;
+-- select "making starts" as marker_point;
+create table  oldstarts
+  select starts.*, dayid, hourid
+  from starts inner join oldhourday using(hourdayid);
+create index index11 on oldstarts (dayid, monthid, yearid, ageid, zoneid, sourcetypeid);
+truncate starts;
+insert into starts (hourdayid, monthid, yearid, ageid, zoneid, 
+    sourcetypeid, starts, startscv, isuserinput)
+  select dayid as hourdayid, monthid, yearid, ageid, zoneid, sourcetypeid, 
+    sum(starts) as starts, null as startscv, "Y" as isuserinput
+  from oldstarts
+  group by dayid, monthid, yearid, ageid, zoneid, sourcetypeid;
+flush table starts;
   
 --
---  ExtendedIdleHours
+--  extendedidlehours
 --
--- SELECT "Making ExtendedIdleHours" AS MARKER_POINT;
-CREATE TABLE OldExtendedIdleHours
-  SELECT ExtendedIdleHours.*, dayID, hourID
-  FROM ExtendedIdleHours INNER JOIN OldHourDay USING(hourDayID);
-CREATE INDEX index12 ON OldExtendedIdleHours (sourceTypeID, dayID, monthID, yearID, ageID, zoneID);
-TRUNCATE ExtendedIdleHours;
-INSERT INTO ExtendedIdleHours (sourceTypeID, hourDayID, monthID, yearID, ageID, zoneID, 
-    extendedIdleHours, extendedIdleHoursCV, isUserInput)
-  SELECT sourceTypeID, dayID AS hourDayID, monthID, yearID, ageID, zoneID,  
-    sum(extendedIdleHours) AS extendedIdleHours, NULL AS extendedIdleHoursCV, "Y" AS isUserInput
-  FROM OldExtendedIdleHours
-  GROUP BY sourceTypeID, dayID, monthID, yearID, ageID, zoneID;
-FLUSH TABLE ExtendedIdleHours;
+-- select "making extendedidlehours" as marker_point;
+create table oldextendedidlehours
+  select extendedidlehours.*, dayid, hourid
+  from extendedidlehours inner join oldhourday using(hourdayid);
+create index index12 on oldextendedidlehours (sourcetypeid, dayid, monthid, yearid, ageid, zoneid);
+truncate extendedidlehours;
+insert into extendedidlehours (sourcetypeid, hourdayid, monthid, yearid, ageid, zoneid, 
+    extendedidlehours, extendedidlehourscv, isuserinput)
+  select sourcetypeid, dayid as hourdayid, monthid, yearid, ageid, zoneid,  
+    sum(extendedidlehours) as extendedidlehours, null as extendedidlehourscv, "Y" as isuserinput
+  from oldextendedidlehours
+  group by sourcetypeid, dayid, monthid, yearid, ageid, zoneid;
+flush table extendedidlehours;
 
--- HotellingHourFraction
+-- hotellinghourfraction
 -- 
--- SELECT "Making StartsHourFraction" AS MARKER_POINT;
-CREATE TABLE OldHotellingHourFraction
-  SELECT * FROM HotellingHourFraction;
-TRUNCATE HotellingHourFraction;
-INSERT INTO HotellingHourFraction (zoneID, dayID, hourID, hourFraction)
-  SELECT zoneID, dayID, 0 as hourID, sum(hourFraction) as hourFraction
-  FROM OldHotellingHourFraction
-  GROUP BY zoneID, dayID;
-FLUSH TABLE HotellingHourFraction;
-  
--- 
--- ZoneMonthHour
---
--- SELECT "Making ZoneMonthHour" AS MARKER_POINT;
--- Explicit Creation of Intermediate File Found necessary to avoid significance problems
-CREATE TABLE  AggZoneMonthHour (
-	monthID SMALLINT,
-	zoneID INTEGER,
-	temperature FLOAT,
-	relHumidity FLOAT);
-INSERT INTO AggZoneMonthHour (monthID,zoneID,temperature,relHumidity)
-  SELECT monthID, zoneID, 
-    (sum(temperature*actFract)/sum(actFract)) AS temperature,
-    (sum(relHumidity*actFract)/sum(actFract)) AS relHumidity
-  FROM ZoneMonthHour INNER JOIN HourWeighting3 USING (hourID)
-  GROUP BY monthID, zoneID;
-TRUNCATE ZoneMonthHour;
-REPLACE INTO ZoneMonthHour (monthID, zoneID, hourID, temperature, temperatureCV,
-    relHumidity, relativeHumidityCV, heatIndex, specificHumidity)
-  SELECT monthID, zoneID, 0 AS hourID, temperature,
-    NULL AS temperatureCV, relHumidity, NULL AS relativeHumidityCV,
-    0.0 as heatIndex, 0.0 as specificHumidity 
-  FROM AggZoneMonthHour;
-FLUSH TABLE ZoneMonthHour;
+-- select "making startshourfraction" as marker_point;
+create table oldhotellinghourfraction
+  select * from hotellinghourfraction;
+truncate hotellinghourfraction;
+insert into hotellinghourfraction (zoneid, dayid, hourid, hourfraction)
+  select zoneid, dayid, 0 as hourid, sum(hourfraction) as hourfraction
+  from oldhotellinghourfraction
+  group by zoneid, dayid;
+flush table hotellinghourfraction;
   
 -- 
--- MonthGroupHour
+-- zonemonthhour
 --
--- SELECT "Making MonthGroupHour" AS MARKER_POINT;
--- Explicit Creation of Intermediate File Found necessary to avoid significance problems
-CREATE TABLE AggMonthGroupHour (
-	monthGroupID SMALLINT,
-	ACActivityTermA FLOAT,
-	ACActivityTermB FLOAT,
-	ACActivityTermC FLOAT);
-INSERT INTO AggMonthGroupHour (monthGroupID,ACActivityTermA,ACActivityTermB,ACActivityTermC)
-  SELECT monthGroupID, 
-    (sum(ACActivityTermA*actFract)/sum(actFract)) AS ACActivityTermA,
-    (sum(ACActivityTermB*actFract)/sum(actFract)) AS ACActivityTermB,
-    (sum(ACActivityTermC*actFract)/sum(actFract)) AS ACActivityTermC
-  FROM MonthGroupHour INNER JOIN HourWeighting3 USING (hourID)
-  GROUP BY monthGroupID;
-TRUNCATE MonthGroupHour;
-REPLACE INTO MonthGroupHour (monthGroupID, hourID,
-	ACActivityTermA, ACActivityTermACV, 
-	ACActivityTermB, ACActivityTermBCV, 
-	ACActivityTermC, ACActivityTermCCV 
-	)
-  SELECT monthGroupID, 0 AS hourID,
-    ACActivityTermA, NULL AS ACActivityTermACV,
-    ACActivityTermB, NULL AS ACActivityTermBCV,
-    ACActivityTermC, NULL AS ACActivityTermCCV
-  FROM AggMonthGroupHour;  
-FLUSH TABLE MonthGroupHour;
+-- select "making zonemonthhour" as marker_point;
+-- explicit creation of intermediate file found necessary to avoid significance problems
+create table  aggzonemonthhour (
+  monthid smallint,
+  zoneid integer,
+  temperature float,
+  relhumidity float);
+insert into aggzonemonthhour (monthid,zoneid,temperature,relhumidity)
+  select monthid, zoneid, 
+    (sum(temperature*actfract)/sum(actfract)) as temperature,
+    (sum(relhumidity*actfract)/sum(actfract)) as relhumidity
+  from zonemonthhour inner join hourweighting3 using (hourid)
+  group by monthid, zoneid;
+truncate zonemonthhour;
+replace into zonemonthhour (monthid, zoneid, hourid, temperature, temperaturecv,
+    relhumidity, relativehumiditycv, heatindex, specifichumidity)
+  select monthid, zoneid, 0 as hourid, temperature,
+    null as temperaturecv, relhumidity, null as relativehumiditycv,
+    0.0 as heatindex, 0.0 as specifichumidity 
+  from aggzonemonthhour;
+flush table zonemonthhour;
+  
+-- 
+-- monthgrouphour
+--
+-- select "making monthgrouphour" as marker_point;
+-- explicit creation of intermediate file found necessary to avoid significance problems
+create table aggmonthgrouphour (
+  monthgroupid smallint,
+  acactivityterma float,
+  acactivitytermb float,
+  acactivitytermc float);
+insert into aggmonthgrouphour (monthgroupid,acactivityterma,acactivitytermb,acactivitytermc)
+  select monthgroupid, 
+    (sum(acactivityterma*actfract)/sum(actfract)) as acactivityterma,
+    (sum(acactivitytermb*actfract)/sum(actfract)) as acactivitytermb,
+    (sum(acactivitytermc*actfract)/sum(actfract)) as acactivitytermc
+  from monthgrouphour inner join hourweighting3 using (hourid)
+  group by monthgroupid;
+truncate monthgrouphour;
+replace into monthgrouphour (monthgroupid, hourid,
+  acactivityterma, acactivitytermacv, 
+  acactivitytermb, acactivitytermbcv, 
+  acactivitytermc, acactivitytermccv 
+  )
+  select monthgroupid, 0 as hourid,
+    acactivityterma, null as acactivitytermacv,
+    acactivitytermb, null as acactivitytermbcv,
+    acactivitytermc, null as acactivitytermccv
+  from aggmonthgrouphour;  
+flush table monthgrouphour;
   
 --
--- SampleVehicleTrip
+-- samplevehicletrip
 -- 
--- SELECT "Making SampleVehicleTrip" AS MARKER_POINT;
-CREATE TABLE OldSampleVehicleTrip 
-  SELECT *
-  FROM SampleVehicleTrip;
+-- select "making samplevehicletrip" as marker_point;
+create table oldsamplevehicletrip 
+  select *
+  from samplevehicletrip;
 -- ***************************
---  SELECT SampleVehicleTrip.*, dayID 
---  FROM SampleVehicleTrip INNER JOIN OldHourDay USING (hourDayID);
+--  select samplevehicletrip.*, dayid 
+--  from samplevehicletrip inner join oldhourday using (hourdayid);
 -- ***************************
 
-TRUNCATE SampleVehicleTrip;
-INSERT INTO SampleVehicleTrip (vehID, tripID, dayID, hourID, priorTripID, 
-	keyOnTime, keyOffTime) 
-  SELECT vehID, tripID, dayID, 0 as hourID, priorTripID, keyOnTime, keyOffTime
-  FROM OldSampleVehicleTrip;
+truncate samplevehicletrip;
+insert into samplevehicletrip (vehid, tripid, dayid, hourid, priortripid, 
+  keyontime, keyofftime) 
+  select vehid, tripid, dayid, 0 as hourid, priortripid, keyontime, keyofftime
+  from oldsamplevehicletrip;
 -- ***************************
---  SELECT vehID, tripID, dayID AS hourDayID, priorTripID, keyOnTime, keyOffTime
---  FROM OldSampleVehicleTrip;
+--  select vehid, tripid, dayid as hourdayid, priortripid, keyontime, keyofftime
+--  from oldsamplevehicletrip;
 -- ***************************
-FLUSH TABLE SampleVehicleTrip;
+flush table samplevehicletrip;
 
 --
--- StartsPerVehicle
+-- startspervehicle
 -- 
--- SELECT "Making StartsPerVehicle" AS MARKER_POINT;
-CREATE TABLE OldStartsPerVehicle 
-  SELECT StartsPerVehicle.*, dayID 
-  FROM StartsPerVehicle INNER JOIN OldHourDay USING (hourDayID);
-TRUNCATE StartsPerVehicle;
-INSERT INTO StartsPerVehicle (sourceTypeID, hourDayID, 
-	startsPerVehicle, startsPerVehicleCV) 
-  SELECT sourceTypeID, dayID AS hourDayID, sum(startsPerVehicle) as startsPerVehicle,
-    NULL AS startsPerVehicleCV
-  FROM OldStartsPerVehicle GROUP BY sourceTypeID, hourDayID;
-FLUSH TABLE StartsPerVehicle;
+-- select "making startspervehicle" as marker_point;
+create table oldstartspervehicle 
+  select startspervehicle.*, dayid 
+  from startspervehicle inner join oldhourday using (hourdayid);
+truncate startspervehicle;
+insert into startspervehicle (sourcetypeid, hourdayid, 
+  startspervehicle, startspervehiclecv) 
+  select sourcetypeid, dayid as hourdayid, sum(startspervehicle) as startspervehicle,
+    null as startspervehiclecv
+  from oldstartspervehicle group by sourcetypeid, hourdayid;
+flush table startspervehicle;
 
--- This MUST happen before changes are made to StartsHourFraction (Jarrod/Evan/Michael Integration Sprint 27 March 2019)
--- StartsOpModeDistribution
+-- this must happen before changes are made to startshourfraction (jarrod/evan/michael integration sprint 27 march 2019)
+-- startsopmodedistribution
 -- 
--- SELECT "Making StartsOpModeDistribution" AS MARKER_POINT;
-CREATE TABLE OldStartsOpModeDistribution
-  SELECT * FROM StartsOpModeDistribution;
-TRUNCATE StartsOpModeDistribution;
-INSERT INTO StartsOpModeDistribution (dayID, hourID, sourceTypeID, ageID,
-  opModeID, opModeFraction, isUserInput)
-  SELECT dayID, 0 as hourID, sourceTypeID, ageID, opModeID,
-    sum(opModeFraction * allocationFraction) as opModeFraction, 'Y' as isUserInput
-  FROM OldStartsOpModeDistribution INNER JOIN startshourfraction USING (dayID, hourID, sourceTypeID)
-  GROUP BY dayID, sourceTypeID, ageID, opModeID;
-FLUSH TABLE StartsOpModeDistribution;
+-- select "making startsopmodedistribution" as marker_point;
+create table oldstartsopmodedistribution
+  select * from startsopmodedistribution;
+truncate startsopmodedistribution;
+insert into startsopmodedistribution (dayid, hourid, sourcetypeid, ageid,
+  opmodeid, opmodefraction, isuserinput)
+  select dayid, 0 as hourid, sourcetypeid, ageid, opmodeid,
+    sum(opmodefraction * allocationfraction) as opmodefraction, 'Y' as isuserinput
+  from oldstartsopmodedistribution inner join startshourfraction using (dayid, hourid, sourcetypeid)
+  group by dayid, sourcetypeid, ageid, opmodeid;
+flush table startsopmodedistribution;
 
--- StartsHourFraction
+-- startshourfraction
 -- 
--- SELECT "Making StartsHourFraction" AS MARKER_POINT;
-CREATE TABLE OldStartsHourFraction
-  SELECT * FROM StartsHourFraction;
-TRUNCATE StartsHourFraction;
-INSERT INTO StartsHourFraction (dayID, hourID, sourceTypeID, allocationFraction)
-  SELECT dayID, 0 as hourID, sourceTypeID, sum(allocationFraction) as allocationFraction
-  FROM OldStartsHourFraction
-  GROUP BY dayID, sourceTypeID;
-FLUSH TABLE StartsHourFraction;
+-- select "making startshourfraction" as marker_point;
+create table oldstartshourfraction
+  select * from startshourfraction;
+truncate startshourfraction;
+insert into startshourfraction (dayid, hourid, sourcetypeid, allocationfraction)
+  select dayid, 0 as hourid, sourcetypeid, sum(allocationfraction) as allocationfraction
+  from oldstartshourfraction
+  group by dayid, sourcetypeid;
+flush table startshourfraction;
      
 --
--- AverageTankTemperature
+-- averagetanktemperature
 --
--- SELECT "Making AverageTankTemperature" AS MARKER_POINT;
-CREATE TABLE OldAverageTankTemperature
-  SELECT tankTemperatureGroupID, zoneID, monthID, hourID, dayID, opModeID, averageTankTemperature
-  FROM AverageTankTemperature INNER JOIN OldHourDay USING(hourDayID);
-TRUNCATE AverageTankTemperature;
-INSERT INTO AverageTankTemperature (tankTemperatureGroupID, zoneID, monthID,
-    hourDayID, opModeID, averageTankTemperature, averageTankTemperatureCV, isUserInput) 
-  SELECT tankTemperatureGroupID, zoneID, monthID, oatt.dayID AS hourDayID, opModeID,
-    sum(averageTankTemperature*actFract) AS averageTankTemperature, 
-    NULL AS averageTankTemperatureCV, 'Y' AS isUserInput
-  FROM OldAverageTankTemperature AS oatt INNER JOIN HourWeighting4 USING(dayID, hourID)
-  GROUP BY tankTemperatureGroupID, zoneID, monthID, oatt.dayID, opModeID ;
-FLUSH TABLE AverageTankTemperature;
+-- select "making averagetanktemperature" as marker_point;
+create table oldaveragetanktemperature
+  select tanktemperaturegroupid, zoneid, monthid, hourid, dayid, opmodeid, averagetanktemperature
+  from averagetanktemperature inner join oldhourday using(hourdayid);
+truncate averagetanktemperature;
+insert into averagetanktemperature (tanktemperaturegroupid, zoneid, monthid,
+    hourdayid, opmodeid, averagetanktemperature, averagetanktemperaturecv, isuserinput) 
+  select tanktemperaturegroupid, zoneid, monthid, oatt.dayid as hourdayid, opmodeid,
+    sum(averagetanktemperature*actfract) as averagetanktemperature, 
+    null as averagetanktemperaturecv, 'Y' as isuserinput
+  from oldaveragetanktemperature as oatt inner join hourweighting4 using(dayid, hourid)
+  group by tanktemperaturegroupid, zoneid, monthid, oatt.dayid, opmodeid ;
+flush table averagetanktemperature;
 
 --
--- SoakActivityFraction
+-- soakactivityfraction
 --
--- SELECT "Making SoakActivityFraction" AS MARKER_POINT;
-CREATE TABLE OldSoakActivityFraction
-  SELECT sourceTypeID, zoneID, monthID, hourID, dayID, opModeID, soakActivityFraction
-  FROM SoakActivityFraction INNER JOIN OldHourDay USING(hourDayID);
-TRUNCATE SoakActivityFraction;
-INSERT INTO SoakActivityFraction (sourceTypeID, zoneID, monthID,
-    hourDayID, opModeID, soakActivityFraction, soakActivityFractionCV, isUserInput) 
-  SELECT osaf.sourceTypeID, zoneID, monthID, osaf.dayID AS hourDayID, opModeID,
-    sum(soakActivityFraction*actFract) AS soakActivityFraction, 
-    NULL AS soakActivityFractionCV, 'Y' AS isUserInput
-  FROM OldSoakActivityFraction AS osaf INNER JOIN HourWeighting2 USING(sourceTypeID, dayID, hourID)
-  GROUP BY osaf.sourceTypeID, zoneID, monthID, osaf.dayID, opModeID ;
-FLUSH TABLE SoakActivityFraction;
+-- select "making soakactivityfraction" as marker_point;
+create table oldsoakactivityfraction
+  select sourcetypeid, zoneid, monthid, hourid, dayid, opmodeid, soakactivityfraction
+  from soakactivityfraction inner join oldhourday using(hourdayid);
+truncate soakactivityfraction;
+insert into soakactivityfraction (sourcetypeid, zoneid, monthid,
+    hourdayid, opmodeid, soakactivityfraction, soakactivityfractioncv, isuserinput) 
+  select osaf.sourcetypeid, zoneid, monthid, osaf.dayid as hourdayid, opmodeid,
+    sum(soakactivityfraction*actfract) as soakactivityfraction, 
+    null as soakactivityfractioncv, 'Y' as isuserinput
+  from oldsoakactivityfraction as osaf inner join hourweighting2 using(sourcetypeid, dayid, hourid)
+  group by osaf.sourcetypeid, zoneid, monthid, osaf.dayid, opmodeid ;
+flush table soakactivityfraction;
   
 --
--- Drop any New Tables Created 
+-- drop any new tables created 
 --
 
--- FLUSH TABLES;
+-- flush tables;
 
-DROP TABLE IF EXISTS HourWeighting1;
-DROP TABLE IF EXISTS HourWeighting2;
-DROP TABLE IF EXISTS HourWeighting3;
-DROP TABLE IF EXISTS HourWeighting4;
-DROP TABLE IF EXISTS OldHourDay;
-DROP TABLE IF EXISTS OldAvgSpeedDistribution;
-DROP TABLE IF EXISTS OldOpModeDistribution;
-DROP TABLE IF EXISTS OldOpModeDistribution2;
-DROP TABLE IF EXISTS OldSourceTypeHour;
-DROP TABLE IF EXISTS OldSHO;
-DROP TABLE IF EXISTS OldSourceHours;
-DROP TABLE IF EXISTS OldStarts;
-DROP TABLE IF EXISTS OldExtendedIdleHours;
-DROP TABLE IF EXISTS OldHotellingHourFraction;
-DROP TABLE IF EXISTS AggZoneMonthHour;
-DROP TABLE IF EXISTS AggMonthGroupHour;
-DROP TABLE IF EXISTS OldSampleVehicleTrip;
-DROP TABLE IF EXISTS OldStartsPerVehicle;
-DROP TABLE IF EXISTS OldStartsOpModeDistribution;
-DROP TABLE IF EXISTS OldStartsHourFraction;
-DROP TABLE IF EXISTS OldSoakActivityFraction;
-DROP TABLE IF EXISTS OldAverageTankTemperature;
+drop table if exists hourweighting1;
+drop table if exists hourweighting2;
+drop table if exists hourweighting3;
+drop table if exists hourweighting4;
+drop table if exists oldhourday;
+drop table if exists oldavgspeeddistribution;
+drop table if exists oldopmodedistribution;
+drop table if exists oldopmodedistribution2;
+drop table if exists oldsourcetypehour;
+drop table if exists oldsho;
+drop table if exists oldsourcehours;
+drop table if exists oldstarts;
+drop table if exists oldextendedidlehours;
+drop table if exists oldhotellinghourfraction;
+drop table if exists aggzonemonthhour;
+drop table if exists aggmonthgrouphour;
+drop table if exists oldsamplevehicletrip;
+drop table if exists oldstartspervehicle;
+drop table if exists oldstartsopmodedistribution;
+drop table if exists oldstartshourfraction;
+drop table if exists oldsoakactivityfraction;
+drop table if exists oldaveragetanktemperature;
 
--- FLUSH TABLES;
+-- flush tables;

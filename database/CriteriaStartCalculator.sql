@@ -1,782 +1,782 @@
--- Version 2013-09-15
--- Author Ed Glover
--- Author Wesley Faler
--- Author Ed Campbell
--- Add deterioration to HC,CO and NOx for starts - Gwo Shyu, EPA, 11/12/2008
--- Modified to add exponential start temperature equation - Ed Glover & David Hawkins  3/26/2013
+-- version 2013-09-15
+-- author ed glover
+-- author wesley faler
+-- author ed campbell
+-- add deterioration to hc,co and nox for starts - gwo shyu, epa, 11/12/2008
+-- modified to add exponential start temperature equation - ed glover & david hawkins  3/26/2013
 
--- Section Create Remote Tables for Extracted Data
-##create.AgeCategory##;
-TRUNCATE AgeCategory;
+-- section create remote tables for extracted data
+##create.agecategory##;
+truncate agecategory;
 
-##create.County##;
-TRUNCATE County;
+##create.county##;
+truncate county;
 
-##create.criteriaRatio##;
-TRUNCATE criteriaRatio;
+##create.criteriaratio##;
+truncate criteriaratio;
 
-##create.EmissionRateByAge##;
-TRUNCATE EmissionRateByAge;
+##create.emissionratebyage##;
+truncate emissionratebyage;
 
-##create.FuelFormulation##;
-TRUNCATE FuelFormulation;
+##create.fuelformulation##;
+truncate fuelformulation;
 
-##create.FuelSubType##;
-TRUNCATE FuelSubType;
+##create.fuelsubtype##;
+truncate fuelsubtype;
 
-##create.FuelSupply##;
-TRUNCATE FuelSupply;
+##create.fuelsupply##;
+truncate fuelsupply;
 
-##create.FuelType##;
-TRUNCATE FuelType;
+##create.fueltype##;
+truncate fueltype;
 
-##create.HourDay##;
-TRUNCATE HourDay;
+##create.hourday##;
+truncate hourday;
 
-##create.IMCoverage##;
-TRUNCATE IMCoverage;
+##create.imcoverage##;
+truncate imcoverage;
 
-##create.IMFactor##;
-TRUNCATE IMFactor;
+##create.imfactor##;
+truncate imfactor;
 
-##create.MonthOfAnyYear##;
-TRUNCATE MonthOfAnyYear;
+##create.monthofanyyear##;
+truncate monthofanyyear;
 
-##create.OpModeDistribution##;
-TRUNCATE OpModeDistribution;
+##create.opmodedistribution##;
+truncate opmodedistribution;
 
-##create.PollutantProcessAssoc##;
-TRUNCATE PollutantProcessAssoc;
+##create.pollutantprocessassoc##;
+truncate pollutantprocessassoc;
 
-##create.PollutantProcessModelYear##;
-TRUNCATE PollutantProcessModelYear;
+##create.pollutantprocessmodelyear##;
+truncate pollutantprocessmodelyear;
 
-##create.PollutantProcessMappedModelYear##;
-TRUNCATE PollutantProcessMappedModelYear;
+##create.pollutantprocessmappedmodelyear##;
+truncate pollutantprocessmappedmodelyear;
 
-##create.SourceBin##;
-TRUNCATE SourceBin;
+##create.sourcebin##;
+truncate sourcebin;
 
-##create.SourceBinDistribution##;
-TRUNCATE SourceBinDistribution;
+##create.sourcebindistribution##;
+truncate sourcebindistribution;
 
-##create.SourceTypeModelYear##;
-TRUNCATE SourceTypeModelYear;
+##create.sourcetypemodelyear##;
+truncate sourcetypemodelyear;
 
-##create.StartTempAdjustment##;
-TRUNCATE TABLE StartTempAdjustment;
+##create.starttempadjustment##;
+truncate table starttempadjustment;
 
-##create.Starts##;
-TRUNCATE TABLE Starts;
+##create.starts##;
+truncate table starts;
 
-##create.Year##;
-TRUNCATE Year;
+##create.year##;
+truncate year;
 
-##create.Zone##;
-TRUNCATE Zone;
+##create.zone##;
+truncate zone;
 
-##create.ZoneMonthHour##;
-TRUNCATE ZoneMonthHour;
+##create.zonemonthhour##;
+truncate zonemonthhour;
 
--- End Section Create Remote Tables for Extracted Data
+-- end section create remote tables for extracted data
 
--- Section Extract Data
-cache SELECT * INTO OUTFILE '##AgeCategory##'
-FROM AgeCategory;
+-- section extract data
+cache select * into outfile '##agecategory##'
+from agecategory;
 
-cache SELECT * INTO OUTFILE '##County##'
-FROM County
-WHERE countyID = ##context.iterLocation.countyRecordID##;
+cache select * into outfile '##county##'
+from county
+where countyid = ##context.iterlocation.countyrecordid##;
 
-cache SELECT fuelTypeID,
-	fuelFormulationID,
-	polProcessID,
-	pollutantID,
-	processID,
-	sourceTypeID,
-	MYRMAP(modelYearID) as modelYearID,
-	ageID,
+cache select fueltypeid,
+	fuelformulationid,
+	polprocessid,
+	pollutantid,
+	processid,
+	sourcetypeid,
+	myrmap(modelyearid) as modelyearid,
+	ageid,
 	ratio,
-	ratioGPA,
-	ratioNoSulfur
-INTO OUTFILE '##criteriaRatio##'
-FROM criteriaRatio
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND modelYearID = MYMAP(##context.year## - ageID);
+	ratiogpa,
+	rationosulfur
+into outfile '##criteriaratio##'
+from criteriaratio
+where polprocessid in (##pollutantprocessids##)
+and modelyearid = mymap(##context.year## - ageid);
 
-cache SELECT DISTINCT EmissionRateByAge.* INTO OUTFILE '##EmissionRateByAge##'
-FROM EmissionRateByAge, SourceBinDistribution, SourceTypeModelYear, SourceBin, RunSpecSourceFuelType
-WHERE RunSpecSourceFuelType.fuelTypeID = SourceBin.fuelTypeID
-AND EmissionRateByAge.polProcessID = SourceBinDistribution.polProcessID
-AND EmissionRateByAge.sourceBinID = SourceBin.sourceBinID
-AND EmissionRateByAge.sourceBinID = SourceBinDistribution.sourceBinID
-AND SourceBin.sourceBinID = SourceBinDistribution.sourceBinID
-AND RunSpecSourceFuelType.sourceTypeID = SourceTypeModelYear.sourceTypeID
-AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
-AND SourceTypeModelYear.modelYearID <= ##context.year##
-AND SourceTypeModelYear.modelYearID >= ##context.year## - 30
-AND EmissionRateByAge.polProcessID IN (##pollutantProcessIDs##);
+cache select distinct emissionratebyage.* into outfile '##emissionratebyage##'
+from emissionratebyage, sourcebindistribution, sourcetypemodelyear, sourcebin, runspecsourcefueltype
+where runspecsourcefueltype.fueltypeid = sourcebin.fueltypeid
+and emissionratebyage.polprocessid = sourcebindistribution.polprocessid
+and emissionratebyage.sourcebinid = sourcebin.sourcebinid
+and emissionratebyage.sourcebinid = sourcebindistribution.sourcebinid
+and sourcebin.sourcebinid = sourcebindistribution.sourcebinid
+and runspecsourcefueltype.sourcetypeid = sourcetypemodelyear.sourcetypeid
+and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+and sourcetypemodelyear.modelyearid <= ##context.year##
+and sourcetypemodelyear.modelyearid >= ##context.year## - 30
+and emissionratebyage.polprocessid in (##pollutantprocessids##);
 
-cache SELECT ff.* INTO OUTFILE '##FuelFormulation##'
-FROM FuelFormulation ff
-INNER JOIN FuelSupply fs ON fs.fuelFormulationID = ff.fuelFormulationID
-INNER JOIN Year y ON y.fuelYearID = fs.fuelYearID
-INNER JOIN RunSpecMonthGroup rsmg ON rsmg.monthGroupID = fs.monthGroupID
-INNER JOIN MonthOfAnyYear ON MonthOfAnyYear.monthGroupID = rsmg.monthGroupID
-WHERE fuelRegionID = ##context.fuelRegionID## AND
-yearID = ##context.year##
-AND MonthOfAnyYear.monthID = ##context.monthID##
-GROUP BY ff.FuelFormulationID ORDER BY NULL;
+cache select ff.* into outfile '##fuelformulation##'
+from fuelformulation ff
+inner join fuelsupply fs on fs.fuelformulationid = ff.fuelformulationid
+inner join year y on y.fuelyearid = fs.fuelyearid
+inner join runspecmonthgroup rsmg on rsmg.monthgroupid = fs.monthgroupid
+inner join monthofanyyear on monthofanyyear.monthgroupid = rsmg.monthgroupid
+where fuelregionid = ##context.fuelregionid## and
+yearid = ##context.year##
+and monthofanyyear.monthid = ##context.monthid##
+group by ff.fuelformulationid order by null;
 
-cache SELECT * INTO OUTFILE '##FuelSubtype##'
-FROM FuelSubtype;
+cache select * into outfile '##fuelsubtype##'
+from fuelsubtype;
 
-cache SELECT FuelSupply.* INTO OUTFILE '##FuelSupply##'
-FROM FuelSupply
-INNER JOIN RunSpecMonthGroup ON (FuelSupply.monthGroupID = RunSpecMonthGroup.monthGroupID)
-INNER JOIN MonthOfAnyYear ON (MonthOfAnyYear.monthGroupID = RunSpecMonthGroup.monthGroupID)
-INNER JOIN Year ON (FuelSupply.fuelYearID = Year.fuelYearID)
-WHERE fuelRegionID = ##context.fuelRegionID##
-AND yearID = ##context.year##
-AND MonthOfAnyYear.monthID = ##context.monthID##;
+cache select fuelsupply.* into outfile '##fuelsupply##'
+from fuelsupply
+inner join runspecmonthgroup on (fuelsupply.monthgroupid = runspecmonthgroup.monthgroupid)
+inner join monthofanyyear on (monthofanyyear.monthgroupid = runspecmonthgroup.monthgroupid)
+inner join year on (fuelsupply.fuelyearid = year.fuelyearid)
+where fuelregionid = ##context.fuelregionid##
+and yearid = ##context.year##
+and monthofanyyear.monthid = ##context.monthid##;
 
-cache SELECT DISTINCT FuelType.* INTO OUTFILE '##FuelType##'
-FROM FuelType
-INNER JOIN RunSpecSourceFuelType ON (RunSpecSourceFuelType.fuelTypeID = FuelType.fuelTypeID);
+cache select distinct fueltype.* into outfile '##fueltype##'
+from fueltype
+inner join runspecsourcefueltype on (runspecsourcefueltype.fueltypeid = fueltype.fueltypeid);
 
-cache SELECT DISTINCT HourDay.* INTO OUTFILE '##HourDay##'
-FROM HourDay,RunSpecHour,RunSpecDay
-WHERE HourDay.dayID = RunSpecDay.dayID
-AND HourDay.hourID = RunSpecHour.hourID;
+cache select distinct hourday.* into outfile '##hourday##'
+from hourday,runspechour,runspecday
+where hourday.dayid = runspecday.dayid
+and hourday.hourid = runspechour.hourid;
 
-cache SELECT DISTINCT IMCoverage.* INTO OUTFILE '##IMCoverage##'
-FROM IMCoverage
-INNER JOIN RunSpecSourceFuelType ON (RunSpecSourceFuelType.fuelTypeID = IMCoverage.fuelTypeID
-	and RunSpecSourceFuelType.sourceTypeID = IMCoverage.sourceTypeID)
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND countyID = ##context.iterLocation.countyRecordID## 
-AND yearID = ##context.year##
-AND useIMyn = 'Y';
+cache select distinct imcoverage.* into outfile '##imcoverage##'
+from imcoverage
+inner join runspecsourcefueltype on (runspecsourcefueltype.fueltypeid = imcoverage.fueltypeid
+	and runspecsourcefueltype.sourcetypeid = imcoverage.sourcetypeid)
+where polprocessid in (##pollutantprocessids##)
+and countyid = ##context.iterlocation.countyrecordid## 
+and yearid = ##context.year##
+and useimyn = 'Y';
 
-cache SELECT DISTINCT IMFactor.* INTO OUTFILE '##IMFactor##'
-FROM IMFactor
-INNER JOIN RunSpecSourceFuelType ON (RunSpecSourceFuelType.fuelTypeID = IMFactor.fuelTypeID
-	and RunSpecSourceFuelType.sourceTypeID = IMFactor.sourceTypeID)
-WHERE polProcessID IN (##pollutantProcessIDs##);
+cache select distinct imfactor.* into outfile '##imfactor##'
+from imfactor
+inner join runspecsourcefueltype on (runspecsourcefueltype.fueltypeid = imfactor.fueltypeid
+	and runspecsourcefueltype.sourcetypeid = imfactor.sourcetypeid)
+where polprocessid in (##pollutantprocessids##);
 
-cache SELECT MonthOfAnyYear.* INTO OUTFILE '##MonthOfAnyYear##'
-FROM MonthOfAnyYear
-WHERE MonthOfAnyYear.monthID = ##context.monthID##;
+cache select monthofanyyear.* into outfile '##monthofanyyear##'
+from monthofanyyear
+where monthofanyyear.monthid = ##context.monthid##;
 
-SELECT OpModeDistribution.* INTO OUTFILE '##OpModeDistribution##'
-FROM OpModeDistribution, RunSpecSourceType
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND linkID = ##context.iterLocation.linkRecordID##
-AND RunSpecSourceType.sourceTypeID = OpModeDistribution.sourceTypeID;
+select opmodedistribution.* into outfile '##opmodedistribution##'
+from opmodedistribution, runspecsourcetype
+where polprocessid in (##pollutantprocessids##)
+and linkid = ##context.iterlocation.linkrecordid##
+and runspecsourcetype.sourcetypeid = opmodedistribution.sourcetypeid;
 
-cache SELECT * INTO OUTFILE '##PollutantProcessAssoc##'
-FROM PollutantProcessAssoc
-WHERE processID=##context.iterProcess.databaseKey##;
+cache select * into outfile '##pollutantprocessassoc##'
+from pollutantprocessassoc
+where processid=##context.iterprocess.databasekey##;
 
-cache SELECT * INTO OUTFILE '##PollutantProcessModelYear##'
-FROM PollutantProcessModelYear
-WHERE modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND polProcessID IN (##pollutantProcessIDs##);
+cache select * into outfile '##pollutantprocessmodelyear##'
+from pollutantprocessmodelyear
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and polprocessid in (##pollutantprocessids##);
 
-cache SELECT * INTO OUTFILE '##PollutantProcessMappedModelYear##'
-FROM PollutantProcessMappedModelYear
-WHERE modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30
-AND polProcessID IN (##pollutantProcessIDs##);
+cache select * into outfile '##pollutantprocessmappedmodelyear##'
+from pollutantprocessmappedmodelyear
+where modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30
+and polprocessid in (##pollutantprocessids##);
 
-cache SELECT DISTINCT SourceBin.* INTO OUTFILE '##SourceBin##'
-FROM SourceBinDistribution, SourceTypeModelYear, SourceBin, RunSpecSourceFuelType
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
-AND SourceTypeModelYear.modelYearID <= ##context.year##
-AND SourceTypeModelYear.modelYearID >= ##context.year## - 30
-AND SourceTypeModelYear.sourceTypeID = RunSpecSourceFuelType.sourceTypeID
-AND SourceBinDistribution.SourceBinID = SourceBin.SourceBinID
-AND SourceBin.fuelTypeID = RunSpecSourceFuelType.fuelTypeID;
+cache select distinct sourcebin.* into outfile '##sourcebin##'
+from sourcebindistribution, sourcetypemodelyear, sourcebin, runspecsourcefueltype
+where polprocessid in (##pollutantprocessids##)
+and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+and sourcetypemodelyear.modelyearid <= ##context.year##
+and sourcetypemodelyear.modelyearid >= ##context.year## - 30
+and sourcetypemodelyear.sourcetypeid = runspecsourcefueltype.sourcetypeid
+and sourcebindistribution.sourcebinid = sourcebin.sourcebinid
+and sourcebin.fueltypeid = runspecsourcefueltype.fueltypeid;
 
-cache SELECT DISTINCT SourceBinDistribution.* INTO OUTFILE '##SourceBinDistribution##'
-FROM sourceBinDistributionFuelUsage_##context.iterProcess.databaseKey##_##context.iterLocation.countyRecordID##_##context.year## as SourceBinDistribution, 
-SourceTypeModelYear, SourceBin, RunSpecSourceFuelType
-WHERE polProcessID IN (##pollutantProcessIDs##)
-AND SourceBinDistribution.sourceTypeModelYearID = SourceTypeModelYear.sourceTypeModelYearID
-AND SourceTypeModelYear.modelYearID <= ##context.year##
-AND SourceTypeModelYear.modelYearID >= ##context.year## - 30
-AND SourceTypeModelYear.sourceTypeID = RunSpecSourceFuelType.sourceTypeID
-AND SourceBinDistribution.SourceBinID = SourceBin.SourceBinID
-AND SourceBin.fuelTypeID = RunSpecSourceFuelType.fuelTypeID;
+cache select distinct sourcebindistribution.* into outfile '##sourcebindistribution##'
+from sourcebindistributionfuelusage_##context.iterprocess.databasekey##_##context.iterlocation.countyrecordid##_##context.year## as sourcebindistribution, 
+sourcetypemodelyear, sourcebin, runspecsourcefueltype
+where polprocessid in (##pollutantprocessids##)
+and sourcebindistribution.sourcetypemodelyearid = sourcetypemodelyear.sourcetypemodelyearid
+and sourcetypemodelyear.modelyearid <= ##context.year##
+and sourcetypemodelyear.modelyearid >= ##context.year## - 30
+and sourcetypemodelyear.sourcetypeid = runspecsourcefueltype.sourcetypeid
+and sourcebindistribution.sourcebinid = sourcebin.sourcebinid
+and sourcebin.fueltypeid = runspecsourcefueltype.fueltypeid;
 
-cache SELECT SourceTypeModelYear.* INTO OUTFILE '##SourceTypeModelYear##'
-FROM SourceTypeModelYear,RunSpecSourceType
-WHERE SourceTypeModelYear.sourceTypeID = RunSpecSourceType.sourceTypeID
-AND modelYearID <= ##context.year##
-AND modelYearID >= ##context.year## - 30;
+cache select sourcetypemodelyear.* into outfile '##sourcetypemodelyear##'
+from sourcetypemodelyear,runspecsourcetype
+where sourcetypemodelyear.sourcetypeid = runspecsourcetype.sourcetypeid
+and modelyearid <= ##context.year##
+and modelyearid >= ##context.year## - 30;
 
-SELECT Starts.* INTO OUTFILE '##Starts##'
-FROM Starts
-WHERE yearID = ##context.year##
-AND monthID = ##context.monthID##
-AND zoneID = ##context.iterLocation.zoneRecordID##;
+select starts.* into outfile '##starts##'
+from starts
+where yearid = ##context.year##
+and monthid = ##context.monthid##
+and zoneid = ##context.iterlocation.zonerecordid##;
 
-SELECT StartTempAdjustment.* INTO OUTFILE '##StartTempAdjustment##'
-FROM StartTempAdjustment
-WHERE polProcessID IN (##pollutantProcessIDs##);
+select starttempadjustment.* into outfile '##starttempadjustment##'
+from starttempadjustment
+where polprocessid in (##pollutantprocessids##);
 
-SELECT Year.* INTO OUTFILE '##Year##'
-FROM Year
-WHERE yearID = ##context.year##;
+select year.* into outfile '##year##'
+from year
+where yearid = ##context.year##;
 
-SELECT * INTO OUTFILE '##Zone##'
-FROM Zone
-WHERE zoneID = ##context.iterLocation.zoneRecordID##;
+select * into outfile '##zone##'
+from zone
+where zoneid = ##context.iterlocation.zonerecordid##;
 
-cache SELECT DISTINCT ZoneMonthHour.* INTO OUTFILE '##ZoneMonthHour##'
-FROM ZoneMonthHour,RunSpecHour
-WHERE zoneID = ##context.iterLocation.zoneRecordID##
-AND ZoneMonthHour.monthID = ##context.monthID##
-AND RunSpecHour.hourID = ZoneMonthHour.hourID;
+cache select distinct zonemonthhour.* into outfile '##zonemonthhour##'
+from zonemonthhour,runspechour
+where zoneid = ##context.iterlocation.zonerecordid##
+and zonemonthhour.monthid = ##context.monthid##
+and runspechour.hourid = zonemonthhour.hourid;
 
--- End Section Extract Data
+-- end section extract data
 --
--- Section Processing
+-- section processing
 
 --
--- CSEC 1-a Complete I/M adjustment fraction information
+-- csec 1-a complete i/m adjustment fraction information
 --
-DROP TABLE IF EXISTS IMCoverageMergedUngrouped;
-CREATE TABLE IMCoverageMergedUngrouped (
-       processID SMALLINT NOT NULL,
-       pollutantID SMALLINT NOT NULL,
-       modelYearID SMALLINT NOT NULL,
-       fuelTypeID SMALLINT NOT NULL,
-       sourceTypeID SMALLINT NOT NULL,
-       IMAdjustFract FLOAT
+drop table if exists imcoveragemergedungrouped;
+create table imcoveragemergedungrouped (
+       processid smallint not null,
+       pollutantid smallint not null,
+       modelyearid smallint not null,
+       fueltypeid smallint not null,
+       sourcetypeid smallint not null,
+       imadjustfract float
 );
 
-CREATE INDEX XPKIMCoverageMergedUngrouped ON IMCoverageMergedUngrouped
+create index xpkimcoveragemergedungrouped on imcoveragemergedungrouped
 (
-       processID ASC,
-       pollutantID ASC,
-       modelYearID ASC,
-       fuelTypeID ASC,
-       sourceTypeID ASC
+       processid asc,
+       pollutantid asc,
+       modelyearid asc,
+       fueltypeid asc,
+       sourcetypeid asc
 );
 
-INSERT INTO IMCoverageMergedUngrouped (
-	processID,pollutantID,modelYearID,fuelTypeID,sourceTypeID,IMAdjustFract)
-SELECT
- ppa.processID,
- ppa.pollutantID,
- ppmy.modelYearID,
- imf.fuelTypeID,
- imc.sourceTypeID,
- sum(IMFactor*complianceFactor*.01) AS IMAdjustFract
-FROM PollutantProcessMappedModelYear ppmy
-INNER JOIN PollutantProcessAssoc ppa on (ppa.polProcessID=ppmy.polProcessID)
-INNER JOIN IMFactor imf ON (
-	imf.polProcessID = ppa.polProcessID
-	AND imf.IMModelYearGroupID = ppmy.IMModelYearGroupID)
-INNER JOIN AgeCategory ac ON (
-	ac.ageGroupID = imf.ageGroupID)
-INNER JOIN IMCoverage imc ON (
-	imc.polProcessID = imf.polProcessID
-	AND imc.inspectFreq = imf.inspectFreq
-	AND imc.testStandardsID = imf.testStandardsID
-	AND imc.sourceTypeID = imf.sourceTypeID
-	AND imc.fuelTypeID = imf.fuelTypeID
-	AND imc.begModelYearID <= ppmy.modelYearID
-	AND imc.endModelYearID >= ppmy.modelYearID)
-WHERE imc.countyID = ##context.iterLocation.countyRecordID##
-AND imc.yearID = ##context.year##
-AND ppmy.modelYearID = ##context.year##-ageID
-AND ppmy.polProcessID IN (##pollutantProcessIDs##)
-GROUP BY ppa.processID,
- ppa.pollutantID,
- ppmy.modelYearID,
- imf.fuelTypeID,
- imc.sourceTypeID;
+insert into imcoveragemergedungrouped (
+	processid,pollutantid,modelyearid,fueltypeid,sourcetypeid,imadjustfract)
+select
+ ppa.processid,
+ ppa.pollutantid,
+ ppmy.modelyearid,
+ imf.fueltypeid,
+ imc.sourcetypeid,
+ sum(imfactor*compliancefactor*.01) as imadjustfract
+from pollutantprocessmappedmodelyear ppmy
+inner join pollutantprocessassoc ppa on (ppa.polprocessid=ppmy.polprocessid)
+inner join imfactor imf on (
+	imf.polprocessid = ppa.polprocessid
+	and imf.immodelyeargroupid = ppmy.immodelyeargroupid)
+inner join agecategory ac on (
+	ac.agegroupid = imf.agegroupid)
+inner join imcoverage imc on (
+	imc.polprocessid = imf.polprocessid
+	and imc.inspectfreq = imf.inspectfreq
+	and imc.teststandardsid = imf.teststandardsid
+	and imc.sourcetypeid = imf.sourcetypeid
+	and imc.fueltypeid = imf.fueltypeid
+	and imc.begmodelyearid <= ppmy.modelyearid
+	and imc.endmodelyearid >= ppmy.modelyearid)
+where imc.countyid = ##context.iterlocation.countyrecordid##
+and imc.yearid = ##context.year##
+and ppmy.modelyearid = ##context.year##-ageid
+and ppmy.polprocessid in (##pollutantprocessids##)
+group by ppa.processid,
+ ppa.pollutantid,
+ ppmy.modelyearid,
+ imf.fueltypeid,
+ imc.sourcetypeid;
 
 --
--- CSEC 2-a: Combine GPA and non GPA fuel adjustment factors.
+-- csec 2-a: combine gpa and non gpa fuel adjustment factors.
 --
 
-DROP TABLE IF EXISTS CountyFuelAdjustment;
-CREATE TABLE CountyFuelAdjustment (
-	fuelRegionID INTEGER NOT NULL,
-	polProcessID int NOT NULL,
-	modelYearID INTEGER NOT NULL,
-	sourceTypeID SMALLINT NOT NULL,
-	fuelFormulationID SMALLINT NOT NULL,
-	fuelAdjustment FLOAT
+drop table if exists countyfueladjustment;
+create table countyfueladjustment (
+	fuelregionid integer not null,
+	polprocessid int not null,
+	modelyearid integer not null,
+	sourcetypeid smallint not null,
+	fuelformulationid smallint not null,
+	fueladjustment float
 );
 
-CREATE UNIQUE INDEX XPKCountyFuelAdjustment ON CountyFuelAdjustment
+create unique index xpkcountyfueladjustment on countyfueladjustment
 (
-	fuelRegionID ASC,
-	polProcessID ASC,
-	modelYearID ASC,
-	sourceTypeID ASC,
-	fuelFormulationID ASC
+	fuelregionid asc,
+	polprocessid asc,
+	modelyearid asc,
+	sourcetypeid asc,
+	fuelformulationid asc
 );
 
-CREATE INDEX CountyFuelAdjustment1 ON CountyFuelAdjustment
+create index countyfueladjustment1 on countyfueladjustment
 (
-	polProcessID ASC,
-	modelYearID ASC
+	polprocessid asc,
+	modelyearid asc
 );
 
-CREATE INDEX CountyFuelAdjustment2 ON CountyFuelAdjustment
+create index countyfueladjustment2 on countyfueladjustment
 (
-	fuelFormulationID ASC
+	fuelformulationid asc
 );
 
-INSERT INTO CountyFuelAdjustment (
-  fuelRegionID, polProcessID, modelYearID, sourceTypeID, fuelFormulationID, fuelAdjustment)
-SELECT 
-	##context.fuelRegionID##,
-	ppa.polProcessID,
-	stmy.modelYearID,
-	stmy.sourceTypeID,
-	ff. fuelFormulationID,
-	ifnull(ratio,1) + GPAFract * (ifnull(ratioGPA,1)-ifnull(ratio,1))
-FROM County c
-inner join PollutantProcessAssoc ppa
-inner join FuelFormulation ff
-inner join SourceTypeModelYear stmy
-LEFT OUTER JOIN criteriaRatio fa ON (fa.polProcessID = ppa.polProcessID
-	and fa.fuelFormulationID = ff.fuelFormulationID
-	and fa.sourceTypeID = stmy.sourceTypeID
-	and fa.modelYearID = stmy.modelYearID
+insert into countyfueladjustment (
+  fuelregionid, polprocessid, modelyearid, sourcetypeid, fuelformulationid, fueladjustment)
+select 
+	##context.fuelregionid##,
+	ppa.polprocessid,
+	stmy.modelyearid,
+	stmy.sourcetypeid,
+	ff. fuelformulationid,
+	ifnull(ratio,1) + gpafract * (ifnull(ratiogpa,1)-ifnull(ratio,1))
+from county c
+inner join pollutantprocessassoc ppa
+inner join fuelformulation ff
+inner join sourcetypemodelyear stmy
+left outer join criteriaratio fa on (fa.polprocessid = ppa.polprocessid
+	and fa.fuelformulationid = ff.fuelformulationid
+	and fa.sourcetypeid = stmy.sourcetypeid
+	and fa.modelyearid = stmy.modelyearid
 )
-WHERE ppa.polProcessID IN (##pollutantProcessIDs##)
-AND c.countyID = ##context.iterLocation.countyRecordID##
+where ppa.polprocessid in (##pollutantprocessids##)
+and c.countyid = ##context.iterlocation.countyrecordid##
 ;
 
 
 --
--- CSEC 2-b: Aggregate county fuel adjustments to fuel type
+-- csec 2-b: aggregate county fuel adjustments to fuel type
 --
 
-DROP TABLE IF EXISTS CountyFuelAdjustmentWithFuelType;
-CREATE TABLE CountyFuelAdjustmentWithFuelType (
-	fuelRegionID INTEGER NOT NULL,
-	polProcessID int NOT NULL,
-	modelYearID SMALLINT NOT NULL,
-	sourceTypeID SMALLINT NOT NULL,
-	fuelFormulationID SMALLINT NOT NULL,
-	fuelTypeID SMALLINT NOT NULL,
-	fuelAdjustment FLOAT
+drop table if exists countyfueladjustmentwithfueltype;
+create table countyfueladjustmentwithfueltype (
+	fuelregionid integer not null,
+	polprocessid int not null,
+	modelyearid smallint not null,
+	sourcetypeid smallint not null,
+	fuelformulationid smallint not null,
+	fueltypeid smallint not null,
+	fueladjustment float
 );
 
-CREATE UNIQUE INDEX XPKCountyFuelAdjustmentWithFuelType ON CountyFuelAdjustmentWithFuelType 
+create unique index xpkcountyfueladjustmentwithfueltype on countyfueladjustmentwithfueltype 
 (
-	fuelRegionID ASC,
-	polProcessID ASC,
-	modelYearID ASC,
-	sourceTypeID ASC,
-	fuelFormulationID ASC,
-	fuelTypeID ASC
+	fuelregionid asc,
+	polprocessid asc,
+	modelyearid asc,
+	sourcetypeid asc,
+	fuelformulationid asc,
+	fueltypeid asc
 );
 
-INSERT INTO CountyFuelAdjustmentWithFuelType (
-	fuelRegionID, polProcessID, modelYearID, sourceTypeID,
-      fuelFormulationID, fuelTypeID, fuelAdjustment)
-SELECT 
-  fuelRegionID, cfa.polProcessID, cfa.modelYearID, sourceTypeID,
-  cfa.fuelFormulationID, fuelTypeID, fuelAdjustment
-FROM CountyFuelAdjustment cfa
-INNER JOIN FuelFormulation ff ON (ff.fuelFormulationID = cfa.fuelFormulationID)
-INNER JOIN FuelSubType fst ON (fst.fuelSubtypeID = ff.fuelSubtypeID);
+insert into countyfueladjustmentwithfueltype (
+	fuelregionid, polprocessid, modelyearid, sourcetypeid,
+      fuelformulationid, fueltypeid, fueladjustment)
+select 
+  fuelregionid, cfa.polprocessid, cfa.modelyearid, sourcetypeid,
+  cfa.fuelformulationid, fueltypeid, fueladjustment
+from countyfueladjustment cfa
+inner join fuelformulation ff on (ff.fuelformulationid = cfa.fuelformulationid)
+inner join fuelsubtype fst on (fst.fuelsubtypeid = ff.fuelsubtypeid);
 
-DROP TABLE IF EXISTS FuelSupplyAdjustment;
-CREATE TABLE FuelSupplyAdjustment (
-	yearID SMALLINT NOT NULL,
-	countyID INTEGER NOT NULL,
-	monthID SMALLINT NOT NULL,
-	polProcessID int NOT NULL,
-	modelYearID SMALLINT NOT NULL,
-	sourceTypeID SMALLINT NOT NULL,
-	fuelTypeID SMALLINT NOT NULL,
-	fuelAdjustment FLOAT
+drop table if exists fuelsupplyadjustment;
+create table fuelsupplyadjustment (
+	yearid smallint not null,
+	countyid integer not null,
+	monthid smallint not null,
+	polprocessid int not null,
+	modelyearid smallint not null,
+	sourcetypeid smallint not null,
+	fueltypeid smallint not null,
+	fueladjustment float
 );
 
-CREATE UNIQUE INDEX XPKFuelSupplyAdjustment ON FuelSupplyAdjustment (
-	yearID ASC,
-	countyID ASC,
-	monthID ASC,
-	polProcessID ASC,
-	modelYearID ASC,
-	sourceTypeID ASC,
-	fuelTypeID ASC
+create unique index xpkfuelsupplyadjustment on fuelsupplyadjustment (
+	yearid asc,
+	countyid asc,
+	monthid asc,
+	polprocessid asc,
+	modelyearid asc,
+	sourcetypeid asc,
+	fueltypeid asc
 );
 
-INSERT INTO FuelSupplyAdjustment (
-	yearID, countyID, monthID, polProcessID, modelYearID,
-	sourceTypeID, fuelTypeID, fuelAdjustment)
-SELECT
-	yearID, ##context.iterLocation.countyRecordID## as countyID, monthID, cfa.polProcessID, cfa.modelYearID, 
-	cfa.sourceTypeID, cfa.fuelTypeID, SUM(fuelAdjustment * marketShare)
-FROM CountyFuelAdjustmentWithFuelType cfa
-INNER JOIN Year y
-INNER JOIN MonthOfAnyYear may
-INNER JOIN FuelSupply fs ON (
-	fs.fuelRegionID = cfa.fuelRegionID
-	AND fs.fuelYearID = y.fuelYearID
-	AND fs.monthGroupID = may.monthGroupID
-	AND fs.fuelFormulationID = cfa.fuelFormulationID)
-WHERE y.YearID = ##context.year##
-GROUP BY yearID, cfa.fuelRegionID, monthID, cfa.polProcessID, 
-	cfa.modelYearID, cfa.sourceTypeID, cfa.fuelTypeID
-ORDER BY NULL;
+insert into fuelsupplyadjustment (
+	yearid, countyid, monthid, polprocessid, modelyearid,
+	sourcetypeid, fueltypeid, fueladjustment)
+select
+	yearid, ##context.iterlocation.countyrecordid## as countyid, monthid, cfa.polprocessid, cfa.modelyearid, 
+	cfa.sourcetypeid, cfa.fueltypeid, sum(fueladjustment * marketshare)
+from countyfueladjustmentwithfueltype cfa
+inner join year y
+inner join monthofanyyear may
+inner join fuelsupply fs on (
+	fs.fuelregionid = cfa.fuelregionid
+	and fs.fuelyearid = y.fuelyearid
+	and fs.monthgroupid = may.monthgroupid
+	and fs.fuelformulationid = cfa.fuelformulationid)
+where y.yearid = ##context.year##
+group by yearid, cfa.fuelregionid, monthid, cfa.polprocessid, 
+	cfa.modelyearid, cfa.sourcetypeid, cfa.fueltypeid
+order by null;
 
 --
--- CSEC-3 Calculate temperature adjustment factors.
+-- csec-3 calculate temperature adjustment factors.
 --
-DROP TABLE IF EXISTS METStartAdjustment;
-CREATE TABLE METStartAdjustment (
-	zoneID INT NOT NULL,
-	monthID SMALLINT NOT NULL,
-	hourID SMALLINT NOT NULL,
-	polProcessID int NOT NULL,
-	modelYearID SMALLINT NOT NULL,
-	fuelTypeID SMALLINT NOT NULL,
-	opModeID SMALLINT NOT NULL,
-	temperatureAdjustment FLOAT
+drop table if exists metstartadjustment;
+create table metstartadjustment (
+	zoneid int not null,
+	monthid smallint not null,
+	hourid smallint not null,
+	polprocessid int not null,
+	modelyearid smallint not null,
+	fueltypeid smallint not null,
+	opmodeid smallint not null,
+	temperatureadjustment float
 );
 
 
-INSERT INTO METStartAdjustment (
-      zoneID, monthID, hourID, polProcessID, modelYearID, 
-	fuelTypeID, opModeID, temperatureAdjustment)
-SELECT
-	zmh.zoneID,
-	zmh.monthID,
-	zmh.hourID,
-	sta.polProcessID,
-	ppmy.modelYearID,
-	sta.fuelTypeID,
-	sta.opModeID,
-     CASE          
-		   WHEN sta.startTempEquationType = 'LOG' THEN
-				(tempAdjustTermB*exp(tempAdjustTermA*(LEAST(temperature,75)-75))+ tempAdjustTermC)	   
-		   WHEN sta.startTempEquationType = 'POLY' THEN
-                (LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * 
-                (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC)) 
-           ELSE
-                (LEAST(temperature,75)-75) * (tempAdjustTermA+(LEAST(temperature,75)-75) * 
-                (tempAdjustTermB+(LEAST(temperature,75)-75) * tempAdjustTermC))
-           END AS temperatureAdjustment
-FROM StartTempAdjustment sta
-INNER JOIN PollutantProcessMappedModelYear ppmy ON (
-	ppmy.polProcessID = sta.polProcessID 
-	AND ppmy.modelYearGroupID = sta.modelYearGroupID)
-INNER JOIN ZoneMonthHour zmh
-WHERE zmh.zoneID = ##context.iterLocation.zoneRecordID##;
-
---
--- CSEC-4: Apply Start Temperature Adjustment to Emission Rates
---
-
-DROP TABLE IF EXISTS EmissionRatesWithIMAndTemp;
-CREATE TABLE EmissionRatesWithIMAndTemp (
-      zoneID INT NOT NULL,
-      monthID SMALLINT NOT NULL,
-      hourID SMALLINT NOT NULL,
-      yearID SMALLINT NOT NULL,
-      polProcessID int NOT NULL,
-      modelYearID SMALLINT NOT NULL,
-      sourceBinID BIGINT NOT NULL,
-      opModeID SMALLINT NOT NULL,
-      fuelTypeID SMALLINT NOT NULL,
-	  meanBaseRate FLOAT,
-	  meanBaseRateIM FLOAT
-);
-
-CREATE INDEX METStartAdjustment_New1 ON METStartAdjustment (
-	polProcessID ASC,
-	modelYearID ASC,
-	opModeID ASC,
-	fuelTypeID ASC,
-	zoneID asc, 
-	monthID asc, 
-	hourID asc,
-	temperatureAdjustment asc
-);
-CREATE INDEX EmissionRateByAge_New1 ON EmissionRateByAge (
-	sourceBinID ASC,
-	ageGroupID ASC,
-	polProcessID asc,
-	opModeID ASC,
-	meanBaseRate asc,
-	meanBaseRateIM
-);
-CREATE INDEX SourceBin_New1 ON SourceBin (
-      sourceBinID ASC,
-      fuelTypeID ASC
-);
-CREATE INDEX AgeCategory_New1 ON AgeCategory (
-	ageGroupID asc,
-	ageID asc
-);
-
--- Note: Below, add "0*" to make the expressions ".. + 0*msa.temperatureAdjustment" to disable starts addititive temperature adjustment.
-INSERT INTO EmissionRatesWithIMAndTemp (
-      zoneID, monthID, hourID, yearID, polProcessID, modelYearID, 
-	  sourceBinID, opModeID, fuelTypeID, meanBaseRate, meanBaseRateIM )
-SELECT 
-      msa.zoneID, msa.monthID, msa.hourID, ##context.year## as yearID, msa.polProcessID, 
-      msa.modelYearID, erim.sourceBinID, msa.opModeID, msa.fuelTypeID,
-	  (erim.meanBaseRate + msa.temperatureAdjustment) AS meanBaseRate,
-	  (erim.meanBaseRateIM + msa.temperatureAdjustment) AS meanBaseRateIM
-FROM SourceBin sb 
-INNER JOIN EmissionRateByAge erim ON (erim.sourceBinID=sb.sourceBinID)
-INNER JOIN AgeCategory age ON (age.ageGroupID=erim.ageGroupID)
-INNER JOIN METStartAdjustment msa ON (msa.polProcessID=erim.polProcessID
-	AND msa.modelYearID=##context.year##-age.ageID
-	AND msa.opModeID=erim.opModeID
-	AND msa.fuelTypeID=sb.fuelTypeID);
+insert into metstartadjustment (
+      zoneid, monthid, hourid, polprocessid, modelyearid, 
+	fueltypeid, opmodeid, temperatureadjustment)
+select
+	zmh.zoneid,
+	zmh.monthid,
+	zmh.hourid,
+	sta.polprocessid,
+	ppmy.modelyearid,
+	sta.fueltypeid,
+	sta.opmodeid,
+     case          
+		   when sta.starttempequationtype = 'LOG' then
+				(tempadjusttermb*exp(tempadjustterma*(least(temperature,75)-75))+ tempadjusttermc)	   
+		   when sta.starttempequationtype = 'POLY' then
+                (least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * 
+                (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc)) 
+           else
+                (least(temperature,75)-75) * (tempadjustterma+(least(temperature,75)-75) * 
+                (tempadjusttermb+(least(temperature,75)-75) * tempadjusttermc))
+           end as temperatureadjustment
+from starttempadjustment sta
+inner join pollutantprocessmappedmodelyear ppmy on (
+	ppmy.polprocessid = sta.polprocessid 
+	and ppmy.modelyeargroupid = sta.modelyeargroupid)
+inner join zonemonthhour zmh
+where zmh.zoneid = ##context.iterlocation.zonerecordid##;
 
 --
--- CSEC-5: Weight Emission Rates by Source Bin.
+-- csec-4: apply start temperature adjustment to emission rates
 --
-DROP TABLE IF EXISTS METSourceBinEmissionRates;
-CREATE TABLE METSourceBinEmissionRates (
-	zoneID INT NOT NULL,
-	monthID SMALLINT NOT NULL,
-	hourID SMALLINT NOT NULL,
-	yearID SMALLINT NOT NULL,
-	polProcessID int NOT NULL,
-	sourceTypeID SMALLINT NOT NULL,
-	modelYearID SMALLINT NOT NULL,
-	fuelTypeID SMALLINT NOT NULL,
-	opModeID SMALLINT NOT NULL,
-	meanBaseRate FLOAT,
-	meanBaseRateIM FLOAT
+
+drop table if exists emissionrateswithimandtemp;
+create table emissionrateswithimandtemp (
+      zoneid int not null,
+      monthid smallint not null,
+      hourid smallint not null,
+      yearid smallint not null,
+      polprocessid int not null,
+      modelyearid smallint not null,
+      sourcebinid bigint not null,
+      opmodeid smallint not null,
+      fueltypeid smallint not null,
+	  meanbaserate float,
+	  meanbaserateim float
 );
 
-CREATE INDEX EmissionRatesWithIMAndTemp3 ON EmissionRatesWithIMAndTemp (
-      polProcessID ASC,
-      sourceBinID ASC,
-      modelYearID ASC
+create index metstartadjustment_new1 on metstartadjustment (
+	polprocessid asc,
+	modelyearid asc,
+	opmodeid asc,
+	fueltypeid asc,
+	zoneid asc, 
+	monthid asc, 
+	hourid asc,
+	temperatureadjustment asc
 );
-CREATE INDEX sourceTypeModelYearID_1 ON sourcetypemodelyear (
-      sourceTypeModelYearID ASC,
-      modelYearID ASC
+create index emissionratebyage_new1 on emissionratebyage (
+	sourcebinid asc,
+	agegroupid asc,
+	polprocessid asc,
+	opmodeid asc,
+	meanbaserate asc,
+	meanbaserateim
 );
-analyze table SourceBinDistribution;
+create index sourcebin_new1 on sourcebin (
+      sourcebinid asc,
+      fueltypeid asc
+);
+create index agecategory_new1 on agecategory (
+	agegroupid asc,
+	ageid asc
+);
 
-INSERT INTO METSourceBinEmissionRates (
-      zoneID, monthID, hourID, yearID, polProcessID,
-      sourceTypeID, modelYearID, fuelTypeID, opModeID,
-	  meanBaseRate, meanBaseRateIM)
-SELECT 
-      er.zoneID, er.monthID, er.hourID, er.yearID, er.polProcessID, 
-      stmy.sourceTypeID, stmy.modelYearID, er.fuelTypeID, er.opModeID,
-	  sum(meanBaseRate*sourceBinActivityFraction) AS meanBaseRate,
-	  sum(meanBaseRateIM*sourceBinActivityFraction) AS meanBaseRateIM
-FROM EmissionRatesWithIMAndTemp er, SourceBinDistribution sbd, SourceTypeModelYear stmy
-WHERE er.polProcessID=sbd.polProcessID AND
-	  er.sourceBinID=sbd.sourceBinID AND
-	  sbd.sourceTypeModelYearID=stmy.sourceTypeModelYearID AND
-	  er.modelYearID=stmy.modelYearID
-GROUP BY zoneID, monthID, hourID, yearID, polProcessID, sourceTypeID, modelYearID, fuelTypeID, opModeID
-ORDER BY NULL;
-
-ALTER TABLE METSourceBinEmissionRates ADD INDEX metsourcebinemissionrates1 (
-	hourID, sourceTypeID, polProcessID, opModeID);
+-- note: below, add "0*" to make the expressions ".. + 0*msa.temperatureadjustment" to disable starts addititive temperature adjustment.
+insert into emissionrateswithimandtemp (
+      zoneid, monthid, hourid, yearid, polprocessid, modelyearid, 
+	  sourcebinid, opmodeid, fueltypeid, meanbaserate, meanbaserateim )
+select 
+      msa.zoneid, msa.monthid, msa.hourid, ##context.year## as yearid, msa.polprocessid, 
+      msa.modelyearid, erim.sourcebinid, msa.opmodeid, msa.fueltypeid,
+	  (erim.meanbaserate + msa.temperatureadjustment) as meanbaserate,
+	  (erim.meanbaserateim + msa.temperatureadjustment) as meanbaserateim
+from sourcebin sb 
+inner join emissionratebyage erim on (erim.sourcebinid=sb.sourcebinid)
+inner join agecategory age on (age.agegroupid=erim.agegroupid)
+inner join metstartadjustment msa on (msa.polprocessid=erim.polprocessid
+	and msa.modelyearid=##context.year##-age.ageid
+	and msa.opmodeid=erim.opmodeid
+	and msa.fueltypeid=sb.fueltypeid);
 
 --
--- CSEC-6 Weight temperature-adjusted emission rates by operating mode.
+-- csec-5: weight emission rates by source bin.
 --
-DROP TABLE IF EXISTS ActivityWeightedEmissionRate;
-CREATE TABLE ActivityWeightedEmissionRate (
-	zoneID INT NOT NULL,
-	yearID SMALLINT NOT NULL,
-	monthID SMALLINT NOT NULL,
-	dayID SMALLINT NOT NULL,
-	hourID SMALLINT NOT NULL,
-	polProcessID int NOT NULL,
-	sourceTypeID SMALLINT NOT NULL,
-	modelYearID SMALLINT NOT NULL,
-	fuelTypeID SMALLINT NOT NULL,
-	meanBaseRate FLOAT,
-	meanBaseRateIM FLOAT
+drop table if exists metsourcebinemissionrates;
+create table metsourcebinemissionrates (
+	zoneid int not null,
+	monthid smallint not null,
+	hourid smallint not null,
+	yearid smallint not null,
+	polprocessid int not null,
+	sourcetypeid smallint not null,
+	modelyearid smallint not null,
+	fueltypeid smallint not null,
+	opmodeid smallint not null,
+	meanbaserate float,
+	meanbaserateim float
 );
 
-INSERT INTO ActivityWeightedEmissionRate (
-      zoneID, yearID, monthID, dayID, hourID, polProcessID,
-      sourceTypeID, modelYearID, fuelTypeID, meanBaseRate, meanBaseRateIM )
-SELECT 
-      zoneID, ##context.year##, monthID, hd.dayID, msber.hourID, msber.polProcessID,
-      msber.sourceTypeID, modelYearID, fuelTypeID, 
-      SUM(meanBaseRate * opModeFraction),
-      SUM(meanBaseRateIM * opModeFraction)
-FROM METSourceBinEmissionRates msber
-INNER JOIN HourDay hd ON (hd.hourID = msber.hourID)
-INNER JOIN OpModeDistribution omd ON (
-	omd.sourceTypeID = msber.sourceTypeID
-	AND omd.hourDayID = hd.hourDayID 
-	AND omd.polProcessID = msber.polProcessID 
-	AND omd.opModeID = msber.opModeID)
-GROUP BY zoneID, yearID, monthID, hd.dayID, msber.hourID, msber.polProcessID, 
-	msber.sourceTypeID, modelYearID, fuelTypeID
-ORDER BY NULL;
+create index emissionrateswithimandtemp3 on emissionrateswithimandtemp (
+      polprocessid asc,
+      sourcebinid asc,
+      modelyearid asc
+);
+create index sourcetypemodelyearid_1 on sourcetypemodelyear (
+      sourcetypemodelyearid asc,
+      modelyearid asc
+);
+analyze table sourcebindistribution;
 
-CREATE UNIQUE INDEX XPKActivityWeightedEmissionRate ON ActivityWeightedEmissionRate (
-	yearID ASC,
-	monthID ASC,
-	polProcessID ASC,
-	modelYearID ASC,	
-	sourceTypeID ASC,
-	fuelTypeID ASC,
-	zoneID ASC,
-	dayID ASC,
-	hourID ASC
+insert into metsourcebinemissionrates (
+      zoneid, monthid, hourid, yearid, polprocessid,
+      sourcetypeid, modelyearid, fueltypeid, opmodeid,
+	  meanbaserate, meanbaserateim)
+select 
+      er.zoneid, er.monthid, er.hourid, er.yearid, er.polprocessid, 
+      stmy.sourcetypeid, stmy.modelyearid, er.fueltypeid, er.opmodeid,
+	  sum(meanbaserate*sourcebinactivityfraction) as meanbaserate,
+	  sum(meanbaserateim*sourcebinactivityfraction) as meanbaserateim
+from emissionrateswithimandtemp er, sourcebindistribution sbd, sourcetypemodelyear stmy
+where er.polprocessid=sbd.polprocessid and
+	  er.sourcebinid=sbd.sourcebinid and
+	  sbd.sourcetypemodelyearid=stmy.sourcetypemodelyearid and
+	  er.modelyearid=stmy.modelyearid
+group by zoneid, monthid, hourid, yearid, polprocessid, sourcetypeid, modelyearid, fueltypeid, opmodeid
+order by null;
+
+alter table metsourcebinemissionrates add index metsourcebinemissionrates1 (
+	hourid, sourcetypeid, polprocessid, opmodeid);
+
+--
+-- csec-6 weight temperature-adjusted emission rates by operating mode.
+--
+drop table if exists activityweightedemissionrate;
+create table activityweightedemissionrate (
+	zoneid int not null,
+	yearid smallint not null,
+	monthid smallint not null,
+	dayid smallint not null,
+	hourid smallint not null,
+	polprocessid int not null,
+	sourcetypeid smallint not null,
+	modelyearid smallint not null,
+	fueltypeid smallint not null,
+	meanbaserate float,
+	meanbaserateim float
+);
+
+insert into activityweightedemissionrate (
+      zoneid, yearid, monthid, dayid, hourid, polprocessid,
+      sourcetypeid, modelyearid, fueltypeid, meanbaserate, meanbaserateim )
+select 
+      zoneid, ##context.year##, monthid, hd.dayid, msber.hourid, msber.polprocessid,
+      msber.sourcetypeid, modelyearid, fueltypeid, 
+      sum(meanbaserate * opmodefraction),
+      sum(meanbaserateim * opmodefraction)
+from metsourcebinemissionrates msber
+inner join hourday hd on (hd.hourid = msber.hourid)
+inner join opmodedistribution omd on (
+	omd.sourcetypeid = msber.sourcetypeid
+	and omd.hourdayid = hd.hourdayid 
+	and omd.polprocessid = msber.polprocessid 
+	and omd.opmodeid = msber.opmodeid)
+group by zoneid, yearid, monthid, hd.dayid, msber.hourid, msber.polprocessid, 
+	msber.sourcetypeid, modelyearid, fueltypeid
+order by null;
+
+create unique index xpkactivityweightedemissionrate on activityweightedemissionrate (
+	yearid asc,
+	monthid asc,
+	polprocessid asc,
+	modelyearid asc,	
+	sourcetypeid asc,
+	fueltypeid asc,
+	zoneid asc,
+	dayid asc,
+	hourid asc
 );	
 
 -- 
--- CSEC-7: Apply fuel adjustment factor
+-- csec-7: apply fuel adjustment factor
 --
 
-DROP TABLE IF EXISTS ActivityWeightedEmissionRate2;
-CREATE TABLE ActivityWeightedEmissionRate2 (
-	zoneID INT NOT NULL,
-	yearID SMALLINT NOT NULL,
-	monthID SMALLINT NOT NULL,
-	dayID SMALLINT NOT NULL,
-	hourID SMALLINT NOT NULL,
-	polProcessID int NOT NULL,
-	sourceTypeID SMALLINT NOT NULL,
-	modelYearID SMALLINT NOT NULL,
-	fuelTypeID SMALLINT NOT NULL,
-	meanBaseRate FLOAT,
-	meanBaseRateIM FLOAT
+drop table if exists activityweightedemissionrate2;
+create table activityweightedemissionrate2 (
+	zoneid int not null,
+	yearid smallint not null,
+	monthid smallint not null,
+	dayid smallint not null,
+	hourid smallint not null,
+	polprocessid int not null,
+	sourcetypeid smallint not null,
+	modelyearid smallint not null,
+	fueltypeid smallint not null,
+	meanbaserate float,
+	meanbaserateim float
 );
 
-INSERT INTO ActivityWeightedEmissionRate2 (
-  zoneID, yearID, monthID, dayID, hourID, polProcessID,
-  sourceTypeID , modelYearID, fuelTypeID, meanBaseRate, meanBaseRateIM)
-SELECT 
-  awer.zoneID, awer.yearID, awer.monthID, dayID, hourID, awer.polProcessID,
-  awer.sourceTypeID, awer.modelYearID, awer.fuelTypeID,
-  meanBaseRate * fuelAdjustment,
-  meanBaseRateIM * fuelAdjustment
-FROM ActivityWeightedEmissionRate awer 
-INNER JOIN FuelSupplyAdjustment fsa ON (
-	fsa.yearID = awer.yearID AND fsa.monthID = awer.monthID
-	AND fsa.polProcessID = awer.polProcessID AND fsa.modelYearID = awer.modelYearID
-	AND fsa.sourceTypeID = awer.sourceTypeID AND fsa.fuelTypeID = awer.fuelTypeID)
-INNER JOIN Zone z ON (z.countyID = fsa.countyID AND z.zoneID = awer.zoneID);
+insert into activityweightedemissionrate2 (
+  zoneid, yearid, monthid, dayid, hourid, polprocessid,
+  sourcetypeid , modelyearid, fueltypeid, meanbaserate, meanbaserateim)
+select 
+  awer.zoneid, awer.yearid, awer.monthid, dayid, hourid, awer.polprocessid,
+  awer.sourcetypeid, awer.modelyearid, awer.fueltypeid,
+  meanbaserate * fueladjustment,
+  meanbaserateim * fueladjustment
+from activityweightedemissionrate awer 
+inner join fuelsupplyadjustment fsa on (
+	fsa.yearid = awer.yearid and fsa.monthid = awer.monthid
+	and fsa.polprocessid = awer.polprocessid and fsa.modelyearid = awer.modelyearid
+	and fsa.sourcetypeid = awer.sourcetypeid and fsa.fueltypeid = awer.fueltypeid)
+inner join zone z on (z.countyid = fsa.countyid and z.zoneid = awer.zoneid);
 
-CREATE UNIQUE INDEX XPKActivityWeightedEmissionRate ON ActivityWeightedEmissionRate2 (
-      zoneID ASC,
-      monthID ASC,
-      hourID ASC,
-	  dayID ASC,
-      yearID ASC,
-      sourceTypeID ASC,
-      modelYearID ASC,
-      fuelTypeID ASC,
-      polProcessID ASC
+create unique index xpkactivityweightedemissionrate on activityweightedemissionrate2 (
+      zoneid asc,
+      monthid asc,
+      hourid asc,
+	  dayid asc,
+      yearid asc,
+      sourcetypeid asc,
+      modelyearid asc,
+      fueltypeid asc,
+      polprocessid asc
 );
 
 -- 
--- CSEC-8: Multiply emission rates by start activity to generate inventory.
+-- csec-8: multiply emission rates by start activity to generate inventory.
 --
--- Make version of Starts table that is optimized to subsequent steps
+-- make version of starts table that is optimized to subsequent steps
 
-DROP TABLE IF EXISTS Starts2;
-CREATE TABLE Starts2 (
-	zoneID INT NOT NULL,
-	monthID SMALLINT NOT NULL,
-	hourID SMALLINT NOT NULL,
-	dayID SMALLINT NOT NULL,
-	yearID SMALLINT NOT NULL,
-	sourceTypeID SMALLINT NOT NULL,
-	modelYearID SMALLINT NOT NULL,
-	starts FLOAT
+drop table if exists starts2;
+create table starts2 (
+	zoneid int not null,
+	monthid smallint not null,
+	hourid smallint not null,
+	dayid smallint not null,
+	yearid smallint not null,
+	sourcetypeid smallint not null,
+	modelyearid smallint not null,
+	starts float
 );
 
-INSERT INTO Starts2 (zoneID, monthID, hourID, dayID, yearID, 
-	sourceTypeID, modelYearID, starts) 
-SELECT zoneID, monthID, hourID, dayID, yearID, sourceTypeID, 
-	(##context.year## - ageID) AS modelYearID, starts
-FROM Starts INNER JOIN HourDay ON (Starts.hourDayID= HourDay.hourDayID);
+insert into starts2 (zoneid, monthid, hourid, dayid, yearid, 
+	sourcetypeid, modelyearid, starts) 
+select zoneid, monthid, hourid, dayid, yearid, sourcetypeid, 
+	(##context.year## - ageid) as modelyearid, starts
+from starts inner join hourday on (starts.hourdayid= hourday.hourdayid);
 
-CREATE UNIQUE INDEX XPKStarts2 ON Starts2 (
-      zoneID ASC,
-      monthID ASC,
-      hourID ASC,
-	  dayID ASC,
-      yearID ASC,
-      sourceTypeID ASC,
-      modelYearID ASC
+create unique index xpkstarts2 on starts2 (
+      zoneid asc,
+      monthid asc,
+      hourid asc,
+	  dayid asc,
+      yearid asc,
+      sourcetypeid asc,
+      modelyearid asc
 );
 
-alter table MOVESWorkerOutput add emissionQuantIM float null default 0.0;
+alter table movesworkeroutput add emissionquantim float null default 0.0;
 
--- alter table MOVESWorkerOutput add emissionQuantIM float null;
+-- alter table movesworkeroutput add emissionquantim float null;
 
-INSERT INTO MOVESWorkerOutput (
-	stateID, countyID, zoneID, linkID, roadTypeID, yearID, monthID, dayID,
-      hourID, pollutantID, processID, sourceTypeID, modelYearID, fuelTypeID,
-	SCC, emissionQuant, emissionQuantIM)
-SELECT
-  ##context.iterLocation.stateRecordID##, 
-  ##context.iterLocation.countyRecordID##,
-  s.zoneID, 
-  ##context.iterLocation.linkRecordID##, 
-  1 AS roadTypeID,
-  s.yearID, s.monthID, s.dayID, s.hourID, pollutantID, processID, 
-  s.sourceTypeID, s.modelYearID, fuelTypeID, NULL AS SCC, 
-  (meanBaseRate * starts) AS emissionQuant,
-  (meanBaseRateIM * starts) AS emissionQuant
-FROM Starts2 s, ActivityWeightedEmissionRate2 awer, PollutantProcessAssoc ppa
-WHERE
-     s.zoneID=awer.zoneID AND
-     s.monthID=awer.monthID AND
-     s.hourID=awer.hourID AND
-     s.dayID=awer.dayID AND
-     s.yearID=awer.yearID AND
-     s.sourceTypeID=awer.sourceTypeID AND
-     s.modelYearID=awer.modelYearID AND
-     awer.polProcessID=ppa.polProcessID;
+insert into movesworkeroutput (
+	stateid, countyid, zoneid, linkid, roadtypeid, yearid, monthid, dayid,
+      hourid, pollutantid, processid, sourcetypeid, modelyearid, fueltypeid,
+	scc, emissionquant, emissionquantim)
+select
+  ##context.iterlocation.staterecordid##, 
+  ##context.iterlocation.countyrecordid##,
+  s.zoneid, 
+  ##context.iterlocation.linkrecordid##, 
+  1 as roadtypeid,
+  s.yearid, s.monthid, s.dayid, s.hourid, pollutantid, processid, 
+  s.sourcetypeid, s.modelyearid, fueltypeid, null as scc, 
+  (meanbaserate * starts) as emissionquant,
+  (meanbaserateim * starts) as emissionquant
+from starts2 s, activityweightedemissionrate2 awer, pollutantprocessassoc ppa
+where
+     s.zoneid=awer.zoneid and
+     s.monthid=awer.monthid and
+     s.hourid=awer.hourid and
+     s.dayid=awer.dayid and
+     s.yearid=awer.yearid and
+     s.sourcetypeid=awer.sourcetypeid and
+     s.modelyearid=awer.modelyearid and
+     awer.polprocessid=ppa.polprocessid;
 
--- Apply IM
-update MOVESWorkerOutput, IMCoverageMergedUngrouped set emissionQuant=GREATEST(emissionQuantIM*IMAdjustFract + emissionQuant*(1.0-IMAdjustFract),0.0)
-where MOVESWorkerOutput.processID = IMCoverageMergedUngrouped.processID
-	and MOVESWorkerOutput.pollutantID = IMCoverageMergedUngrouped.pollutantID
-	and MOVESWorkerOutput.modelYearID = IMCoverageMergedUngrouped.modelYearID
-	and MOVESWorkerOutput.fuelTypeID = IMCoverageMergedUngrouped.fuelTypeID
-	and MOVESWorkerOutput.sourceTypeID = IMCoverageMergedUngrouped.sourceTypeID;
+-- apply im
+update movesworkeroutput, imcoveragemergedungrouped set emissionquant=greatest(emissionquantim*imadjustfract + emissionquant*(1.0-imadjustfract),0.0)
+where movesworkeroutput.processid = imcoveragemergedungrouped.processid
+	and movesworkeroutput.pollutantid = imcoveragemergedungrouped.pollutantid
+	and movesworkeroutput.modelyearid = imcoveragemergedungrouped.modelyearid
+	and movesworkeroutput.fueltypeid = imcoveragemergedungrouped.fueltypeid
+	and movesworkeroutput.sourcetypeid = imcoveragemergedungrouped.sourcetypeid;
 
-alter table MOVESWorkerOutput drop emissionQuantIM;
+alter table movesworkeroutput drop emissionquantim;
 
 flush tables;
 
--- End Section Processing
+-- end section processing
 
--- Section Cleanup
+-- section cleanup
 
-DROP TABLE IF EXISTS ActivityWeightedEmissionRate;
-DROP TABLE IF EXISTS ActivityWeightedEmissionRate2;
-DROP TABLE IF EXISTS CountyFuelAdjustment;
-DROP TABLE IF EXISTS CountyFuelAdjustmentWithFuelType;
-DROP TABLE IF EXISTS EmissionRatesWithIM;
-DROP TABLE IF EXISTS EmissionRatesWithIMAndTemp;
-DROP TABLE IF EXISTS FuelSupplyAdjustment;
-drop table if exists IMCoverageMergedUngrouped;
-drop table if exists IMCoverageMerged;
-DROP TABLE IF EXISTS IMAdjustment;
-DROP TABLE IF EXISTS IMAdjustmentWithSourceBin;
-DROP TABLE IF EXISTS MetSourceBinEmissionRates;
-DROP TABLE IF EXISTS MetStartAdjustment;
-DROP TABLE IF EXISTS Starts2;
--- End Section Cleanup
+drop table if exists activityweightedemissionrate;
+drop table if exists activityweightedemissionrate2;
+drop table if exists countyfueladjustment;
+drop table if exists countyfueladjustmentwithfueltype;
+drop table if exists emissionrateswithim;
+drop table if exists emissionrateswithimandtemp;
+drop table if exists fuelsupplyadjustment;
+drop table if exists imcoveragemergedungrouped;
+drop table if exists imcoveragemerged;
+drop table if exists imadjustment;
+drop table if exists imadjustmentwithsourcebin;
+drop table if exists metsourcebinemissionrates;
+drop table if exists metstartadjustment;
+drop table if exists starts2;
+-- end section cleanup
 
 

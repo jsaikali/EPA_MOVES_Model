@@ -1,731 +1,731 @@
 /* ***********************************************************************************************************************
--- MySQL Script file to pre-aggregate the county level database to the National Level
---    (but preserving the roadtype (Link) distinctions which exist within counties.)
--- An attempt is made to weight some aggregations by activity.
--- These weightings assume that all states and counties are included
+-- mysql script file to pre-aggregate the county level database to the national level
+--    (but preserving the roadtype (link) distinctions which exist within counties.)
+-- an attempt is made to weight some aggregations by activity.
+-- these weightings assume that all states and counties are included
 --
--- Author Wesley Faler
--- Author Mitch Cumberworth
--- Author Gwo Shyu
--- Author Jarrod Brown, Michael Aldridge, Daniel Bizer-Cox, Evan Murray
--- Version 2019-04-22
+-- author wesley faler
+-- author mitch cumberworth
+-- author gwo shyu
+-- author jarrod brown, michael aldridge, daniel bizer-cox, evan murray
+-- version 2019-04-22
 -- *********************************************************************************************************************** */
 
 
-DROP TABLE IF EXISTS SurrogateActivity;
-DROP TABLE IF EXISTS OldCounty;
-DROP TABLE IF EXISTS OldYear;
-DROP TABLE IF EXISTS OldLink;
-DROP TABLE IF EXISTS AggZoneMonthHour;   
-DROP TABLE IF EXISTS OldOpModeDistribution; 
-DROP TABLE IF EXISTS AggZoneRoadType;
-DROP TABLE IF EXISTS AggFuelSupply;
-DROP TABLE IF EXISTS AggNRFuelSupply;
-DROP TABLE IF EXISTS OldIMCoverage;  
-DROP TABLE IF EXISTS AggSHO;
-DROP TABLE IF EXISTS AggSourceHours;
-DROP TABLE IF EXISTS AggStarts;
-DROP TABLE IF EXISTS AggExtendedIdleHours; 
-DROP TABLE IF EXISTS AggAverageTankTemperature;
-DROP TABLE IF EXISTS AggSoakActivityFraction;
-DROP TABLE IF EXISTS AggFuelUsageFraction;
-DROP TABLE IF EXISTS OldTotalIdleFraction;
+drop table if exists surrogateactivity;
+drop table if exists oldcounty;
+drop table if exists oldyear;
+drop table if exists oldlink;
+drop table if exists aggzonemonthhour;   
+drop table if exists oldopmodedistribution; 
+drop table if exists aggzoneroadtype;
+drop table if exists aggfuelsupply;
+drop table if exists aggnrfuelsupply;
+drop table if exists oldimcoverage;  
+drop table if exists aggsho;
+drop table if exists aggsourcehours;
+drop table if exists aggstarts;
+drop table if exists aggextendedidlehours; 
+drop table if exists aggaveragetanktemperature;
+drop table if exists aggsoakactivityfraction;
+drop table if exists aggfuelusagefraction;
+drop table if exists oldtotalidlefraction;
 
--- Since "Nation" does not include the Virgin Islands or
--- Puerto Rico, remove their information from State, County, Zone,
--- ZoneRoadType, and all Nonroad tables as well.
+-- since "nation" does not include the virgin islands or
+-- puerto rico, remove their information from state, county, zone,
+-- zoneroadtype, and all nonroad tables as well.
 delete from zone
 using state
-inner join county on (county.stateID=state.stateID)
-inner join zone on (zone.countyID=county.countyID)
-where state.stateID in (72,78);
+inner join county on (county.stateid=state.stateid)
+inner join zone on (zone.countyid=county.countyid)
+where state.stateid in (72,78);
 
 delete from zoneroadtype
-where round(zoneID/10000, 0) in (72,78);
+where round(zoneid/10000, 0) in (72,78);
 
-delete from nrBaseYearEquipPopulation where stateID in (72,78);
-delete from nrGrowthPatternFinder where stateID in (72,78);
-delete from nrMonthAllocation where stateID in (72,78);
-delete from nrStateSurrogate where stateID in (72,78);
+delete from nrbaseyearequippopulation where stateid in (72,78);
+delete from nrgrowthpatternfinder where stateid in (72,78);
+delete from nrmonthallocation where stateid in (72,78);
+delete from nrstatesurrogate where stateid in (72,78);
 
 delete from county
 using state
-inner join county on (county.stateID=state.stateID)
-where state.stateID in (72,78);
+inner join county on (county.stateid=state.stateid)
+where state.stateid in (72,78);
 
 delete from state
-where state.stateID in (72,78);
+where state.stateid in (72,78);
 
 
 --
--- FLUSH TABLES;
+-- flush tables;
 --
--- Create a table to be used for activity-weighting by zone or county
+-- create a table to be used for activity-weighting by zone or county
 --
--- SELECT "Making SurrogateActivity" AS MARKER_POINT;
+-- select "making surrogateactivity" as marker_point;
 
-create table SurrogateActivity (
-	zoneID int not null,
-	countyID int not null,
-	actFract double not null,
-	primary key (zoneID, countyID),
-	key (countyID, zoneID)
+create table surrogateactivity (
+  zoneid int not null,
+  countyid int not null,
+  actfract double not null,
+  primary key (zoneid, countyid),
+  key (countyid, zoneid)
 );
 
-insert into SurrogateActivity (zoneID, countyID, actFract)
-  SELECT zoneID, countyID, startAllocFactor as actFract from Zone;
+insert into surrogateactivity (zoneid, countyid, actfract)
+  select zoneid, countyid, startallocfactor as actfract from zone;
   
-drop table if exists SurrogateActivityTotal;
-create table SurrogateActivityTotal
-select sum(actFract) as nationalActivityFraction
-from SurrogateActivity;
+drop table if exists surrogateactivitytotal;
+create table surrogateactivitytotal
+select sum(actfract) as nationalactivityfraction
+from surrogateactivity;
 
 
 -- 
--- SurrogateStateActivity Table
+-- surrogatestateactivity table
 -- 
--- SELECT "Making SurrogateStateActivity" AS MARKER_POINT;
+-- select "making surrogatestateactivity" as marker_point;
 
-drop table if exists SurrogateStateActivity;
-create table SurrogateStateActivity (
-	stateID int not null,
-	actFract double not null,
-	primary key (stateID)
+drop table if exists surrogatestateactivity;
+create table surrogatestateactivity (
+  stateid int not null,
+  actfract double not null,
+  primary key (stateid)
 );
 
-insert into SurrogateStateActivity (stateID, actFract)
-select c.stateID, 
-	case when nationalActivityFraction <= 0 then 0 
-	else sum(actFract)/nationalActivityFraction
-	end as actFract
-from SurrogateActivity sa
-inner join County c using (countyID)
-inner join SurrogateActivityTotal t
-where t.nationalActivityFraction > 0
-group by c.stateID;
+insert into surrogatestateactivity (stateid, actfract)
+select c.stateid, 
+  case when nationalactivityfraction <= 0 then 0 
+  else sum(actfract)/nationalactivityfraction
+  end as actfract
+from surrogateactivity sa
+inner join county c using (countyid)
+inner join surrogateactivitytotal t
+where t.nationalactivityfraction > 0
+group by c.stateid;
 
 -- 
--- SurrogateCountyActivity Table
+-- surrogatecountyactivity table
 -- 
--- SELECT "Making SurrogateCountyActivity" AS MARKER_POINT;
-drop table if exists SurrogateCountyActivity;
-create table SurrogateCountyActivity (
-	countyID int not null,
-	actFract double not null,
-	primary key (countyID)
+-- select "making surrogatecountyactivity" as marker_point;
+drop table if exists surrogatecountyactivity;
+create table surrogatecountyactivity (
+  countyid int not null,
+  actfract double not null,
+  primary key (countyid)
 );
 
-insert into SurrogateCountyActivity (countyID, actFract)
-select countyID, 
-	case when nationalActivityFraction <= 0 then 0 
-	else sum(actFract)/nationalActivityFraction
-	end as actFract
-from SurrogateActivity sa
-inner join SurrogateActivityTotal t
-where t.nationalActivityFraction > 0
-group by countyID;
+insert into surrogatecountyactivity (countyid, actfract)
+select countyid, 
+  case when nationalactivityfraction <= 0 then 0 
+  else sum(actfract)/nationalactivityfraction
+  end as actfract
+from surrogateactivity sa
+inner join surrogateactivitytotal t
+where t.nationalactivityfraction > 0
+group by countyid;
 
 -- 
--- SurrogateRegionActivity Table
+-- surrogateregionactivity table
 -- 
--- SELECT "Making SurrogateRegionActivity" AS MARKER_POINT;
-drop table if exists SurrogateRegionActivity;
-create table SurrogateRegionActivity (
-	fuelRegionID int not null,
-	fuelYearID int not null,
-	actFract double not null,
-	primary key (fuelRegionID, fuelYearID)
+-- select "making surrogateregionactivity" as marker_point;
+drop table if exists surrogateregionactivity;
+create table surrogateregionactivity (
+  fuelregionid int not null,
+  fuelyearid int not null,
+  actfract double not null,
+  primary key (fuelregionid, fuelyearid)
 );
 
-insert into SurrogateRegionActivity (fuelRegionID, fuelYearID, actFract)
-select regionID as fuelRegionID, fuelYearID, sum(actFract)
-from SurrogateActivity
-inner join RegionCounty using (countyID)
-where regionCodeID=1
-group by regionID, fuelYearID;
+insert into surrogateregionactivity (fuelregionid, fuelyearid, actfract)
+select regionid as fuelregionid, fuelyearid, sum(actfract)
+from surrogateactivity
+inner join regioncounty using (countyid)
+where regioncodeid=1
+group by regionid, fuelyearid;
 
-drop table if exists SurrogateRegionActivityTotal;
-create table SurrogateRegionActivityTotal (
-	fuelYearID int not null primary key,
-	actFractTotal double not null
+drop table if exists surrogateregionactivitytotal;
+create table surrogateregionactivitytotal (
+  fuelyearid int not null primary key,
+  actfracttotal double not null
 );
-insert into SurrogateRegionActivityTotal (fuelYearID, actFractTotal)
-select fuelYearID, sum(actFract)
-from SurrogateRegionActivity
-group by fuelYearID;
+insert into surrogateregionactivitytotal (fuelyearid, actfracttotal)
+select fuelyearid, sum(actfract)
+from surrogateregionactivity
+group by fuelyearid;
 
-update SurrogateRegionActivity, SurrogateRegionActivityTotal
-set actFract = actFract/actFractTotal
-where SurrogateRegionActivity.fuelYearID = SurrogateRegionActivityTotal.fuelYearID;
+update surrogateregionactivity, surrogateregionactivitytotal
+set actfract = actfract/actfracttotal
+where surrogateregionactivity.fuelyearid = surrogateregionactivitytotal.fuelyearid;
     
 --
--- State Table
+-- state table
 --
--- SELECT "Making State" AS MARKER_POINT;
-TRUNCATE State;
-INSERT INTO State (stateID, stateName, stateAbbr, idleRegionID)
-  VALUES (0, "Nation", "US", 1);
-FLUSH TABLE State;
+-- select "making state" as marker_point;
+truncate state;
+insert into state (stateid, statename, stateabbr, idleregionid)
+  values (0, "Nation", "US", 1);
+flush table state;
   
 --
--- County Table
+-- county table
 --
--- SELECT "Making County" AS MARKER_POINT;
-CREATE TABLE OldCounty SELECT * FROM County;
-TRUNCATE County;
-INSERT INTO County (countyID, stateID, countyName, altitude, GPAFract, 
-		barometricPressure, barometricPressureCV, countyTypeID)
-  SELECT 0, 0, "Nation", "L", SUM(GPAFract*ActFract) AS GPAFract,
-  		SUM(barometricPressure*ActFract) AS barometricPressure, NULL AS barometricPressureCV,
-  		1 as countyTypeID
-  FROM OldCounty INNER JOIN SurrogateActivity USING (countyID);
-FLUSH TABLE County;
+-- select "making county" as marker_point;
+create table oldcounty select * from county;
+truncate county;
+insert into county (countyid, stateid, countyname, altitude, gpafract, 
+    barometricpressure, barometricpressurecv, countytypeid)
+  select 0, 0, "Nation", "L", sum(gpafract*actfract) as gpafract,
+      sum(barometricpressure*actfract) as barometricpressure, null as barometricpressurecv,
+      1 as countytypeid
+  from oldcounty inner join surrogateactivity using (countyid);
+flush table county;
   
 --
--- CountyYear Table
+-- countyyear table
 --
--- SELECT "Making CountyYear" AS MARKER_POINT;
-CREATE TABLE OldYear SELECT DISTINCT yearID from CountyYear;
-TRUNCATE CountyYear;
-REPLACE INTO CountyYear (countyID, yearID)
-	SELECT 0 AS countyID, yearID
-	FROM OldYear;
-FLUSH TABLE CountyYear;
+-- select "making countyyear" as marker_point;
+create table oldyear select distinct yearid from countyyear;
+truncate countyyear;
+replace into countyyear (countyid, yearid)
+  select 0 as countyid, yearid
+  from oldyear;
+flush table countyyear;
   
 --
--- Zone Table
+-- zone table
 --
--- SELECT "Making Zone" AS MARKER_POINT;
-TRUNCATE Zone;
-INSERT INTO Zone (zoneID, countyID, startAllocFactor, idleAllocFactor, SHPAllocFactor)
-  VALUES (0, 0, 1.0, 1.0, 1.0);
-FLUSH TABLE Zone;
+-- select "making zone" as marker_point;
+truncate zone;
+insert into zone (zoneid, countyid, startallocfactor, idleallocfactor, shpallocfactor)
+  values (0, 0, 1.0, 1.0, 1.0);
+flush table zone;
   
 -- 
--- Link Table
+-- link table
 -- 
--- SELECT "Making Link" AS MARKER_POINT;
-CREATE Table OldLink
-  SELECT * from Link;  
-TRUNCATE Link;
-INSERT INTO Link (linkID, countyID, zoneID, roadTypeID, 
-    linkLength,linkVolume, linkAvgSpeed, linkDescription, linkAvgGrade)
-  SELECT roadTypeID AS linkID,0 as countyID, 0 AS zoneID, roadTypeID as roadTypeID,
-    NULL AS linkLength, NULL AS linkVolume, SUM(linkAvgSpeed * actFract) AS linkAvgSpeed,
-    NULL AS linkDescription,
-    SUM(linkAvgGrade * actFract) AS linkAvgGrade
-  FROM OldLink INNER JOIN SurrogateActivity USING(zoneID)
-  GROUP BY roadTypeID;
-FLUSH TABLE Link;
+-- select "making link" as marker_point;
+create table oldlink
+  select * from link;  
+truncate link;
+insert into link (linkid, countyid, zoneid, roadtypeid, 
+    linklength,linkvolume, linkavgspeed, linkdescription, linkavggrade)
+  select roadtypeid as linkid,0 as countyid, 0 as zoneid, roadtypeid as roadtypeid,
+    null as linklength, null as linkvolume, sum(linkavgspeed * actfract) as linkavgspeed,
+    null as linkdescription,
+    sum(linkavggrade * actfract) as linkavggrade
+  from oldlink inner join surrogateactivity using(zoneid)
+  group by roadtypeid;
+flush table link;
 
 -- 
--- ZoneMonthHour
+-- zonemonthhour
 --
--- SELECT "Making ZoneMonthHour" AS MARKER_POINT;
-CREATE Table AggZoneMonthHour (
-	monthID SMALLINT,
-	hourID SMALLINT,
-	temperature FLOAT,
-	relHumidity FLOAT);
-INSERT INTO AggZoneMonthHour	
-  SELECT monthID, hourID, sum(temperature*actFract)/nationalActivityFraction as temperature,
-    sum(relHumidity*actFract)/nationalActivityFraction AS relHumidity
-  FROM ZoneMonthHour INNER JOIN SurrogateActivity USING (zoneID) JOIN SurrogateActivityTotal
-  GROUP BY monthID, hourID;
-CREATE UNIQUE INDEX index1 ON AggZoneMonthHour (monthID, hourID);  
-TRUNCATE ZoneMonthHour;
-REPLACE INTO ZoneMonthHour (monthID, zoneID, hourID, temperature, temperatureCV,
-    relHumidity, relativeHumidityCV, heatIndex, specificHumidity)
-  SELECT monthID, 0 AS zoneID, hourID, temperature,
-    NULL AS temperatureCV, relHumidity, NULL AS relativeHumidityCV, 
-    0.0 as heatIndex, 0.0 as specificHumidity 
-  FROM AggZoneMonthHour 
-  GROUP BY monthID, hourID;
-FLUSH TABLE ZoneMonthHour;
+-- select "making zonemonthhour" as marker_point;
+create table aggzonemonthhour (
+  monthid smallint,
+  hourid smallint,
+  temperature float,
+  relhumidity float);
+insert into aggzonemonthhour  
+  select monthid, hourid, sum(temperature*actfract)/nationalactivityfraction as temperature,
+    sum(relhumidity*actfract)/nationalactivityfraction as relhumidity
+  from zonemonthhour inner join surrogateactivity using (zoneid) join surrogateactivitytotal
+  group by monthid, hourid;
+create unique index index1 on aggzonemonthhour (monthid, hourid);  
+truncate zonemonthhour;
+replace into zonemonthhour (monthid, zoneid, hourid, temperature, temperaturecv,
+    relhumidity, relativehumiditycv, heatindex, specifichumidity)
+  select monthid, 0 as zoneid, hourid, temperature,
+    null as temperaturecv, relhumidity, null as relativehumiditycv, 
+    0.0 as heatindex, 0.0 as specifichumidity 
+  from aggzonemonthhour 
+  group by monthid, hourid;
+flush table zonemonthhour;
 
 --
--- OpModeDistribution
+-- opmodedistribution
 --
--- SELECT "Making OpModeDistribution" AS MARKER_POINT;
-CREATE Table OldOpModeDistribution 
-  SELECT omd.*, link.roadTypeID, link.zoneID 
-  FROM OpModeDistribution AS omd INNER JOIN OldLink as link USING (linkID);
-TRUNCATE OpModeDistribution;
-INSERT INTO OpModeDistribution (sourceTypeID, hourDayID, linkID, polProcessID, opModeID, 
-    opModeFraction, opModeFractionCV, isUserInput)
-  SELECT sourceTypeID, hourDayID, roadTypeID AS linkID, polProcessID, opModeID,
-    SUM(opModeFraction * actFract) AS opModeFraction, NULL AS opModeFractionCV,
-    "Y" AS isUserInput
-  FROM OldOpModeDistribution INNER JOIN SurrogateActivity USING (zoneID)
-  GROUP BY sourceTypeID, hourDayID, roadTypeID, polProcessID, opModeID;
-FLUSH TABLE OpModeDistribution;
+-- select "making opmodedistribution" as marker_point;
+create table oldopmodedistribution 
+  select omd.*, link.roadtypeid, link.zoneid 
+  from opmodedistribution as omd inner join oldlink as link using (linkid);
+truncate opmodedistribution;
+insert into opmodedistribution (sourcetypeid, hourdayid, linkid, polprocessid, opmodeid, 
+    opmodefraction, opmodefractioncv, isuserinput)
+  select sourcetypeid, hourdayid, roadtypeid as linkid, polprocessid, opmodeid,
+    sum(opmodefraction * actfract) as opmodefraction, null as opmodefractioncv,
+    "Y" as isuserinput
+  from oldopmodedistribution inner join surrogateactivity using (zoneid)
+  group by sourcetypeid, hourdayid, roadtypeid, polprocessid, opmodeid;
+flush table opmodedistribution;
   
 --
--- ZoneRoadType
+-- zoneroadtype
 --
--- SELECT "Making ZoneRoadType" AS MARKER_POINT;
-CREATE TABLE AggZoneRoadType (
-	roadTypeID SMALLINT,
-	SHOAllocFactor double);
-INSERT INTO AggZoneRoadType	
-  SELECT  roadTypeID, sum(1.0000000000000 * SHOAllocFactor) AS SHOAllocFactor
-  FROM ZoneRoadType 
-  GROUP BY roadTypeID ;
-TRUNCATE ZoneRoadType;
-REPLACE INTO ZoneRoadType (zoneID, roadTypeID, SHOAllocFactor)
-  SELECT 0 AS zoneID,  roadTypeID, SHOAllocFactor
-  FROM AggZoneRoadType;
-FLUSH TABLE ZoneRoadType;
+-- select "making zoneroadtype" as marker_point;
+create table aggzoneroadtype (
+  roadtypeid smallint,
+  shoallocfactor double);
+insert into aggzoneroadtype 
+  select  roadtypeid, sum(1.0000000000000 * shoallocfactor) as shoallocfactor
+  from zoneroadtype 
+  group by roadtypeid ;
+truncate zoneroadtype;
+replace into zoneroadtype (zoneid, roadtypeid, shoallocfactor)
+  select 0 as zoneid,  roadtypeid, shoallocfactor
+  from aggzoneroadtype;
+flush table zoneroadtype;
    
 --
--- Fuel Supply
+-- fuel supply
 --
--- Note: algorithm is specific to particular default values used.
--- SELECT "Making FuelSupply" AS MARKER_POINT;
---  Creating table explicitly to control column types and avoid significance problems
-CREATE TABLE AggFuelSupply (
-	fuelYearID SMALLINT,
-	monthGroupID SMALLINT,
-	fuelFormulationID SMALLINT,
-	haveFract double);
-INSERT INTO AggFuelSupply
-  SELECT FuelSupply.fuelYearID, monthGroupID,fuelFormulationID, 
-    sum(marketShare*actFract) as haveFract
-  FROM FuelSupply
-  INNER JOIN SurrogateRegionActivity USING (fuelRegionID,fuelYearID)
-  GROUP BY fuelYearID, monthGroupID, fuelFormulationID;
-TRUNCATE FuelSupply;  
-REPLACE INTO FuelSupply (fuelRegionID, fuelYearID, monthGroupID, fuelFormulationID, 
-   marketShare, marketShareCV)
-  SELECT 0 AS fuelRegionID, fuelYearID, monthGroupID, fuelFormulationID, 
-    haveFract AS marketShare, 
-    NULL AS marketShareCV
-  FROM AggFuelSupply; 
-FLUSH TABLE FuelSupply;
+-- note: algorithm is specific to particular default values used.
+-- select "making fuelsupply" as marker_point;
+--  creating table explicitly to control column types and avoid significance problems
+create table aggfuelsupply (
+  fuelyearid smallint,
+  monthgroupid smallint,
+  fuelformulationid smallint,
+  havefract double);
+insert into aggfuelsupply
+  select fuelsupply.fuelyearid, monthgroupid,fuelformulationid, 
+    sum(marketshare*actfract) as havefract
+  from fuelsupply
+  inner join surrogateregionactivity using (fuelregionid,fuelyearid)
+  group by fuelyearid, monthgroupid, fuelformulationid;
+truncate fuelsupply;  
+replace into fuelsupply (fuelregionid, fuelyearid, monthgroupid, fuelformulationid, 
+   marketshare, marketsharecv)
+  select 0 as fuelregionid, fuelyearid, monthgroupid, fuelformulationid, 
+    havefract as marketshare, 
+    null as marketsharecv
+  from aggfuelsupply; 
+flush table fuelsupply;
 
 --
--- Nonroad Fuel Supply
+-- nonroad fuel supply
 --
--- Note: algorithm is specific to particular default values used.
--- SELECT "Making NRFuelSupply" AS MARKER_POINT;
---  Creating table explicitly to control column types and avoid significance problems
-CREATE TABLE AggNRFuelSupply (
-	fuelYearID SMALLINT,
-	monthGroupID SMALLINT,
-	fuelFormulationID SMALLINT,
-	haveFract double);
-INSERT INTO AggNRFuelSupply
-  SELECT NRFuelSupply.fuelYearID, monthGroupID,fuelFormulationID, 
-    sum(marketShare*actFract) as haveFract
-  FROM NRFuelSupply
-  INNER JOIN SurrogateRegionActivity USING (fuelRegionID,fuelYearID)
-  GROUP BY fuelYearID, monthGroupID, fuelFormulationID;
-TRUNCATE NRFuelSupply;  
-REPLACE INTO NRFuelSupply (fuelRegionID, fuelYearID, monthGroupID, fuelFormulationID, 
-   marketShare, marketShareCV)
-  SELECT 0 AS fuelRegionID, fuelYearID, monthGroupID, fuelFormulationID, 
-    haveFract AS marketShare, 
-    NULL AS marketShareCV
-  FROM AggNRFuelSupply; 
-FLUSH TABLE NRFuelSupply;
+-- note: algorithm is specific to particular default values used.
+-- select "making nrfuelsupply" as marker_point;
+--  creating table explicitly to control column types and avoid significance problems
+create table aggnrfuelsupply (
+  fuelyearid smallint,
+  monthgroupid smallint,
+  fuelformulationid smallint,
+  havefract double);
+insert into aggnrfuelsupply
+  select nrfuelsupply.fuelyearid, monthgroupid,fuelformulationid, 
+    sum(marketshare*actfract) as havefract
+  from nrfuelsupply
+  inner join surrogateregionactivity using (fuelregionid,fuelyearid)
+  group by fuelyearid, monthgroupid, fuelformulationid;
+truncate nrfuelsupply;  
+replace into nrfuelsupply (fuelregionid, fuelyearid, monthgroupid, fuelformulationid, 
+   marketshare, marketsharecv)
+  select 0 as fuelregionid, fuelyearid, monthgroupid, fuelformulationid, 
+    havefract as marketshare, 
+    null as marketsharecv
+  from aggnrfuelsupply; 
+flush table nrfuelsupply;
 
-TRUNCATE Region;
-insert into Region (regionID, description) values (0,'Aggregated Nation');
+truncate region;
+insert into region (regionid, description) values (0,'aggregated nation');
 
-TRUNCATE RegionCounty;
-insert into RegionCounty (regionID, countyID, regionCodeID, fuelYearID)
-select distinct 0 as regionID, 0 as countyID, 1 as regionCodeID, fuelYearID
-from fuelSupply;
+truncate regioncounty;
+insert into regioncounty (regionid, countyid, regioncodeid, fuelyearid)
+select distinct 0 as regionid, 0 as countyid, 1 as regioncodeid, fuelyearid
+from fuelsupply;
 
-insert into RegionCounty (regionID, countyID, regionCodeID, fuelYearID)
-select distinct 0 as regionID, 0 as countyID, 2 as regionCodeID, fuelYearID
-from fuelSupply;
+insert into regioncounty (regionid, countyid, regioncodeid, fuelyearid)
+select distinct 0 as regionid, 0 as countyid, 2 as regioncodeid, fuelyearid
+from fuelsupply;
 
 --
--- Fuel Usage
+-- fuel usage
 --
--- SELECT "Making FuelUsageFraction" AS MARKER_POINT;
---  Creating table explicitly to control column types and avoid significance problems
+-- select "making fuelusagefraction" as marker_point;
+--  creating table explicitly to control column types and avoid significance problems
 -- 
--- Because fuel usage fraction is used early in the TAG, reductions here for PR/VI propagate to all
--- activity calculations (i.e., for every activityTypeID). This is why this table is not normalized
+-- because fuel usage fraction is used early in the tag, reductions here for pr/vi propagate to all
+-- activity calculations (i.e., for every activitytypeid). this is why this table is not normalized
 -- to total national activity.
 -- 
-CREATE TABLE AggFuelUsageFraction (
-	fuelYearID SMALLINT,
-	modelYearGroupID int,
-	sourceBinFuelTypeID smallint,
-	fuelSupplyFuelTypeID smallint,
-	usageFraction double
+create table aggfuelusagefraction (
+  fuelyearid smallint,
+  modelyeargroupid int,
+  sourcebinfueltypeid smallint,
+  fuelsupplyfueltypeid smallint,
+  usagefraction double
 );
-INSERT INTO AggFuelUsageFraction
-  SELECT f.fuelYearID, modelYearGroupID, sourceBinFuelTypeID, fuelSupplyFuelTypeID,
-    sum(usageFraction*actFract) as usageFraction
-  FROM FuelUsageFraction AS f INNER JOIN SurrogateActivity USING(countyID)
-  GROUP BY fuelYearID, modelYearGroupID, sourceBinFuelTypeID, fuelSupplyFuelTypeID;
-TRUNCATE FuelUsageFraction;
-REPLACE INTO FuelUsageFraction (countyID, fuelYearID, modelYearGroupID, sourceBinFuelTypeID, fuelSupplyFuelTypeID,
-   usageFraction)
-  SELECT 0 AS countyID, fuelYearID, modelYearGroupID, sourceBinFuelTypeID, fuelSupplyFuelTypeID,
-    least(usageFraction,1)
-  FROM AggFuelUsageFraction;
-FLUSH TABLE FuelUsageFraction;
+insert into aggfuelusagefraction
+  select f.fuelyearid, modelyeargroupid, sourcebinfueltypeid, fuelsupplyfueltypeid,
+    sum(usagefraction*actfract) as usagefraction
+  from fuelusagefraction as f inner join surrogateactivity using(countyid)
+  group by fuelyearid, modelyeargroupid, sourcebinfueltypeid, fuelsupplyfueltypeid;
+truncate fuelusagefraction;
+replace into fuelusagefraction (countyid, fuelyearid, modelyeargroupid, sourcebinfueltypeid, fuelsupplyfueltypeid,
+   usagefraction)
+  select 0 as countyid, fuelyearid, modelyeargroupid, sourcebinfueltypeid, fuelsupplyfueltypeid,
+    least(usagefraction,1)
+  from aggfuelusagefraction;
+flush table fuelusagefraction;
   
 --
--- IMCoverage
+-- imcoverage
 --
--- SELECT "Making IMCoverage Table" AS MARKER_POINT;
-CREATE TABLE OldIMCoverage SELECT * FROM IMCoverage WHERE useIMyn = 'Y';
-CREATE INDEX OldIMCoverageIndex1 ON OldIMCoverage (countyID);
-TRUNCATE IMCoverage;  
--- When aggregated, IM programs may overlap.  This is better than extending model years
--- or forcing all to a particular IMFactor entry.  The overlap is handled within each
+-- select "making imcoverage table" as marker_point;
+create table oldimcoverage select * from imcoverage where useimyn = 'Y';
+create index oldimcoverageindex1 on oldimcoverage (countyid);
+truncate imcoverage;  
+-- when aggregated, im programs may overlap.  this is better than extending model years
+-- or forcing all to a particular imfactor entry.  the overlap is handled within each
 -- calculator.
-DROP TABLE IMCoverage;
-CREATE TABLE IMCoverage (
-  stateID int(11) default NULL,
-  countyID int(11) NOT NULL,
-  yearID smallint(6) NOT NULL,
-  polProcessID int NOT NULL,
-  fuelTypeID smallint(6) NOT NULL,
-  sourceTypeID smallint(6) NOT NULL,
-  IMProgramID smallint(6) NOT NULL default '0',
-  inspectFreq smallint(6) default NULL,
-  testStandardsID smallint(6) default NULL,
-  begModelYearID smallint(4) default NULL,
-  endModelYearID smallint(4) default NULL,
-  useIMyn char(1) NOT NULL default 'Y',
-  complianceFactor float default NULL,
-  KEY XPKIMCoverage (polProcessID,countyID,yearID,sourceTypeID,fuelTypeID,IMProgramID)
+drop table imcoverage;
+create table imcoverage (
+  stateid int(11) default null,
+  countyid int(11) not null,
+  yearid smallint(6) not null,
+  polprocessid int not null,
+  fueltypeid smallint(6) not null,
+  sourcetypeid smallint(6) not null,
+  improgramid smallint(6) not null default '0',
+  inspectfreq smallint(6) default null,
+  teststandardsid smallint(6) default null,
+  begmodelyearid smallint(4) default null,
+  endmodelyearid smallint(4) default null,
+  useimyn char(1) not null default 'Y',
+  compliancefactor float default null,
+  key xpkimcoverage (polprocessid,countyid,yearid,sourcetypeid,fueltypeid,improgramid)
 );
 
--- Add back all of the old IMCoverage records, but use the pseudo county's ID
-INSERT INTO IMCoverage (stateID, countyID, yearID, polProcessID, fuelTypeID,
-	sourceTypeID, IMProgramID, inspectFreq, testStandardsID,
-	begModelYearID, endModelYearID, useIMyn,
-	complianceFactor)
-SELECT 0 as stateID, 0 as countyID, yearID, polProcessID, fuelTypeID,
-	sourceTypeID, IMProgramID, inspectFreq, testStandardsID,
-	begModelYearID, endModelYearID, useIMyn,
-	(complianceFactor*actFract)/nationalActivityFraction as complianceFactor
-FROM OldIMCoverage
-INNER JOIN SurrogateActivity USING(countyID) JOIN SurrogateActivityTotal;
+-- add back all of the old imcoverage records, but use the pseudo county's id
+insert into imcoverage (stateid, countyid, yearid, polprocessid, fueltypeid,
+  sourcetypeid, improgramid, inspectfreq, teststandardsid,
+  begmodelyearid, endmodelyearid, useimyn,
+  compliancefactor)
+select 0 as stateid, 0 as countyid, yearid, polprocessid, fueltypeid,
+  sourcetypeid, improgramid, inspectfreq, teststandardsid,
+  begmodelyearid, endmodelyearid, useimyn,
+  (compliancefactor*actfract)/nationalactivityfraction as compliancefactor
+from oldimcoverage
+inner join surrogateactivity using(countyid) join surrogateactivitytotal;
 
 --
---  SHO    
+--  sho    
 --
--- SELECT "Making SHO" AS MARKER_POINT;
+-- select "making sho" as marker_point;
 
-CREATE TABLE AggSHO (
-	hourDayID SMALLINT,
-	monthID SMALLINT,
-	yearID SMALLINT,
-	ageID SMALLINT,
-	roadTypeID SMALLINT,
-	sourceTypeID SMALLINT,
-	SHO double,
-	distance double);
-INSERT INTO AggSHO
-  SELECT hourDayID, monthID, yearID, ageID, roadTypeID, sourceTypeID, 
-    sum(SHO) AS SHO, sum(distance) AS distance
-  FROM SHO INNER JOIN OldLink USING(linkID)
-  GROUP BY hourDayID, monthID, yearID, ageID, roadTypeID, sourceTypeID;
-TRUNCATE SHO;
-INSERT INTO SHO (hourDayID, monthID, yearID, ageID, linkID, 
-    sourceTypeID, SHO, SHOCV, distance, isUserInput)
-  SELECT hourDayID, monthID, yearID, ageID, roadTypeID AS linkID, 
-    sourceTypeID, SHO, NULL AS SHOCV, distance, "Y" AS isUserInput
-  FROM AggSHO;
-FLUSH TABLE SHO;
+create table aggsho (
+  hourdayid smallint,
+  monthid smallint,
+  yearid smallint,
+  ageid smallint,
+  roadtypeid smallint,
+  sourcetypeid smallint,
+  sho double,
+  distance double);
+insert into aggsho
+  select hourdayid, monthid, yearid, ageid, roadtypeid, sourcetypeid, 
+    sum(sho) as sho, sum(distance) as distance
+  from sho inner join oldlink using(linkid)
+  group by hourdayid, monthid, yearid, ageid, roadtypeid, sourcetypeid;
+truncate sho;
+insert into sho (hourdayid, monthid, yearid, ageid, linkid, 
+    sourcetypeid, sho, shocv, distance, isuserinput)
+  select hourdayid, monthid, yearid, ageid, roadtypeid as linkid, 
+    sourcetypeid, sho, null as shocv, distance, "Y" as isuserinput
+  from aggsho;
+flush table sho;
 
 --
---  SourceHours    
+--  sourcehours    
 --
--- SELECT "Making SourceHours" AS MARKER_POINT;
+-- select "making sourcehours" as marker_point;
 
-CREATE TABLE AggSourceHours (
-	hourDayID SMALLINT,
-	monthID SMALLINT,
-	yearID SMALLINT,
-	ageID SMALLINT,
-	roadTypeID SMALLINT,
-	sourceTypeID SMALLINT,
-	sourceHours double);
-INSERT INTO AggSourceHours
-  SELECT hourDayID, monthID, yearID, ageID, roadTypeID, sourceTypeID, 
-    sum(sourceHours) AS sourceHours
-  FROM SourceHours INNER JOIN OldLink USING(linkID)
-  GROUP BY hourDayID, monthID, yearID, ageID, roadTypeID, sourceTypeID;
-TRUNCATE SourceHours;
-INSERT INTO SourceHours (hourDayID, monthID, yearID, ageID, linkID, 
-    sourceTypeID, sourceHours, sourceHoursCV,isUserInput)
-  SELECT hourDayID, monthID, yearID, ageID, roadTypeID AS linkID, 
-    sourceTypeID, sourceHours, NULL AS sourceHoursCV, "Y" AS isUserInput
-  FROM AggSourceHours;
-FLUSH TABLE SourceHours;
+create table aggsourcehours (
+  hourdayid smallint,
+  monthid smallint,
+  yearid smallint,
+  ageid smallint,
+  roadtypeid smallint,
+  sourcetypeid smallint,
+  sourcehours double);
+insert into aggsourcehours
+  select hourdayid, monthid, yearid, ageid, roadtypeid, sourcetypeid, 
+    sum(sourcehours) as sourcehours
+  from sourcehours inner join oldlink using(linkid)
+  group by hourdayid, monthid, yearid, ageid, roadtypeid, sourcetypeid;
+truncate sourcehours;
+insert into sourcehours (hourdayid, monthid, yearid, ageid, linkid, 
+    sourcetypeid, sourcehours, sourcehourscv,isuserinput)
+  select hourdayid, monthid, yearid, ageid, roadtypeid as linkid, 
+    sourcetypeid, sourcehours, null as sourcehourscv, "Y" as isuserinput
+  from aggsourcehours;
+flush table sourcehours;
   
 --
---  Starts
+--  starts
 --
--- SELECT "Making Starts" AS MARKER_POINT;
-CREATE TABLE AggStarts (
-	hourDayID SMALLINT,
-	monthID SMALLINT,
-	yearID SMALLINT,
-	ageID SMALLINT,
-	sourceTypeID SMALLINT,
-	starts double);
-INSERT INTO AggStarts
-  SELECT hourDayID, monthID, yearID, ageID, sourceTypeID, 
-    sum(starts) AS starts
-  FROM Starts 
-  GROUP BY hourDayID, monthID, yearID, ageID, sourceTypeID;
-TRUNCATE Starts;
-REPLACE INTO Starts (hourDayID, monthID, yearID, ageID, zoneID, 
-    sourceTypeID, starts, startsCV, isUserInput)
-  SELECT hourDayID, monthID, yearID, ageID, 0 AS zoneID, 
-    sourceTypeID, starts, NULL AS startsCV, "Y" AS isUserInput
-  FROM AggStarts;
-FLUSH TABLE Starts;
+-- select "making starts" as marker_point;
+create table aggstarts (
+  hourdayid smallint,
+  monthid smallint,
+  yearid smallint,
+  ageid smallint,
+  sourcetypeid smallint,
+  starts double);
+insert into aggstarts
+  select hourdayid, monthid, yearid, ageid, sourcetypeid, 
+    sum(starts) as starts
+  from starts 
+  group by hourdayid, monthid, yearid, ageid, sourcetypeid;
+truncate starts;
+replace into starts (hourdayid, monthid, yearid, ageid, zoneid, 
+    sourcetypeid, starts, startscv, isuserinput)
+  select hourdayid, monthid, yearid, ageid, 0 as zoneid, 
+    sourcetypeid, starts, null as startscv, "Y" as isuserinput
+  from aggstarts;
+flush table starts;
   
 --
---  ExtendedIdleHours
+--  extendedidlehours
 --
--- SELECT "Making ExtendedIdleHours" AS MARKER_POINT;
-CREATE TABLE AggExtendedIdleHours (
-	sourceTypeID SMALLINT,
-	hourDayID SMALLINT,
-	monthID SMALLINT,
-	yearID SMALLINT,
-	ageID SMALLINT,
-	extendedIdleHours double);
-INSERT INTO AggExtendedIdleHours
-  SELECT sourceTypeID, hourDayID, monthID, yearID, ageID,  
-    sum(extendedIdleHours) AS extendedIdleHours
-  FROM ExtendedIdleHours
-  GROUP BY sourceTypeID, hourDayID, monthID, yearID, ageID; 
-TRUNCATE ExtendedIdleHours;
-REPLACE INTO ExtendedIdleHours (sourceTypeID, hourDayID, monthID, yearID, ageID, zoneID, 
-     extendedIdleHours, extendedIdleHoursCV, isUserInput)
-  SELECT sourceTypeID, hourDayID, monthID, yearID, ageID, 0 AS zoneID, 
-    extendedIdleHours, NULL AS extendedIdleHoursCV, "Y" AS isUserInput
-  FROM AggExtendedIdleHours; 
-FLUSH TABLE ExtendedIdleHours;
+-- select "making extendedidlehours" as marker_point;
+create table aggextendedidlehours (
+  sourcetypeid smallint,
+  hourdayid smallint,
+  monthid smallint,
+  yearid smallint,
+  ageid smallint,
+  extendedidlehours double);
+insert into aggextendedidlehours
+  select sourcetypeid, hourdayid, monthid, yearid, ageid,  
+    sum(extendedidlehours) as extendedidlehours
+  from extendedidlehours
+  group by sourcetypeid, hourdayid, monthid, yearid, ageid; 
+truncate extendedidlehours;
+replace into extendedidlehours (sourcetypeid, hourdayid, monthid, yearid, ageid, zoneid, 
+     extendedidlehours, extendedidlehourscv, isuserinput)
+  select sourcetypeid, hourdayid, monthid, yearid, ageid, 0 as zoneid, 
+    extendedidlehours, null as extendedidlehourscv, "Y" as isuserinput
+  from aggextendedidlehours; 
+flush table extendedidlehours;
 
 -- 
--- AverageTankTemperature
+-- averagetanktemperature
 --
--- SELECT "Making AverageTankTemperature" AS MARKER_POINT;
-CREATE Table AggAverageTankTemperature (
-	tankTemperatureGroupID SMALLINT,
-	monthID SMALLINT,
-	hourDayID SMALLINT,
-	opModeID SMALLINT,
-	averageTankTemperature FLOAT);
-INSERT INTO AggAverageTankTemperature
-  SELECT tankTemperatureGroupID, monthID, hourDayID, opModeID,
-    sum(averageTankTemperature*actFract)/nationalActivityFraction as averageTankTemperature
-  FROM AverageTankTemperature INNER JOIN SurrogateActivity USING (zoneID) JOIN SurrogateActivityTotal
-  GROUP BY tankTemperatureGroupID, monthID, hourDayID, opModeID;
+-- select "making averagetanktemperature" as marker_point;
+create table aggaveragetanktemperature (
+  tanktemperaturegroupid smallint,
+  monthid smallint,
+  hourdayid smallint,
+  opmodeid smallint,
+  averagetanktemperature float);
+insert into aggaveragetanktemperature
+  select tanktemperaturegroupid, monthid, hourdayid, opmodeid,
+    sum(averagetanktemperature*actfract)/nationalactivityfraction as averagetanktemperature
+  from averagetanktemperature inner join surrogateactivity using (zoneid) join surrogateactivitytotal
+  group by tanktemperaturegroupid, monthid, hourdayid, opmodeid;
 
 
-TRUNCATE AverageTankTemperature;
-REPLACE INTO AverageTankTemperature (tankTemperatureGroupID, zoneID, 
-		monthID, hourDayID, opModeID, averageTankTemperature, averageTankTemperatureCV,
-		isUserInput)
-  SELECT tankTemperatureGroupID, 0 AS zoneID, monthID, hourDayID, opModeID, 
-    averageTankTemperature, NULL AS averageTankTemperatureCV, 'Y' AS isUserInput
-  FROM AggAverageTankTemperature;
-FLUSH TABLE AverageTankTemperature;
+truncate averagetanktemperature;
+replace into averagetanktemperature (tanktemperaturegroupid, zoneid, 
+    monthid, hourdayid, opmodeid, averagetanktemperature, averagetanktemperaturecv,
+    isuserinput)
+  select tanktemperaturegroupid, 0 as zoneid, monthid, hourdayid, opmodeid, 
+    averagetanktemperature, null as averagetanktemperaturecv, 'Y' as isuserinput
+  from aggaveragetanktemperature;
+flush table averagetanktemperature;
 
 -- 
--- SoakActivityFraction
+-- soakactivityfraction
 --
--- SELECT "Making SoakActivityFraction" AS MARKER_POINT;
-CREATE Table AggSoakActivityFraction (
-	sourceTypeID SMALLINT,
-	monthID SMALLINT,
-	hourDayID SMALLINT,
-	opModeID SMALLINT,
-	soakActivityFraction double);
-INSERT INTO AggSoakActivityFraction
-  SELECT sourceTypeID, monthID, hourDayID, opModeID,
-    sum(soakActivityFraction*actFract)/nationalActivityFraction as soakActivityFraction
-  FROM SoakActivityFraction INNER JOIN SurrogateActivity USING (zoneID) JOIN SurrogateActivityTotal
-  GROUP BY sourceTypeID, monthID, hourDayID, opModeID;
-TRUNCATE SoakActivityFraction;
-REPLACE INTO SoakActivityFraction (sourceTypeID, zoneID, 
-		monthID, hourDayID, opModeID, soakActivityFraction, soakActivityFractionCV, isUserInput)
-  SELECT sourceTypeID, 0 AS zoneID, monthID, hourDayID, opModeID, 
-    soakActivityFraction, NULL AS soakActivityFractionCV, 'Y' AS isUserInput
-  FROM AggSoakActivityFraction;
-FLUSH TABLE SoakActivityFraction;
+-- select "making soakactivityfraction" as marker_point;
+create table aggsoakactivityfraction (
+  sourcetypeid smallint,
+  monthid smallint,
+  hourdayid smallint,
+  opmodeid smallint,
+  soakactivityfraction double);
+insert into aggsoakactivityfraction
+  select sourcetypeid, monthid, hourdayid, opmodeid,
+    sum(soakactivityfraction*actfract)/nationalactivityfraction as soakactivityfraction
+  from soakactivityfraction inner join surrogateactivity using (zoneid) join surrogateactivitytotal
+  group by sourcetypeid, monthid, hourdayid, opmodeid;
+truncate soakactivityfraction;
+replace into soakactivityfraction (sourcetypeid, zoneid, 
+    monthid, hourdayid, opmodeid, soakactivityfraction, soakactivityfractioncv, isuserinput)
+  select sourcetypeid, 0 as zoneid, monthid, hourdayid, opmodeid, 
+    soakactivityfraction, null as soakactivityfractioncv, 'Y' as isuserinput
+  from aggsoakactivityfraction;
+flush table soakactivityfraction;
 
 -- 
--- ColdSoakTankTemperature
+-- coldsoaktanktemperature
 --
--- SELECT "Making ColdSoakTankTemperature" AS MARKER_POINT;
-CREATE Table AggColdSoakTankTemperature (
-	monthID SMALLINT,
-	hourID SMALLINT,
-	coldSoakTankTemperature FLOAT);
-INSERT INTO AggColdSoakTankTemperature
-  SELECT monthID, hourID, sum(coldSoakTankTemperature*actFract)/nationalActivityFraction as coldSoakTankTemperature
-  FROM ColdSoakTankTemperature INNER JOIN SurrogateActivity USING (zoneID) JOIN SurrogateActivityTotal
-  GROUP BY monthID, hourID;
-CREATE UNIQUE INDEX index1 ON AggColdSoakTankTemperature (monthID, hourID);  
-TRUNCATE ColdSoakTankTemperature;
-REPLACE INTO ColdSoakTankTemperature (monthID, zoneID, hourID, coldSoakTankTemperature)
-  SELECT monthID, 0 AS zoneID, hourID, coldSoakTankTemperature
-  FROM AggColdSoakTankTemperature
-  GROUP BY monthID, hourID;
-FLUSH TABLE ColdSoakTankTemperature;
+-- select "making coldsoaktanktemperature" as marker_point;
+create table aggcoldsoaktanktemperature (
+  monthid smallint,
+  hourid smallint,
+  coldsoaktanktemperature float);
+insert into aggcoldsoaktanktemperature
+  select monthid, hourid, sum(coldsoaktanktemperature*actfract)/nationalactivityfraction as coldsoaktanktemperature
+  from coldsoaktanktemperature inner join surrogateactivity using (zoneid) join surrogateactivitytotal
+  group by monthid, hourid;
+create unique index index1 on aggcoldsoaktanktemperature (monthid, hourid);  
+truncate coldsoaktanktemperature;
+replace into coldsoaktanktemperature (monthid, zoneid, hourid, coldsoaktanktemperature)
+  select monthid, 0 as zoneid, hourid, coldsoaktanktemperature
+  from aggcoldsoaktanktemperature
+  group by monthid, hourid;
+flush table coldsoaktanktemperature;
 
 -- 
--- ColdSoakInitialHourFraction
+-- coldsoakinitialhourfraction
 --
--- SELECT "Making ColdSoakInitialHourFraction" AS MARKER_POINT;
-CREATE Table AggColdSoakInitialHourFraction (
-	sourceTypeID SMALLINT,
-	monthID SMALLINT,
-	hourDayID SMALLINT,
-	initialHourDayID SMALLINT,
-	coldSoakInitialHourFraction FLOAT);
-INSERT INTO AggColdSoakInitialHourFraction
-  SELECT sourceTypeID, monthID, hourDayID, initialHourDayID, sum(coldSoakInitialHourFraction*actFract)/nationalActivityFraction as coldSoakInitialHourFraction
-  FROM ColdSoakInitialHourFraction INNER JOIN SurrogateActivity USING (zoneID) JOIN SurrogateActivityTotal
-  GROUP BY sourceTypeID, monthID, hourDayID, initialHourDayID;
-CREATE UNIQUE INDEX index1 ON AggColdSoakInitialHourFraction (sourceTypeID, monthID, hourDayID, initialHourDayID);
-TRUNCATE ColdSoakInitialHourFraction;
-REPLACE INTO ColdSoakInitialHourFraction (sourceTypeID, monthID, zoneID, hourDayID, initialHourDayID, 
-	coldSoakInitialHourFraction, isUserInput)
-  SELECT sourceTypeID, monthID, 0 AS zoneID, hourDayID, initialHourDayID, coldSoakInitialHourFraction,
-  	'Y' as isUserInput
-  FROM AggColdSoakInitialHourFraction 
-  GROUP BY sourceTypeID, monthID, hourDayID, initialHourDayID;
-FLUSH TABLE ColdSoakInitialHourFraction;
+-- select "making coldsoakinitialhourfraction" as marker_point;
+create table aggcoldsoakinitialhourfraction (
+  sourcetypeid smallint,
+  monthid smallint,
+  hourdayid smallint,
+  initialhourdayid smallint,
+  coldsoakinitialhourfraction float);
+insert into aggcoldsoakinitialhourfraction
+  select sourcetypeid, monthid, hourdayid, initialhourdayid, sum(coldsoakinitialhourfraction*actfract)/nationalactivityfraction as coldsoakinitialhourfraction
+  from coldsoakinitialhourfraction inner join surrogateactivity using (zoneid) join surrogateactivitytotal
+  group by sourcetypeid, monthid, hourdayid, initialhourdayid;
+create unique index index1 on aggcoldsoakinitialhourfraction (sourcetypeid, monthid, hourdayid, initialhourdayid);
+truncate coldsoakinitialhourfraction;
+replace into coldsoakinitialhourfraction (sourcetypeid, monthid, zoneid, hourdayid, initialhourdayid, 
+  coldsoakinitialhourfraction, isuserinput)
+  select sourcetypeid, monthid, 0 as zoneid, hourdayid, initialhourdayid, coldsoakinitialhourfraction,
+    'Y' as isuserinput
+  from aggcoldsoakinitialhourfraction 
+  group by sourcetypeid, monthid, hourdayid, initialhourdayid;
+flush table coldsoakinitialhourfraction;
 
 -- 
--- AverageTankGasoline
+-- averagetankgasoline
 --
--- SELECT "Making AverageTankGasoline" AS MARKER_POINT;
-CREATE Table AggAverageTankGasoline (
-	fuelTypeID SMALLINT,
-	fuelYearID SMALLINT,
-	monthGroupID SMALLINT,
-	ETOHVolume FLOAT,
-	RVP FLOAT);
-INSERT INTO AggAverageTankGasoline
-  SELECT fuelTypeID, fuelYearID, monthGroupID, 
-  	sum(ETOHVolume*actFract)/nationalActivityFraction as ETOHVolume,
-  	sum(RVP*actFract)/nationalActivityFraction as RVP
-  FROM AverageTankGasoline INNER JOIN SurrogateActivity USING (zoneID) JOIN SurrogateActivityTotal
-  GROUP BY fuelTypeID, fuelYearID, monthGroupID;
-CREATE UNIQUE INDEX index1 ON AggAverageTankGasoline (fuelTypeID, fuelYearID, monthGroupID);
-TRUNCATE AverageTankGasoline;
-REPLACE INTO AverageTankGasoline (zoneID, fuelTypeID, fuelYearID, monthGroupID, ETOHVolume, RVP, isUserInput)
-  SELECT 0 AS zoneID, fuelTypeID, fuelYearID, monthGroupID, ETOHVolume, RVP, 'Y' as isUserInput
-  FROM AggAverageTankGasoline 
-  GROUP BY fuelTypeID, fuelYearID, monthGroupID;
-FLUSH TABLE AverageTankGasoline;
+-- select "making averagetankgasoline" as marker_point;
+create table aggaveragetankgasoline (
+  fueltypeid smallint,
+  fuelyearid smallint,
+  monthgroupid smallint,
+  etohvolume float,
+  rvp float);
+insert into aggaveragetankgasoline
+  select fueltypeid, fuelyearid, monthgroupid, 
+    sum(etohvolume*actfract)/nationalactivityfraction as etohvolume,
+    sum(rvp*actfract)/nationalactivityfraction as rvp
+  from averagetankgasoline inner join surrogateactivity using (zoneid) join surrogateactivitytotal
+  group by fueltypeid, fuelyearid, monthgroupid;
+create unique index index1 on aggaveragetankgasoline (fueltypeid, fuelyearid, monthgroupid);
+truncate averagetankgasoline;
+replace into averagetankgasoline (zoneid, fueltypeid, fuelyearid, monthgroupid, etohvolume, rvp, isuserinput)
+  select 0 as zoneid, fueltypeid, fuelyearid, monthgroupid, etohvolume, rvp, 'Y' as isuserinput
+  from aggaveragetankgasoline 
+  group by fueltypeid, fuelyearid, monthgroupid;
+flush table averagetankgasoline;
 
 -- 
--- nrBaseYearEquipPopulation Table
+-- nrbaseyearequippopulation table
 -- 
--- SELECT "Making nrBaseYearEquipPopulation" AS MARKER_POINT;
-DROP TABLE IF EXISTS OldnrBaseYearEquipPopulation;
-CREATE Table OldnrBaseYearEquipPopulation
-  SELECT * from nrBaseYearEquipPopulation;
-TRUNCATE nrBaseYearEquipPopulation;
-INSERT INTO nrBaseYearEquipPopulation (sourceTypeID, stateID, population, NRBaseYearID)
-	SELECT sourceTypeID, 0 as stateID, sum(population) as population, NRBaseYearID
-	FROM OldnrBaseYearEquipPopulation
-	GROUP BY sourceTypeID, NRBaseYearID;
-FLUSH TABLE nrBaseYearEquipPopulation;
+-- select "making nrbaseyearequippopulation" as marker_point;
+drop table if exists oldnrbaseyearequippopulation;
+create table oldnrbaseyearequippopulation
+  select * from nrbaseyearequippopulation;
+truncate nrbaseyearequippopulation;
+insert into nrbaseyearequippopulation (sourcetypeid, stateid, population, nrbaseyearid)
+  select sourcetypeid, 0 as stateid, sum(population) as population, nrbaseyearid
+  from oldnrbaseyearequippopulation
+  group by sourcetypeid, nrbaseyearid;
+flush table nrbaseyearequippopulation;
 
 -- 
--- nrGrowthPatternFinder Table
+-- nrgrowthpatternfinder table
 -- 
--- SELECT "Making nrGrowthPatternFinder" AS MARKER_POINT;
-DROP TABLE IF EXISTS OldnrGrowthPatternFinder;
-CREATE Table OldnrGrowthPatternFinder
-  SELECT * from nrGrowthPatternFinder;
-TRUNCATE nrGrowthPatternFinder;
-INSERT INTO nrGrowthPatternFinder (SCC, stateID, growthPatternID)
-	select SCC, 0 as stateID, min(growthPatternID) as growthPatternID
-	from OldnrGrowthPatternFinder
-	group by SCC;
-FLUSH TABLE nrGrowthPatternFinder;
+-- select "making nrgrowthpatternfinder" as marker_point;
+drop table if exists oldnrgrowthpatternfinder;
+create table oldnrgrowthpatternfinder
+  select * from nrgrowthpatternfinder;
+truncate nrgrowthpatternfinder;
+insert into nrgrowthpatternfinder (scc, stateid, growthpatternid)
+  select scc, 0 as stateid, min(growthpatternid) as growthpatternid
+  from oldnrgrowthpatternfinder
+  group by scc;
+flush table nrgrowthpatternfinder;
 
 -- 
--- nrMonthAllocation Table
+-- nrmonthallocation table
 -- 
--- SELECT "Making nrMonthAllocation" AS MARKER_POINT;
-TRUNCATE nrMonthAllocation;
-INSERT INTO nrMonthAllocation (SCC, stateID, monthID, monthFraction)
-	select SCC, stateID, monthID, monthFraction
-	from nrUSMonthAllocation
-	where stateID=0;
-FLUSH TABLE nrMonthAllocation;
+-- select "making nrmonthallocation" as marker_point;
+truncate nrmonthallocation;
+insert into nrmonthallocation (scc, stateid, monthid, monthfraction)
+  select scc, stateid, monthid, monthfraction
+  from nrusmonthallocation
+  where stateid=0;
+flush table nrmonthallocation;
 
 -- 
--- nrStateSurrogate Table
+-- nrstatesurrogate table
 -- 
--- SELECT "Making nrStateSurrogate" AS MARKER_POINT;
-DROP TABLE IF EXISTS OldnrStateSurrogate;
-CREATE Table OldnrStateSurrogate
-  SELECT * from nrStateSurrogate;
-TRUNCATE nrStateSurrogate;
-INSERT INTO nrStateSurrogate (surrogateID,stateID,countyID,surrogatequant,surrogateYearID)
-	select surrogateID, 0 as stateID, 0 as countyID, sum(surrogatequant) as surrogatequant,surrogateYearID
-	from OldnrStateSurrogate
-	where stateID > 0 and countyID > 0
-	and mod(countyID,1000) > 0
-	group by surrogateID, surrogateYearID;
-FLUSH TABLE nrStateSurrogate;
-
---
--- TotalIdleFraction
---
--- SELECT "Making TotalIdleFraction" AS MARKER_POINT;
-CREATE TABLE OldTotalIdleFraction
-  SELECT sourceTypeID, minModelYearID, maxModelYearID, monthID, dayID, idleRegionID, countyTypeID, totalIdleFraction
-    FROM TotalIdleFraction;
-TRUNCATE TotalIdleFraction;
-INSERT INTO TotalIdleFraction (sourceTypeID, minModelYearID, maxModelYearID, monthID, dayID, idleRegionID, countyTypeID, totalIdleFraction)
-  SELECT sourceTypeID,  minModelYearID, maxModelYearID, monthID, dayID, 1 as idleRegionID, countyTypeID, totalIdleFraction
-  FROM OldTotalIdleFraction
-  WHERE idleRegionID = 103;
-FLUSH TABLE TotalIdleFraction;
+-- select "making nrstatesurrogate" as marker_point;
+drop table if exists oldnrstatesurrogate;
+create table oldnrstatesurrogate
+  select * from nrstatesurrogate;
+truncate nrstatesurrogate;
+insert into nrstatesurrogate (surrogateid,stateid,countyid,surrogatequant,surrogateyearid)
+  select surrogateid, 0 as stateid, 0 as countyid, sum(surrogatequant) as surrogatequant,surrogateyearid
+  from oldnrstatesurrogate
+  where stateid > 0 and countyid > 0
+  and mod(countyid,1000) > 0
+  group by surrogateid, surrogateyearid;
+flush table nrstatesurrogate;
 
 --
--- Drop any New Tables Created 
+-- totalidlefraction
 --
--- DROP TABLE IF EXISTS SurrogateActivity;
-DROP TABLE IF EXISTS OldCounty;
-DROP TABLE IF EXISTS OldYear;
-DROP TABLE IF EXISTS OldLink;
-DROP TABLE IF EXISTS AggZoneMonthHour;   
-DROP TABLE IF EXISTS OldOpModeDistribution; 
-DROP TABLE IF EXISTS AggZoneRoadType;
-DROP TABLE IF EXISTS AggFuelSupply;
-DROP TABLE IF EXISTS OldIMCoverage;  
-DROP TABLE IF EXISTS AggSHO;
-DROP TABLE IF EXISTS AggSourceHours;
-DROP TABLE IF EXISTS AggStarts;
-DROP TABLE IF EXISTS AggExtendedIdleHours; 
-DROP TABLE IF EXISTS AggAverageTankTemperature;
-DROP TABLE IF EXISTS AggSoakActivityFraction;
-DROP TABLE IF EXISTS AggFuelUsageFraction;
+-- select "making totalidlefraction" as marker_point;
+create table oldtotalidlefraction
+  select sourcetypeid, minmodelyearid, maxmodelyearid, monthid, dayid, idleregionid, countytypeid, totalidlefraction
+    from totalidlefraction;
+truncate totalidlefraction;
+insert into totalidlefraction (sourcetypeid, minmodelyearid, maxmodelyearid, monthid, dayid, idleregionid, countytypeid, totalidlefraction)
+  select sourcetypeid,  minmodelyearid, maxmodelyearid, monthid, dayid, 1 as idleregionid, countytypeid, totalidlefraction
+  from oldtotalidlefraction
+  where idleregionid = 103;
+flush table totalidlefraction;
 
-drop table if exists SurrogateActivityTotal;
-drop table if exists SurrogateStateActivity;
-drop table if exists SurrogateCountyActivity;
-DROP TABLE IF EXISTS OldnrBaseYearEquipPopulation;
-DROP TABLE IF EXISTS OldnrGrowthPatternFinder;
-DROP TABLE IF EXISTS OldnrFuelSupply;
-DROP TABLE IF EXISTS OldnrStateSurrogate;
-DROP TABLE IF EXISTS OldTotalIdleFraction;
+--
+-- drop any new tables created 
+--
+-- drop table if exists surrogateactivity;
+drop table if exists oldcounty;
+drop table if exists oldyear;
+drop table if exists oldlink;
+drop table if exists aggzonemonthhour;   
+drop table if exists oldopmodedistribution; 
+drop table if exists aggzoneroadtype;
+drop table if exists aggfuelsupply;
+drop table if exists oldimcoverage;  
+drop table if exists aggsho;
+drop table if exists aggsourcehours;
+drop table if exists aggstarts;
+drop table if exists aggextendedidlehours; 
+drop table if exists aggaveragetanktemperature;
+drop table if exists aggsoakactivityfraction;
+drop table if exists aggfuelusagefraction;
+
+drop table if exists surrogateactivitytotal;
+drop table if exists surrogatestateactivity;
+drop table if exists surrogatecountyactivity;
+drop table if exists oldnrbaseyearequippopulation;
+drop table if exists oldnrgrowthpatternfinder;
+drop table if exists oldnrfuelsupply;
+drop table if exists oldnrstatesurrogate;
+drop table if exists oldtotalidlefraction;
 
 -- FLUSH TABLES;
 

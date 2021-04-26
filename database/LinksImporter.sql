@@ -1,110 +1,110 @@
--- Version 2012-02-18
--- Author Wesley Faler
+-- version 2012-02-18
+-- author wesley faler
 
-drop procedure if exists spCheckLinkImporter;
+drop procedure if exists spchecklinkimporter;
 
-BeginBlock
-create procedure spCheckLinkImporter()
+beginblock
+create procedure spchecklinkimporter()
 begin
-	-- Mode 0 is run after importing
-	-- Mode 1 is run to check overall success/failure
+	-- mode 0 is run after importing
+	-- mode 1 is run to check overall success/failure
 	declare mode int default ##mode##;
-	declare isOk int default 1;
-	declare howMany int default 0;
+	declare isok int default 1;
+	declare howmany int default 0;
 
-	-- Check for missing road types
-	insert into importTempMessages (message)
-	select concat('ERROR: Link ',linkID,' is missing its roadTypeID') as errorMessage
+	-- check for missing road types
+	insert into importtempmessages (message)
+	select concat('error: link ',linkid,' is missing its roadtypeid') as errormessage
 	from link
-	where (roadTypeID is null or roadTypeID <= 0)
-	order by linkID;
+	where (roadtypeid is null or roadtypeid <= 0)
+	order by linkid;
 
-	if(isOk=1) then
-		set howMany=0;
-		select count(*) into howMany from importTempMessages where message like 'ERROR: Link % is missing its roadTypeID';
-		set howMany=ifnull(howMany,0);
-		if(howMany > 0) then
-			set isOk=0;
+	if(isok=1) then
+		set howmany=0;
+		select count(*) into howmany from importtempmessages where message like 'error: link % is missing its roadtypeid';
+		set howmany=ifnull(howmany,0);
+		if(howmany > 0) then
+			set isok=0;
 		end if;
 	end if;
 
-	-- Check for negative average speeds
-	insert into importTempMessages (message)
-	select concat('ERROR: Link ',linkID,' average speed (',linkAvgSpeed,') cannot be negative') as errorMessage
+	-- check for negative average speeds
+	insert into importtempmessages (message)
+	select concat('error: link ',linkid,' average speed (',linkavgspeed,') cannot be negative') as errormessage
 	from link
-	where (linkAvgSpeed < 0)
-	order by linkID;
+	where (linkavgspeed < 0)
+	order by linkid;
 
-	if(isOk=1) then
-		set howMany=0;
-		select count(*) into howMany from importTempMessages where message like 'ERROR: Link % average speed (%) cannot be negative';
-		set howMany=ifnull(howMany,0);
-		if(howMany > 0) then
-			set isOk=0;
+	if(isok=1) then
+		set howmany=0;
+		select count(*) into howmany from importtempmessages where message like 'error: link % average speed (%) cannot be negative';
+		set howmany=ifnull(howmany,0);
+		if(howmany > 0) then
+			set isok=0;
 		end if;
 	end if;
 
-	-- Remind users that drive schedules will override any link average speed or grade
-	insert into importTempMessages (message)
-	select concat('INFO: Link ',linkID,' will obtain average speed and grade from its driving schedule') as errorMessage
+	-- remind users that drive schedules will override any link average speed or grade
+	insert into importtempmessages (message)
+	select concat('info: link ',linkid,' will obtain average speed and grade from its driving schedule') as errormessage
 	from link
-	where linkID in (select distinct linkID from driveScheduleSecondLink)
-	order by linkID;
+	where linkid in (select distinct linkid from driveschedulesecondlink)
+	order by linkid;
 
-	-- Note missing data
-	insert into importTempMessages (message)
-	select concat('ERROR: Link ',linkID,' is missing average speed, operating modes, and/or a drive schedule') as errorMessage
+	-- note missing data
+	insert into importtempmessages (message)
+	select concat('error: link ',linkid,' is missing average speed, operating modes, and/or a drive schedule') as errormessage
 	from link
-	where linkAvgSpeed is null
-	and linkID not in (select distinct linkID from opModeDistribution)
-	and linkID not in (select distinct linkID from driveScheduleSecondLink)
-	order by linkID;
+	where linkavgspeed is null
+	and linkid not in (select distinct linkid from opmodedistribution)
+	and linkid not in (select distinct linkid from driveschedulesecondlink)
+	order by linkid;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Link ',linkID,' is missing average speed but has operating mode data') as errorMessage
+	insert into importtempmessages (message)
+	select concat('error: link ',linkid,' is missing average speed but has operating mode data') as errormessage
 	from link
-	where linkAvgSpeed is null
-	and linkID in (select distinct linkID from opModeDistribution)
-	and linkID not in (select distinct linkID from driveScheduleSecondLink)
-	order by linkID;
+	where linkavgspeed is null
+	and linkid in (select distinct linkid from opmodedistribution)
+	and linkid not in (select distinct linkid from driveschedulesecondlink)
+	order by linkid;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Link ',linkID,' is missing average grade and cannot interpolate a drive schedule') as errorMessage
+	insert into importtempmessages (message)
+	select concat('error: link ',linkid,' is missing average grade and cannot interpolate a drive schedule') as errormessage
 	from link
-	where linkAvgSpeed is not null and linkAvgGrade is null
-	and linkID not in (select distinct linkID from opModeDistribution)
-	and linkID not in (select distinct linkID from driveScheduleSecondLink)
-	order by linkID;
+	where linkavgspeed is not null and linkavggrade is null
+	and linkid not in (select distinct linkid from opmodedistribution)
+	and linkid not in (select distinct linkid from driveschedulesecondlink)
+	order by linkid;
 
-	insert into importTempMessages (message)
-	select distinct concat('ERROR: Zone ',zoneID,' is missing Off-Network data') as errorMessage
+	insert into importtempmessages (message)
+	select distinct concat('error: zone ',zoneid,' is missing off-network data') as errormessage
 	from link
-	where roadTypeID = 1
-	and zoneID not in (select distinct zoneID from offNetworkLink)
-	order by zoneID;
+	where roadtypeid = 1
+	and zoneid not in (select distinct zoneid from offnetworklink)
+	order by zoneid;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Zone ',zoneID,' has more than 1 off-network link') as message
+	insert into importtempmessages (message)
+	select concat('error: zone ',zoneid,' has more than 1 off-network link') as message
 	from link
-	where roadTypeID = 1
-	group by zoneID
+	where roadtypeid = 1
+	group by zoneid
 	having count(*) > 1;
 
-	if(isOk=1) then
-		set howMany=0;
-		select count(*) into howMany from importTempMessages where message like 'ERROR: %';
-		set howMany=ifnull(howMany,0);
-		if(howMany > 0) then
-			set isOk=0;
+	if(isok=1) then
+		set howmany=0;
+		select count(*) into howmany from importtempmessages where message like 'error: %';
+		set howmany=ifnull(howmany,0);
+		if(howmany > 0) then
+			set isok=0;
 		end if;
 	end if;
 
-	-- Insert 'NOT_READY' or 'OK' to indicate iconic success
+	-- insert 'not_ready' or 'ok' to indicate iconic success
 	if(mode = 1) then
-		insert into importTempMessages (message) values (case when isOk=1 then 'OK' else 'NOT_READY' end);
+		insert into importtempmessages (message) values (case when isok=1 then 'OK' else 'NOT_READY' end);
 	end if;
 end
-EndBlock
+endblock
 
-call spCheckLinkImporter();
-drop procedure if exists spCheckLinkImporter;
+call spchecklinkimporter();
+drop procedure if exists spchecklinkimporter;

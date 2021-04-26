@@ -1,135 +1,135 @@
--- Create utility tables in the MOVESExecution database.
--- Author Harvey Michaels
--- Author Wesley Faler
--- Version 2017-03-22
+-- create utility tables in the movesexecution database.
+-- author harvey michaels
+-- author wesley faler
+-- version 2017-03-22
 
 -- --------------------------------------------------------------------
--- Fill the set of regions used by the runspec
+-- fill the set of regions used by the runspec
 -- --------------------------------------------------------------------
-insert into runSpecFuelRegion (fuelRegionID)
-select distinct regionID as fuelRegionID
-from regionCounty
-inner join runSpecCounty using (countyID)
-where regionCodeID=1;
+insert into runspecfuelregion (fuelregionid)
+select distinct regionid as fuelregionid
+from regioncounty
+inner join runspeccounty using (countyid)
+where regioncodeid=1;
 
 -- --------------------------------------------------------------------
--- Add indexes and extra columns needed for runtime but not in the default database.
+-- add indexes and extra columns needed for runtime but not in the default database.
 -- --------------------------------------------------------------------
-alter table OpModeDistribution add key (linkID, polProcessID, sourceTypeID);
+alter table opmodedistribution add key (linkid, polprocessid, sourcetypeid);
 
 -- --------------------------------------------------------------------
--- Filter any disabled mechanism and speciation profile data
+-- filter any disabled mechanism and speciation profile data
 -- --------------------------------------------------------------------
-delete from mechanismName
+delete from mechanismname
 where not exists (
 	select *
-	from runSpecPollutant
-	inner join pollutant using (pollutantID)
-	inner join pollutantDisplayGroup using (pollutantDisplayGroupID)
-	where pollutantDisplayGroupName='Mechanisms'
-	and pollutantID = 1000 + ((mechanismID-1) * 500)
+	from runspecpollutant
+	inner join pollutant using (pollutantid)
+	inner join pollutantdisplaygroup using (pollutantdisplaygroupid)
+	where pollutantdisplaygroupname='Mechanisms'
+	and pollutantid = 1000 + ((mechanismid-1) * 500)
 );
 
-delete from integratedSpeciesSet where useISSyn<>'Y';
+delete from integratedspeciesset where useissyn<>'Y';
 
-delete from integratedSpeciesSet
+delete from integratedspeciesset
 where not exists (
-	select * from mechanismName
-	where mechanismName.mechanismID = integratedSpeciesSet.mechanismID);
+	select * from mechanismname
+	where mechanismname.mechanismid = integratedspeciesset.mechanismid);
 
-delete from integratedSpeciesSetName
+delete from integratedspeciessetname
 where not exists (
-	select * from integratedSpeciesSet 
-	where integratedSpeciesSet.integratedSpeciesSetID = integratedSpeciesSetName.integratedSpeciesSetID);
+	select * from integratedspeciesset 
+	where integratedspeciesset.integratedspeciessetid = integratedspeciessetname.integratedspeciessetid);
 
--- Remove TOGSpeciationProfile entries that use inactive integratedSpeciesSet entries.
--- Keep any TOGSpeciationProfile entries that are not tied to any integratedSpeciesSet.
-delete from TOGSpeciationProfile
-where integratedSpeciesSetID <> 0
+-- remove togspeciationprofile entries that use inactive integratedspeciesset entries.
+-- keep any togspeciationprofile entries that are not tied to any integratedspeciesset.
+delete from togspeciationprofile
+where integratedspeciessetid <> 0
 and not exists (
-	select * from integratedSpeciesSet 
-	where integratedSpeciesSet.integratedSpeciesSetID = TOGSpeciationProfile.integratedSpeciesSetID);
+	select * from integratedspeciesset 
+	where integratedspeciesset.integratedspeciessetid = togspeciationprofile.integratedspeciessetid);
 
-delete from lumpedSpeciesName
+delete from lumpedspeciesname
 where not exists (
-	select * from TOGSpeciationProfile
-	where TOGSpeciationProfile.lumpedSpeciesName = lumpedSpeciesName.lumpedSpeciesName);
+	select * from togspeciationprofile
+	where togspeciationprofile.lumpedspeciesname = lumpedspeciesname.lumpedspeciesname);
 
-delete from togSpeciation
+delete from togspeciation
 where not exists (
-	select * from TOGSpeciationProfile
-	where TOGSpeciationProfile.togSpeciationProfileID = togSpeciation.togSpeciationProfileID);
+	select * from togspeciationprofile
+	where togspeciationprofile.togspeciationprofileid = togspeciation.togspeciationprofileid);
 
--- Expand togSpeciationProfile entries that use wildcard togSpeciationPofileID=0
-drop table if exists TOGTemp;
-create table TOGTemp
-select distinct mechanismID, TOGspeciationProfileID, pollutantID, lumpedSpeciesName
-from togSpeciationProfile;
+-- expand togspeciationprofile entries that use wildcard togspeciationpofileid=0
+drop table if exists togtemp;
+create table togtemp
+select distinct mechanismid, togspeciationprofileid, pollutantid, lumpedspeciesname
+from togspeciationprofile;
 
-alter table TOGTemp add unique key (mechanismID, TOGspeciationProfileID, pollutantID, lumpedSpeciesName);
+alter table togtemp add unique key (mechanismid, togspeciationprofileid, pollutantid, lumpedspeciesname);
 
-insert ignore into TOGSpeciationProfile (mechanismID, TOGspeciationProfileID, integratedSpeciesSetID, 
-	pollutantID, lumpedSpeciesName,
-	TOGSpeciationDivisor, TOGSpeciationMassFraction)
-select distinct tsp.mechanismID, ts.TOGspeciationProfileID, tsp.integratedSpeciesSetID, 
-	tsp.pollutantID, tsp.lumpedSpeciesName,
-	tsp.TOGSpeciationDivisor, tsp.TOGSpeciationMassFraction
-from togSpeciationProfile tsp, togSpeciation ts
-where tsp.togSpeciationProfileID='0'
+insert ignore into togspeciationprofile (mechanismid, togspeciationprofileid, integratedspeciessetid, 
+	pollutantid, lumpedspeciesname,
+	togspeciationdivisor, togspeciationmassfraction)
+select distinct tsp.mechanismid, ts.togspeciationprofileid, tsp.integratedspeciessetid, 
+	tsp.pollutantid, tsp.lumpedspeciesname,
+	tsp.togspeciationdivisor, tsp.togspeciationmassfraction
+from togspeciationprofile tsp, togspeciation ts
+where tsp.togspeciationprofileid='0'
 and not exists (
 	select *
-	from TOGTemp t
-	where t.mechanismID=tsp.mechanismID
-	and t.TOGspeciationProfileID=ts.TOGspeciationProfileID
-	and t.pollutantID=tsp.pollutantID
-	and t.lumpedSpeciesName=tsp.lumpedSpeciesName
+	from togtemp t
+	where t.mechanismid=tsp.mechanismid
+	and t.togspeciationprofileid=ts.togspeciationprofileid
+	and t.pollutantid=tsp.pollutantid
+	and t.lumpedspeciesname=tsp.lumpedspeciesname
 );
 
-drop table if exists TOGTemp;
+drop table if exists togtemp;
 
--- Delete any wildcard togSpeciationProfile entries after expansion
-delete from togSpeciationProfile where togSpeciationProfileID='0';
+-- delete any wildcard togspeciationprofile entries after expansion
+delete from togspeciationprofile where togspeciationprofileid='0';
 
--- Delete any togSpeciationProfile entries for integratedSpeciesSetID=0
--- that are represented by a non-zero integratedSpeciesSetID.
-drop table if exists TOGTemp;
-create table TOGTemp
-select distinct mechanismID, TOGspeciationProfileID, pollutantID, lumpedSpeciesName
-from togSpeciationProfile
-where integratedSpeciesSetID<>0;
+-- delete any togspeciationprofile entries for integratedspeciessetid=0
+-- that are represented by a non-zero integratedspeciessetid.
+drop table if exists togtemp;
+create table togtemp
+select distinct mechanismid, togspeciationprofileid, pollutantid, lumpedspeciesname
+from togspeciationprofile
+where integratedspeciessetid<>0;
 
-alter table TOGTemp add unique key (mechanismID, TOGspeciationProfileID, pollutantID, lumpedSpeciesName);
+alter table togtemp add unique key (mechanismid, togspeciationprofileid, pollutantid, lumpedspeciesname);
 
-delete from togSpeciationProfile
-where integratedSpeciesSetID=0
+delete from togspeciationprofile
+where integratedspeciessetid=0
 and exists (
 	select *
-	from TOGTemp t
-	where t.mechanismID=togSpeciationProfile.mechanismID
-	and t.TOGspeciationProfileID=togSpeciationProfile.TOGspeciationProfileID
-	and t.pollutantID=togSpeciationProfile.pollutantID
-	and t.lumpedSpeciesName=togSpeciationProfile.lumpedSpeciesName
+	from togtemp t
+	where t.mechanismid=togspeciationprofile.mechanismid
+	and t.togspeciationprofileid=togspeciationprofile.togspeciationprofileid
+	and t.pollutantid=togspeciationprofile.pollutantid
+	and t.lumpedspeciesname=togspeciationprofile.lumpedspeciesname
 );
 
-drop table if exists TOGTemp;
+drop table if exists togtemp;
 
--- Remove unused TOG profile names
-delete from TOGSpeciationProfileName
+-- remove unused tog profile names
+delete from togspeciationprofilename
 where not exists (
-	select * from TOGSpeciationProfile
-	where TOGSpeciationProfile.togSpeciationProfileID = TOGSpeciationProfileName.togSpeciationProfileID);
+	select * from togspeciationprofile
+	where togspeciationprofile.togspeciationprofileid = togspeciationprofilename.togspeciationprofileid);
 
--- Decode the togSpeciation.modelYearGroupID
-alter table togSpeciation add minModelYearID smallint not null default 0;
-alter table togSpeciation add maxModelYearID smallint not null default 0;
+-- decode the togspeciation.modelyeargroupid
+alter table togspeciation add minmodelyearid smallint not null default 0;
+alter table togspeciation add maxmodelyearid smallint not null default 0;
 
-update togSpeciation set minModelYearID = floor(modelYearGroupID/10000),
-	maxModelYearID = mod(modelYearGroupID,10000)
-where minModelYearID=0 or maxModelYearID=0;
+update togspeciation set minmodelyearid = floor(modelyeargroupid/10000),
+	maxmodelyearid = mod(modelyeargroupid,10000)
+where minmodelyearid=0 or maxmodelyearid=0;
 
 -- --------------------------------------------------------------------
--- Provide a place for THC E85/E10 fuel adjustments. These are special cases
--- to match E10. These ratios are made with E85 fuel properties except
--- using an E10 RVP.
+-- provide a place for thc e85/e10 fuel adjustments. these are special cases
+-- to match e10. these ratios are made with e85 fuel properties except
+-- using an e10 rvp.
 -- --------------------------------------------------------------------
-create table altCriteriaRatio like criteriaRatio;
+create table altcriteriaratio like criteriaratio;

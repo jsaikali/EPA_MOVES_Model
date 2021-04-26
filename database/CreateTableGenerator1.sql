@@ -1,9 +1,9 @@
-CREATE TABLE Generator1 (
-	StateID INTEGER UNSIGNED NOT NULL,
-	CountyID INTEGER UNSIGNED NOT NULL,
-	ZoneID INTEGER UNSIGNED NOT NULL,
-	LinkID INTEGER UNSIGNED NOT NULL,
-	Time DATETIME NOT NULL,
-	VType INTEGER UNSIGNED NOT NULL,
-	ActivityPerHour FLOAT
+create table generator1 (
+	stateid integer unsigned not null,
+	countyid integer unsigned not null,
+	zoneid integer unsigned not null,
+	linkid integer unsigned not null,
+	time datetime not null,
+	vtype integer unsigned not null,
+	activityperhour float
 );

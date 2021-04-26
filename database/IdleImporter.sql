@@ -1,44 +1,44 @@
--- Author Wesley Faler
--- Version 2017-09-30
+-- author wesley faler
+-- version 2017-09-30
 
-drop procedure if exists spCheckIdleImporter;
+drop procedure if exists spcheckidleimporter;
 
-BeginBlock
-create procedure spCheckIdleImporter()
+beginblock
+create procedure spcheckidleimporter()
 begin
-	-- Mode 0 is run after importing
-	-- Mode 1 is run to check overall success/failure
+	-- mode 0 is run after importing
+	-- mode 1 is run to check overall success/failure
 	declare mode int default ##mode##;
-	declare isOk int default 1;
-	declare howMany int default 0;
+	declare isok int default 1;
+	declare howmany int default 0;
 
-	-- Scale 0 is national
-	-- Scale 1 is single county
-	-- Scale 2 is project domain
+	-- scale 0 is national
+	-- scale 1 is single county
+	-- scale 2 is project domain
 	declare scale int default ##scale##;
 
-	-- Rate 0 is Inventory
-	-- Rate 1 is Rates
+	-- rate 0 is inventory
+	-- rate 1 is rates
 	declare rate int default ##rate##;
 
-	-- Complain if any model year ranges are inverted
-	insert into importTempMessages (message)
-	select distinct concat('ERROR: totalIdleFraction minModelYearID (',minModelYearID,') must be <= maxModelYearID (',maxModelYearID,')') as errorMessage
-	from totalIdleFraction
-	where minModelYearID > maxModelYearID;
+	-- complain if any model year ranges are inverted
+	insert into importtempmessages (message)
+	select distinct concat('error: totalidlefraction minmodelyearid (',minmodelyearid,') must be <= maxmodelyearid (',maxmodelyearid,')') as errormessage
+	from totalidlefraction
+	where minmodelyearid > maxmodelyearid;
 
-	insert into importTempMessages (message)
-	select distinct concat('ERROR: idleModelYearGrouping minModelYearID (',minModelYearID,') must be <= maxModelYearID (',maxModelYearID,')') as errorMessage
-	from idleModelYearGrouping
-	where minModelYearID > maxModelYearID;
+	insert into importtempmessages (message)
+	select distinct concat('error: idlemodelyeargrouping minmodelyearid (',minmodelyearid,') must be <= maxmodelyearid (',maxmodelyearid,')') as errormessage
+	from idlemodelyeargrouping
+	where minmodelyearid > maxmodelyearid;
 
-	-- Expand to full set of model years
-	drop table if exists tempYear;
-	create table if not exists tempYear (
+	-- expand to full set of model years
+	drop table if exists tempyear;
+	create table if not exists tempyear (
 		year int not null primary key
 	);
 	
-	insert into tempYear(year) values(1960),(1961),(1962),(1963),(1964),(1965),(1966),(1967)
+	insert into tempyear(year) values(1960),(1961),(1962),(1963),(1964),(1965),(1966),(1967)
 		,(1968),(1969),(1970),(1971),(1972),(1973),(1974),(1975),(1976),(1977)
 		,(1978),(1979),(1980),(1981),(1982),(1983),(1984),(1985),(1986),(1987)
 		,(1988),(1989),(1990),(1991),(1992),(1993),(1994),(1995),(1996),(1997)
@@ -51,89 +51,89 @@ begin
 		,(2058),(2059),(2060)
 	;
 
-	drop table if exists tempTotalIdleFraction;
-	create table if not exists tempTotalIdleFraction (
-		idleRegionID int not null,
-		countyTypeID int not null,
-		sourceTypeID smallint not null,
-		monthID smallint not null,
-		dayID smallint not null,
-		modelYearID smallint not null,
-		totalIdleFraction double not null,
-		key (idleRegionID, countyTypeID, sourceTypeID, monthID, dayID, modelYearID)
+	drop table if exists temptotalidlefraction;
+	create table if not exists temptotalidlefraction (
+		idleregionid int not null,
+		countytypeid int not null,
+		sourcetypeid smallint not null,
+		monthid smallint not null,
+		dayid smallint not null,
+		modelyearid smallint not null,
+		totalidlefraction double not null,
+		key (idleregionid, countytypeid, sourcetypeid, monthid, dayid, modelyearid)
 	);
 
-	insert into tempTotalIdleFraction (idleRegionID,countyTypeID,sourceTypeID,monthID,dayID,modelYearID,totalIdleFraction)
-	select idleRegionID,countyTypeID,sourceTypeID,monthID,dayID,year as modelYearID,totalIdleFraction
-	from totalIdleFraction, tempYear
-	where minModelYearID <= year
-	and maxModelYearID >= year;
+	insert into temptotalidlefraction (idleregionid,countytypeid,sourcetypeid,monthid,dayid,modelyearid,totalidlefraction)
+	select idleregionid,countytypeid,sourcetypeid,monthid,dayid,year as modelyearid,totalidlefraction
+	from totalidlefraction, tempyear
+	where minmodelyearid <= year
+	and maxmodelyearid >= year;
 
-	drop table if exists tempIdleModelYearGrouping;
-	create table if not exists tempIdleModelYearGrouping (
-		sourceTypeID smallint not null,
-		modelYearID smallint not null,
-		totalIdleFraction double not null,
-		key (sourceTypeID, modelYearID)
+	drop table if exists tempidlemodelyeargrouping;
+	create table if not exists tempidlemodelyeargrouping (
+		sourcetypeid smallint not null,
+		modelyearid smallint not null,
+		totalidlefraction double not null,
+		key (sourcetypeid, modelyearid)
 	);
 
-	insert into tempIdleModelYearGrouping (sourceTypeID,modelYearID,totalIdleFraction)
-	select sourceTypeID,year as modelYearID,totalIdleFraction
-	from idleModelYearGrouping, tempYear
-	where minModelYearID <= year
-	and maxModelYearID >= year;
+	insert into tempidlemodelyeargrouping (sourcetypeid,modelyearid,totalidlefraction)
+	select sourcetypeid,year as modelyearid,totalidlefraction
+	from idlemodelyeargrouping, tempyear
+	where minmodelyearid <= year
+	and maxmodelyearid >= year;
 
-	-- Complain about model years that appear more than once
-	insert into importTempMessages (message)
-	select distinct concat('ERROR: totalIdleFraction model year ',modelYearID,
-		' appears more than once (',count(*),') for idle region ',idleRegionID,
-		', county type ',countyTypeID,', source type ',sourceTypeID,
-		', month ',monthID,', day ',dayID) as errorMessage
-	from tempTotalIdleFraction
-	group by idleRegionID, countyTypeID, sourceTypeID, monthID, dayID, modelYearID
+	-- complain about model years that appear more than once
+	insert into importtempmessages (message)
+	select distinct concat('error: totalidlefraction model year ',modelyearid,
+		' appears more than once (',count(*),') for idle region ',idleregionid,
+		', county type ',countytypeid,', source type ',sourcetypeid,
+		', month ',monthid,', day ',dayid) as errormessage
+	from temptotalidlefraction
+	group by idleregionid, countytypeid, sourcetypeid, monthid, dayid, modelyearid
 	having count(*) > 1;
 
-	insert into importTempMessages (message)
-	select distinct concat('ERROR: idleModelYearGrouping model year ',modelYearID,
-		' appears more than once (',count(*),') for source type ',sourceTypeID) as errorMessage
-	from tempIdleModelYearGrouping
-	group by sourceTypeID, modelYearID
+	insert into importtempmessages (message)
+	select distinct concat('error: idlemodelyeargrouping model year ',modelyearid,
+		' appears more than once (',count(*),') for source type ',sourcetypeid) as errormessage
+	from tempidlemodelyeargrouping
+	group by sourcetypeid, modelyearid
 	having count(*) > 1;
 
-	-- Complain about a TIF of 1
-	insert into importTempMessages (message)
-	select distinct concat('ERROR: totalIdleFraction is >= 1 for source type ', sourceTypeID) as errorMessage
-	from totalIdleFraction tif
-	where tif.totalIdleFraction >= 1
-	group by sourceTypeID;
+	-- complain about a tif of 1
+	insert into importtempmessages (message)
+	select distinct concat('error: totalidlefraction is >= 1 for source type ', sourcetypeid) as errormessage
+	from totalidlefraction tif
+	where tif.totalidlefraction >= 1
+	group by sourcetypeid;
 	
-	insert into importTempMessages (message)
-	select distinct concat('ERROR: totalIdleFraction is >= 1 for source type ', sourceTypeID) as errorMessage
-	from idleModelYearGrouping
-	where totalIdleFraction >= 1
-	group by sourceTypeID;
+	insert into importtempmessages (message)
+	select distinct concat('error: totalidlefraction is >= 1 for source type ', sourcetypeid) as errormessage
+	from idlemodelyeargrouping
+	where totalidlefraction >= 1
+	group by sourcetypeid;
 
-	-- Cleanup
-	drop table if exists tempYear;
-	drop table if exists tempTotalIdleFraction;
-	drop table if exists tempIdleModelYearGrouping;
+	-- cleanup
+	drop table if exists tempyear;
+	drop table if exists temptotalidlefraction;
+	drop table if exists tempidlemodelyeargrouping;
 
-	-- Check final status
-	if(isOk=1) then
-		set howMany=0;
-		select count(*) into howMany from importTempMessages where message like 'ERROR: %';
-		set howMany=ifnull(howMany,0);
-		if(howMany > 0) then
-			set isOk=0;
+	-- check final status
+	if(isok=1) then
+		set howmany=0;
+		select count(*) into howmany from importtempmessages where message like 'error: %';
+		set howmany=ifnull(howmany,0);
+		if(howmany > 0) then
+			set isok=0;
 		end if;
 	end if;
 
-	-- Insert 'NOT_READY' or 'OK' to indicate iconic success
+	-- insert 'not_ready' or 'ok' to indicate iconic success
 	if(mode = 1) then
-		insert into importTempMessages (message) values (case when isOk=1 then 'OK' else 'NOT_READY' end);
+		insert into importtempmessages (message) values (case when isok=1 then 'OK' else 'NOT_READY' end);
 	end if;
 end
-EndBlock
+endblock
 
-call spCheckIdleImporter();
-drop procedure if exists spCheckIdleImporter;
+call spcheckidleimporter();
+drop procedure if exists spcheckidleimporter;

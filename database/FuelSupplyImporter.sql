@@ -1,473 +1,473 @@
--- FuelSupplyImporter.sql - script to check import errors for the
--- tables: AVFT, fuelFormulation, fuelSupply, and fuelUsageFraction.
--- Author Wesley Faler
--- Version 2016-10-04
+-- fuelsupplyimporter.sql - script to check import errors for the
+-- tables: avft, fuelformulation, fuelsupply, and fuelusagefraction.
+-- author wesley faler
+-- version 2016-10-04
 
-drop procedure if exists spCheckFuelSupplyImporter;
+drop procedure if exists spcheckfuelsupplyimporter;
 
-BeginBlock
-create procedure spCheckFuelSupplyImporter()
+beginblock
+create procedure spcheckfuelsupplyimporter()
 begin
-	-- Mode 0 is run after importing
-	-- Mode 1 is run to check overall success/failure, allowing data from the default database
-	-- Mode 2 is run to check overall success/failure, requiring no data from the default database
+	-- mode 0 is run after importing
+	-- mode 1 is run to check overall success/failure, allowing data from the default database
+	-- mode 2 is run to check overall success/failure, requiring no data from the default database
 	declare mode int default ##mode##;
-	declare isOk int default 1;
-	declare howMany int default 0;
-	declare defaultFuelCount int default 0;
-	declare avftFuelCount int default 0;
+	declare isok int default 1;
+	declare howmany int default 0;
+	declare defaultfuelcount int default 0;
+	declare avftfuelcount int default 0;
 
-	-- Scale 0 is national
-	-- Scale 1 is single county
-	-- Scale 2 is project domain
-	-- Scale 3 is Nonroad
+	-- scale 0 is national
+	-- scale 1 is single county
+	-- scale 2 is project domain
+	-- scale 3 is nonroad
 	declare scale int default ##scale##;
 
-	-- useFuelUsageFraction 0 when the fuelUsageFraction table is not used in the model
-	declare useFuelUsageFraction int default ##USE_FUELUSAGEFRACTION##;
+	-- usefuelusagefraction 0 when the fuelusagefraction table is not used in the model
+	declare usefuelusagefraction int default ##use_fuelusagefraction##;
 
 	if(mode = 0) then
-		-- Create any new fuel years and associate them to the required years
-		drop table if exists tempNewFuelYear;
+		-- create any new fuel years and associate them to the required years
+		drop table if exists tempnewfuelyear;
 
 		if(scale = 3) then
-			create table tempNewFuelYear
-			select distinct fuelYearID
-			from nrFuelSupply fs
-			left outer join ##defaultDatabase##.fuelSupplyYear fsy using (fuelYearID)
-			where fsy.fuelYearID is null;
+			create table tempnewfuelyear
+			select distinct fuelyearid
+			from nrfuelsupply fs
+			left outer join ##defaultdatabase##.fuelsupplyyear fsy using (fuelyearid)
+			where fsy.fuelyearid is null;
 		else
-			create table tempNewFuelYear
-			select distinct fuelYearID
-			from fuelSupply fs
-			left outer join ##defaultDatabase##.fuelSupplyYear fsy using (fuelYearID)
-			where fsy.fuelYearID is null;
+			create table tempnewfuelyear
+			select distinct fuelyearid
+			from fuelsupply fs
+			left outer join ##defaultdatabase##.fuelsupplyyear fsy using (fuelyearid)
+			where fsy.fuelyearid is null;
 		end if;
 		
-		drop table if exists fuelSupplyYear;
+		drop table if exists fuelsupplyyear;
 		
-		create table if not exists fuelSupplyYear (
-		  fuelYearID smallint(6) not null default '0',
-		  primary key (fuelYearID)
+		create table if not exists fuelsupplyyear (
+		  fuelyearid smallint(6) not null default '0',
+		  primary key (fuelyearid)
 		);
 		
-		insert ignore into fuelSupplyYear (fuelYearID)
-		select fuelYearID from tempNewFuelYear;
+		insert ignore into fuelsupplyyear (fuelyearid)
+		select fuelyearid from tempnewfuelyear;
 		
-		drop table if exists tempYear;
+		drop table if exists tempyear;
 		
-		create table if not exists tempYear (
-		  yearID smallint(6) not null default '0',
-		  isBaseYear char(1) default null,
-		  fuelYearID smallint(6) not null default '0',
-		  primary key  (yearID),
-		  key isBaseYear (isBaseYear)
+		create table if not exists tempyear (
+		  yearid smallint(6) not null default '0',
+		  isbaseyear char(1) default null,
+		  fuelyearid smallint(6) not null default '0',
+		  primary key  (yearid),
+		  key isbaseyear (isbaseyear)
 		);
 		
 		create table if not exists year (
-		  yearID smallint(6) not null default '0',
-		  isBaseYear char(1) default null,
-		  fuelYearID smallint(6) not null default '0',
-		  primary key  (yearID),
-		  key isBaseYear (isBaseYear)
+		  yearid smallint(6) not null default '0',
+		  isbaseyear char(1) default null,
+		  fuelyearid smallint(6) not null default '0',
+		  primary key  (yearid),
+		  key isbaseyear (isbaseyear)
 		);
 		
-		insert into tempYear (yearID, isBaseYear, fuelYearID)
-		select yearID, isBaseYear, nfy.fuelYearID
-		from tempNewFuelYear nfy
-		inner join ##defaultDatabase##.year y on (y.yearID=nfy.fuelYearID);
+		insert into tempyear (yearid, isbaseyear, fuelyearid)
+		select yearid, isbaseyear, nfy.fuelyearid
+		from tempnewfuelyear nfy
+		inner join ##defaultdatabase##.year y on (y.yearid=nfy.fuelyearid);
 		
--- 		insert ignore into year (yearID, isBaseYear, fuelYearID)
--- 		select yearID, isBaseYear, fuelYearID
--- 		from tempYear
+-- 		insert ignore into year (yearid, isbaseyear, fuelyearid)
+-- 		select yearid, isbaseyear, fuelyearid
+-- 		from tempyear
 		
-		update year, tempYear set year.fuelYearID=tempYear.fuelYearID
-		where year.yearID=tempYear.yearID;
+		update year, tempyear set year.fuelyearid=tempyear.fuelyearid
+		where year.yearid=tempyear.yearid;
 		
-		drop table if exists tempYear;
-		drop table if exists tempNewFuelYear;
+		drop table if exists tempyear;
+		drop table if exists tempnewfuelyear;
 	end if;
 	
-	-- Complain about any years outside of MOVES's range
+	-- complain about any years outside of moves's range
 	if(scale = 3) then
-		insert into importTempMessages (message)
-		select distinct concat('ERROR: Fuel Year ',fuelYearID,' is outside the range of 1990-2060 and cannot be used') as errorMessage
-		from nrFuelSupply
-		where fuelYearID < 1990 or fuelYearID > 2060
-		and marketShare > 0;
+		insert into importtempmessages (message)
+		select distinct concat('error: fuel year ',fuelyearid,' is outside the range of 1990-2060 and cannot be used') as errormessage
+		from nrfuelsupply
+		where fuelyearid < 1990 or fuelyearid > 2060
+		and marketshare > 0;
 	else
-		insert into importTempMessages (message)
-		select distinct concat('ERROR: Fuel Year ',fuelYearID,' is outside the range of 1990-2060 and cannot be used') as errorMessage
-		from fuelSupply
-		where fuelYearID < 1990 or fuelYearID > 2060
-		and marketShare > 0;
+		insert into importtempmessages (message)
+		select distinct concat('error: fuel year ',fuelyearid,' is outside the range of 1990-2060 and cannot be used') as errormessage
+		from fuelsupply
+		where fuelyearid < 1990 or fuelyearid > 2060
+		and marketshare > 0;
 	end if;
 	
 	if(mode = 0) then
 		if(scale = 3) then
-			-- Remove records with zero market shares
-			delete from nrFuelSupply where marketShare < 0.0001;
+			-- remove records with zero market shares
+			delete from nrfuelsupply where marketshare < 0.0001;
 		else
-			-- Remove records with zero market shares
-			delete from fuelSupply where marketShare < 0.0001;
+			-- remove records with zero market shares
+			delete from fuelsupply where marketshare < 0.0001;
 		end if;
 	end if;
 	
-	-- Complain about unknown fuel formulations
+	-- complain about unknown fuel formulations
 	if(scale = 3) then
-		insert into importTempMessages (message)
-		select distinct concat('ERROR: Fuel formulation ',fuelFormulationID,' is unknown') as message
-		from nrFuelSupply
-		where fuelFormulationID not in (
-			select fuelFormulationID
-			from fuelFormulation
+		insert into importtempmessages (message)
+		select distinct concat('error: fuel formulation ',fuelformulationid,' is unknown') as message
+		from nrfuelsupply
+		where fuelformulationid not in (
+			select fuelformulationid
+			from fuelformulation
 			union
-			select fuelFormulationID
-			from ##defaultDatabase##.fuelFormulation
+			select fuelformulationid
+			from ##defaultdatabase##.fuelformulation
 		)
-		and marketShare > 0;
+		and marketshare > 0;
 	else 
 		if(mode = 2 or scale in (1,2)) then
-			insert into importTempMessages (message)
-			select distinct concat('ERROR: Fuel formulation ',fuelFormulationID,' is unknown') as message
-			from fuelSupply
-			where fuelFormulationID not in (
-				select fuelFormulationID
-				from fuelFormulation
+			insert into importtempmessages (message)
+			select distinct concat('error: fuel formulation ',fuelformulationid,' is unknown') as message
+			from fuelsupply
+			where fuelformulationid not in (
+				select fuelformulationid
+				from fuelformulation
 			)
-			and marketShare > 0;
+			and marketshare > 0;
 		else
-			insert into importTempMessages (message)
-			select distinct concat('ERROR: Fuel formulation ',fuelFormulationID,' is unknown') as message
-			from fuelSupply
-			where fuelFormulationID not in (
-				select fuelFormulationID
-				from fuelFormulation
+			insert into importtempmessages (message)
+			select distinct concat('error: fuel formulation ',fuelformulationid,' is unknown') as message
+			from fuelsupply
+			where fuelformulationid not in (
+				select fuelformulationid
+				from fuelformulation
 				union
-				select fuelFormulationID
-				from ##defaultDatabase##.fuelFormulation
+				select fuelformulationid
+				from ##defaultdatabase##.fuelformulation
 			)
-			and marketShare > 0;
+			and marketshare > 0;
 		end if;
 	end if;
 
 	if (scale = 3) then
-		insert into importTempMessages (message)
-		select concat('Warning: Fuel formulation ',fuelFormulationID,' is gasoline with ethanol volume greater than 10%') as message
+		insert into importtempmessages (message)
+		select concat('warning: fuel formulation ',fuelformulationid,' is gasoline with ethanol volume greater than 10%') as message
 		from fuelformulation 
-		join nrfuelsupply using (fuelFormulationID)
-		where ETOHVolume > 10 and fuelSubtypeID in (10,11,12,13,14,15,18) and marketShare > 0;
+		join nrfuelsupply using (fuelformulationid)
+		where etohvolume > 10 and fuelsubtypeid in (10,11,12,13,14,15,18) and marketshare > 0;
 	else
-		insert into importTempMessages (message)
-		select concat('ERROR: Fuel formulation ',fuelFormulationID,' is gasoline with ethanol volume greater than 15%') as message
+		insert into importtempmessages (message)
+		select concat('error: fuel formulation ',fuelformulationid,' is gasoline with ethanol volume greater than 15%') as message
 		from fuelformulation 
-		join fuelsupply using (fuelFormulationID)
-		where ETOHVolume > 15 and fuelSubtypeID in (10,11,12,13,14,15,18) and marketShare > 0;
+		join fuelsupply using (fuelformulationid)
+		where etohvolume > 15 and fuelsubtypeid in (10,11,12,13,14,15,18) and marketshare > 0;
 	end if;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Fuel formulation ',fuelFormulationID,' has non-zero value for MTBE volume') as message
-	from fuelformulation where MTBEVolume <> 0;
+	insert into importtempmessages (message)
+	select concat('error: fuel formulation ',fuelformulationid,' has non-zero value for mtbe volume') as message
+	from fuelformulation where mtbevolume <> 0;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Fuel formulation ',fuelFormulationID,' has non-zero value for ETBE volume') as message
-	from fuelformulation where ETBEVolume <> 0;
+	insert into importtempmessages (message)
+	select concat('error: fuel formulation ',fuelformulationid,' has non-zero value for etbe volume') as message
+	from fuelformulation where etbevolume <> 0;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Fuel formulation ',fuelFormulationID,' has non-zero value for TAME volume') as message
-	from fuelformulation where TAMEVolume <> 0;
+	insert into importtempmessages (message)
+	select concat('error: fuel formulation ',fuelformulationid,' has non-zero value for tame volume') as message
+	from fuelformulation where tamevolume <> 0;
 
-	-- Correct fuelFormulation.fuelSubtypeID for gasoline and ethanol fuels
-	-- Note: RFG (sub type 11) and conventional gasoline (sub type 10) cannot be distinguished by ETOHVolume, so anything with
-	-- ----- a low ETOHVolume and not already assigned as RFG is assigned to conventional gasoline.
+	-- correct fuelformulation.fuelsubtypeid for gasoline and ethanol fuels
+	-- note: rfg (sub type 11) and conventional gasoline (sub type 10) cannot be distinguished by etohvolume, so anything with
+	-- ----- a low etohvolume and not already assigned as rfg is assigned to conventional gasoline.
 
-	insert into importTempMessages (message)
-	select distinct concat('Warning: Fuel formulation ',fuelFormulationID,' changed fuelSubtypeID from ',fuelSubtypeID, ' to 10 based on ETOHVolume') as message
-	from fuelFormulation where fuelSubtypeID <> 10 and ETOHVolume < 0.10  and fuelSubtypeID <> 11 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
+	insert into importtempmessages (message)
+	select distinct concat('warning: fuel formulation ',fuelformulationid,' changed fuelsubtypeid from ',fuelsubtypeid, ' to 10 based on etohvolume') as message
+	from fuelformulation where fuelsubtypeid <> 10 and etohvolume < 0.10  and fuelsubtypeid <> 11 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
 
-	insert into importTempMessages (message)
-	select distinct concat('Warning: Fuel formulation ',fuelFormulationID,' changed fuelSubtypeID from ',fuelSubtypeID, ' to 12 based on ETOHVolume') as message
-	from fuelFormulation where fuelSubtypeID <> 12 and ETOHVolume >= 9    and ETOHVolume < 12.5 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
+	insert into importtempmessages (message)
+	select distinct concat('warning: fuel formulation ',fuelformulationid,' changed fuelsubtypeid from ',fuelsubtypeid, ' to 12 based on etohvolume') as message
+	from fuelformulation where fuelsubtypeid <> 12 and etohvolume >= 9    and etohvolume < 12.5 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
 
-	insert into importTempMessages (message)
-	select distinct concat('Warning: Fuel formulation ',fuelFormulationID,' changed fuelSubtypeID from ',fuelSubtypeID, ' to 13 based on ETOHVolume') as message
-	from fuelFormulation where fuelSubtypeID <> 13 and ETOHVolume >= 6    and ETOHVolume < 9 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
+	insert into importtempmessages (message)
+	select distinct concat('warning: fuel formulation ',fuelformulationid,' changed fuelsubtypeid from ',fuelsubtypeid, ' to 13 based on etohvolume') as message
+	from fuelformulation where fuelsubtypeid <> 13 and etohvolume >= 6    and etohvolume < 9 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
 
-	insert into importTempMessages (message)
-	select distinct concat('Warning: Fuel formulation ',fuelFormulationID,' changed fuelSubtypeID from ',fuelSubtypeID, ' to 14 based on ETOHVolume') as message
-	from fuelFormulation where fuelSubtypeID <> 14 and ETOHVolume >= 0.10 and ETOHVolume < 6 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
+	insert into importtempmessages (message)
+	select distinct concat('warning: fuel formulation ',fuelformulationid,' changed fuelsubtypeid from ',fuelsubtypeid, ' to 14 based on etohvolume') as message
+	from fuelformulation where fuelsubtypeid <> 14 and etohvolume >= 0.10 and etohvolume < 6 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
 
-	insert into importTempMessages (message)
-	select distinct concat('Warning: Fuel formulation ',fuelFormulationID,' changed fuelSubtypeID from ',fuelSubtypeID, ' to 15 based on ETOHVolume') as message
-	from fuelFormulation where fuelSubtypeID <> 15 and ETOHVolume >= 12.5 and ETOHVolume < 17.5 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
+	insert into importtempmessages (message)
+	select distinct concat('warning: fuel formulation ',fuelformulationid,' changed fuelsubtypeid from ',fuelsubtypeid, ' to 15 based on etohvolume') as message
+	from fuelformulation where fuelsubtypeid <> 15 and etohvolume >= 12.5 and etohvolume < 17.5 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
 
-	insert into importTempMessages (message)
-	select distinct concat('Warning: Fuel formulation ',fuelFormulationID,' changed fuelSubtypeID from ',fuelSubtypeID, ' to 51 based on ETOHVolume') as message
-	from fuelFormulation where fuelSubtypeID <> 51 and ETOHVolume >= 70.5 and ETOHVolume <= 100 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
+	insert into importtempmessages (message)
+	select distinct concat('warning: fuel formulation ',fuelformulationid,' changed fuelsubtypeid from ',fuelsubtypeid, ' to 51 based on etohvolume') as message
+	from fuelformulation where fuelsubtypeid <> 51 and etohvolume >= 70.5 and etohvolume <= 100 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
 
-	insert into importTempMessages (message)
-	select distinct concat('Warning: Fuel formulation ',fuelFormulationID,' changed fuelSubtypeID from ',fuelSubtypeID, ' to 52 based on ETOHVolume') as message
-	from fuelFormulation where fuelSubtypeID <> 52 and ETOHVolume >= 50.5   and ETOHVolume < 70.5 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
+	insert into importtempmessages (message)
+	select distinct concat('warning: fuel formulation ',fuelformulationid,' changed fuelsubtypeid from ',fuelsubtypeid, ' to 52 based on etohvolume') as message
+	from fuelformulation where fuelsubtypeid <> 52 and etohvolume >= 50.5   and etohvolume < 70.5 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
 
-	insert into importTempMessages (message)
-	select distinct concat('Warning: Fuel formulation ',fuelFormulationID,' changed fuelSubtypeID from ',fuelSubtypeID, ' to 18 based on ETOHVolume') as message
-	from fuelFormulation where fuelSubtypeID <> 18 and ETOHVolume >= 17.5 and ETOHVolume < 50.5 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
+	insert into importtempmessages (message)
+	select distinct concat('warning: fuel formulation ',fuelformulationid,' changed fuelsubtypeid from ',fuelsubtypeid, ' to 18 based on etohvolume') as message
+	from fuelformulation where fuelsubtypeid <> 18 and etohvolume >= 17.5 and etohvolume < 50.5 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
 
-	update fuelFormulation set fuelSubtypeID = 10 where fuelSubtypeID <> 10 and ETOHVolume < 0.10  and fuelSubtypeID <> 11 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
-	update fuelFormulation set fuelSubtypeID = 12 where fuelSubtypeID <> 12 and ETOHVolume >= 9    and ETOHVolume < 12.5 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
-	update fuelFormulation set fuelSubtypeID = 13 where fuelSubtypeID <> 13 and ETOHVolume >= 6    and ETOHVolume < 9 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
-	update fuelFormulation set fuelSubtypeID = 14 where fuelSubtypeID <> 14 and ETOHVolume >= 0.10 and ETOHVolume < 6 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
-	update fuelFormulation set fuelSubtypeID = 15 where fuelSubtypeID <> 15 and ETOHVolume >= 12.5 and ETOHVolume < 17.5 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
-	update fuelFormulation set fuelSubtypeID = 51 where fuelSubtypeID <> 51 and ETOHVolume >= 70.5 and ETOHVolume <= 100 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
-	update fuelFormulation set fuelSubtypeID = 52 where fuelSubtypeID <> 52 and ETOHVolume >= 50.5 and ETOHVolume < 70.5 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
-	update fuelFormulation set fuelSubtypeID = 18 where fuelSubtypeID <> 18 and ETOHVolume >= 17.5 and ETOHVolume < 50.5 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18);
+	update fuelformulation set fuelsubtypeid = 10 where fuelsubtypeid <> 10 and etohvolume < 0.10  and fuelsubtypeid <> 11 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
+	update fuelformulation set fuelsubtypeid = 12 where fuelsubtypeid <> 12 and etohvolume >= 9    and etohvolume < 12.5 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
+	update fuelformulation set fuelsubtypeid = 13 where fuelsubtypeid <> 13 and etohvolume >= 6    and etohvolume < 9 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
+	update fuelformulation set fuelsubtypeid = 14 where fuelsubtypeid <> 14 and etohvolume >= 0.10 and etohvolume < 6 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
+	update fuelformulation set fuelsubtypeid = 15 where fuelsubtypeid <> 15 and etohvolume >= 12.5 and etohvolume < 17.5 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
+	update fuelformulation set fuelsubtypeid = 51 where fuelsubtypeid <> 51 and etohvolume >= 70.5 and etohvolume <= 100 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
+	update fuelformulation set fuelsubtypeid = 52 where fuelsubtypeid <> 52 and etohvolume >= 50.5 and etohvolume < 70.5 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
+	update fuelformulation set fuelsubtypeid = 18 where fuelsubtypeid <> 18 and etohvolume >= 17.5 and etohvolume < 50.5 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18);
 
-	-- Complain about fuel types that were imported but won't be used
+	-- complain about fuel types that were imported but won't be used
 	if(scale = 3) then
-		insert into importTempMessages (message)
-		select distinct concat('Warning: Fuel type ',fuelTypeID,' is imported but will not be used') as message
-		from nrFuelSupply fs
-		inner join ##defaultDatabase##.fuelFormulation ff using (fuelFormulationID)
-		inner join ##defaultDatabase##.fuelSubType fst using (fuelSubTypeID)
-		where fuelTypeID not in (##fuelTypeIDs##)
+		insert into importtempmessages (message)
+		select distinct concat('warning: fuel type ',fueltypeid,' is imported but will not be used') as message
+		from nrfuelsupply fs
+		inner join ##defaultdatabase##.fuelformulation ff using (fuelformulationid)
+		inner join ##defaultdatabase##.fuelsubtype fst using (fuelsubtypeid)
+		where fueltypeid not in (##fueltypeids##)
 		union
-		select distinct concat('Warning: Fuel type ',fuelTypeID,' is imported but will not be used') as message
-		from nrFuelSupply fs
-		inner join fuelFormulation ff using (fuelFormulationID)
-		inner join ##defaultDatabase##.fuelSubType fst using (fuelSubTypeID)
-		where fuelTypeID not in (##fuelTypeIDs##);
+		select distinct concat('warning: fuel type ',fueltypeid,' is imported but will not be used') as message
+		from nrfuelsupply fs
+		inner join fuelformulation ff using (fuelformulationid)
+		inner join ##defaultdatabase##.fuelsubtype fst using (fuelsubtypeid)
+		where fueltypeid not in (##fueltypeids##);
 	else
 		if(mode = 2 or scale in (1,2)) then
-			insert into importTempMessages (message)
-			select distinct concat('Warning: Fuel type ',fuelTypeID,' is imported but will not be used') as message
-			from fuelSupply fs
-			inner join fuelFormulation ff using (fuelFormulationID)
-			inner join ##defaultDatabase##.fuelSubType fst using (fuelSubTypeID)
-			where fuelTypeID not in (##fuelTypeIDs##);
+			insert into importtempmessages (message)
+			select distinct concat('warning: fuel type ',fueltypeid,' is imported but will not be used') as message
+			from fuelsupply fs
+			inner join fuelformulation ff using (fuelformulationid)
+			inner join ##defaultdatabase##.fuelsubtype fst using (fuelsubtypeid)
+			where fueltypeid not in (##fueltypeids##);
 		else
-			insert into importTempMessages (message)
-			select distinct concat('Warning: Fuel type ',fuelTypeID,' is imported but will not be used') as message
-			from fuelSupply fs
-			inner join ##defaultDatabase##.fuelFormulation ff using (fuelFormulationID)
-			inner join ##defaultDatabase##.fuelSubType fst using (fuelSubTypeID)
-			where fuelTypeID not in (##fuelTypeIDs##)
+			insert into importtempmessages (message)
+			select distinct concat('warning: fuel type ',fueltypeid,' is imported but will not be used') as message
+			from fuelsupply fs
+			inner join ##defaultdatabase##.fuelformulation ff using (fuelformulationid)
+			inner join ##defaultdatabase##.fuelsubtype fst using (fuelsubtypeid)
+			where fueltypeid not in (##fueltypeids##)
 			union
-			select distinct concat('Warning: Fuel type ',fuelTypeID,' is imported but will not be used') as message
-			from fuelSupply fs
-			inner join fuelFormulation ff using (fuelFormulationID)
-			inner join ##defaultDatabase##.fuelSubType fst using (fuelSubTypeID)
-			where fuelTypeID not in (##fuelTypeIDs##);
+			select distinct concat('warning: fuel type ',fueltypeid,' is imported but will not be used') as message
+			from fuelsupply fs
+			inner join fuelformulation ff using (fuelformulationid)
+			inner join ##defaultdatabase##.fuelsubtype fst using (fuelsubtypeid)
+			where fueltypeid not in (##fueltypeids##);
 		end if;
 	end if;
 
-	-- Complain about fixable gaps in T50/T90/E200/E300 data (only for gasoline & gasohol)
-	insert into importTempMessages (message)
-	select distinct concat('Warning: Fuel formulation ',fuelFormulationID,' is using calculated E200') as message
-	from fuelFormulation where T50 is not null and T50 > 0 and (e200 is null or e200 <= 0)
-	and fuelSubtypeID in (10, 11, 12, 13, 14, 15);
+	-- complain about fixable gaps in t50/t90/e200/e300 data (only for gasoline & gasohol)
+	insert into importtempmessages (message)
+	select distinct concat('warning: fuel formulation ',fuelformulationid,' is using calculated e200') as message
+	from fuelformulation where t50 is not null and t50 > 0 and (e200 is null or e200 <= 0)
+	and fuelsubtypeid in (10, 11, 12, 13, 14, 15);
 
-	insert into importTempMessages (message)
-	select distinct concat('Warning: Fuel formulation ',fuelFormulationID,' is using calculated E300') as message
-	from fuelFormulation where T90 is not null and T90 > 0 and (e300 is null or e300 <= 0)
-	and fuelSubtypeID in (10, 11, 12, 13, 14, 15);
+	insert into importtempmessages (message)
+	select distinct concat('warning: fuel formulation ',fuelformulationid,' is using calculated e300') as message
+	from fuelformulation where t90 is not null and t90 > 0 and (e300 is null or e300 <= 0)
+	and fuelsubtypeid in (10, 11, 12, 13, 14, 15);
 
-	insert into importTempMessages (message)
-	select distinct concat('Warning: Fuel formulation ',fuelFormulationID,' is using calculated T50') as message
-	from fuelFormulation where e200 is not null and e200 > 0 and (T50 is null or T50 <= 0)
-	and fuelSubtypeID in (10, 11, 12, 13, 14, 15);
+	insert into importtempmessages (message)
+	select distinct concat('warning: fuel formulation ',fuelformulationid,' is using calculated t50') as message
+	from fuelformulation where e200 is not null and e200 > 0 and (t50 is null or t50 <= 0)
+	and fuelsubtypeid in (10, 11, 12, 13, 14, 15);
 
-	insert into importTempMessages (message)
-	select distinct concat('Warning: Fuel formulation ',fuelFormulationID,' is using calculated T90') as message
-	from fuelFormulation where e300 is not null and e300 > 0 and (T90 is null or T90 <= 0)
-	and fuelSubtypeID in (10, 11, 12, 13, 14, 15);
+	insert into importtempmessages (message)
+	select distinct concat('warning: fuel formulation ',fuelformulationid,' is using calculated t90') as message
+	from fuelformulation where e300 is not null and e300 > 0 and (t90 is null or t90 <= 0)
+	and fuelsubtypeid in (10, 11, 12, 13, 14, 15);
 
-	-- Complain about unfixable gaps in T50/T90/E200/E300 data (only for gasoline & gasohol)
-	insert into importTempMessages (message)
-	select distinct concat('ERROR: Fuel formulation ',fuelFormulationID,' is missing both E200 and T50') as message
-	from fuelFormulation where (T50 is null or T50 <= 0) and (e200 is null or e200 <= 0)
-	and fuelSubtypeID in (10, 11, 12, 13, 14, 15);
+	-- complain about unfixable gaps in t50/t90/e200/e300 data (only for gasoline & gasohol)
+	insert into importtempmessages (message)
+	select distinct concat('error: fuel formulation ',fuelformulationid,' is missing both e200 and t50') as message
+	from fuelformulation where (t50 is null or t50 <= 0) and (e200 is null or e200 <= 0)
+	and fuelsubtypeid in (10, 11, 12, 13, 14, 15);
 
-	insert into importTempMessages (message)
-	select distinct concat('ERROR: Fuel formulation ',fuelFormulationID,' is missing both E300 and T90') as message
-	from fuelFormulation where (T90 is null or T90 <= 0) and (e300 is null or e300 <= 0)
-	and fuelSubtypeID in (10, 11, 12, 13, 14, 15);
+	insert into importtempmessages (message)
+	select distinct concat('error: fuel formulation ',fuelformulationid,' is missing both e300 and t90') as message
+	from fuelformulation where (t90 is null or t90 <= 0) and (e300 is null or e300 <= 0)
+	and fuelsubtypeid in (10, 11, 12, 13, 14, 15);
 
-	-- Fill gaps in T50/T90/E200/E300 data (only for gasoline & gasohol)
-	update fuelFormulation set T50 = 2.0408163 * (147.91 - e200) where e200 is not null and e200 > 0 and (T50 is null or T50 <= 0) and fuelSubTypeID in (10, 11, 12, 13, 14, 15);
-	update fuelFormulation set T90 = 4.5454545 * (155.47 - e300) where e300 is not null and e300 > 0 and (T90 is null or T90 <= 0) and fuelSubTypeID in (10, 11, 12, 13, 14, 15);
-	update fuelFormulation set e200 = 147.91-(T50/2.0408163) where T50 is not null and T50 > 0 and (e200 is null or e200 <= 0) and fuelSubTypeID in (10, 11, 12, 13, 14, 15);
-	update fuelFormulation set e300 = 155.47-(T90/4.5454545) where T90 is not null and T90 > 0 and (e300 is null or e300 <= 0) and fuelSubTypeID in (10, 11, 12, 13, 14, 15);
+	-- fill gaps in t50/t90/e200/e300 data (only for gasoline & gasohol)
+	update fuelformulation set t50 = 2.0408163 * (147.91 - e200) where e200 is not null and e200 > 0 and (t50 is null or t50 <= 0) and fuelsubtypeid in (10, 11, 12, 13, 14, 15);
+	update fuelformulation set t90 = 4.5454545 * (155.47 - e300) where e300 is not null and e300 > 0 and (t90 is null or t90 <= 0) and fuelsubtypeid in (10, 11, 12, 13, 14, 15);
+	update fuelformulation set e200 = 147.91-(t50/2.0408163) where t50 is not null and t50 > 0 and (e200 is null or e200 <= 0) and fuelsubtypeid in (10, 11, 12, 13, 14, 15);
+	update fuelformulation set e300 = 155.47-(t90/4.5454545) where t90 is not null and t90 > 0 and (e300 is null or e300 <= 0) and fuelsubtypeid in (10, 11, 12, 13, 14, 15);
 	
-	-- Ensure market shares sum to 1.0 for all fuel types, year, month, counties.
-	drop table if exists tempFuelSupplyNotUnity;
+	-- ensure market shares sum to 1.0 for all fuel types, year, month, counties.
+	drop table if exists tempfuelsupplynotunity;
 	
-	drop table if exists tempFuelSupplyUnion;
+	drop table if exists tempfuelsupplyunion;
 
 	if(scale = 3) then
-		create table tempFuelSupplyUnion
-		select fuelTypeID, fuelRegionID, fuelYearID, monthGroupID, marketShare, fuelFormulationID
-		from nrFuelSupply fs
-		inner join ##defaultDatabase##.fuelFormulation ff using (fuelFormulationID)
-		inner join ##defaultDatabase##.fuelSubType fst using (fuelSubTypeID)
+		create table tempfuelsupplyunion
+		select fueltypeid, fuelregionid, fuelyearid, monthgroupid, marketshare, fuelformulationid
+		from nrfuelsupply fs
+		inner join ##defaultdatabase##.fuelformulation ff using (fuelformulationid)
+		inner join ##defaultdatabase##.fuelsubtype fst using (fuelsubtypeid)
 		union
-		select fuelTypeID, fuelRegionID, fuelYearID, monthGroupID, marketShare, fuelFormulationID
-		from nrFuelSupply fs
-		inner join fuelFormulation ff using (fuelFormulationID)
-		inner join ##defaultDatabase##.fuelSubType fst using (fuelSubTypeID);
+		select fueltypeid, fuelregionid, fuelyearid, monthgroupid, marketshare, fuelformulationid
+		from nrfuelsupply fs
+		inner join fuelformulation ff using (fuelformulationid)
+		inner join ##defaultdatabase##.fuelsubtype fst using (fuelsubtypeid);
 	else
 		if(mode = 2 or scale in (1,2)) then
-			create table tempFuelSupplyUnion
-			select fuelTypeID, fuelRegionID, fuelYearID, monthGroupID, marketShare, fuelFormulationID
-			from fuelSupply fs
-			inner join fuelFormulation ff using (fuelFormulationID)
-			inner join ##defaultDatabase##.fuelSubType fst using (fuelSubTypeID);
+			create table tempfuelsupplyunion
+			select fueltypeid, fuelregionid, fuelyearid, monthgroupid, marketshare, fuelformulationid
+			from fuelsupply fs
+			inner join fuelformulation ff using (fuelformulationid)
+			inner join ##defaultdatabase##.fuelsubtype fst using (fuelsubtypeid);
 		else
-			create table tempFuelSupplyUnion
-			select fuelTypeID, fuelRegionID, fuelYearID, monthGroupID, marketShare, fuelFormulationID
-			from fuelSupply fs
-			inner join ##defaultDatabase##.fuelFormulation ff using (fuelFormulationID)
-			inner join ##defaultDatabase##.fuelSubType fst using (fuelSubTypeID)
+			create table tempfuelsupplyunion
+			select fueltypeid, fuelregionid, fuelyearid, monthgroupid, marketshare, fuelformulationid
+			from fuelsupply fs
+			inner join ##defaultdatabase##.fuelformulation ff using (fuelformulationid)
+			inner join ##defaultdatabase##.fuelsubtype fst using (fuelsubtypeid)
 			union
-			select fuelTypeID, fuelRegionID, fuelYearID, monthGroupID, marketShare, fuelFormulationID
-			from fuelSupply fs
-			inner join fuelFormulation ff using (fuelFormulationID)
-			inner join ##defaultDatabase##.fuelSubType fst using (fuelSubTypeID);
+			select fueltypeid, fuelregionid, fuelyearid, monthgroupid, marketshare, fuelformulationid
+			from fuelsupply fs
+			inner join fuelformulation ff using (fuelformulationid)
+			inner join ##defaultdatabase##.fuelsubtype fst using (fuelsubtypeid);
 		end if;
 	end if;
 
-	create table tempFuelSupplyNotUnity
-	select fuelTypeID, fuelRegionID, fuelYearID, monthGroupID, sum(marketShare) as sumMarketShare
-	from tempFuelSupplyUnion fs
-	group by fuelTypeID, fuelRegionID, fuelYearID, monthGroupID
-	having round(sum(marketShare),4) <> 1.0000;
+	create table tempfuelsupplynotunity
+	select fueltypeid, fuelregionid, fuelyearid, monthgroupid, sum(marketshare) as summarketshare
+	from tempfuelsupplyunion fs
+	group by fueltypeid, fuelregionid, fuelyearid, monthgroupid
+	having round(sum(marketshare),4) <> 1.0000;
 
-	drop table if exists tempFuelSupplyUnion;
+	drop table if exists tempfuelsupplyunion;
 
-	insert into importTempMessages (message)
-	select concat('ERROR: Region ',fuelRegionID,', year ',fuelYearID,', month ',monthGroupID,', fuel type ',fuelTypeID,' market share is not 1.0 but instead ',round(sumMarketShare,4))
-	from tempFuelSupplyNotUnity;
+	insert into importtempmessages (message)
+	select concat('error: region ',fuelregionid,', year ',fuelyearid,', month ',monthgroupid,', fuel type ',fueltypeid,' market share is not 1.0 but instead ',round(summarketshare,4))
+	from tempfuelsupplynotunity;
 	
-	drop table if exists tempFuelSupplyNotUnity;
+	drop table if exists tempfuelsupplynotunity;
 
-	if(scale < 3 and useFuelUsageFraction > 0) then
+	if(scale < 3 and usefuelusagefraction > 0) then
 		-- -----------------------------------------------------------------------------------------------------
-		-- Check fuelUsageFraction table
+		-- check fuelusagefraction table
 		-- -----------------------------------------------------------------------------------------------------
 	
-		-- Complain about any years outside of MOVES's range
-		insert into importTempMessages (message)
-		select distinct concat('ERROR: Fuel Year ',fuelYearID,' is outside the range of 1990-2060 and cannot be used') as errorMessage
-		from fuelUsageFraction
-		where fuelYearID < 1990 or fuelYearID > 2060
-		and usageFraction > 0;
+		-- complain about any years outside of moves's range
+		insert into importtempmessages (message)
+		select distinct concat('error: fuel year ',fuelyearid,' is outside the range of 1990-2060 and cannot be used') as errormessage
+		from fuelusagefraction
+		where fuelyearid < 1990 or fuelyearid > 2060
+		and usagefraction > 0;
 		
 		-- if(mode = 0) then
-		-- 	-- Remove records with zero usage
-		-- 	delete from fuelUsageFraction where usageFraction < 0.0001;
+		-- 	-- remove records with zero usage
+		-- 	delete from fuelusagefraction where usagefraction < 0.0001;
 		-- end if;
 		
-		-- Ensure usage fractions sum to 1.0 for all counties, fuel years, model year groups, and sourcebin fuel types.
-		drop table if exists tempFuelUsageFractionNotUnity;
+		-- ensure usage fractions sum to 1.0 for all counties, fuel years, model year groups, and sourcebin fuel types.
+		drop table if exists tempfuelusagefractionnotunity;
 		
-		drop table if exists tempFuelUsageFractionNotUnity;
+		drop table if exists tempfuelusagefractionnotunity;
 	
-		create table tempFuelUsageFractionNotUnity
-		select countyID, fuelYearID, modelYearGroupID, sourceBinFuelTypeID, sum(usageFraction) as sumUsageFraction
-		from fuelUsageFraction
-		group by countyID, fuelYearID, modelYearGroupID, sourceBinFuelTypeID
-		having round(sum(usageFraction),4) <> 1.0000;
+		create table tempfuelusagefractionnotunity
+		select countyid, fuelyearid, modelyeargroupid, sourcebinfueltypeid, sum(usagefraction) as sumusagefraction
+		from fuelusagefraction
+		group by countyid, fuelyearid, modelyeargroupid, sourcebinfueltypeid
+		having round(sum(usagefraction),4) <> 1.0000;
 	
-		insert into importTempMessages (message)
-		select concat('ERROR: County ',countyID,', year ',fuelYearID,', model year group ',modelYearGroupID,', source fuel type ',sourceBinFuelTypeID,' usage fraction is not 1.0 but instead ',round(sumUsageFraction,4))
-		from tempFuelUsageFractionNotUnity;
+		insert into importtempmessages (message)
+		select concat('error: county ',countyid,', year ',fuelyearid,', model year group ',modelyeargroupid,', source fuel type ',sourcebinfueltypeid,' usage fraction is not 1.0 but instead ',round(sumusagefraction,4))
+		from tempfuelusagefractionnotunity;
 		
-		drop table if exists tempFuelUsageFractionNotUnity;
+		drop table if exists tempfuelusagefractionnotunity;
 	end if;
 
-	-- Check AVFT
+	-- check avft
 	if(scale < 3) then
-		set howMany=0;
-		select count(*) into howMany from avft;
-		set howMany=ifnull(howMany,0);
-		if(howMany > 0) then
-			insert into importTempMessages (message)
-			select concat('ERROR: source type ',sourceTypeID,', model year ',modelYearID,', fuel engine fraction is more than 1.0, being ',round(sum(fuelEngFraction),4))
+		set howmany=0;
+		select count(*) into howmany from avft;
+		set howmany=ifnull(howmany,0);
+		if(howmany > 0) then
+			insert into importtempmessages (message)
+			select concat('error: source type ',sourcetypeid,', model year ',modelyearid,', fuel engine fraction is more than 1.0, being ',round(sum(fuelengfraction),4))
 			from avft 
-			group by sourceTypeID, modelYearID
-			having round(sum(fuelEngFraction),4) > 1.0000;
+			group by sourcetypeid, modelyearid
+			having round(sum(fuelengfraction),4) > 1.0000;
 		
-			insert into importTempMessages (message)
-			select concat('ERROR: source type ',sourceTypeID,', model year ',modelYearID,', fuel ',fuelTypeID,', engine ',engTechID,', fuel engine fraction is less than 0.0, being ',round(fuelEngFraction,4))
+			insert into importtempmessages (message)
+			select concat('error: source type ',sourcetypeid,', model year ',modelyearid,', fuel ',fueltypeid,', engine ',engtechid,', fuel engine fraction is less than 0.0, being ',round(fuelengfraction,4))
 			from avft
-			where round(fuelEngFraction,4) < 0.0000;
+			where round(fuelengfraction,4) < 0.0000;
 		
-			insert into importTempMessages (message)
-			select concat('Warning: source type ',sourceTypeID,', model year ',modelYearID,', fuel engine fraction is not 1.0 but instead ',round(sum(fuelEngFraction),4))
+			insert into importtempmessages (message)
+			select concat('warning: source type ',sourcetypeid,', model year ',modelyearid,', fuel engine fraction is not 1.0 but instead ',round(sum(fuelengfraction),4))
 			from avft 
-			group by sourceTypeID, modelYearID
-			having round(sum(fuelEngFraction),4) < 1.0000 and round(sum(fuelEngFraction),4) > 0.0000;
+			group by sourcetypeid, modelyearid
+			having round(sum(fuelengfraction),4) < 1.0000 and round(sum(fuelengfraction),4) > 0.0000;
 	
-			insert into importTempMessages (message)
-			select distinct concat('ERROR: Imported AVFT is missing source type ',sourceTypeID, ', model year ',modelYearID,', fuel ',fuelTypeID) as message
+			insert into importtempmessages (message)
+			select distinct concat('error: imported avft is missing source type ',sourcetypeid, ', model year ',modelyearid,', fuel ',fueltypeid) as message
 			from (
-				select distinct sourceTypeID, modelYearID, fuelTypeID
-				from ##defaultDatabase##.sampleVehiclePopulation
-				where sourceTypeID in (##sourceTypeIDs##)
+				select distinct sourcetypeid, modelyearid, fueltypeid
+				from ##defaultdatabase##.samplevehiclepopulation
+				where sourcetypeid in (##sourcetypeids##)
 			) t1
-			left outer join avft using (sourceTypeID, modelYearID, fuelTypeID)
-			where avft.sourceTypeID is null 
-				and avft.modelYearID is null 
-				and avft.fuelTypeID is null
-				and t1.sourceTypeID in (##sourceTypeIDs##)
-			and t1.modelYearID in (
-				select distinct modelYearID
-				from ##defaultDatabase##.modelYear,
-				##defaultDatabase##.year
-				where yearID in (##yearIDs##)
-				and modelYearID >= yearID - 30
-				and modelYearID <= yearID
+			left outer join avft using (sourcetypeid, modelyearid, fueltypeid)
+			where avft.sourcetypeid is null 
+				and avft.modelyearid is null 
+				and avft.fueltypeid is null
+				and t1.sourcetypeid in (##sourcetypeids##)
+			and t1.modelyearid in (
+				select distinct modelyearid
+				from ##defaultdatabase##.modelyear,
+				##defaultdatabase##.year
+				where yearid in (##yearids##)
+				and modelyearid >= yearid - 30
+				and modelyearid <= yearid
 			)
-			order by t1.sourceTypeID, t1.modelYearID, t1.fuelTypeID;
+			order by t1.sourcetypeid, t1.modelyearid, t1.fueltypeid;
 			
-			insert into importTempMessages (message)
-			select distinct concat('Warning: No emission rates exist for AVFT source type ',sourceTypeID, ', model year ',modelYearID,', fuel ',fuelTypeID) as message
+			insert into importtempmessages (message)
+			select distinct concat('warning: no emission rates exist for avft source type ',sourcetypeid, ', model year ',modelyearid,', fuel ',fueltypeid) as message
 			from avft
 			left outer join (
-				select distinct sourceTypeID, modelYearID, fuelTypeID
-				from ##defaultDatabase##.sampleVehiclePopulation
-				where sourceTypeID in (##sourceTypeIDs##)
-			) t1 using (sourceTypeID, modelYearID, fuelTypeID)
-			where t1.sourceTypeID is null 
-				and t1.modelYearID is null 
-				and t1.fuelTypeID is null
-				and avft.sourceTypeID in (##sourceTypeIDs##)
-			and avft.modelYearID in (
-				select distinct modelYearID
-				from ##defaultDatabase##.modelYear,
-				##defaultDatabase##.year
-				where yearID in (##yearIDs##)
-				and modelYearID >= yearID - 30
-				and modelYearID <= yearID
+				select distinct sourcetypeid, modelyearid, fueltypeid
+				from ##defaultdatabase##.samplevehiclepopulation
+				where sourcetypeid in (##sourcetypeids##)
+			) t1 using (sourcetypeid, modelyearid, fueltypeid)
+			where t1.sourcetypeid is null 
+				and t1.modelyearid is null 
+				and t1.fueltypeid is null
+				and avft.sourcetypeid in (##sourcetypeids##)
+			and avft.modelyearid in (
+				select distinct modelyearid
+				from ##defaultdatabase##.modelyear,
+				##defaultdatabase##.year
+				where yearid in (##yearids##)
+				and modelyearid >= yearid - 30
+				and modelyearid <= yearid
 			)
-			order by avft.sourceTypeID, avft.modelYearID, avft.fuelTypeID;
+			order by avft.sourcetypeid, avft.modelyearid, avft.fueltypeid;
 		end if;
 	end if;
 
-	if(isOk=1) then
-		set howMany=0;
-		select count(*) into howMany from importTempMessages where message like 'ERROR: %';
-		set howMany=ifnull(howMany,0);
-		if(howMany > 0) then
-			set isOk=0;
+	if(isok=1) then
+		set howmany=0;
+		select count(*) into howmany from importtempmessages where message like 'error: %';
+		set howmany=ifnull(howmany,0);
+		if(howmany > 0) then
+			set isok=0;
 		end if;
 	end if;
 
-	-- Insert 'NOT_READY' or 'OK' to indicate iconic success
+	-- insert 'not_ready' or 'ok' to indicate iconic success
 	if(mode = 1) then
-		insert into importTempMessages (message) values (case when isOk=1 then 'OK' else 'NOT_READY' end);
+		insert into importtempmessages (message) values (case when isok=1 then 'OK' else 'NOT_READY' end);
 	end if;
 end
-EndBlock
+endblock
 
-call spCheckFuelSupplyImporter();
-drop procedure if exists spCheckFuelSupplyImporter;
+call spcheckfuelsupplyimporter();
+drop procedure if exists spcheckfuelsupplyimporter;

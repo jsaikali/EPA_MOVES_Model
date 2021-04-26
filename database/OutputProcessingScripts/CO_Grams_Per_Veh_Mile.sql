@@ -6,22 +6,22 @@
 -- for guidance on filling out the MOVES RunSpec and importing the appropriate inputs
 --
 
-FLUSH TABLES;
-SELECT CURRENT_TIME;
+flush tables;
+select current_time;
 
-Drop   table if exists CO_Grams_Per_Veh_Mile;
-Create table CO_Grams_Per_Veh_Mile
-Select   movesRunId,
-         yearId,
-         monthId,
-         hourId,
-         linkId,
+drop   table if exists co_grams_per_veh_mile;
+create table co_grams_per_veh_mile
+select   movesrunid,
+         yearid,
+         monthid,
+         hourid,
+         linkid,
          'Total CO' as pollutant,
-         sum(rateperdistance) as GramsPerVehMile
-From     rateperdistance
-where    pollutantId in (2)
-Group by movesRunId,
-         yearId,
-         monthId,
-         hourId,
-         linkId;
+         sum(rateperdistance) as gramspervehmile
+from     rateperdistance
+where    pollutantid in (2)
+group by movesrunid,
+         yearid,
+         monthid,
+         hourid,
+         linkid;

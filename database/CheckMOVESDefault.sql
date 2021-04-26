@@ -1,15 +1,15 @@
 /*
-Checks for the MOVESDefault schema.
+checks for the movesdefault schema.
 */
-SELECT
-	stateID,
-	stateName
-FROM State
-LIMIT 1;
+select
+	stateid,
+	statename
+from state
+limit 1;
 
-SELECT
-	countyID,
-	countyName,
-	stateID
-FROM County
-LIMIT 1;
+select
+	countyid,
+	countyname,
+	stateid
+from county
+limit 1;

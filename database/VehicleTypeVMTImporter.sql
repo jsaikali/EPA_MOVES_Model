@@ -1,138 +1,138 @@
--- Author Wesley Faler
--- Version 2016-10-04
+-- author wesley faler
+-- version 2016-10-04
 
--- Mark any years in hpmsVTypeYear as base years in the Year table
+-- mark any years in hpmsvtypeyear as base years in the year table
 
-drop table if exists tempNewYear;
+drop table if exists tempnewyear;
 
-create table if not exists tempNewYear (
-  yearID smallint(6) not null default '0',
-  primary key  (yearID)
+create table if not exists tempnewyear (
+  yearid smallint(6) not null default '0',
+  primary key  (yearid)
 );
 
-insert into tempNewYear (yearID)
-select distinct yearID
-from hpmsVTypeYear;
+insert into tempnewyear (yearid)
+select distinct yearid
+from hpmsvtypeyear;
 
-drop table if exists tempYear;
+drop table if exists tempyear;
 
-create table if not exists tempYear (
-  yearID smallint(6) not null default '0',
-  isBaseYear char(1) default null,
-  fuelYearID smallint(6) not null default '0',
-  primary key  (yearID),
-  key isBaseYear (isBaseYear)
+create table if not exists tempyear (
+  yearid smallint(6) not null default '0',
+  isbaseyear char(1) default null,
+  fuelyearid smallint(6) not null default '0',
+  primary key  (yearid),
+  key isbaseyear (isbaseyear)
 );
 
 create table if not exists year (
-  yearID smallint(6) not null default '0',
-  isBaseYear char(1) default null,
-  fuelYearID smallint(6) not null default '0',
-  primary key  (yearID),
-  key isBaseYear (isBaseYear)
+  yearid smallint(6) not null default '0',
+  isbaseyear char(1) default null,
+  fuelyearid smallint(6) not null default '0',
+  primary key  (yearid),
+  key isbaseyear (isbaseyear)
 );
 
-insert into tempYear (yearID, isBaseYear, fuelYearID)
-select y.yearID, 'Y' as isBaseYear, y.fuelYearID
-from tempNewYear ny
-inner join ##defaultDatabase##.year y on (y.yearID=ny.yearID);
+insert into tempyear (yearid, isbaseyear, fuelyearid)
+select y.yearid, 'Y' as isbaseyear, y.fuelyearid
+from tempnewyear ny
+inner join ##defaultdatabase##.year y on (y.yearid=ny.yearid);
 
--- insert ignore into year (yearID, isBaseYear, fuelYearID)
--- select yearID, isBaseYear, fuelYearID
--- from tempYear
+-- insert ignore into year (yearid, isbaseyear, fuelyearid)
+-- select yearid, isbaseyear, fuelyearid
+-- from tempyear
 
-update year, tempNewYear set year.isBaseYear='Y'
-where year.yearID=tempNewYear.yearID;
+update year, tempnewyear set year.isbaseyear='Y'
+where year.yearid=tempnewyear.yearid;
 
-drop table if exists tempYear;
-drop table if exists tempNewYear;
+drop table if exists tempyear;
+drop table if exists tempnewyear;
 
--- Set VMTGrowthFactor to 0 instead of NULL
-update HPMSVTypeYear set VMTGrowthFactor=0 where VMTGrowthFactor is null;
+-- set vmtgrowthfactor to 0 instead of null
+update hpmsvtypeyear set vmtgrowthfactor=0 where vmtgrowthfactor is null;
 
--- Complain about any years outside of MOVES's range
-insert into importTempMessages (message)
-select distinct concat('ERROR: Year ',yearID,' in HPMSVTypeYear is outside the range of 1990-2060 and cannot be used') as errorMessage
-from hpmsVTypeYear
-where yearID < 1990 or yearID > 2060;
+-- complain about any years outside of moves's range
+insert into importtempmessages (message)
+select distinct concat('error: year ',yearid,' in hpmsvtypeyear is outside the range of 1990-2060 and cannot be used') as errormessage
+from hpmsvtypeyear
+where yearid < 1990 or yearid > 2060;
 
-insert into importTempMessages (message)
-select distinct concat('ERROR: Year ',yearID,' in HPMSVtypeDay is outside the range of 1990-2060 and cannot be used') as errorMessage
-from HPMSVtypeDay
-where yearID < 1990 or yearID > 2060;
+insert into importtempmessages (message)
+select distinct concat('error: year ',yearid,' in hpmsvtypeday is outside the range of 1990-2060 and cannot be used') as errormessage
+from hpmsvtypeday
+where yearid < 1990 or yearid > 2060;
 
-insert into importTempMessages (message)
-select distinct concat('ERROR: Year ',yearID,' in SourceTypeYearVMT is outside the range of 1990-2060 and cannot be used') as errorMessage
-from SourceTypeYearVMT
-where yearID < 1990 or yearID > 2060;
+insert into importtempmessages (message)
+select distinct concat('error: year ',yearid,' in sourcetypeyearvmt is outside the range of 1990-2060 and cannot be used') as errormessage
+from sourcetypeyearvmt
+where yearid < 1990 or yearid > 2060;
 
-insert into importTempMessages (message)
-select distinct concat('ERROR: Year ',yearID,' in SourceTypeDayVMT is outside the range of 1990-2060 and cannot be used') as errorMessage
-from SourceTypeDayVMT
-where yearID < 1990 or yearID > 2060;
+insert into importtempmessages (message)
+select distinct concat('error: year ',yearid,' in sourcetypedayvmt is outside the range of 1990-2060 and cannot be used') as errormessage
+from sourcetypedayvmt
+where yearid < 1990 or yearid > 2060;
 
--- MonthVMTFraction
--- Fill with 0's for entries that were not imported
-insert ignore into monthVMTFraction (sourceTypeID, monthID, monthVMTFraction)
-select sourceTypeID, monthID, 0.0
-from ##defaultDatabase##.sourceUseType, ##defaultDatabase##.monthOfAnyYear
-where (select count(*) from monthVMTFraction where monthVMTFraction > 0) > 0;
+-- monthvmtfraction
+-- fill with 0's for entries that were not imported
+insert ignore into monthvmtfraction (sourcetypeid, monthid, monthvmtfraction)
+select sourcetypeid, monthid, 0.0
+from ##defaultdatabase##.sourceusetype, ##defaultdatabase##.monthofanyyear
+where (select count(*) from monthvmtfraction where monthvmtfraction > 0) > 0;
 
--- Check sum to 1
-insert into importTempMessages (message)
-select distinct concat('ERROR: Source type ',sourceTypeID,' monthVMTFraction is greater than 1.0') as errorMessage
-from monthVMTFraction
-group by sourceTypeID
-having round(sum(monthVMTFraction),4)>1.0000;
+-- check sum to 1
+insert into importtempmessages (message)
+select distinct concat('error: source type ',sourcetypeid,' monthvmtfraction is greater than 1.0') as errormessage
+from monthvmtfraction
+group by sourcetypeid
+having round(sum(monthvmtfraction),4)>1.0000;
 
--- For non-zero fractions supplied, make sure they sum to 1
-insert into importTempMessages (message)
-select distinct concat('Warning: Source type ',sourceTypeID,' monthVMTFraction is less than 1.0') as errorMessage
-from monthVMTFraction
-group by sourceTypeID
-having round(sum(monthVMTFraction),4)<1.0000 and sum(monthVMTFraction)>0.0000;
-
-
--- DayVMTFraction
--- Fill with 0's for entries that were not imported
-insert ignore into dayVMTFraction (sourceTypeID, monthID, roadTypeID, dayID, dayVMTFraction)
-select sourceTypeID, monthID, roadTypeID, dayID, 0.0
-from ##defaultDatabase##.sourceUseType, ##defaultDatabase##.monthOfAnyYear,
-	##defaultDatabase##.roadType, ##defaultDatabase##.dayOfAnyWeek
-where (select count(*) from dayVMTFraction where dayVMTFraction > 0) > 0;
-
--- Check sum to 1
-insert into importTempMessages (message)
-select distinct concat('ERROR: Source type ',sourceTypeID,', month ',monthID,', road type ',roadTypeID,' dayVMTFraction is greater than 1.0') as errorMessage
-from dayVMTFraction
-group by sourceTypeID, monthID, roadTypeID
-having round(sum(dayVMTFraction),4)>1.0000;
-
--- For non-zero fractions supplied, make sure they sum to 1
-insert into importTempMessages (message)
-select distinct concat('Warning: Source type ',sourceTypeID,', month ',monthID,', road type ',roadTypeID,' dayVMTFraction is less than 1.0') as errorMessage
-from dayVMTFraction
-group by sourceTypeID, monthID, roadTypeID
-having round(sum(dayVMTFraction),4)<1.0000 and sum(dayVMTFraction)>0.0000;
+-- for non-zero fractions supplied, make sure they sum to 1
+insert into importtempmessages (message)
+select distinct concat('warning: source type ',sourcetypeid,' monthvmtfraction is less than 1.0') as errormessage
+from monthvmtfraction
+group by sourcetypeid
+having round(sum(monthvmtfraction),4)<1.0000 and sum(monthvmtfraction)>0.0000;
 
 
--- HourVMTFraction
--- Fill with 0's for entries that were not imported
-insert ignore into hourVMTFraction (sourceTypeID, roadTypeID, dayID, hourID, hourVMTFraction)
-select sourceTypeID, roadTypeID, dayID, hourID, 0.0
-from ##defaultDatabase##.sourceUseType, ##defaultDatabase##.roadType, ##defaultDatabase##.hourDay
-where (select count(*) from hourVMTFraction where hourVMTFraction > 0) > 0;
+-- dayvmtfraction
+-- fill with 0's for entries that were not imported
+insert ignore into dayvmtfraction (sourcetypeid, monthid, roadtypeid, dayid, dayvmtfraction)
+select sourcetypeid, monthid, roadtypeid, dayid, 0.0
+from ##defaultdatabase##.sourceusetype, ##defaultdatabase##.monthofanyyear,
+  ##defaultdatabase##.roadtype, ##defaultdatabase##.dayofanyweek
+where (select count(*) from dayvmtfraction where dayvmtfraction > 0) > 0;
 
--- Check sum to 1
-insert into importTempMessages (message)
-select distinct concat('ERROR: Source type ',sourceTypeID,', day ',dayID,', road type ',roadTypeID,' hourVMTFraction is greater than 1.0') as errorMessage
-from hourVMTFraction
-group by sourceTypeID, dayID, roadTypeID
-having round(sum(hourVMTFraction),4)>1.0000;
+-- check sum to 1
+insert into importtempmessages (message)
+select distinct concat('error: source type ',sourcetypeid,', month ',monthid,', road type ',roadtypeid,' dayvmtfraction is greater than 1.0') as errormessage
+from dayvmtfraction
+group by sourcetypeid, monthid, roadtypeid
+having round(sum(dayvmtfraction),4)>1.0000;
 
--- For non-zero fractions supplied, make sure they sum to 1
-insert into importTempMessages (message)
-select distinct concat('Warning: Source type ',sourceTypeID,', day ',dayID,', road type ',roadTypeID,' hourVMTFraction is less than 1.0') as errorMessage
-from hourVMTFraction
-group by sourceTypeID, dayID, roadTypeID
-having round(sum(hourVMTFraction),4)<1.0000 and sum(hourVMTFraction)>0.0000;
+-- for non-zero fractions supplied, make sure they sum to 1
+insert into importtempmessages (message)
+select distinct concat('warning: source type ',sourcetypeid,', month ',monthid,', road type ',roadtypeid,' dayvmtfraction is less than 1.0') as errormessage
+from dayvmtfraction
+group by sourcetypeid, monthid, roadtypeid
+having round(sum(dayvmtfraction),4)<1.0000 and sum(dayvmtfraction)>0.0000;
+
+
+-- hourvmtfraction
+-- fill with 0's for entries that were not imported
+insert ignore into hourvmtfraction (sourcetypeid, roadtypeid, dayid, hourid, hourvmtfraction)
+select sourcetypeid, roadtypeid, dayid, hourid, 0.0
+from ##defaultdatabase##.sourceusetype, ##defaultdatabase##.roadtype, ##defaultdatabase##.hourday
+where (select count(*) from hourvmtfraction where hourvmtfraction > 0) > 0;
+
+-- check sum to 1
+insert into importtempmessages (message)
+select distinct concat('error: source type ',sourcetypeid,', day ',dayid,', road type ',roadtypeid,' hourvmtfraction is greater than 1.0') as errormessage
+from hourvmtfraction
+group by sourcetypeid, dayid, roadtypeid
+having round(sum(hourvmtfraction),4)>1.0000;
+
+-- for non-zero fractions supplied, make sure they sum to 1
+insert into importtempmessages (message)
+select distinct concat('warning: source type ',sourcetypeid,', day ',dayid,', road type ',roadtypeid,' hourvmtfraction is less than 1.0') as errormessage
+from hourvmtfraction
+group by sourcetypeid, dayid, roadtypeid
+having round(sum(hourvmtfraction),4)<1.0000 and sum(hourvmtfraction)>0.0000;
