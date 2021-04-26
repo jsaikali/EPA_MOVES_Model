@@ -81,10 +81,10 @@ public abstract class EmissionCalculator implements MasterLoopable, Comparable {
 			manifest.copyFrom(MOVESEngine.theInstance.masterFragment);
 			manifest.context = context.toBundleManifestContext();
 			manifest.contextForHumans = context.toBundleManifestContextForHumans();
-			manifest.tablesToRetrieve.add("MOVESWorkerOutput");
-			manifest.tablesToRetrieve.add("MOVESWorkerActivityOutput");
+			manifest.tablesToRetrieve.add("movesworkeroutput");
+			manifest.tablesToRetrieve.add("movesworkeractivityoutput");
 			if(CompilationFlags.DO_RATES_FIRST) {
-				manifest.tablesToRetrieve.add("BaseRateOutput");
+				manifest.tablesToRetrieve.add("baserateoutput");
 			}
 			manifest.bundleNumber = MOVESEngine.theInstance.bundler.getNextQueueIDCore();
 
