@@ -73,10 +73,27 @@ public abstract class EmissionCalculator implements MasterLoopable, Comparable {
 				return;
 			}
 
+			temporaryFolderPath.setReadable(true, false);
+			temporaryFolderPath.setExecutable(true, false);
+			temporaryFolderPath.setWritable(true, false);
+
 			// Open the classname.txt and worker.sql PrintWriters
 			File classNameFilePath = new File(temporaryFolderPath, "classname.txt");
 			File workerSQLFilePath = new File(temporaryFolderPath, "worker.sql");
 			File flagsFilePath = new File(temporaryFolderPath, "flags.txt");
+
+			classNameFilePath.setReadable(true, false);
+			classNameFilePath.setExecutable(true, false);
+			classNameFilePath.setWritable(true, false);
+
+			workerSQLFilePath.setReadable(true, false);
+			workerSQLFilePath.setExecutable(true, false);
+			workerSQLFilePath.setWritable(true, false);
+
+			flagsFilePath.setReadable(true, false);
+			flagsFilePath.setExecutable(true, false);
+			flagsFilePath.setWritable(true, false);
+
 			manifest = new BundleManifest();
 			manifest.copyFrom(MOVESEngine.theInstance.masterFragment);
 			manifest.context = context.toBundleManifestContext();

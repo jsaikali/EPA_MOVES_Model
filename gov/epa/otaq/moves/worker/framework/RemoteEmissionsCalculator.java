@@ -450,6 +450,12 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 				"WorkerTemp");
 		File tempWorkFilePath = DistributedWorkFileName.alterFilePathState(
 				progressPath, DistributedWorkFileState.TEMP);
+		tempWorkFilePath.setReadable(true, false);
+		tempWorkFilePath.setExecutable(true, false);
+		tempWorkFilePath.setWritable(true, false);
+		workingFolderPath.setReadable(true, false);
+		workingFolderPath.setExecutable(true, false);
+		workingFolderPath.setWritable(true, false);
 
 		try {
 			if(!openDatabase(false)) {
@@ -486,6 +492,10 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 				if(progressPath.exists()) {
 					File doneWorkFilePath = DistributedWorkFileName.alterFilePathState(
 							progressPath, DistributedWorkFileState.DONE);
+
+					doneWorkFilePath.setReadable(true, false);
+					doneWorkFilePath.setExecutable(true, false);
+					doneWorkFilePath.setWritable(true, false);
 
 					if(FileUtilities.renameFileWithRetry(tempWorkFilePath,doneWorkFilePath)) {
 						progressPath.delete();
@@ -533,6 +543,11 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 
 				File todoWorkFilePath = DistributedWorkFileName.alterFilePathState(
 						progressPath, DistributedWorkFileState.TODO);
+
+				todoWorkFilePath.setReadable(true, false);
+				todoWorkFilePath.setExecutable(true, false);
+				todoWorkFilePath.setWritable(true, false);
+
 				if(!FileUtilities.renameFileWithRetry(progressPath,todoWorkFilePath)) {
 					Logger.log(LogMessageCategory.WARNING, "Failed to rename "
 							+ progressPath.getName() + " to " + todoWorkFilePath.getName());
@@ -577,6 +592,17 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 		File errorFile = new File(workingFolderPath, ERROR_FILE_NAME);
 		File versionFile = new File(workingFolderPath, VERSION_FILE_NAME);
 		File flagsFile = new File(workingFolderPath, FLAGS_FILE_NAME);
+
+		errorFile.setReadable(true, false);
+		errorFile.setExecutable(true, false);
+		errorFile.setWritable(true, false);
+		versionFile.setReadable(true, false);
+		versionFile.setExecutable(true, false);
+		versionFile.setWritable(true, false);
+		flagsFile.setReadable(true, false);
+		flagsFile.setExecutable(true, false);
+		flagsFile.setWritable(true, false);
+
 		BundleManifest manifest = new BundleManifest();
 		File manifestFile = null;
 		if(manifest.containsManifest(workingFolderPath)) {
@@ -659,6 +685,7 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 			removeUnwantedTables();
 
 			File workerSQLPath = new File(workingFolderPath, WORKER_SQL_FILE_NAME);
+
 			sqlReader = new BufferedReader(new FileReader(workerSQLPath));
 
 			sql = "TRUNCATE movesworkeroutput";
