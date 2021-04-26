@@ -1663,7 +1663,7 @@ public class AggregationSQLGenerator {
 					+ " where movesrunid = " + activeRunID
 					+ " and iterationid = " + activeIterationID);
 			String insertOutputSQL = "insert into " + ExecutionRunSpec.getEmissionOutputTable()
-					+ "(" + masteroutputtablefields + ") "
+					+ "(" + masterOutputTableFields + ") "
 					+ selectSQLForMasterOutput + " from workeroutputtemp";
 			outputProcessorSQLs.add(insertOutputSQL);
 			outputProcessorSQLs.add("drop table if exists workeroutputtemp");
@@ -1769,7 +1769,7 @@ public class AggregationSQLGenerator {
 					+ " where movesrunid = " + activeRunID
 					+ " and iterationid = " + activeIterationID);
 			String insertOutputSQL = "insert into " + ExecutionRunSpec.getEmissionOutputTable()
-					+ "(" + masteroutputtablefields + ") "
+					+ "(" + masterOutputTableFields + ") "
 					+ selectSQLForMasterOutput + " from workeroutputtemp";
 			finalProcessSQLs.add(insertOutputSQL);
 			finalProcessSQLs.add("drop table if exists workeroutputtemp");
@@ -1813,26 +1813,26 @@ public class AggregationSQLGenerator {
 
 				finalProcessSQLs.add("drop table if exists nractivityweightsummary;");
 				finalProcessSQLs.add("drop table if exists nractivityweightdetail;");
-				finalProcessSQLs.add("create table nractivityweightsummary like " + ExecutionRunSpec.getactivityoutputtable() + ";");
+				finalProcessSQLs.add("create table nractivityweightsummary like " + ExecutionRunSpec.getActivityOutputTable() + ";");
 				finalProcessSQLs.add("alter table nractivityweightsummary add primary key (" + keyColumnNames + ");");
 				finalProcessSQLs.add("insert into nractivityweightsummary (" + keyColumnNames + ",activity)"
 						+ " select " + keyColumnNames + ",sum(activity) as activity"
-						+ " from " + ExecutionRunSpec.getactivityoutputtable() + " where activitytypeid=2" // weight by source hours (activity type 2)
+						+ " from " + ExecutionRunSpec.getActivityOutputTable() + " where activitytypeid=2" // weight by source hours (activity type 2)
 						+ " and movesrunid = "+ activeRunID
 						+ " and iterationid = " + activeIterationID
 						+ " group by " + keyColumnNames
 						+ " order by null;");
-				finalProcessSQLs.add("create table nractivityweightdetail like " + ExecutionRunSpec.getactivityoutputtable() + ";");
+				finalProcessSQLs.add("create table nractivityweightdetail like " + ExecutionRunSpec.getActivityOutputTable() + ";");
 				finalProcessSQLs.add("alter table nractivityweightdetail add primary key (" + detailKey + ");");
 				finalProcessSQLs.add("insert into nractivityweightdetail(" + detailKey + ",activity,activitytypeid)"
 						+ " select " + detailSelect + ","
 						+ " case when s.activity>0 then a.activity/s.activity else 0.0 end as activity,2 as activitytypeid"
-						+ " from " + ExecutionRunSpec.getactivityoutputtable() + " a"
+						+ " from " + ExecutionRunSpec.getActivityOutputTable() + " a"
 						+ " inner join nractivityweightsummary s using (" + keyColumnNames + ")"
 						+ " where a.activitytypeid=2" // weight by source hours (activity type 2)
 						+ " and movesrunid = "+ activeRunID
 						+ " and iterationid = " + activeIterationID + ";");
-				finalProcessSQLs.add("update " + ExecutionRunSpec.getactivityoutputtable() + " a, nractivityweightdetail set a.activity=nractivityweightdetail.activity*a.activity"
+				finalProcessSQLs.add("update " + ExecutionRunSpec.getActivityOutputTable() + " a, nractivityweightdetail set a.activity=nractivityweightdetail.activity*a.activity"
 						+ " where " + updateWhere
 						+ " and a.activitytypeid in (9,10,12);"); // avgHP, retroFrac, LF load factor
 				finalProcessSQLs.add("drop table if exists nractivityweightsummary;");
