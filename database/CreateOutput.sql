@@ -1,8 +1,8 @@
 /*
    Version 2017-09-29
    -- MOVESRun table structure modified by Mitch Cumberworth per Task 206
-   -- Foreign keys removed by Wesley Faler Oct. 2007 to speedup Master-side INSERTs
-   -- Output and activity primary keys and unique keys removed by Wesley Faler Jan. 2008 to speedup Master-side INSERTs
+   -- Foreign keys removed by Wesley Faler Oct. 2007 to speedup Master-side inserts
+   -- Output and activity primary keys and unique keys removed by Wesley Faler Jan. 2008 to speedup Master-side inserts
    -- MOVESRun table structure modified by Gwo Shyu per Task 812 "MOVES performance Improvement ...": 
 		(1) Added a new table ActivityType
 		(2) Structure of MOVESActivityOutput and MOVESOutput were modified - fields changed, and no primary key nor indexes
@@ -12,30 +12,30 @@
    -- Merged Michele's changes with the changes done by Wes etc.
 */
 /* Creates tables in the MOVESOutput Database */
-DROP TABLE IF EXISTS MOVESOutput;
-DROP TABLE IF EXISTS MOVESActivityOutput;
-DROP TABLE IF EXISTS MOVESRun;
-DROP TABLE IF EXISTS MOVESError;
-DROP TABLE IF EXISTS MOVESEventLog;
-DROP TABLE IF EXISTS MOVESWorkersUsed;
-DROP TABLE IF EXISTS bundleTracking;
-DROP TABLE IF EXISTS ActivityType;
-DROP TABLE IF EXISTS MOVESTablesUsed;
-DROP TABLE IF EXISTS RatePerDistance;
-DROP TABLE IF EXISTS RatePerVehicle;
-DROP TABLE IF EXISTS RatePerProfile;
-DROP TABLE IF EXISTS StartsPerVehicle;
-DROP TABLE IF EXISTS RatePerStart;
-DROP TABLE IF EXISTS RatePerHour;
+drop table if exists movesoutput;
+drop table if exists movesactivityoutput;
+drop table if exists movesrun;
+drop table if exists moveserror;
+drop table if exists moveseventlog;
+drop table if exists movesworkersused;
+drop table if exists bundletracking;
+drop table if exists activitytype;
+drop table if exists movestablesused;
+drop table if exists rateperdistance;
+drop table if exists ratepervehicle;
+drop table if exists rateperprofile;
+drop table if exists startspervehicle;
+drop table if exists rateperstart;
+drop table if exists rateperhour;
 
-CREATE TABLE MOVESEventLog (
-	EventRecordID        INT UNSIGNED NOT NULL,
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
-    PRIMARY KEY (EventRecordID, MOVESRunID),
-	EventName            CHAR(255) NOT NULL,
-	WhenStarted          INT UNSIGNED NOT NULL,
-	WhenStopped          INT UNSIGNED NULL,
-	Duration             INT UNSIGNED NULL
+create table moveseventlog (
+	eventrecordid        int unsigned not null,
+	movesrunid           smallint unsigned not null,
+    primary key (eventrecordid, movesrunid),
+	eventname            char(255) not null,
+	whenstarted          int unsigned not null,
+	whenstopped          int unsigned null,
+	duration             int unsigned null
 );
 
 -- ***********************************************************************************
@@ -48,122 +48,122 @@ CREATE TABLE MOVESEventLog (
 -- ***********************************************************************************
 -- ***********************************************************************************
 -- No PK nor indexes
-CREATE TABLE MOVESOutput (
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
-	iterationID          SMALLINT UNSIGNED NULL DEFAULT 1,
-	yearID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	monthID              SMALLINT UNSIGNED NULL DEFAULT NULL,
-	dayID                SMALLINT UNSIGNED NULL DEFAULT NULL,
-	hourID               SMALLINT UNSIGNED NULL DEFAULT NULL,
+CREATE TABLE movesoutput (
+	movesrunid           smallint unsigned not null,
+	iterationid          smallint unsigned null default 1,
+	yearid               smallint unsigned null default null,
+	monthid              smallint unsigned null default null,
+	dayid                smallint unsigned null default null,
+	hourid               smallint unsigned null default null,
 -- ******************************************************
--- stateID, locationID, zoneID, and linkID can all be default
--- in the case where the user selected "Nation" as the 
+-- stateid, locationid, zoneid, and linkid can all be default
+-- in the case where the user selected "nation" as the 
 -- geographic granularity for the output.
--- linkID and/or zoneID will be default otherwise if "County" 
+-- linkid and/or zoneid will be default otherwise if "county" 
 -- level granularity was selected depending upon scale.
--- locationID will be default otherwise if "State" level
+-- locationid will be default otherwise if "state" level
 -- granularity was selected.
 -- ******************************************************
-	stateID              SMALLINT UNSIGNED NULL DEFAULT NULL,
-	countyID             INTEGER  UNSIGNED NULL DEFAULT NULL,
-	zoneID               INTEGER  UNSIGNED NULL DEFAULT NULL,
-	linkID               INTEGER  UNSIGNED NULL DEFAULT NULL,
-	pollutantID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	processID            SMALLINT UNSIGNED NULL DEFAULT NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL DEFAULT NULL,
-	regClassID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	fuelSubTypeID        SMALLINT UNSIGNED NULL DEFAULT NULL,
-	modelYearID          SMALLINT UNSIGNED NULL DEFAULT NULL,
+	stateid              smallint unsigned null default null,
+	countyid             integer  unsigned null default null,
+	zoneid               integer  unsigned null default null,
+	linkid               integer  unsigned null default null,
+	pollutantid          smallint unsigned null default null,
+	processid            smallint unsigned null default null,
+	sourcetypeid         smallint unsigned null default null,
+	regclassid           smallint unsigned null default null,
+	fueltypeid           smallint unsigned null default null,
+	fuelsubtypeid        smallint unsigned null default null,
+	modelyearid          smallint unsigned null default null,
 -- ******************************************************
--- roadTypeID is not redundant with linkID in the cases where
+-- roadtypeid is not redundant with linkid in the cases where
 -- the user wants road type as a dimension but does not want
 -- geographic detail to the link/zone (or perhaps even to
--- the County) level.
+-- the county) level.
 -- ******************************************************
-	roadTypeID           SMALLINT UNSIGNED NULL DEFAULT NULL,
+	roadtypeid           smallint unsigned null default null,
 -- ******************************************************
--- SCC holds both OnRoad and OffRoad SCC codes and may be
--- all 0's (zeroes) to represent "all" SCC codes at once.
+-- scc holds both onroad and offroad scc codes and may be
+-- all 0's (zeroes) to represent "all" scc codes at once.
 -- ******************************************************
-	SCC                  CHAR(10) NULL DEFAULT NULL,
+	scc                  char(10) null default null,
 -- ******************************************************
--- OffRoad keys
+-- offroad keys
 -- ******************************************************
-	engTechID            SMALLINT UNSIGNED NULL DEFAULT NULL,
-	sectorID             SMALLINT UNSIGNED NULL DEFAULT NULL,
-	hpID                 SMALLINT UNSIGNED NULL DEFAULT NULL,
+	engtechid            smallint unsigned null default null,
+	sectorid             smallint unsigned null default null,
+	hpid                 smallint unsigned null default null,
 -- ******************************************************
--- The emission* columns are the actual values produced,
--- not dimensions to the data.  These will be NULL if the
+-- the emission* columns are the actual values produced,
+-- not dimensions to the data.  these will be null if the
 -- user chose not to generate them.
 -- ******************************************************
-	emissionQuant        FLOAT NULL DEFAULT NULL,
-	emissionQuantMean    FLOAT NULL DEFAULT NULL,
-	emissionQuantSigma   FLOAT NULL  DEFAULT NULL
+	emissionquant        float null default null,
+	emissionquantmean    float null default null,
+	emissionquantsigma   float null  default null
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
 
-CREATE TABLE MOVESRun (
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL auto_increment,
+CREATE TABLE movesrun (
+	movesrunid           smallint unsigned not null auto_increment,
 -- ******************************************************
--- outputTimePeriod has values 'Hour', 'Day', 'Month', or 'Year'
+-- outputtimeperiod has values 'hour', 'day', 'month', or 'year'
 -- ******************************************************
-	outputTimePeriod     CHAR(5) NULL DEFAULT NULL,
-	timeUnits            CHAR(5) NULL DEFAULT NULL,
-	distanceUnits        CHAR(5) NULL DEFAULT NULL,
-	massUnits            CHAR(5) NULL DEFAULT NULL,
-	energyUnits          CHAR(5) NULL DEFAULT NULL,
+	outputtimeperiod     char(5) null default null,
+	timeunits            char(5) null default null,
+	distanceunits        char(5) null default null,
+	massunits            char(5) null default null,
+	energyunits          char(5) null default null,
 -- ******************************************************
--- runSpecFileName can be null if the user has not saved
+-- runspecfilename can be null if the user has not saved
 -- their runspec prior to launching the simulation.
 -- ******************************************************
-	runSpecFileName      VARCHAR(500) NULL DEFAULT NULL,
-	runSpecDescription   TEXT NULL,
-	runSpecFileDateTime  DATETIME NULL DEFAULT NULL,
-	runDateTime          DATETIME NULL DEFAULT NULL,
+	runspecfilename      varchar(500) null default null,
+	runspecdescription   text null,
+	runspecfiledatetime  datetime null default null,
+	rundatetime          datetime null default null,
 -- ******************************************************
--- scale has values 'MACRO', 'MESO', 'MICRO'
+-- scale has values 'macro', 'meso', 'micro'
 -- ******************************************************
-	scale                CHAR(5) NULL DEFAULT NULL,
-	minutesDuration      FLOAT NULL  DEFAULT NULL,
-	defaultDatabaseUsed  VARCHAR(200) NULL DEFAULT NULL,
-	masterVersion        VARCHAR(100) NULL DEFAULT NULL,
-	masterComputerID     VARCHAR(255) NULL DEFAULT NULL,
-	masterIDNumber       VARCHAR(255) NULL DEFAULT NULL,
+	scale                char(5) null default null,
+	minutesduration      float null  default null,
+	defaultdatabaseused  varchar(200) null default null,
+	masterversion        varchar(100) null default null,
+	mastercomputerid     varchar(255) null default null,
+	masteridnumber       varchar(255) null default null,
 -- ******************************************************
 -- domain has values 'NATIONAL', 'SINGLE', 'PROJECT'
 -- ******************************************************
 	domain               CHAR(10) NULL DEFAULT 'NATIONAL',
-	domainCountyID		 INTEGER UNSIGNED NULL DEFAULT NULL,
-	domainCountyName     VARCHAR(50) NULL DEFAULT NULL,
-	domainDatabaseServer VARCHAR(100) NULL DEFAULT NULL,
-	domainDatabaseName   VARCHAR(200) NULL DEFAULT NULL,
+	domaincountyid		 integer unsigned null default null,
+	domaincountyname     varchar(50) null default null,
+	domaindatabaseserver varchar(100) null default null,
+	domaindatabasename   varchar(200) null default null,
 
-	expectedDONEFiles    INTEGER UNSIGNED NULL DEFAULT NULL,
-	retrievedDONEFiles   INTEGER UNSIGNED NULL DEFAULT NULL,
+	expecteddonefiles    integer unsigned null default null,
+	retrieveddonefiles   integer unsigned null default null,
 
-	models               VARCHAR(40) NOT NULL DEFAULT 'onroad',
+	models               varchar(40) not null default 'onroad',
 
-	PRIMARY KEY (MOVESRunID)
+	PRIMARY KEY (movesrunid)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
 
-CREATE TABLE MOVESError (
-	MOVESErrorID         INTEGER  UNSIGNED NOT NULL AUTO_INCREMENT,
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
-	yearID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	monthID              SMALLINT UNSIGNED NULL DEFAULT NULL,
-	dayID                SMALLINT UNSIGNED NULL DEFAULT NULL,
-	hourID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	stateID              SMALLINT UNSIGNED NULL DEFAULT NULL,
-	countyID             INTEGER UNSIGNED NULL DEFAULT NULL,
-	zoneID               INTEGER UNSIGNED NULL DEFAULT NULL,
-	linkID               INTEGER UNSIGNED NULL DEFAULT NULL,
-	pollutantID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	processID            SMALLINT UNSIGNED NULL DEFAULT NULL,
-	errorMessage         VARCHAR(255) NOT NULL,
-	PRIMARY KEY (MOVESErrorID),
-	KEY IX_MOVES_ERROR_ID (MOVESErrorID),
-	KEY IX_MOVES_RUN_ID (MOVESRunID)
+CREATE TABLE moveserror (
+	moveserrorid         integer  unsigned not null auto_increment,
+	movesrunid           smallint unsigned not null,
+	yearid               smallint unsigned null default null,
+	monthid              smallint unsigned null default null,
+	dayid                smallint unsigned null default null,
+	hourid               smallint unsigned null default null,
+	stateid              smallint unsigned null default null,
+	countyid             integer unsigned null default null,
+	zoneid               integer unsigned null default null,
+	linkid               integer unsigned null default null,
+	pollutantid          smallint unsigned null default null,
+	processid            smallint unsigned null default null,
+	errormessage         varchar(255) not null,
+	primary key (moveserrorid),
+	key ix_moves_error_id (moveserrorid),
+	key ix_moves_run_id (movesrunid)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
 
 -- ***********************************************************************************
@@ -173,13 +173,13 @@ CREATE TABLE MOVESError (
 -- ***********************************************************************************
 -- ***********************************************************************************
 -- No PK nor indexes
-CREATE TABLE MOVESActivityOutput (
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
-	iterationID          SMALLINT UNSIGNED NULL DEFAULT 1,
-	yearID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	monthID              SMALLINT UNSIGNED NULL DEFAULT NULL,
-	dayID                SMALLINT UNSIGNED NULL DEFAULT NULL,
-	hourID               SMALLINT UNSIGNED NULL DEFAULT NULL,
+CREATE TABLE movesactivityoutput (
+	movesrunid           smallint unsigned not null,
+	iterationid          smallint unsigned null default 1,
+	yearid               smallint unsigned null default null,
+	monthid              smallint unsigned null default null,
+	dayid                smallint unsigned null default null,
+	hourid               smallint unsigned null default null,
 -- ******************************************************
 -- stateID, locationID, zoneID, and linkID can all be default
 -- in the case where the user selected "Nation" as the 
@@ -189,135 +189,135 @@ CREATE TABLE MOVESActivityOutput (
 -- locationID will be default otherwise if "State" level
 -- granularity was selected.
 -- ******************************************************
-	stateID              SMALLINT UNSIGNED NULL DEFAULT NULL,
-	countyID             INTEGER UNSIGNED NULL DEFAULT NULL,
-	zoneID               INTEGER UNSIGNED NULL DEFAULT NULL,
-	linkID               INTEGER UNSIGNED NULL DEFAULT NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL DEFAULT NULL,
-	regClassID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	fuelSubTypeID        SMALLINT UNSIGNED NULL DEFAULT NULL,
-	modelYearID          SMALLINT UNSIGNED NULL DEFAULT NULL,
+	stateid              smallint unsigned null default null,
+	countyid             integer unsigned null default null,
+	zoneid               integer unsigned null default null,
+	linkid               integer unsigned null default null,
+	sourcetypeid         smallint unsigned null default null,
+	regclassid           smallint unsigned null default null,
+	fueltypeid           smallint unsigned null default null,
+	fuelsubtypeid        smallint unsigned null default null,
+	modelyearid          smallint unsigned null default null,
 -- ******************************************************
 -- roadTypeID is not redundant with linkID in the cases where
 -- the user wants road type as a dimension but does not want
 -- geographic detail to the link/zone (or perhaps even to
 -- the County) level.
 -- ******************************************************
-	roadTypeID           SMALLINT UNSIGNED NULL DEFAULT NULL,
+	roadtypeid           smallint unsigned null default null,
 -- ******************************************************
--- SCC holds both OnRoad and OffRoad SCC codes and may be
--- all 0's (zeroes) to represent "all" SCC codes at once.
+-- scc holds both onroad and offroad scc codes and may be
+-- all 0's (zeroes) to represent "all" scc codes at once.
 -- ******************************************************
-	SCC                  CHAR(10) NULL DEFAULT NULL,
-	engTechID            SMALLINT UNSIGNED NULL DEFAULT NULL,
-	sectorID             SMALLINT UNSIGNED NULL DEFAULT NULL,
-	hpID                 SMALLINT UNSIGNED NULL DEFAULT NULL,
-	activityTypeID       SMALLINT NOT NULL,
-	activity             FLOAT NULL DEFAULT NULL,
-	activityMean         FLOAT NULL DEFAULT NULL,
-	activitySigma        FLOAT NULL DEFAULT NULL 
+	scc                  char(10) null default null,
+	engtechid            smallint unsigned null default null,
+	sectorid             smallint unsigned null default null,
+	hpid                 smallint unsigned null default null,
+	activitytypeid       smallint not null,
+	activity             float null default null,
+	activitymean         float null default null,
+	activitysigma        float null default null 
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
 
-CREATE TABLE ActivityType (
-	activityTypeID       SMALLINT UNSIGNED NOT NULL,
-	activityType         CHAR(20) NOT NULL,
-	activityTypeDesc     CHAR(50) NULL DEFAULT NULL,
-	PRIMARY KEY (activityTypeID)
+CREATE TABLE activitytype (
+	activitytypeid       smallint unsigned not null,
+	activitytype         char(20) not null,
+	activitytypedesc     char(50) null default null,
+	primary key (activitytypeid)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
 
 -- add records
-INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 VALUES (1, "distance", "Distance traveled");
-INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 VALUES (2, "sourcehours", "Source Hours");
-INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 VALUES (3, "extidle", "Extended Idle Hours");
-INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 VALUES (4, "sho", "Source Hours Operating");
-INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 VALUES (5, "shp", "Source Hours Parked");
-INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 VALUES (6, "population", "Population");
-INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 VALUES (7, "starts", "Starts");
--- INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+-- insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 -- VALUES (8, "hotelling", "Hotelling Hours")
-INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 VALUES (9, "avghp", "Average Horsepower");
-INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 VALUES (10, "retrofrac", "Fraction Retrofitted");
-INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 VALUES (11, "retrocnt", "Number Units Retrofitted");
-INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 VALUES (12, "loadfactor", "Load Factor");
-INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 VALUES (13, "hotellingAux", "Hotelling Diesel Aux");
-INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 VALUES (14, "hotellingElectric", "Hotelling Battery or AC");
-INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 VALUES (15, "hotellingOff", "Hotelling All Engines Off");
-INSERT IGNORE INTO ActivityType (activityTypeID, activityType, activityTypeDesc)
+insert ignore into activitytype (activitytypeid, activitytype, activitytypedesc)
 VALUES (16, "shi", "Source Hours Idle");
 
 
 
-CREATE TABLE MOVESWorkersUsed (
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
-	workerVersion        VARCHAR(100) NOT NULL,
-	workerComputerID     VARCHAR(255) NOT NULL,
-	workerID             VARCHAR(255) NOT NULL DEFAULT '',
-	bundleCount          INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	failedBundleCount    INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	PRIMARY KEY (MOVESRunID, workerVersion, workerComputerID, workerID)
+CREATE TABLE movesworkersused (x
+	movesrunid           smallint unsigned not null,
+	workerversion        varchar(100) not null,
+	workercomputerid     varchar(255) not null,
+	workerid             varchar(255) not null default '',
+	bundlecount          integer unsigned not null default '0',
+	failedbundlecount    integer unsigned not null default '0',
+	primary key (movesrunid, workerversion, workercomputerid, workerid)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
 
-CREATE TABLE bundleTracking (
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
-	-- 'M' for master, 'W' for worker
-	hostType             char(1) not null default ' ',
-	loopableClassName 	 varchar(200) not null default '',
+CREATE TABLE bundletracking (
+	movesrunid           smallint unsigned not null,
+	-- 'm' for master, 'w' for worker
+	hosttype             char(1) not null default ' ',
+	loopableclassname 	 varchar(200) not null default '',
 
 	-- worker fields will be blank ('') for tasks done on a master
-	workerVersion        VARCHAR(100) NOT NULL,
-	workerComputerID     VARCHAR(255) NOT NULL,
-	workerID             VARCHAR(255) NOT NULL DEFAULT '',
-	-- bundleNumber will be 0 for tasks done on a master, even if the task is done on behalf of a calculator
-	bundleNumber		 int not null default '0',
-	-- isCleanUp is set to 'N' for bundles done on a worker
-	isCleanUp 			 char(1) not null default 'N', 
+	workerversion        varchar(100) not null,
+	workercomputerid     varchar(255) not null,
+	workerid             varchar(255) not null default '',
+	-- bundlenumber will be 0 for tasks done on a master, even if the task is done on behalf of a calculator
+	bundlenumber		 int not null default '0',
+	-- iscleanup is set to 'n' for bundles done on a worker
+	iscleanup 			 char(1) not null default 'N', 
 
-	iterationID 		 smallint unsigned null default null,
-	processID 			 smallint unsigned null default null,
-	roadTypeID		 	 smallint unsigned null default null,
-	linkID		 		 integer unsigned null default null,
-	zoneID 				 integer unsigned null default null,
-	countyID 			 integer unsigned null default null,
-	stateID 			 smallint unsigned null default null,
-	yearID 				 smallint unsigned null default null,
-	monthID 			 smallint unsigned null default null,
-	dayID 				 smallint unsigned null default null,
-	hourID 				 smallint unsigned null default null,
-	executionGranularity varchar(10) null default null,
-	executionPriority 	 smallint unsigned null,
+	iterationid 		 smallint unsigned null default null,
+	processid 			 smallint unsigned null default null,
+	roadtypeid		 	 smallint unsigned null default null,
+	linkid		 		 integer unsigned null default null,
+	zoneid 				 integer unsigned null default null,
+	countyid 			 integer unsigned null default null,
+	stateid 			 smallint unsigned null default null,
+	yearid 				 smallint unsigned null default null,
+	monthid 			 smallint unsigned null default null,
+	dayid 				 smallint unsigned null default null,
+	hourid 				 smallint unsigned null default null,
+	executiongranularity varchar(10) null default null,
+	executionpriority 	 smallint unsigned null,
 
-	durationSeconds		 FLOAT NULL DEFAULT NULL,
+	durationseconds		 float null default null,
 
 	-- There is no primary key in this table, but the following KEY is
 	-- useful when searching for performance bottlenecks.
-	KEY (MOVESRunID, hostType, loopableClassName)
+	KEY (movesrunid, hosttype, loopableclassname)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
 
-CREATE TABLE MOVESTablesUsed (
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
-	databaseServer		 VARCHAR(100) NOT NULL DEFAULT '',
-	databaseName		 VARCHAR(200) NOT NULL,
-	tableName			 VARCHAR(200) NOT NULL,
-	dataFileSize	     INTEGER UNSIGNED NULL DEFAULT NULL,
-	dataFileModificationDate DATETIME NULL DEFAULT NULL,
-	tableUseSequence	 INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	PRIMARY KEY (MOVESRunID, databaseServer, databaseName, tableName),
-	KEY (MOVESRunID, tableUseSequence)
+CREATE TABLE movestablesused (
+	movesrunid           smallint unsigned not null,
+	databaseserver		 varchar(100) not null default '',
+	databasename		 varchar(200) not null,
+	tablename			 varchar(200) not null,
+	datafilesize	     integer unsigned null default null,
+	datafilemodificationdate datetime null default null,
+	tableusesequence	 integer unsigned not null auto_increment,
+	primary key (movesrunid, databaseserver, databasename, tablename),
+	key (movesrunid, tableusesequence)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
 
 -- ***********************************************************************************
@@ -328,26 +328,26 @@ CREATE TABLE MOVESTablesUsed (
 -- ***********************************************************************************
 -- ***********************************************************************************
 -- No PK nor indexes
-CREATE TABLE RatePerDistance (
-	MOVESScenarioID		 VARCHAR(40) NOT NULL DEFAULT '',
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
-	yearID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	monthID              SMALLINT UNSIGNED NULL DEFAULT NULL,
-	dayID                SMALLINT UNSIGNED NULL DEFAULT NULL,
-	hourID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	linkID               INTEGER  UNSIGNED NULL DEFAULT NULL,
-	pollutantID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	processID            SMALLINT UNSIGNED NULL DEFAULT NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL DEFAULT NULL,
-	regClassID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	SCC                  CHAR(10) NULL DEFAULT NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	modelYearID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	roadTypeID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	avgSpeedBinID        SMALLINT NULL DEFAULT NULL,
-	temperature          FLOAT NULL DEFAULT NULL,
-	relHumidity          FLOAT NULL DEFAULT NULL,
-	ratePerDistance      FLOAT NULL DEFAULT NULL
+CREATE TABLE rateperdistance (
+	movesscenarioid		 varchar(40) not null default '',
+	movesrunid           smallint unsigned not null,
+	yearid               smallint unsigned null default null,
+	monthid              smallint unsigned null default null,
+	dayid                smallint unsigned null default null,
+	hourid               smallint unsigned null default null,
+	linkid               integer  unsigned null default null,
+	pollutantid          smallint unsigned null default null,
+	processid            smallint unsigned null default null,
+	sourcetypeid         smallint unsigned null default null,
+	regclassid           smallint unsigned null default null,
+	scc                  char(10) null default null,
+	fueltypeid           smallint unsigned null default null,
+	modelyearid          smallint unsigned null default null,
+	roadtypeid           smallint unsigned null default null,
+	avgspeedbinid        smallint null default null,
+	temperature          float null default null,
+	relhumidity          float null default null,
+	rateperdistance      float null default null
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
 
 -- ***********************************************************************************
@@ -358,24 +358,24 @@ CREATE TABLE RatePerDistance (
 -- ***********************************************************************************
 -- ***********************************************************************************
 -- No PK nor indexes
-CREATE TABLE RatePerVehicle (
-	MOVESScenarioID		 VARCHAR(40) NOT NULL DEFAULT '',
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
-	yearID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	monthID              SMALLINT UNSIGNED NULL DEFAULT NULL,
-	dayID                SMALLINT UNSIGNED NULL DEFAULT NULL,
-	hourID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	zoneID               INTEGER  UNSIGNED NULL DEFAULT NULL,
-	pollutantID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	processID            SMALLINT UNSIGNED NULL DEFAULT NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL DEFAULT NULL,
-	regClassID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	SCC                  CHAR(10) NULL DEFAULT NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	modelYearID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	temperature          FLOAT NULL DEFAULT NULL,
-	relHumidity          FLOAT NULL DEFAULT NULL,
-	ratePerVehicle       FLOAT NULL DEFAULT NULL
+CREATE TABLE ratepervehicle (
+	movesscenarioid		 varchar(40) not null default '',
+	movesrunid           smallint unsigned not null,
+	yearid               smallint unsigned null default null,
+	monthid              smallint unsigned null default null,
+	dayid                smallint unsigned null default null,
+	hourid               smallint unsigned null default null,
+	zoneid               integer  unsigned null default null,
+	pollutantid          smallint unsigned null default null,
+	processid            smallint unsigned null default null,
+	sourcetypeid         smallint unsigned null default null,
+	regclassid           smallint unsigned null default null,
+	scc                  char(10) null default null,
+	fueltypeid           smallint unsigned null default null,
+	modelyearid          smallint unsigned null default null,
+	temperature          float null default null,
+	relhumidity          float null default null,
+	ratepervehicle       float null default null
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
 
 -- ***********************************************************************************
@@ -385,23 +385,23 @@ CREATE TABLE RatePerVehicle (
 -- ***********************************************************************************
 -- ***********************************************************************************
 -- No PK nor indexes
-CREATE TABLE RatePerProfile (
-	MOVESScenarioID		 VARCHAR(40) NOT NULL DEFAULT '',
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
-	temperatureProfileID BIGINT NULL DEFAULT NULL,
-	yearID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	dayID                SMALLINT UNSIGNED NULL DEFAULT NULL,
-	hourID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	pollutantID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	processID            SMALLINT UNSIGNED NULL DEFAULT NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL DEFAULT NULL,
-	regClassID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	SCC                  CHAR(10) NULL DEFAULT NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	modelYearID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	temperature          FLOAT NULL DEFAULT NULL,
-	relHumidity          FLOAT NULL DEFAULT NULL,
-	ratePerVehicle       FLOAT NULL DEFAULT NULL
+CREATE TABLE rateperprofile (
+	movesscenarioid		 varchar(40) not null default '',
+	movesrunid           smallint unsigned not null,
+	temperatureprofileid bigint null default null,
+	yearid               smallint unsigned null default null,
+	dayid                smallint unsigned null default null,
+	hourid               smallint unsigned null default null,
+	pollutantid          smallint unsigned null default null,
+	processid            smallint unsigned null default null,
+	sourcetypeid         smallint unsigned null default null,
+	regclassid           smallint unsigned null default null,
+	scc                  char(10) null default null,
+	fueltypeid           smallint unsigned null default null,
+	modelyearid          smallint unsigned null default null,
+	temperature          float null default null,
+	relhumidity          float null default null,
+	ratepervehicle       float null default null
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
 
 -- ***********************************************************************************
@@ -410,20 +410,20 @@ CREATE TABLE RatePerProfile (
 -- ***********************************************************************************
 -- ***********************************************************************************
 -- No PK nor indexes
-CREATE TABLE StartsPerVehicle (
-	MOVESScenarioID		 VARCHAR(40) NOT NULL DEFAULT '',
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
-	yearID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	monthID              SMALLINT UNSIGNED NULL DEFAULT NULL,
-	dayID                SMALLINT UNSIGNED NULL DEFAULT NULL,
-	hourID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	zoneID               INTEGER  UNSIGNED NULL DEFAULT NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL DEFAULT NULL,
-	regClassID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	SCC                  CHAR(10) NULL DEFAULT NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	modelYearID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	startsPerVehicle     FLOAT NULL DEFAULT NULL
+CREATE TABLE startspervehicle (
+	movesscenarioid		 varchar(40) not null default '',
+	movesrunid           smallint unsigned not null,
+	yearid               smallint unsigned null default null,
+	monthid              smallint unsigned null default null,
+	dayid                smallint unsigned null default null,
+	hourid               smallint unsigned null default null,
+	zoneid               integer  unsigned null default null,
+	sourcetypeid         smallint unsigned null default null,
+	regclassid           smallint unsigned null default null,
+	scc                  char(10) null default null,
+	fueltypeid           smallint unsigned null default null,
+	modelyearid          smallint unsigned null default null,
+	startspervehicle     float null default null
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
 
 -- ***********************************************************************************
@@ -432,24 +432,24 @@ CREATE TABLE StartsPerVehicle (
 -- ***********************************************************************************
 -- ***********************************************************************************
 -- No PK nor indexes
-CREATE TABLE RatePerStart (
-	MOVESScenarioID		 VARCHAR(40) NOT NULL DEFAULT '',
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
-	yearID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	monthID              SMALLINT UNSIGNED NULL DEFAULT NULL,
-	dayID                SMALLINT UNSIGNED NULL DEFAULT NULL,
-	hourID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	zoneID               INTEGER  UNSIGNED NULL DEFAULT NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL DEFAULT NULL,
-	regClassID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	SCC                  CHAR(10) NULL DEFAULT NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	modelYearID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	pollutantID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	processID            SMALLINT UNSIGNED NULL DEFAULT NULL,
-	temperature          FLOAT NULL DEFAULT NULL,
-	relHumidity          FLOAT NULL DEFAULT NULL,
-	ratePerStart         FLOAT NULL DEFAULT NULL
+CREATE TABLE rateperstart (
+	movesscenarioid		 varchar(40) not null default '',
+	movesrunid           smallint unsigned not null,
+	yearid               smallint unsigned null default null,
+	monthid              smallint unsigned null default null,
+	dayid                smallint unsigned null default null,
+	hourid               smallint unsigned null default null,
+	zoneid               integer  unsigned null default null,
+	sourcetypeid         smallint unsigned null default null,
+	regclassid           smallint unsigned null default null,
+	scc                  char(10) null default null,
+	fueltypeid           smallint unsigned null default null,
+	modelyearid          smallint unsigned null default null,
+	pollutantid          smallint unsigned null default null,
+	processid            smallint unsigned null default null,
+	temperature          float null default null,
+	relhumidity          float null default null,
+	rateperstart         float null default null
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
 
 -- ***********************************************************************************
@@ -459,23 +459,23 @@ CREATE TABLE RatePerStart (
 -- ***********************************************************************************
 -- ***********************************************************************************
 -- No PK nor indexes
-CREATE TABLE RatePerHour (
-	MOVESScenarioID		 VARCHAR(40) NOT NULL DEFAULT '',
-	MOVESRunID           SMALLINT UNSIGNED NOT NULL,
-	yearID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	monthID              SMALLINT UNSIGNED NULL DEFAULT NULL,
-	dayID                SMALLINT UNSIGNED NULL DEFAULT NULL,
-	hourID               SMALLINT UNSIGNED NULL DEFAULT NULL,
-	linkID               INTEGER  UNSIGNED NULL DEFAULT NULL,
-	pollutantID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	processID            SMALLINT UNSIGNED NULL DEFAULT NULL,
-	sourceTypeID         SMALLINT UNSIGNED NULL DEFAULT NULL,
-	regClassID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	SCC                  CHAR(10) NULL DEFAULT NULL,
-	fuelTypeID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	modelYearID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	roadTypeID           SMALLINT UNSIGNED NULL DEFAULT NULL,
-	temperature          FLOAT NULL DEFAULT NULL,
-	relHumidity          FLOAT NULL DEFAULT NULL,
-	ratePerHour          FLOAT NULL DEFAULT NULL
+CREATE TABLE rateperhour (
+	movesscenarioid		 varchar(40) not null default '',
+	movesrunid           smallint unsigned not null,
+	yearid               smallint unsigned null default null,
+	monthid              smallint unsigned null default null,
+	dayid                smallint unsigned null default null,
+	hourid               smallint unsigned null default null,
+	linkid               integer  unsigned null default null,
+	pollutantid          smallint unsigned null default null,
+	processid            smallint unsigned null default null,
+	sourcetypeid         smallint unsigned null default null,
+	regclassid           smallint unsigned null default null,
+	scc                  char(10) null default null,
+	fueltypeid           smallint unsigned null default null,
+	modelyearid          smallint unsigned null default null,
+	roadtypeid           smallint unsigned null default null,
+	temperature          float null default null,
+	relhumidity          float null default null,
+	rateperhour          float null default null
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
