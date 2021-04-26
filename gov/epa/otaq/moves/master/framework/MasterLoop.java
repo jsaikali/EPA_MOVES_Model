@@ -332,7 +332,7 @@ public class MasterLoop extends MOVESThread {
 	**/
 	int howManyVMTSources() {
 		String[] tables = {
-			"HPMSVtypeYear", "HPMSVtypeDay", "SourceTypeYearVMT", "SourceTypeDayVMT"
+			"hpmsvtypeyear", "hpmsvtypeday", "sourcetypeyearvmt", "sourcetypedayvmt"
 		};
 		int count = 0;
 		Connection db = null;

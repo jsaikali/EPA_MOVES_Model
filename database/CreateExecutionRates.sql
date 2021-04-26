@@ -1,21 +1,21 @@
 -- Author Wesley Faler
 -- Version 2016-03-14
 
-drop table if exists RatesOpModeDistribution;
+drop table if exists ratesopmodedistribution;
 
-CREATE TABLE IF NOT EXISTS RatesOpModeDistribution (
-	sourceTypeID         SMALLINT NOT NULL,
-	roadTypeID           SMALLINT NOT NULL,
-	avgSpeedBinID        SMALLINT NOT NULL DEFAULT '0',
-	hourDayID            SMALLINT NOT NULL DEFAULT '0',
-	polProcessID         int NOT NULL,
-	opModeID             SMALLINT NOT NULL,
-	opModeFraction       FLOAT NULL,
-	opModeFractionCV     FLOAT NULL,
-	avgBinSpeed			 FLOAT NULL,
-	avgSpeedFraction 	 float not null default '0',
+CREATE TABLE IF NOT EXISTS ratesopmodedistribution (
+	sourcetypeid         smallint not null,
+	roadtypeid           smallint not null,
+	avgspeedbinid        smallint not null default '0',
+	hourdayid            smallint not null default '0',
+	polprocessid         int not null,
+	opmodeid             smallint not null,
+	opmodefraction       float null,
+	opmodefractioncv     float null,
+	avgbinspeed			 float null,
+	avgspeedfraction 	 float not null default '0',
 
-	PRIMARY KEY (sourceTypeID, polProcessID, roadTypeID, hourDayID, opModeID, avgSpeedBinID)
+	PRIMARY KEY (sourcetypeid, polprocessid, roadtypeid, hourdayid, opmodeid, avgspeedbinid)
 );
 
 -- Go-based	P RIMARY KEY (sourceTypeID, polProcessID, roadTypeID, hourDayID, opModeID, avgSpeedBinID)
@@ -29,151 +29,151 @@ CREATE TABLE IF NOT EXISTS RatesOpModeDistribution (
 -- 	K EY (polProcessID)
 -- 	K EY (opModeID)
 
-TRUNCATE TABLE RatesOpModeDistribution;
+TRUNCATE TABLE ratesopmodedistribution;
 
-drop table if exists SBWeightedEmissionRateByAge;
+drop table if exists sbweightedemissionratebyage;
 
-CREATE TABLE IF NOT EXISTS SBWeightedEmissionRateByAge (
-	sourceTypeID		SMALLINT NOT NULL,
-	polProcessID		int NOT NULL,
-	opModeID			SMALLINT NOT NULL,
-	modelYearID			SMALLINT NOT NULL,
-	fuelTypeID			SMALLINT NOT NULL,
-	ageGroupID			SMALLINT NOT NULL,
-	regClassID			SMALLINT NOT NULL,
+CREATE TABLE IF NOT EXISTS sbweightedemissionratebyage (
+	sourcetypeid		smallint not null,
+	polprocessid		int not null,
+	opmodeid			smallint not null,
+	modelyearid			smallint not null,
+	fueltypeid			smallint not null,
+	agegroupid			smallint not null,
+	regclassid			smallint not null,
 
-	meanBaseRate		FLOAT NULL,
-	meanBaseRateIM		FLOAT NULL,
-	meanBaseRateACAdj	FLOAT NULL,
-	meanBaseRateIMACAdj	FLOAT NULL,
-	sumSBD				DOUBLE NULL,
-	sumSBDRaw			DOUBLE NULL,
-	unique key (sourceTypeID, polProcessID, opModeID, modelYearID, fuelTypeID, ageGroupID, regClassID)
+	meanbaserate		float null,
+	meanbaserateim		float null,
+	meanbaserateacadj	float null,
+	meanbaserateimacadj	float null,
+	sumsbd				double null,
+	sumsbdraw			double null,
+	unique key (sourcetypeid, polprocessid, opmodeid, modelyearid, fueltypeid, agegroupid, regclassid)
 );
 
-TRUNCATE TABLE SBWeightedEmissionRateByAge;
+TRUNCATE TABLE sbweightedemissionratebyage;
 
-drop table if exists SBWeightedEmissionRate;
+drop table if exists sbweightedemissionrate;
 
-CREATE TABLE IF NOT EXISTS SBWeightedEmissionRate (
-	sourceTypeID		SMALLINT NOT NULL,
-	polProcessID		int NOT NULL,
-	opModeID			SMALLINT NOT NULL,
-	modelYearID			SMALLINT NOT NULL,
-	fuelTypeID			SMALLINT NOT NULL,
-	regClassID			SMALLINT NOT NULL,
+CREATE TABLE IF NOT EXISTS sbweightedemissionrate (
+	sourcetypeid		smallint not null,
+	polprocessid		int not null,
+	opmodeid			smallint not null,
+	modelyearid			smallint not null,
+	fueltypeid			smallint not null,
+	regclassid			smallint not null,
 
-	meanBaseRate		FLOAT NULL,
-	meanBaseRateIM		FLOAT NULL,
-	meanBaseRateACAdj	FLOAT NULL,
-	meanBaseRateIMACAdj	FLOAT NULL,
-	sumSBD				DOUBLE NULL,
-	sumSBDRaw			DOUBLE NULL,
-	unique key (sourceTypeID, polProcessID, opModeID, modelYearID, fuelTypeID, regClassID)
+	meanbaserate		float null,
+	meanbaserateim		float null,
+	meanbaserateacadj	float null,
+	meanbaserateimacadj	float null,
+	sumsbd				double null,
+	sumsbdraw			double null,
+	unique key (sourcetypeid, polprocessid, opmodeid, modelyearid, fueltypeid, regclassid)
 );
 
-TRUNCATE TABLE SBWeightedEmissionRate;
+TRUNCATE TABLE sbweightedemissionrate;
 
-drop table if exists SBWeightedDistanceRate;
+drop table if exists sbweighteddistancerate;
 
-CREATE TABLE IF NOT EXISTS SBWeightedDistanceRate (
-	sourceTypeID		SMALLINT NOT NULL,
-	polProcessID		int NOT NULL,
-	modelYearID			SMALLINT NOT NULL,
-	fuelTypeID			SMALLINT NOT NULL,
-	regClassID			SMALLINT NOT NULL,
-	avgSpeedBinID 		smallint not null,
+CREATE TABLE IF NOT EXISTS sbweighteddistancerate (
+	sourcetypeid		smallint not null,
+	polprocessid		int not null,
+	modelyearid			smallint not null,
+	fueltypeid			smallint not null,
+	regclassid			smallint not null,
+	avgspeedbinid 		smallint not null,
 
-	meanBaseRate		FLOAT NULL,
-	meanBaseRateIM		FLOAT NULL,
-	meanBaseRateACAdj	FLOAT NULL,
-	meanBaseRateIMACAdj	FLOAT NULL,
-	sumSBD				DOUBLE NULL,
-	sumSBDRaw			DOUBLE NULL,
-	primary key (sourceTypeID, polProcessID, modelYearID, fuelTypeID, regClassID, avgSpeedBinID)
+	meanbaserate		float null,
+	meanbaserateim		float null,
+	meanbaserateacadj	float null,
+	meanbaserateimacadj	float null,
+	sumsbd				double null,
+	sumsbdraw			double null,
+	primary key (sourcetypeid, polprocessid, modelyearid, fueltypeid, regclassid, avgspeedbinid)
 );
 
-TRUNCATE TABLE SBWeightedDistanceRate;
+TRUNCATE TABLE sbweighteddistancerate;
 
-drop table if exists distanceEmissionRate;
+drop table if exists distanceemissionrate;
 
-create table if not exists distanceEmissionRate (
-	polProcessID int not null,
-	fuelTypeID smallint not null,
-	sourceTypeID smallint not null,
-	modelYearID smallint not null,
-	avgSpeedBinID smallint not null,
-	ratePerMile double not null,
-	ratePerSHO double not null,
-	primary key (sourceTypeID, polProcessID, modelYearID, fuelTypeID, avgSpeedBinID)
+create table if not exists distanceemissionrate (
+	polprocessid int not null,
+	fueltypeid smallint not null,
+	sourcetypeid smallint not null,
+	modelyearid smallint not null,
+	avgspeedbinid smallint not null,
+	ratepermile double not null,
+	ratepersho double not null,
+	primary key (sourcetypeid, polprocessid, modelyearid, fueltypeid, avgspeedbinid)
 );
 
---	regClassID smallint not null,
---	primary key (sourceTypeID, polProcessID, modelYearID, fuelTypeID, regClassID, avgSpeedBinID)
+--	regclassid smallint not null,
+--	primary key (sourcetypeid, polprocessid, modelyearid, fueltypeid, regclassid, avgspeedbinid)
 
-truncate table distanceEmissionRate;
+truncate table distanceemissionrate;
 
-drop table if exists BaseRateByAge;
+drop table if exists baseratebyage;
 
-CREATE TABLE IF NOT EXISTS BaseRateByAge (
-	sourceTypeID         SMALLINT NOT NULL,
-	roadTypeID           SMALLINT NOT NULL,
-	avgSpeedBinID        SMALLINT NOT NULL DEFAULT '0',
-	hourDayID            SMALLINT NOT NULL DEFAULT '0',
-	polProcessID         int NOT NULL,
-	pollutantID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	processID            SMALLINT UNSIGNED NULL DEFAULT NULL,
-	modelYearID			 SMALLINT NOT NULL,
-	fuelTypeID			 SMALLINT NOT NULL,
-	ageGroupID			 SMALLINT NOT NULL,
-	regClassID			 SMALLINT NOT NULL,
-	opModeID			 SMALLINT NOT NULL,
+create table if not exists baseratebyage (
+	sourcetypeid         smallint not null,
+	roadtypeid           smallint not null,
+	avgspeedbinid        smallint not null default '0',
+	hourdayid            smallint not null default '0',
+	polprocessid         int not null,
+	pollutantid          smallint unsigned null default null,
+	processid            smallint unsigned null default null,
+	modelyearid			 smallint not null,
+	fueltypeid			 smallint not null,
+	agegroupid			 smallint not null,
+	regclassid			 smallint not null,
+	opmodeid			 smallint not null,
 
-	meanBaseRate		 FLOAT NULL,
-	meanBaseRateIM		 FLOAT NULL,
-	emissionRate		 FLOAT NULL,
-	emissionRateIM		 FLOAT NULL,
+	meanbaserate		 float null,
+	meanbaserateim		 float null,
+	emissionrate		 float null,
+	emissionrateim		 float null,
 
-	meanBaseRateACAdj	 FLOAT NULL,
-	meanBaseRateIMACAdj	 FLOAT NULL,
-	emissionRateACAdj    FLOAT NULL,
-	emissionRateIMACAdj  FLOAT NULL,
+	meanbaserateacadj	 float null,
+	meanbaserateimacadj	 float null,
+	emissionrateacadj    float null,
+	emissionrateimacadj  float null,
 
-	opModeFraction       FLOAT NULL,
-	opModeFractionRate   FLOAT NULL,
-	PRIMARY KEY (sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID, polProcessID, modelYearID, fuelTypeID, ageGroupID, regClassID, opModeID)
+	opmodefraction       float null,
+	opmodefractionrate   float null,
+	primary key (sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, polprocessid, modelyearid, fueltypeid, agegroupid, regclassid, opmodeid)
 );
 
-TRUNCATE TABLE BaseRateByAge;
+truncate table baseratebyage;
 
-drop table if exists BaseRate;
+drop table if exists baserate;
 
-CREATE TABLE IF NOT EXISTS BaseRate (
-	sourceTypeID         SMALLINT NOT NULL,
-	roadTypeID           SMALLINT NOT NULL,
-	avgSpeedBinID        SMALLINT NOT NULL DEFAULT '0',
-	hourDayID            SMALLINT NOT NULL DEFAULT '0',
-	polProcessID         int NOT NULL,
-	pollutantID          SMALLINT UNSIGNED NULL DEFAULT NULL,
-	processID            SMALLINT UNSIGNED NULL DEFAULT NULL,
-	modelYearID			 SMALLINT NOT NULL,
-	fuelTypeID			 SMALLINT NOT NULL,
-	regClassID			 SMALLINT NOT NULL,
-	opModeID			 SMALLINT NOT NULL,
+create table if not exists baserate (
+	sourcetypeid         smallint not null,
+	roadtypeid           smallint not null,
+	avgspeedbinid        smallint not null default '0',
+	hourdayid            smallint not null default '0',
+	polprocessid         int not null,
+	pollutantid          smallint unsigned null default null,
+	processid            smallint unsigned null default null,
+	modelyearid			 smallint not null,
+	fueltypeid			 smallint not null,
+	regclassid			 smallint not null,
+	opmodeid			 smallint not null,
 
-	meanBaseRate		 FLOAT NULL,
-	meanBaseRateIM		 FLOAT NULL,
-	emissionRate		 FLOAT NULL,
-	emissionRateIM		 FLOAT NULL,
+	meanbaserate		 float null,
+	meanbaserateim		 float null,
+	emissionrate		 float null,
+	emissionrateim		 float null,
 
-	meanBaseRateACAdj	 FLOAT NULL,
-	meanBaseRateIMACAdj	 FLOAT NULL,
-	emissionRateACAdj    FLOAT NULL,
-	emissionRateIMACAdj  FLOAT NULL,
+	meanbaserateacadj	 float null,
+	meanbaserateimacadj	 float null,
+	emissionrateacadj    float null,
+	emissionrateimacadj  float null,
 
-	opModeFraction       FLOAT NULL,
-	opModeFractionRate   FLOAT NULL,
-	PRIMARY KEY (sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID, polProcessID, modelYearID, fuelTypeID, regClassID, opModeID)
+	opmodefraction       float null,
+	opmodefractionrate   float null,
+	primary key (sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, polprocessid, modelyearid, fueltypeid, regclassid, opmodeid)
 );
 
-TRUNCATE TABLE BaseRate;
+truncate table baserate;
