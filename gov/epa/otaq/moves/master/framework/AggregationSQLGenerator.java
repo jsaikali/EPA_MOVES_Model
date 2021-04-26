@@ -669,7 +669,7 @@ public class AggregationSQLGenerator {
 				if(tableName.length() <= 0) {
 					continue;
 				}
-				sql = "update " + tablename + " set scc=concat('22',lpad(fueltypeid,2,'00'),lpad(sourcetypeid,2,'00'),lpad(roadtypeid,2,'00'),lpad(processid,2,'00'));";
+				sql = "update " + tableName + " set scc=concat('22',lpad(fueltypeid,2,'00'),lpad(sourcetypeid,2,'00'),lpad(roadtypeid,2,'00'),lpad(processid,2,'00'));";
 				workerSQLs.add(sql);
 			}
 			/*
@@ -710,11 +710,11 @@ public class AggregationSQLGenerator {
 			workerSQLs.add("drop table if exists workeroutputtemp;");
 			workerSQLs.add(createSQL+";");
 			//workerSQLs.add("flush tables;");
-			workerSQLs.add(workerInsertSQL + ") " + workerselectsql + " from movesworkeroutput "
+			workerSQLs.add(workerInsertSQL + ") " + workerSelectSQL + " from movesworkeroutput "
 					+ groupBy + ";");
 			workerSQLs.add("truncate movesworkeroutput;");
 			//workerSQLs.add("flush tables;");
-			String insertOutputSQL = "insert into movesworkeroutput (" + workeroutputtablefields + ") "
+			String insertOutputSQL = "insert into movesworkeroutput (" + workerOutputTableFields + ") "
 					+ selectSQLForWorkerOutput + " from workeroutputtemp;";
 			workerSQLs.add(insertOutputSQL+";");
 			//workerSQLs.add("flush tables;");
@@ -777,7 +777,7 @@ public class AggregationSQLGenerator {
 				if(i > 0) {
 					sql += ", ";
 				}
-				sql += affectedColumns[i] + "=coalesce(" + affectedcolumns[i] + ",0)";
+				sql += affectedColumns[i] + "=coalesce(" + affectedColumns[i] + ",0)";
 			}
 			sql += ", scc=coalesce(scc,'nothing');";
 			workerSQLs.add(sql);
@@ -1614,7 +1614,7 @@ public class AggregationSQLGenerator {
 
 		/*
 		System .out.println("masterselectsql=" + masterSelectSQL);
-		System .out.println("workerselectsql=" + workerSelectSQL);
+		System .out.println("workerSelectSQL=" + workerSelectSQL);
 		System .out.println("groupby=" + groupBy);
 		System .out.println("selectactivitysql=" + selectActivitySQL);
 		System .out.println("selectactivitynoscalesql=" + selectActivityNoScaleSQL);
@@ -1656,7 +1656,7 @@ public class AggregationSQLGenerator {
 			outputProcessorSQLs.add(createSQL);
 			outputProcessorSQLs.add(masterInsertSQL + ") " + masterSelectSQL
 					+ " from " + ExecutionRunSpec.getEmissionOutputTable()
-					+ " where movesrunid = " + activerunid + " and iterationid = "
+					+ " where movesrunid = " + activeRunID + " and iterationid = "
 					+ activeIterationID + " " + groupBy);
 			outputProcessorSQLs.add("optimize table " + ExecutionRunSpec.getEmissionOutputTable());
 			outputProcessorSQLs.add("delete from " + ExecutionRunSpec.getEmissionOutputTable()
@@ -1682,16 +1682,16 @@ public class AggregationSQLGenerator {
 			if(ExecutionRunSpec.getRunSpec().outputPopulation) {
 				outputProcessorSQLs.add(insertActivitySQL + ") " + selectActivitySQL
 						+ " from " + ExecutionRunSpec.getActivityOutputTable()
-						+ " where movesrunid = " + activerunid + " and iterationid = "
+						+ " where movesrunid = " + activeRunID + " and iterationid = "
 						+ activeIterationID + " and activitytypeid <> 6 " + groupByActivity);
 				outputProcessorSQLs.add(insertActivitySQL + ") " + selectActivityNoScaleSQL
 						+ " from " + ExecutionRunSpec.getActivityOutputTable()
-						+ " where movesrunid = " + activerunid + " and iterationid = "
+						+ " where movesrunid = " + activeRunID + " and iterationid = "
 						+ activeIterationID + " and activitytypeid = 6 " + groupByActivitySpatialOnly);
 			} else {
 				outputProcessorSQLs.add(insertActivitySQL + ") " + selectActivitySQL
 						+ " from " + ExecutionRunSpec.getActivityOutputTable()
-						+ " where movesrunid = " + activerunid + " and iterationid = "
+						+ " where movesrunid = " + activeRunID + " and iterationid = "
 						+ activeIterationID + " " + groupByActivity);
 			}
 
@@ -1722,7 +1722,7 @@ public class AggregationSQLGenerator {
 				outputProcessorSQLs.add(createBaseRateOutputSQL);
 				outputProcessorSQLs.add(insertBaseRateOutputSQL + ") " + selectBaseRateOutputSQL
 						+ " from baserateoutput"
-						+ " where movesrunid = " + activerunid + " and iterationid = "
+						+ " where movesrunid = " + activeRunID + " and iterationid = "
 						+ activeIterationID + " " + groupByBaseRateOutput);
 				outputProcessorSQLs.add("delete from baserateoutput"
 						+ " where movesrunid = " + activeRunID
@@ -1763,7 +1763,7 @@ public class AggregationSQLGenerator {
 			finalProcessSQLs.add(createSQL);
 			finalProcessSQLs.add(masterInsertSQL + ") " + masterSelectSQL
 					+ " from " + ExecutionRunSpec.getEmissionOutputTable()
-					+ " where movesrunid = " + activerunid + " and iterationid = "
+					+ " where movesrunid = " + activeRunID + " and iterationid = "
 					+ activeIterationID + " " + groupBy);
 			finalProcessSQLs.add("delete from " + ExecutionRunSpec.getEmissionOutputTable()
 					+ " where movesrunid = " + activeRunID
@@ -1813,26 +1813,26 @@ public class AggregationSQLGenerator {
 
 				finalProcessSQLs.add("drop table if exists nractivityweightsummary;");
 				finalProcessSQLs.add("drop table if exists nractivityweightdetail;");
-				finalProcessSQLs.add("create table nractivityweightsummary like " + executionrunspec.getactivityoutputtable() + ";");
+				finalProcessSQLs.add("create table nractivityweightsummary like " + ExecutionRunSpec.getactivityoutputtable() + ";");
 				finalProcessSQLs.add("alter table nractivityweightsummary add primary key (" + keyColumnNames + ");");
 				finalProcessSQLs.add("insert into nractivityweightsummary (" + keyColumnNames + ",activity)"
 						+ " select " + keyColumnNames + ",sum(activity) as activity"
-						+ " from " + executionrunspec.getactivityoutputtable() + " where activitytypeid=2" // weight by source hours (activity type 2)
+						+ " from " + ExecutionRunSpec.getactivityoutputtable() + " where activitytypeid=2" // weight by source hours (activity type 2)
 						+ " and movesrunid = "+ activeRunID
 						+ " and iterationid = " + activeIterationID
 						+ " group by " + keyColumnNames
 						+ " order by null;");
-				finalProcessSQLs.add("create table nractivityweightdetail like " + executionrunspec.getactivityoutputtable() + ";");
+				finalProcessSQLs.add("create table nractivityweightdetail like " + ExecutionRunSpec.getactivityoutputtable() + ";");
 				finalProcessSQLs.add("alter table nractivityweightdetail add primary key (" + detailKey + ");");
 				finalProcessSQLs.add("insert into nractivityweightdetail(" + detailKey + ",activity,activitytypeid)"
 						+ " select " + detailSelect + ","
 						+ " case when s.activity>0 then a.activity/s.activity else 0.0 end as activity,2 as activitytypeid"
-						+ " from " + executionrunspec.getactivityoutputtable() + " a"
+						+ " from " + ExecutionRunSpec.getactivityoutputtable() + " a"
 						+ " inner join nractivityweightsummary s using (" + keyColumnNames + ")"
 						+ " where a.activitytypeid=2" // weight by source hours (activity type 2)
 						+ " and movesrunid = "+ activeRunID
-						+ " and iterationid = " + activeiterationid + ";");
-				finalProcessSQLs.add("update " + executionrunspec.getactivityoutputtable() + " a, nractivityweightdetail set a.activity=nractivityweightdetail.activity*a.activity"
+						+ " and iterationid = " + activeIterationID + ";");
+				finalProcessSQLs.add("update " + ExecutionRunSpec.getactivityoutputtable() + " a, nractivityweightdetail set a.activity=nractivityweightdetail.activity*a.activity"
 						+ " where " + updateWhere
 						+ " and a.activitytypeid in (9,10,12);"); // avgHP, retroFrac, LF load factor
 				finalProcessSQLs.add("drop table if exists nractivityweightsummary;");
@@ -1866,7 +1866,7 @@ public class AggregationSQLGenerator {
 				finalProcessSQLs.add(insertActivitySQL + ") " + selectActivitySQL
 						+ " from " + ExecutionRunSpec.getActivityOutputTable()
 						+ " where movesrunid = " + activeRunID
-						+ " and iterationid = " + activeiterationid + " " + groupByActivity);
+						+ " and iterationid = " + activeIterationID + " " + groupByActivity);
 			}
 
 			finalProcessSQLs.add("delete from " + ExecutionRunSpec.getActivityOutputTable()
@@ -1896,7 +1896,7 @@ public class AggregationSQLGenerator {
 				finalProcessSQLs.add(insertBaseRateOutputSQL + ") " + selectBaseRateOutputSQL
 						+ " from baserateoutput"
 						+ " where movesrunid = " + activeRunID
-						+ " and iterationid = " + activeiterationid + " " + groupByBaseRateOutput);
+						+ " and iterationid = " + activeIterationID + " " + groupByBaseRateOutput);
 				finalProcessSQLs.add("delete from baserateoutput"
 						+ " where movesrunid = " + activeRunID
 						+ " and iterationid = " + activeIterationID);
