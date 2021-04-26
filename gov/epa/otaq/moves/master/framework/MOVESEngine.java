@@ -558,11 +558,11 @@ public class MOVESEngine implements LogHandler {
 	**/
 	private static boolean hasWrongHotellingTables(Connection db, DatabaseSelection dbSelection) {
 		String[] commands = {
-			"hotellingHoursPerDay", "select count(distinct yearID, zoneID, dayID) from hotellingHoursPerDay",
-			"hotellingHourFraction", "select count(distinct zoneID, dayID, hourID)+ifnull(sum(hourFraction),0) from hotellingHourFraction",
-			"hotellingAgeFraction", "select count(distinct zoneID, ageID) from hotellingAgeFraction",
-			"hotellingActivityDistribution", "select count(distinct zoneID, beginModelYearID, endModelYearID, opModeID) from hotellingActivityDistribution",
-			"hotellingMonthAdjust", "select count(distinct zoneID, monthID) from hotellingMonthAdjust"
+			"hotellinghoursperday", "select count(distinct yearid, zoneid, dayid) from hotellinghoursperday",
+			"hotellinghourfraction", "select count(distinct zoneid, dayid, hourid)+ifnull(sum(hourfraction),0) from hotellinghourfraction",
+			"hotellingagefraction", "select count(distinct zoneid, ageid) from hotellingagefraction",
+			"hotellingactivitydistribution", "select count(distinct zoneid, beginmodelyearid, endmodelyearid, opmodeid) from hotellingactivitydistribution",
+			"hotellingmonthadjust", "select count(distinct zoneid, monthid) from hotellingmonthadjust"
 		};
 		String tableName = "";
 		try {
@@ -673,8 +673,8 @@ public class MOVESEngine implements LogHandler {
 		String sql = "";
 
 		try {
-			sql = "update MOVESRun set expectedDONEFiles=" + howManyExpected
-					+ " where MOVESRunID=" + theInstance.activeRunID;
+			sql = "update movesrun set expecteddonefiles=" + howManyExpected
+					+ " where movesrunid=" + theInstance.activeRunID;
 			SQLRunner.executeSQL(outputConnection,sql);
 		} finally {
 			DatabaseConnectionManager.checkInConnection(MOVESDatabaseType.OUTPUT, outputConnection);
@@ -702,10 +702,10 @@ public class MOVESEngine implements LogHandler {
 
 			// Silently upgrade MOVESRun to include required columns
 			String[] upgradeStatements = {
-				"alter table MOVESRun add masterIDNumber VARCHAR(20) NULL DEFAULT NULL",
-				"alter table MOVESRun add expectedDONEFiles INTEGER UNSIGNED NULL DEFAULT NULL",
-				"alter table MOVESRun add retrievedDONEFiles INTEGER UNSIGNED NULL DEFAULT NULL",
-				"alter table MOVESRun add models VARCHAR(40) NOT NULL DEFAULT 'onroad'"
+				"alter table movesrun add masteridnumber varchar(20) null default null",
+				"alter table movesrun add expecteddonefiles integer unsigned null default null",
+				"alter table movesrun add retrieveddonefiles integer unsigned null default null",
+				"alter table movesrun add models varchar(40) not null default 'onroad'"
 			};
 			for(int i=0;i<upgradeStatements.length;i++) {
 				sql = upgradeStatements[i];
@@ -720,12 +720,12 @@ public class MOVESEngine implements LogHandler {
 			}
 
 			// Add to MOVESRun
-			sql = "INSERT INTO MOVESRun "
-				+ "(outputTimePeriod, timeUnits, distanceUnits, massUnits, "
-				+ "energyUnits, runSpecFileName, runSpecDescription, "
-				+ "runSpecFileDateTime, runDateTime, scale, "
-				+ "defaultDatabaseUsed, masterVersion, masterComputerID, "
-				+ "domain,masterIDNumber,retrievedDONEFiles,models) "
+			sql = "INSERT into movesrun "
+				+ "(outputtimeperiod, timeunits, distanceunits, massunits, "
+				+ "energyunits, runspecfilename, runspecdescription, "
+				+ "runspecfiledatetime, rundatetime, scale, "
+				+ "defaultdatabaseused, masterversion, mastercomputerid, "
+				+ "domain,masteridnumber,retrieveddonefiles,models) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, now(), ?, ?, ?, ?, ?, ?, 0, ?) ";
 			PreparedStatement statement = outputConnection.prepareStatement(sql);
 			ResultSet rs = null;
@@ -862,7 +862,7 @@ public class MOVESEngine implements LogHandler {
 						// Get the county ID from the first county-level geographic selection
 						countyID = runSpec.getCountyID();
 						if(countyID > 0) {
-							sql = "select countyName from County where countyID=" + countyID;
+							sql = "select countyname from county where countyid=" + countyID;
 							countyName = SQLRunner.executeScalarString(defaultConnection,sql);
 						}
 					}
@@ -879,25 +879,25 @@ public class MOVESEngine implements LogHandler {
 					masterFragment.domainDatabaseServer = serverName;
 					masterFragment.domainDatabaseName = databaseName;
 
-					sql = "update MOVESRun set domainCountyID=" + countyID
-							+ ", domainCountyName="
+					sql = "update movesrun set domaincountyid=" + countyID
+							+ ", domaincountyname="
 							+ DatabaseUtilities.escapeSQL(countyName,true)
-							+ ", domainDatabaseServer="
+							+ ", domaindatabaseserver="
 							+ DatabaseUtilities.escapeSQL(serverName,true)
-							+ ", domainDatabaseName="
+							+ ", domaindatabasename="
 							+ DatabaseUtilities.escapeSQL(databaseName,true)
-							+ " where MOVESRunID=" + runID;
+							+ " where movesrunid=" + runID;
 					SQLRunner.executeSQL(outputConnection,sql);
 				}
 
 				if(CompilationFlags.DO_RATES_FIRST) {
 					// pollutant.energyOrMass: "mass", "energy", "TEQ"
 					TreeMap<String,String> pollutantUnits = new TreeMap<String,String>();
-					sql = "select pollutantID, energyOrMass from pollutant";
+					sql = "select pollutantid, energyormass from pollutant";
 					query.open(defaultConnection,sql);
 					while(query.rs.next()) {
-						String pollutantID = query.rs.getString("pollutantID");
-						String energyOrMass = query.rs.getString("energyOrMass");
+						String pollutantID = query.rs.getString("pollutantid");
+						String energyOrMass = query.rs.getString("energyormass");
 						pollutantUnits.put(pollutantID,energyOrMass);
 					}
 					query.close();
@@ -918,14 +918,14 @@ public class MOVESEngine implements LogHandler {
 							processUnits = "start";
 							activityUnits = "start";
 						}
-						sql = "insert into BaseRateUnits ("
-								+ "MOVESRunID,"
-								+ "pollutantID,"
-								+ "processID,"
-								+ "meanBaseRateUnitsNumerator,"
-								+ "meanBaseRateUnitsDenominator,"
-								+ "emissionBaseRateUnitsNumerator,"
-								+ "emissionBaseRateUnitsDenominator) "
+						sql = "insert into baserateunits ("
+								+ "movesrunid,"
+								+ "pollutantid,"
+								+ "processid,"
+								+ "meanbaserateunitsnumerator,"
+								+ "meanbaserateunitsdenominator,"
+								+ "emissionbaserateunitsnumerator,"
+								+ "emissionbaserateunitsdenominator) "
 								+ "values ("
 								+ runID + ","
 								+ pollutantID + ","
@@ -985,10 +985,10 @@ public class MOVESEngine implements LogHandler {
 
 			// Silently upgrade MOVESRun to include required columns
 			String[] upgradeStatements = {
-				"alter table MOVESRun add masterIDNumber VARCHAR(20) NULL DEFAULT NULL",
-				"alter table MOVESRun add expectedDONEFiles INTEGER UNSIGNED NULL DEFAULT NULL",
-				"alter table MOVESRun add retrievedDONEFiles INTEGER UNSIGNED NULL DEFAULT NULL",
-				"alter table MOVESRun add models VARCHAR(40) NOT NULL DEFAULT 'onroad'"
+				"alter table movesrun add masteridnumber varchar(20) null default null",
+				"alter table movesrun add expecteddonefiles integer unsigned null default null",
+				"alter table movesrun add retrieveddonefiles integer unsigned null default null",
+				"alter table movesrun add models varchar(40) not null default 'onroad'"
 			         /** NR_IMP: **/
 			};
 			for(int i=0;i<upgradeStatements.length;i++) {
@@ -1004,12 +1004,12 @@ public class MOVESEngine implements LogHandler {
 			}
 
 			// Add to MOVESRun
-			sql = "INSERT INTO MOVESRun "
-				+ "(outputTimePeriod, timeUnits, distanceUnits, massUnits, "
-				+ "energyUnits, runSpecFileName, runSpecDescription, "
-				+ "runSpecFileDateTime, runDateTime, scale, "
-				+ "defaultDatabaseUsed, masterVersion, masterComputerID, "
-				+ "domain,masterIDNumber,retrievedDONEFiles,expectedDONEFiles,models) "
+			sql = "INSERT INTO movesrun "
+				+ "(outputtimeperiod, timeunits, distanceunits, massunits, "
+				+ "energyunits, runspecfilename, runspecdescription, "
+				+ "runspecfiledatetime, rundatetime, scale, "
+				+ "defaultdatabaseused, masterversion, mastercomputerid, "
+				+ "domain,masteridnumber,retrieveddonefiles,expecteddonefiles,models) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, now(), ?, ?, ?, ?, ?, ?, 0, ?, ?) ";
 			PreparedStatement statement = outputConnection.prepareStatement(sql);
 			ResultSet rs = null;
@@ -1085,14 +1085,14 @@ public class MOVESEngine implements LogHandler {
 					String serverName = StringUtilities.substring(masterFragment.domainDatabaseServer,0,100);
 					String databaseName = StringUtilities.substring(masterFragment.domainDatabaseName,0,200);
 
-					sql = "update MOVESRun set domainCountyID=" + masterFragment.domainCountyID
-							+ ", domainCountyName="
+					sql = "update movesrun set domaincountyid=" + masterFragment.domainCountyID
+							+ ", domaincountyname="
 							+ DatabaseUtilities.escapeSQL(countyName,true)
-							+ ", domainDatabaseServer="
+							+ ", domaindatabaseserver="
 							+ DatabaseUtilities.escapeSQL(serverName,true)
-							+ ", domainDatabaseName="
+							+ ", domaindatabasename="
 							+ DatabaseUtilities.escapeSQL(databaseName,true)
-							+ " where MOVESRunID=" + runID;
+							+ " where movesrunid=" + runID;
 					SQLRunner.executeSQL(outputConnection,sql);
 				}
 
@@ -1566,10 +1566,10 @@ public class MOVESEngine implements LogHandler {
 			Connection outputConnection = DatabaseConnectionManager.checkOutConnection
 					(MOVESDatabaseType.OUTPUT);
 			try {
-				sql = "INSERT INTO MOVESError ("
-								+"MOVESRunID, linkID, zoneID, countyID,"
-								+"stateID, hourID, dayID, monthID, yearID, pollutantID,"
-								+"processID, ErrorMessage) "
+				sql = "INSERT INTO moveserror ("
+								+"movesrunid, linkid, zoneid, countyid,"
+								+"stateid, hourid, dayid, monthid, yearid, pollutantid,"
+								+"processid, errormessage) "
 							+"VALUES ("
 								+"?, ?, ?, ?,"
 								+"?, ?, ?, ?, ?, ?,"
@@ -1823,7 +1823,7 @@ public class MOVESEngine implements LogHandler {
 			}
 			long now = System.currentTimeMillis() - theInstance.startTimeMillis;
 			String sql;
-			sql = "INSERT INTO MOVESEventLog (EventRecordID,MOVESRunID,EventName,WhenStarted) "
+			sql = "INSERT INTO moveseventlog (eventrecordid,movesrunid,eventname,whenstarted) "
 					+ "VALUES (" + theInstance.nextEventRecordID + ","
 					+ theInstance.activeRunID + ",'" + name + "'," + now + ")";
 			Connection db = null;
@@ -1863,9 +1863,9 @@ public class MOVESEngine implements LogHandler {
 			}
 			long now = System.currentTimeMillis() - theInstance.startTimeMillis;
 			String sql;
-			sql = "UPDATE MOVESEventLog SET WhenStopped=" + now
-					+ " WHERE EventRecordID=" + eventRecordID
-					+ " AND MOVESRunID=" + theInstance.activeRunID;
+			sql = "UPDATE moveseventlog set whenstopped=" + now
+					+ " WHERE eventrecordid=" + eventRecordID
+					+ " AND movesrunid=" + theInstance.activeRunID;
 			Connection db = null;
 			try {
 				db = DatabaseConnectionManager.checkOutConnection(MOVESDatabaseType.OUTPUT);
@@ -1895,8 +1895,8 @@ public class MOVESEngine implements LogHandler {
 				return;
 			}
 			String sql;
-			sql = "UPDATE MOVESEventLog SET Duration=WhenStopped-WhenStarted "
-					+ "WHERE WhenStopped IS NOT NULL";
+			sql = "UPDATE moveseventlog set duration=whenstopped-whenstarted "
+					+ "WHERE whenstopped IS NOT NULL";
 			Connection db = null;
 			try {
 				db = DatabaseConnectionManager.checkOutConnection(MOVESDatabaseType.OUTPUT);
