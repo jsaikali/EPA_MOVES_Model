@@ -1,0 +1,696 @@
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+Buildfile: /home/ec2-user/climateaction/EPA_MOVES_Model/build.xml
+
+run:
+     [java] Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+     [java] 4/27/21, 3:11 AM INFO: Loading system configuration...
+     [java] 4/27/21, 3:11 AM INFO: System configuration setting up the instance counter...
+     [java] 4/27/21, 3:11 AM INFO: System configuration clearing prior IDs...
+     [java] 4/27/21, 3:11 AM INFO: System configuration reading computer ID...
+     [java] 4/27/21, 3:11 AM INFO: Using master configuration file: MOVESConfiguration.txt
+     [java] 4/27/21, 3:11 AM INFO: System configuration loading configuration files...
+     [java] 4/27/21, 3:11 AM INFO: System configuration setting up temporary files...
+     [java] 4/27/21, 3:11 AM INFO: Folder for temporary files: /home/ec2-user/climateaction/EPA_MOVES_Model/MOVESTemporary
+     [java] 4/27/21, 3:11 AM INFO: System configuration acquiring distributed master ID...
+     [java] 4/27/21, 3:11 AM INFO: Done loading system configuration.
+     [java] 4/27/21, 3:11 AM INFO: Initializing default database connections...
+     [java] 4/27/21, 3:11 AM INFO: Reading default database table definitions...
+     [java] 4/27/21, 3:11 AM INFO: Done initializing database connections.
+     [java] 4/27/21, 3:11 AM INFO: ***Starting MOVES run***
+     [java] 4/27/21, 3:11 AM INFO: Master Release: MOVES3.0.1
+     [java] 4/27/21, 3:11 AM INFO: Master Computer ID: ip-172-31-37-47.us-east-2.compute.internal
+     [java] 4/27/21, 3:11 AM INFO: Master ID: 16840630064742651041
+     [java] 4/27/21, 3:11 AM INFO: RunSpec: /home/ec2-user/climateaction/EPA_MOVES_Model/joannarunspec.mrs
+     [java] 4/27/21, 3:11 AM INFO: Thread starting for class gov.epa.otaq.moves.master.framework.HeartbeatDetectionThread.
+     [java] 4/27/21, 3:11 AM INFO: Initializing default database connections...
+     [java] 4/27/21, 3:11 AM INFO: Database connections already established.
+     [java] 4/27/21, 3:11 AM INFO: Initializing MOVESExecution connections...
+     [java] 4/27/21, 3:11 AM INFO: HeartbeatDetectionThread !hasWorkerOnThisComputer
+     [java] 4/27/21, 3:11 AM INFO: Creating the execution database...
+     [java] 4/27/21, 3:11 AM INFO: Removing tables from the execution database...
+     [java] 4/27/21, 3:11 AM INFO: Creating empty tables in the execution database...
+     [java] 4/27/21, 3:11 AM INFO: Finalizing the execution database...
+     [java] 4/27/21, 3:11 AM INFO: Reading execution database table definitions...
+     [java] 4/27/21, 3:11 AM INFO: Done initializing database connections.
+     [java] 4/27/21, 3:11 AM INFO: Initializing output database connections...
+     [java] 4/27/21, 3:11 AM INFO: Done initializing database connections.
+     [java] 4/27/21, 3:11 AM INFO: Thread starting for class gov.epa.otaq.moves.master.framework.MasterLoop.
+     [java] 4/27/21, 3:11 AM INFO: Thread starting for class gov.epa.otaq.moves.master.framework.EmissionCalculatorInboundUnbundler.
+     [java] 4/27/21, 3:11 AM INFO: WARNING: Off-Network Idle requires all roadtypes. Selecting all roadtypes regardless of runspec.
+     [java] 4/27/21, 3:11 AM INFO: InputDataManager transferred all default tables.
+     [java] 4/27/21, 3:11 AM INFO: WARNING: Off-Network Idle requires all roadtypes. Selecting all roadtypes regardless of runspec.
+     [java] 4/27/21, 3:11 AM DEBUG: Starting WorkerCommandLine...
+     [java] 4/27/21, 3:11 AM INFO: testConnection = com.mysql.jdbc.JDBC4Connection@2b57aee3
+     [java] 4/27/21, 3:11 AM INFO: WorkerConfiguration loaded. distributedWorkerId = 14251689042102632124
+     [java] 4/27/21, 3:11 AM INFO: Worker Release: MOVES3.0.1
+     [java] 4/27/21, 3:11 AM INFO: Worker Computer ID: ip-172-31-37-47.us-east-2.compute.internal
+     [java] 4/27/21, 3:11 AM INFO: Worker ID: 14251689042102632124
+     [java] 4/27/21, 3:11 AM INFO: Thread starting for class gov.epa.otaq.moves.worker.framework.WorkerHeartbeatThread.
+     [java] 4/27/21, 3:11 AM INFO: Setting worker flag for 14251689042102632124 on port 13132
+     [java] 4/27/21, 3:11 AM INFO: Thread starting for class gov.epa.otaq.moves.worker.framework.RemoteEmissionsCalculator.
+     [java] 4/27/21, 3:11 AM DEBUG: Worker found 45 TODO files.
+     [java] 4/27/21, 3:11 AM INFO: Found work file: 14454910791931484444_4_TODO
+     [java] 4/27/21, 3:11 AM DEBUG: java.lang.NullPointerException
+     [java] 	at gov.epa.otaq.moves.worker.framework.RemoteEmissionsCalculator.processProgressFile(RemoteEmissionsCalculator.java:456)
+     [java] 	at gov.epa.otaq.moves.worker.framework.RemoteEmissionsCalculator.threadIterationGo(RemoteEmissionsCalculator.java:278)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:193)
+     [java] 
+     [java] null
+     [java] 4/27/21, 3:11 AM RUN_ERROR: Thread startup failed for class gov.epa.otaq.moves.worker.framework.RemoteEmissionsCalculator.
+     [java] 4/27/21, 3:11 AM INFO: Thread shutdown starting for class gov.epa.otaq.moves.worker.framework.RemoteEmissionsCalculator.
+     [java] 4/27/21, 3:11 AM INFO: Thread shutdown complete for class gov.epa.otaq.moves.worker.framework.RemoteEmissionsCalculator.
+     [java] 4/27/21, 3:11 AM INFO: WARNING: Off-Network Idle requires all roadtypes. Selecting all roadtypes regardless of runspec.
+     [java] 4/27/21, 3:11 AM INFO: InputDataManager transferred all default tables.
+     [java] 4/27/21, 3:11 AM INFO: InputDataManager transferred all NonRoad tables.
+     [java] 4/27/21, 3:11 AM INFO: WARNING: Off-Network Idle requires all roadtypes. Selecting all roadtypes regardless of runspec.
+     [java] 4/27/21, 3:11 AM INFO: WARNING: Off-Network Idle requires all roadtypes. Selecting all roadtypes regardless of runspec.
+     [java] 4/27/21, 3:11 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.modelYearMapping' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.ModelYearMapper.buildMappings(ModelYearMapper.java:58)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:321)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.modelYearMapping' doesn't exist
+     [java] 4/27/21, 3:11 AM RUN_ERROR: Unable to map model years using: select startUserModelYear, endUserModelYear, startStandardModelYear, endStandardModelYear from modelYearMapping order by startUserModelYear
+     [java] 4/27/21, 3:11 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.modelYearMapping' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner$Query.open(SQLRunner.java:102)
+     [java] 	at gov.epa.otaq.moves.master.framework.ModelYearMapper.buildMappings(ModelYearMapper.java:58)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeAfterExecutionDatabase(ExecutionRunSpec.java:321)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:285)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.modelYearMapping' doesn't exist
+     [java] 4/27/21, 3:11 AM RUN_ERROR: Unable to build model year mappings
+     [java] 4/27/21, 3:11 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.fuelFormulation' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:824)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:667)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQLCore(SQLRunner.java:341)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQL(SQLRunner.java:321)
+     [java] 	at gov.epa.otaq.moves.master.framework.DefaultDataMaker.addDefaultDataToExecutionDatabase(DefaultDataMaker.java:65)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:291)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.fuelFormulation' doesn't exist
+     [java] 4/27/21, 3:11 AM RUN_ERROR: Unable to create default data
+     [java] 4/27/21, 3:11 AM INFO: Class gov.epa.otaq.moves.master.implementation.general.MeteorologyGenerator has been instantiated.
+     [java] 4/27/21, 3:11 AM INFO: Class gov.epa.otaq.moves.master.implementation.ghg.BaseRateCalculator has been instantiated.
+     [java] 4/27/21, 3:11 AM INFO: Class gov.epa.otaq.moves.master.implementation.ghg.BaseRateGenerator has been instantiated.
+     [java] 4/27/21, 3:11 AM INFO: Class gov.epa.otaq.moves.master.implementation.ghg.CrankcaseEmissionCalculatorNonPM has been instantiated.
+     [java] 4/27/21, 3:11 AM INFO: Class gov.epa.otaq.moves.master.implementation.ghg.DistanceCalculator has been instantiated.
+     [java] 4/27/21, 3:11 AM INFO: Class gov.epa.otaq.moves.master.implementation.ghg.FuelEffectsGenerator has been instantiated.
+     [java] 4/27/21, 3:11 AM INFO: Class gov.epa.otaq.moves.master.implementation.ghg.RatesOperatingModeDistributionGenerator has been instantiated.
+     [java] 4/27/21, 3:11 AM INFO: Class gov.epa.otaq.moves.master.implementation.ghg.SourceBinDistributionGenerator has been instantiated.
+     [java] 4/27/21, 3:11 AM INFO: Class gov.epa.otaq.moves.master.implementation.ghg.StartOperatingModeDistributionGenerator has been instantiated.
+     [java] 4/27/21, 3:11 AM INFO: Class gov.epa.otaq.moves.master.implementation.ghg.TotalActivityGenerator has been instantiated.
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.general.MeteorologyGenerator subscribed to Running Exhaust at PROCESS/100
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.general.MeteorologyGenerator subscribed to Extended Idle Exhaust at PROCESS/100
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.general.MeteorologyGenerator subscribed to Start Exhaust at PROCESS/100
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.general.MeteorologyGenerator subscribed to Auxiliary Power Exhaust at PROCESS/100
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.general.MeteorologyGenerator subscribed to Tirewear at PROCESS/100
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.general.MeteorologyGenerator subscribed to Brakewear at PROCESS/100
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.BaseRateCalculator subscribed to Running Exhaust at MONTH/10
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.BaseRateCalculator subscribed to Start Exhaust at MONTH/10
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.BaseRateCalculator subscribed to Extended Idle Exhaust at MONTH/10
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.BaseRateCalculator subscribed to Auxiliary Power Exhaust at MONTH/10
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.BaseRateGenerator subscribed to Running Exhaust at YEAR/98
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.BaseRateGenerator subscribed to Start Exhaust at YEAR/98
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.BaseRateGenerator subscribed to Extended Idle Exhaust at YEAR/98
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.BaseRateGenerator subscribed to Auxiliary Power Exhaust at YEAR/98
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.BaseRateGenerator subscribed to Brakewear at YEAR/98
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.BaseRateGenerator subscribed to Tirewear at YEAR/98
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.DistanceCalculator subscribed to Running Exhaust at YEAR/10
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.FuelEffectsGenerator subscribed to Running Exhaust at PROCESS/99
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.FuelEffectsGenerator subscribed to Crankcase Running Exhaust at PROCESS/99
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.FuelEffectsGenerator subscribed to Start Exhaust at PROCESS/99
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.FuelEffectsGenerator subscribed to Crankcase Start Exhaust at PROCESS/99
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.FuelEffectsGenerator subscribed to Extended Idle Exhaust at PROCESS/99
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.FuelEffectsGenerator subscribed to Crankcase Extended Idle Exhaust at PROCESS/99
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.FuelEffectsGenerator subscribed to Auxiliary Power Exhaust at PROCESS/99
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.RatesOperatingModeDistributionGenerator subscribed to Running Exhaust at YEAR/100
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.RatesOperatingModeDistributionGenerator subscribed to Extended Idle Exhaust at YEAR/100
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.RatesOperatingModeDistributionGenerator subscribed to Auxiliary Power Exhaust at YEAR/100
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.SourceBinDistributionGenerator subscribed to Running Exhaust at YEAR/101
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.SourceBinDistributionGenerator subscribed to Start Exhaust at YEAR/101
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.SourceBinDistributionGenerator subscribed to Extended Idle Exhaust at YEAR/101
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.SourceBinDistributionGenerator subscribed to Auxiliary Power Exhaust at YEAR/101
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.SourceBinDistributionGenerator subscribed to Evap Permeation at YEAR/101
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.SourceBinDistributionGenerator subscribed to Evap Fuel Vapor Venting at YEAR/101
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.SourceBinDistributionGenerator subscribed to Evap Fuel Leaks at YEAR/101
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.SourceBinDistributionGenerator subscribed to Brakewear at YEAR/101
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.SourceBinDistributionGenerator subscribed to Tirewear at YEAR/101
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.StartOperatingModeDistributionGenerator subscribed to Start Exhaust at PROCESS/100
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.TotalActivityGenerator subscribed to Running Exhaust at YEAR/97
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.TotalActivityGenerator subscribed to Start Exhaust at YEAR/100
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.TotalActivityGenerator subscribed to Extended Idle Exhaust at YEAR/100
+     [java] 4/27/21, 3:11 AM DEBUG: gov.epa.otaq.moves.master.implementation.ghg.TotalActivityGenerator subscribed to Auxiliary Power Exhaust at YEAR/100
+     [java] 4/27/21, 3:11 AM INFO: WARNING: Off-Network Idle requires all roadtypes. Selecting all roadtypes regardless of runspec.
+     [java] 4/27/21, 3:11 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.MonthOfAnyYear' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:366)
+     [java] 	at gov.epa.otaq.moves.master.framework.WeeksInMonthHelper.loadMonthsFromDatabase(WeeksInMonthHelper.java:164)
+     [java] 	at gov.epa.otaq.moves.master.framework.WeeksInMonthHelper.getPortionOfWeekPerDayClause(WeeksInMonthHelper.java:136)
+     [java] 	at gov.epa.otaq.moves.master.framework.AggregationSQLGenerator.generateBaseSQLForAggregation(AggregationSQLGenerator.java:1590)
+     [java] 	at gov.epa.otaq.moves.master.framework.AggregationSQLGenerator.generateSQLsForWorker(AggregationSQLGenerator.java:706)
+     [java] 	at gov.epa.otaq.moves.master.framework.AggregationSQLGenerator.generateReportSQL(AggregationSQLGenerator.java:444)
+     [java] 	at gov.epa.otaq.moves.master.framework.ExecutionRunSpec.initializeBeforeIteration(ExecutionRunSpec.java:357)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.threadIterationGo(MasterLoop.java:412)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.calcHowManyOutboundBundlesWillBeCreated(MasterLoop.java:1019)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoop.startupInThread(MasterLoop.java:297)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:190)
+     [java] 
+     [java] Table 'movesexecution.MonthOfAnyYear' doesn't exist
+     [java] 4/27/21, 3:11 AM RUN_ERROR: Failed to get monthID from MonthOfAnyYear with: SELECT MonthID, noOfDays FROM MonthOfAnyYear
+     [java] 4/27/21, 3:11 AM INFO: 12 bundles will be used.
+     [java] 4/27/21, 3:11 AM INFO: Thread starting for class gov.epa.otaq.moves.master.framework.MasterLoopableThread.
+     [java] 4/27/21, 3:11 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.County' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:824)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:667)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQLCore(SQLRunner.java:341)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQL(SQLRunner.java:321)
+     [java] 	at gov.epa.otaq.moves.master.implementation.general.MeteorologyGenerator.doHeatIndex(MeteorologyGenerator.java:131)
+     [java] 	at gov.epa.otaq.moves.master.implementation.general.MeteorologyGenerator.executeLoop(MeteorologyGenerator.java:82)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoopableThread.threadIterationGo(MasterLoopableThread.java:122)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:193)
+     [java] 
+     [java] Table 'movesexecution.County' doesn't exist
+     [java] 4/27/21, 3:11 AM RUN_ERROR: SQL error in heat index.calculation
+     [java] SQL: update County set barometricPressure=( case	when altitude='H' then 24.59	else 28.94 end ) where (barometricPressure is null) or barometricPressure<=0
+     [java] 4/27/21, 3:11 AM INFO: MetGen setupTime=22 bundleTime=0
+     [java] 4/27/21, 3:11 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.fuelFormulation' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:824)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:667)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQLCore(SQLRunner.java:341)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQL(SQLRunner.java:321)
+     [java] 	at gov.epa.otaq.moves.master.framework.DefaultDataMaker.calculateVolToWtPercentOxy(DefaultDataMaker.java:634)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.FuelEffectsGenerator.alterHighEthanolFuelProperties(FuelEffectsGenerator.java:4433)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.FuelEffectsGenerator.setup(FuelEffectsGenerator.java:602)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.FuelEffectsGenerator.executeLoop(FuelEffectsGenerator.java:485)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoopableThread.threadIterationGo(MasterLoopableThread.java:122)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:193)
+     [java] 
+     [java] Table 'movesexecution.fuelFormulation' doesn't exist
+     [java] 4/27/21, 3:11 AM RUN_ERROR: Fuel Effects Generation failed
+     [java] 4/27/21, 3:11 AM INFO: FuelEffectsGenerator totalTime=0
+     [java] 4/27/21, 3:11 AM DEBUG: newSBD Generator called for process: Running Exhaust
+     [java] 4/27/21, 3:11 AM DEBUG: Processing pollutant-process: Carbon Monoxide (CO) - Running Exhaust
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=71
+     [java] 4/27/21, 3:11 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.sourceUseTypePhysics' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:824)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:667)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQLCore(SQLRunner.java:341)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQL(SQLRunner.java:321)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.SourceTypePhysics.setup(SourceTypePhysics.java:76)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.RatesOperatingModeDistributionGenerator.executeLoop(RatesOperatingModeDistributionGenerator.java:128)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoopableThread.threadIterationGo(MasterLoopableThread.java:122)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:193)
+     [java] 
+     [java] Table 'movesexecution.sourceUseTypePhysics' doesn't exist
+     [java] 4/27/21, 3:11 AM RUN_ERROR: Unable to setup sourceUseTypePhysicsMapping
+     [java] 4/27/21, 3:11 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.sourceUseTypePhysics' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:824)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:667)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQLCore(SQLRunner.java:341)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQL(SQLRunner.java:321)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.SourceTypePhysics.setup(SourceTypePhysics.java:76)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.RatesOperatingModeDistributionGenerator.executeLoop(RatesOperatingModeDistributionGenerator.java:128)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoopableThread.threadIterationGo(MasterLoopableThread.java:122)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:193)
+     [java] 
+     [java] Table 'movesexecution.sourceUseTypePhysics' doesn't exist
+     [java] 4/27/21, 3:11 AM RUN_ERROR: Rates Operating Mode Distribution Generation failed.
+     [java] 4/27/21, 3:11 AM INFO: ROMDG setupTime=0 bundleTime=0
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.addIndexes: alter table avgspeedbin add key speed1 (avgspeedbinid, avgbinspeed)
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.addIndexes ms=3
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.addIndexes: alter table avgspeedbin add key speed2 (avgbinspeed, avgspeedbinid)
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.addIndexes ms=3
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.addIndexes: analyze table avgspeedbin
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.addIndexes ms=0
+     [java] 4/27/21, 3:11 AM DEBUG: Base Rate Generator called for process: Running Exhaust
+     [java] 4/27/21, 3:11 AM DEBUG: Not normalizing sourcebin-weighted emission rates
+     [java] 4/27/21, 3:11 AM DEBUG: Not normalizing sourcebin-weighted distance rates
+     [java] 4/27/21, 3:11 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.distanceEmissionRate' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:824)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:667)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQLCore(SQLRunner.java:341)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQL(SQLRunner.java:321)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.BaseRateGenerator.makeDistanceRates(BaseRateGenerator.java:1492)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.BaseRateGenerator.generateSBWeightedEmissionRates(BaseRateGenerator.java:579)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.BaseRateGenerator.executeLoop(BaseRateGenerator.java:149)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoopableThread.threadIterationGo(MasterLoopableThread.java:122)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:193)
+     [java] 
+     [java] Table 'movesexecution.distanceEmissionRate' doesn't exist
+     [java] 4/27/21, 3:11 AM RUN_ERROR: Could not generate distance rates
+     [java] SQL: truncate table distanceEmissionRate
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 1 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 2 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 3 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 4 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 5 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 6 of 6
+     [java] 4/27/21, 3:11 AM INFO: BRG SBW running concurrent statements...
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDDISTANCERATE: 1 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATEBYAGE: 1 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATE: 1 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATEBYAGE: 2 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATE: 2 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDDISTANCERATE: 2 of 2
+     [java] 4/27/21, 3:11 AM INFO: BRG SBW done running concurrent statements.
+     [java] 4/27/21, 3:11 AM INFO: Statements done: 12
+     [java] 4/27/21, 3:11 AM INFO: Avg. Concurrent Statements: 1.75
+     [java] 4/27/21, 3:11 AM INFO: Max. Concurrent Statements: 3
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=190
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator: processID=1, applyAvgSpeedDistribution=true, useAvgSpeedBin=false, applySourceBinDistribution=true, keepOpModeID=false, avgSpeedFraction="*coalesce(avgspeedfraction,0)", sumSBD="*sumSBD"
+     [java] 4/27/21, 3:11 AM DEBUG: Run /home/ec2-user/climateaction/EPA_MOVES_Model/generators/externalgenerator64.exe in /home/ec2-user/climateaction/EPA_MOVES_Model/MOVESTemporary/GeneratorTemp
+     [java] 4/27/21, 3:11 AM DEBUG: Command line = 
+     [java] 4/27/21, 3:11 AM DEBUG: -class=BaseRateGenerator.generateBaseRates
+     [java] 4/27/21, 3:11 AM DEBUG: , 
+     [java] 4/27/21, 3:11 AM DEBUG: -db=movesexecution
+     [java] 4/27/21, 3:11 AM DEBUG: , 
+     [java] 4/27/21, 3:11 AM DEBUG: -dbuser=moves
+     [java] 4/27/21, 3:11 AM DEBUG: , 
+     [java] 4/27/21, 3:11 AM DEBUG: -dbpwd=moves
+     [java] 4/27/21, 3:11 AM DEBUG: , 
+     [java] 4/27/21, 3:11 AM DEBUG: -params=nOp,nASB,yASF,ySBD,nRaw,1,2019,0
+     [java] 4/27/21, 3:11 AM DEBUG: , 
+     [java] 4/27/21, 3:11 AM DEBUG: -isproject=0
+     [java] 4/27/21, 3:11 AM DEBUG: , 
+     [java] 4/27/21, 3:11 AM DEBUG: -saveromd=0
+     [java] 4/27/21, 3:11 AM DEBUG: 
+     [java] 4/27/21, 3:11 AM DEBUG: ERROR in Go generator, causing a panic: Error 1146: Table 'movesexecution.ageCategory' doesn't exist
+     [java] 4/27/21, 3:11 AM DEBUG: panic: Error 1146: Table 'movesexecution.ageCategory' doesn't exist
+     [java] 4/27/21, 3:11 AM DEBUG: 
+     [java] 4/27/21, 3:11 AM DEBUG: goroutine 1 [running]:
+     [java] 4/27/21, 3:11 AM DEBUG: gen/configuration.CheckErr(...)
+     [java] 4/27/21, 3:11 AM DEBUG: 	/home/ec2-user/climateaction/EPA_MOVES_Model/generators/configuration/configuration.go:122
+     [java] 4/27/21, 3:11 AM DEBUG: gen/configuration.TestExecutionDatabase()
+     [java] 4/27/21, 3:11 AM DEBUG: 	/home/ec2-user/climateaction/EPA_MOVES_Model/generators/configuration/configuration.go:135 +0x46e
+     [java] 4/27/21, 3:11 AM DEBUG: main.main()
+     [java] 4/27/21, 3:11 AM DEBUG: 	/home/ec2-user/climateaction/EPA_MOVES_Model/generators/externalgenerator.go:43 +0x2da
+     [java] 4/27/21, 3:11 AM INFO: Time spent on running the external generator (sec): 0.07599999755620956 for Process: 1 Running Exhaust
+     [java] State: 36
+     [java] County: 36001
+     [java] Zone: 360010
+     [java] Link: 3600101
+     [java] Road Type: 1
+     [java] Year: 2019
+     [java] Month: -1
+     [java] Day: -1
+     [java] Hour: -1
+     [java] Granularity: YEAR
+     [java] Priority: 98
+     [java] Phase: exec
+     [java] Module: gov.epa.otaq.moves.master.implementation.ghg.BaseRateGenerator
+     [java] Iteration: 1
+     [java] MovesRunID: 5
+     [java] 4/27/21, 3:11 AM DEBUG: Success running the external generator in BaseRateGenerator.generateBaseRates
+     [java] 4/27/21, 3:11 AM INFO: Statements done: 0
+     [java] 4/27/21, 3:11 AM INFO: Max. Concurrent Statements: 0
+     [java] 4/27/21, 3:11 AM DEBUG: Done with BaseRateGenerator processID=1, roadTypeID=0, yearID=2019
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateBaseRates ms=286
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=478
+     [java] 4/27/21, 3:11 AM DEBUG: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'movesexecution.MonthOfAnyYear' doesn't exist
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+     [java] 	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+     [java] 	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+     [java] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+     [java] 	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+     [java] 	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1052)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1521)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:381)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeQuery(SQLRunner.java:366)
+     [java] 	at gov.epa.otaq.moves.master.framework.WeeksInMonthHelper.loadMonthsFromDatabase(WeeksInMonthHelper.java:164)
+     [java] 	at gov.epa.otaq.moves.master.framework.WeeksInMonthHelper.getWeeksPerMonthSQLClause(WeeksInMonthHelper.java:79)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.TotalActivityGenerator.calculateVMTByRoadwayHour(TotalActivityGenerator.java:1479)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.TotalActivityGenerator.executeLoop(TotalActivityGenerator.java:215)
+     [java] 	at gov.epa.otaq.moves.master.framework.MasterLoopableThread.threadIterationGo(MasterLoopableThread.java:122)
+     [java] 	at gov.epa.otaq.moves.common.MOVESThread.run(MOVESThread.java:193)
+     [java] 
+     [java] Table 'movesexecution.MonthOfAnyYear' doesn't exist
+     [java] 4/27/21, 3:11 AM RUN_ERROR: Failed to get monthID from MonthOfAnyYear with: SELECT MonthID, noOfDays FROM MonthOfAnyYear
+     [java] 4/27/21, 3:11 AM INFO: TAG SourceTypeHour2 ms=19
+     [java] 4/27/21, 3:11 AM INFO: TAG averagespeed ms=9
+     [java] 4/27/21, 3:11 AM INFO: TAG shobyageroadwayhour ms=61
+     [java] 4/27/21, 3:11 AM INFO: TAG IdleHoursByAgeHour ms=2
+     [java] 4/27/21, 3:11 AM INFO: TAG StartsPerSampleVehicle ms=36
+     [java] 4/27/21, 3:11 AM INFO: TAG SourceTypesInStartsPerVehicle ms=8
+     [java] 4/27/21, 3:11 AM INFO: TAG StartsPerVehicle ms=24
+     [java] 4/27/21, 3:11 AM INFO: TAG StartsByAgeHour ms=19
+     [java] 4/27/21, 3:11 AM INFO: TAG SHPByAgeHour ms=19
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=198 focusTime=212
+     [java] 4/27/21, 3:11 AM INFO: Created bundle 1 for workers to process
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM DEBUG: ROMD calculateOpModeFractions processID=1
+     [java] 4/27/21, 3:11 AM DEBUG: RatesOpModeDistributionGenerator.calculateOpModeFractions ms=0
+     [java] 4/27/21, 3:11 AM INFO: ROMDG setupTime=0 bundleTime=0
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=478
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=374 focusTime=212
+     [java] 4/27/21, 3:11 AM INFO: Created bundle 2 for workers to process
+     [java] 4/27/21, 3:11 AM INFO: Created bundle 3 for workers to process
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: ROMDG setupTime=0 bundleTime=0
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=478
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=518 focusTime=212
+     [java] 4/27/21, 3:11 AM INFO: Created bundle 4 for workers to process
+     [java] 4/27/21, 3:11 AM INFO: Created bundle 5 for workers to process
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: ROMDG setupTime=0 bundleTime=0
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=478
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=667 focusTime=212
+     [java] 4/27/21, 3:11 AM INFO: Created bundle 6 for workers to process
+     [java] 4/27/21, 3:11 AM INFO: Created bundle 7 for workers to process
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: ROMDG setupTime=0 bundleTime=0
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=478
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=839 focusTime=212
+     [java] 4/27/21, 3:11 AM INFO: Created bundle 8 for workers to process
+     [java] 4/27/21, 3:11 AM INFO: Created bundle 9 for workers to process
+     [java] 4/27/21, 3:11 AM INFO: MetGen setupTime=22 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: StartOperatingModeDistributionGenerator setupTime=1805 totalTime=7
+     [java] 4/27/21, 3:11 AM DEBUG: newSBD Generator called for process: Start Exhaust
+     [java] 4/27/21, 3:11 AM DEBUG: Processing pollutant-process: Carbon Monoxide (CO) - Start Exhaust
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=58
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=925 focusTime=212
+     [java] 4/27/21, 3:11 AM DEBUG: Base Rate Generator called for process: Start Exhaust
+     [java] 4/27/21, 3:11 AM DEBUG: Not normalizing sourcebin-weighted emission rates
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 1 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 2 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 3 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 4 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 5 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 6 of 6
+     [java] 4/27/21, 3:11 AM INFO: BRG SBW running concurrent statements...
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDDISTANCERATE: 1 of 1
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATE: 1 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATE: 2 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATEBYAGE: 1 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATEBYAGE: 2 of 2
+     [java] 4/27/21, 3:11 AM INFO: BRG SBW done running concurrent statements.
+     [java] 4/27/21, 3:11 AM INFO: Statements done: 11
+     [java] 4/27/21, 3:11 AM INFO: Avg. Concurrent Statements: 1.0
+     [java] 4/27/21, 3:11 AM INFO: Max. Concurrent Statements: 1
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=29
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator: processID=2, applyAvgSpeedDistribution=false, useAvgSpeedBin=false, applySourceBinDistribution=true, keepOpModeID=true, avgSpeedFraction="", sumSBD="*sumSBD"
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator processID=2, roadTypeID=0, yearID=2019 has 1 iterations
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator executing concurrent SQL...
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #BASERATE: 1 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #BASERATE: 2 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #BASERATEBYAGE: 1 of 1
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator executing BaseRateByAgeHelper...
+     [java] 4/27/21, 3:11 AM INFO: 2118381561: #BASERATEBYAGE: Can't get stat of '/home/ec2-user/climateaction/EPA_MOVES_Model/Temp_BaseRateByAge_2_2019_21_202_0.txt' (Errcode: 13 "Permission denied")
+     [java] 4/27/21, 3:11 AM INFO: ERROR executing: 2118381561: #BASERATEBYAGE: insert into baseratebyage_2_2019 ( 	sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, polprocessid, modelyearid, fueltypeid, agegroupid, regclassid, opmodeid, 	opmodefraction, opmodefractionrate, meanbaserate, meanbaserateim, meanbaserateacadj, meanbaserateimacadj, emissionrate, emissionrateim, emissionrateacadj, emissionrateimacadj, processid, pollutantid) select 	romd.sourcetypeid, romd.roadtypeid, 0 as avgspeedbinid,		romd.hourdayid, romd.polprocessid, 	er.modelyearid, er.fueltypeid, er.agegroupid, er.regclassid, romd.opmodeid,		sum(opmodefraction*sumSBD),		sum(opmodefraction*sumSBD), 	sum(meanbaserate * opmodefraction), 	sum(meanbaserateim * opmodefraction), 	sum(meanbaserateacadj * opmodefraction), 	sum(meanbaserateimacadj * opmodefraction), 	sum(meanbaserate * opmodefraction), 	sum(meanbaserateim * opmodefraction), 	sum(meanbaserateacadj * opmodefraction), 	sum(meanbaserateimacadj * opmodefraction), 	mod(romd.polprocessid,100) as processid, floor(romd.polprocessid/100) as pollutantid from 	ratesopmodedistribution romd 	inner join Sbweightedemissionratebyage er on ( 		er.sourcetypeid = romd.sourcetypeid 		and er.polprocessid = romd.polprocessid 		and er.opmodeid = romd.opmodeid 	) where romd.sourcetypeid = 21 and romd.polprocessid = 202 group by 	romd.sourcetypeid, romd.polprocessid, romd.roadtypeid, romd.hourdayid, romd.opmodeid, 	er.modelyearid, er.fueltypeid, er.agegroupid, er.regclassid
+     [java] 4/27/21, 3:11 AM DEBUG: java.sql.SQLException: Can't get stat of '/home/ec2-user/climateaction/EPA_MOVES_Model/Temp_BaseRateByAge_2_2019_21_202_0.txt' (Errcode: 13 "Permission denied")
+     [java] 	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1073)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3597)
+     [java] 	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3529)
+     [java] 	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1990)
+     [java] 	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2151)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2619)
+     [java] 	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2569)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:824)
+     [java] 	at com.mysql.jdbc.StatementImpl.execute(StatementImpl.java:667)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQLCore(SQLRunner.java:341)
+     [java] 	at gov.epa.otaq.moves.common.SQLRunner.executeSQL(SQLRunner.java:321)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.BaseRateByAgeHelper.process(BaseRateByAgeHelper.java:384)
+     [java] 	at gov.epa.otaq.moves.master.implementation.ghg.BaseRateGenerator$2.onOverrideSQL(BaseRateGenerator.java:1532)
+     [java] 	at gov.epa.otaq.moves.common.TaggedSQLRunner$SQLTask.run(TaggedSQLRunner.java:173)
+     [java] 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+     [java] 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+     [java] 	at java.base/java.lang.Thread.run(Thread.java:834)
+     [java] 
+     [java] Can't get stat of '/home/ec2-user/climateaction/EPA_MOVES_Model/Temp_BaseRateByAge_2_2019_21_202_0.txt' (Errcode: 13 "Permission denied")
+     [java] 4/27/21, 3:11 AM RUN_ERROR: Could not generate base rates
+     [java] SQL: insert into baserate_2_2019 ( 	sourcetypeid, roadtypeid, avgspeedbinid, polprocessid, hourdayid, modelyearid, fueltypeid, regclassid, opmodeid, 	opmodefraction, opmodefractionrate, meanbaserate, meanbaserateim, meanbaserateacadj, meanbaserateimacadj, emissionrate, emissionrateim, emissionrateacadj, emissionrateimacadj, processid, pollutantid) select 	er.sourcetypeid, rsrt.roadtypeid, 0 as avgspeedbinid,		er.polprocessid, rshd.hourdayid, 	er.modelyearid, er.fueltypeid, er.regclassid, 300 as opmodeid,		sum(1*sumSBD),		sum(1*sumSBD), 	sum(meanbaserate), 	sum(meanbaserateim), 	sum(meanbaserateacadj), 	sum(meanbaserateimacadj), 	sum(meanbaserate), 	sum(meanbaserateim), 	sum(meanbaserateacadj), 	sum(meanbaserateimacadj), 	mod(er.polprocessid,100) as processid, floor(er.polprocessid/100) as pollutantid from 	sbweighteddistancerate er 	inner join runspecroadtype rsrt 	inner join runspechourday rshd where rsrt.roadtypeid > 1 and rsrt.roadtypeid < 100 and er.sourcetypeid = 21 and er.polprocessid = 202 group by		rsrt.roadtypeid, rshd.hourdayid, 	er.sourcetypeid,		er.polprocessid, 	er.modelyearid, er.fueltypeid, er.regclassid
+     [java] 4/27/21, 3:11 AM INFO: Statements done: 3
+     [java] 4/27/21, 3:11 AM INFO: Avg. Concurrent Statements: 1.0
+     [java] 4/27/21, 3:11 AM INFO: Max. Concurrent Statements: 1
+     [java] 4/27/21, 3:11 AM DEBUG: Done with BaseRateGenerator processID=2, roadTypeID=0, yearID=2019
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateBaseRates ms=771
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=1279
+     [java] 4/27/21, 3:11 AM INFO: Created bundle 10 for workers to process
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=925 focusTime=212
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=1279
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=925 focusTime=212
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=1279
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=925 focusTime=212
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=1280
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=925 focusTime=212
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=1280
+     [java] 4/27/21, 3:11 AM INFO: MetGen setupTime=22 bundleTime=0
+     [java] 4/27/21, 3:11 AM DEBUG: newSBD Generator called for process: Extended Idle Exhaust
+     [java] 4/27/21, 3:11 AM DEBUG: Processing pollutant-process: Carbon Monoxide (CO) - Extended Idle Exhaust
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=43
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=964 focusTime=212
+     [java] 4/27/21, 3:11 AM DEBUG: RatesOpModeDistributionGenerator.calculateOpModeFractions ms=1
+     [java] 4/27/21, 3:11 AM INFO: ROMDG setupTime=0 bundleTime=1
+     [java] 4/27/21, 3:11 AM DEBUG: Base Rate Generator called for process: Extended Idle Exhaust
+     [java] 4/27/21, 3:11 AM DEBUG: Not normalizing sourcebin-weighted emission rates
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 1 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 2 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 3 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 4 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 5 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 6 of 6
+     [java] 4/27/21, 3:11 AM INFO: BRG SBW running concurrent statements...
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDDISTANCERATE: 1 of 1
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATE: 1 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATE: 2 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATEBYAGE: 1 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATEBYAGE: 2 of 2
+     [java] 4/27/21, 3:11 AM INFO: BRG SBW done running concurrent statements.
+     [java] 4/27/21, 3:11 AM INFO: Statements done: 11
+     [java] 4/27/21, 3:11 AM INFO: Avg. Concurrent Statements: 1.0
+     [java] 4/27/21, 3:11 AM INFO: Max. Concurrent Statements: 1
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=32
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator: processID=90, applyAvgSpeedDistribution=false, useAvgSpeedBin=false, applySourceBinDistribution=true, keepOpModeID=false, avgSpeedFraction="", sumSBD="*sumSBD"
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator processID=90, roadTypeID=0, yearID=2019 has 0 iterations
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator executing concurrent SQL...
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator concurrent SQL done.
+     [java] 4/27/21, 3:11 AM INFO: Statements done: 0
+     [java] 4/27/21, 3:11 AM INFO: Max. Concurrent Statements: 0
+     [java] 4/27/21, 3:11 AM DEBUG: Done with BaseRateGenerator processID=90, roadTypeID=0, yearID=2019
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateBaseRates ms=1
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=1314
+     [java] 4/27/21, 3:11 AM INFO: Created bundle 11 for workers to process
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=964 focusTime=212
+     [java] 4/27/21, 3:11 AM INFO: ROMDG setupTime=0 bundleTime=1
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=1314
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=964 focusTime=212
+     [java] 4/27/21, 3:11 AM INFO: ROMDG setupTime=0 bundleTime=1
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=1314
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=964 focusTime=212
+     [java] 4/27/21, 3:11 AM INFO: ROMDG setupTime=0 bundleTime=1
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=1314
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=964 focusTime=212
+     [java] 4/27/21, 3:11 AM INFO: ROMDG setupTime=0 bundleTime=1
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=1314
+     [java] 4/27/21, 3:11 AM INFO: MetGen setupTime=22 bundleTime=0
+     [java] 4/27/21, 3:11 AM DEBUG: newSBD Generator called for process: Auxiliary Power Exhaust
+     [java] 4/27/21, 3:11 AM DEBUG: Processing pollutant-process: Carbon Monoxide (CO) - Auxiliary Power Exhaust
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=40
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=980 focusTime=212
+     [java] 4/27/21, 3:11 AM DEBUG: RatesOpModeDistributionGenerator.calculateOpModeFractions ms=1
+     [java] 4/27/21, 3:11 AM INFO: ROMDG setupTime=0 bundleTime=2
+     [java] 4/27/21, 3:11 AM DEBUG: Base Rate Generator called for process: Auxiliary Power Exhaust
+     [java] 4/27/21, 3:11 AM DEBUG: Not normalizing sourcebin-weighted emission rates
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 1 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 2 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 3 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 4 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 5 of 6
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #CORE: 6 of 6
+     [java] 4/27/21, 3:11 AM INFO: BRG SBW running concurrent statements...
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDDISTANCERATE: 1 of 1
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATE: 1 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATE: 2 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATEBYAGE: 1 of 2
+     [java] 4/27/21, 3:11 AM INFO: Running Statement: #SBWEIGHTEDEMISSIONRATEBYAGE: 2 of 2
+     [java] 4/27/21, 3:11 AM INFO: BRG SBW done running concurrent statements.
+     [java] 4/27/21, 3:11 AM INFO: Statements done: 11
+     [java] 4/27/21, 3:11 AM INFO: Avg. Concurrent Statements: 1.0
+     [java] 4/27/21, 3:11 AM INFO: Max. Concurrent Statements: 1
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=35
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator: processID=91, applyAvgSpeedDistribution=false, useAvgSpeedBin=false, applySourceBinDistribution=true, keepOpModeID=false, avgSpeedFraction="", sumSBD="*sumSBD"
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator processID=91, roadTypeID=0, yearID=2019 has 0 iterations
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator executing concurrent SQL...
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator concurrent SQL done.
+     [java] 4/27/21, 3:11 AM INFO: Statements done: 0
+     [java] 4/27/21, 3:11 AM INFO: Max. Concurrent Statements: 0
+     [java] 4/27/21, 3:11 AM DEBUG: Done with BaseRateGenerator processID=91, roadTypeID=0, yearID=2019
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateBaseRates ms=1
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=1350
+     [java] 4/27/21, 3:11 AM INFO: Created bundle 12 for workers to process
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=980 focusTime=212
+     [java] 4/27/21, 3:11 AM INFO: ROMDG setupTime=0 bundleTime=2
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=1350
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=980 focusTime=212
+     [java] 4/27/21, 3:11 AM INFO: ROMDG setupTime=0 bundleTime=2
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=1351
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=980 focusTime=212
+     [java] 4/27/21, 3:11 AM INFO: ROMDG setupTime=0 bundleTime=2
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=1351
+     [java] 4/27/21, 3:11 AM INFO: newSBDG setupTime=1 bundleTime=0
+     [java] 4/27/21, 3:11 AM INFO: TAG setupTime=47 growthTime=441 bundleTime=980 focusTime=212
+     [java] 4/27/21, 3:11 AM INFO: ROMDG setupTime=0 bundleTime=2
+     [java] 4/27/21, 3:11 AM DEBUG: BaseRateGenerator.generateSBWeightedEmissionRates ms=0
+     [java] 4/27/21, 3:11 AM INFO: BRG setupTime=8 bundleTime=1353
+     [java] 4/27/21, 3:11 AM INFO: Thread shutdown starting for class gov.epa.otaq.moves.master.framework.MasterLoop.
+     [java] 4/27/21, 3:11 AM INFO: Thread shutdown starting for class gov.epa.otaq.moves.master.framework.MasterLoopableThread.
+     [java] 4/27/21, 3:11 AM INFO: Thread shutdown complete for class gov.epa.otaq.moves.master.framework.MasterLoopableThread.
+     [java] 4/27/21, 3:11 AM INFO: Thread shutdown complete for class gov.epa.otaq.moves.master.framework.MasterLoop.
