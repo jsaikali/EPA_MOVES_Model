@@ -436,7 +436,7 @@ public class ExecutionRunSpec {
 			} else {
 				// The "YEAR" aggregation option uses one or more pseudo-months, so
 				// just load these months now.
-				sql = "SELECT monthID FROM MonthOfAnyYear ORDER BY monthID";
+				sql = "SELECT monthid from monthofanyyear order by monthid";
 				results = SQLRunner.executeQuery(targetDB,sql);
 				for(int i=0;results.next();i++) {
 					months.add(Integer.valueOf(results.getInt(1)));
@@ -1042,11 +1042,11 @@ public class ExecutionRunSpec {
 		}
 		
 		//Create database query string for all onroad roadtype selections
-		String sql = "SELECT roadTypeID, roadDesc, isAffectedByOnroad, isAffectedByNonroad"
-				+ " FROM roadtype"
-				+ " WHERE shouldDisplay = 1"
-				+ " AND isAffectedByOnroad = TRUE"
-				+ " ORDER BY roadDesc";
+		String sql = "SELECT roadtypeid, roaddesc, isaffectedbyonroad, isaffectedbynonroad"
+				+ " from roadtype"
+				+ " where shoulddisplay = 1"
+				+ " and isaffectedbyonroad = TRUE"
+				+ " ORDER BY roaddesc";
 				
 		//Query database using connection db with the query string
 		try {

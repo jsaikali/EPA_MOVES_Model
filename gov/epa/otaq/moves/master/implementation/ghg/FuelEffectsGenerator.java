@@ -113,26 +113,26 @@ public class FuelEffectsGenerator extends Generator {
 		float altRVP;
 
 		public void fromResultSet(ResultSet rs) throws SQLException {
-			fuelFormulationID = rs.getInt("fuelFormulationID");
-			fuelSubtypeID = rs.getInt("fuelSubtypeID");
-			RVP = rs.getFloat("RVP");
-			sulfurLevel = rs.getFloat("sulfurLevel");
-			ETOHVolume = rs.getFloat("ETOHVolume");
-			MTBEVolume = rs.getFloat("MTBEVolume");
-			ETBEVolume = rs.getFloat("ETBEVolume");
-			TAMEVolume = rs.getFloat("TAMEVolume");
-			aromaticContent = rs.getFloat("aromaticContent");
-			olefinContent = rs.getFloat("olefinContent");
-			benzeneContent = rs.getFloat("benzeneContent");
+			fuelFormulationID = rs.getInt("fuelformulationid");
+			fuelSubtypeID = rs.getInt("fuelsubtypeid");
+			RVP = rs.getFloat("rvp");
+			sulfurLevel = rs.getFloat("sulfurlevel");
+			ETOHVolume = rs.getFloat("etohvolume");
+			MTBEVolume = rs.getFloat("mtbevolume");
+			ETBEVolume = rs.getFloat("etbevolume");
+			TAMEVolume = rs.getFloat("tamevolume");
+			aromaticContent = rs.getFloat("aromaticcontent");
+			olefinContent = rs.getFloat("olefincontent");
+			benzeneContent = rs.getFloat("benzenecontent");
 			e200 = rs.getFloat("e200");
 			e300 = rs.getFloat("e300");
-			volToWtPercentOxy = rs.getFloat("volToWtPercentOxy");
-			bioDieselEsterVolume = rs.getFloat("BioDieselEsterVolume");
-			cetaneIndex = rs.getFloat("CetaneIndex");
-			PAHContent = rs.getFloat("PAHContent");
+			volToWtPercentOxy = rs.getFloat("voltowtpercentoxy");
+			bioDieselEsterVolume = rs.getFloat("biodieselestervolume");
+			cetaneIndex = rs.getFloat("cetaneindex");
+			PAHContent = rs.getFloat("pahcontent");
 			t50 = rs.getFloat("t50");
 			t90 = rs.getFloat("t90");
-			altRVP = rs.getFloat("altRVP");
+			altRVP = rs.getFloat("altrvp");
 		}
 	}
 
@@ -514,7 +514,7 @@ public class FuelEffectsGenerator extends Generator {
 			 * remaining generalFuelRatio entries that have the default ratio of 1.0.
 			 * @output generalFuelRatio
 			**/
-			String sql = "delete from GeneralFuelRatio where fuelEffectRatio=1 and fuelEffectRatioGPA=1";
+			String sql = "delete from generalfuelratio where fueleffectratio=1 and fueleffectratiogpa=1";
 			SQLRunner.executeSQL(db,sql);
 
 			/**
@@ -523,7 +523,7 @@ public class FuelEffectsGenerator extends Generator {
 			 * @output generalFuelRatio
 			 * @input modelYearMapping
 			**/
-			sql = "update generalFuelRatio set minModelYearID=MYRMAP(minModelYearID), maxModelYearID=MYRMAP(maxModelYearID)";
+			sql = "update generalfuelratio set minmodelyearid=MYRMAP(minmodelyearid), maxmodelyearid=MYRMAP(maxmodelyearid)";
 			sql = ExecutionRunSpec.theExecutionRunSpec.findAndConvertModelYearMapping(sql);
 			SQLRunner.executeSQL(db,sql);
 
@@ -534,15 +534,15 @@ public class FuelEffectsGenerator extends Generator {
 			 * @output ATRatioNonGas
 			 * @input ATRatio
 			**/
-			sql = "delete from ATRatioNonGas"
+			sql = "delete from atrationongas"
 					+ " where exists ("
 					+ " 	select *"
-					+ " 	from ATRatio"
-					+ " 	inner join fuelFormulation using (fuelFormulationID)"
-					+ " 	where ATRatio.polProcessID=ATRatioNonGas.polProcessID"
-					+ " 	and fuelFormulation.fuelSubtypeID=ATRatioNonGas.fuelSubtypeID"
-					+ " 	and minModelYearID <= round(modelYearGroupID/10000,0)"
-					+ " 	and maxModelYearID >= mod(modelYearGroupID,10000)"
+					+ " 	from atratio"
+					+ " 	inner join fuelformulation using (fuelformulationid)"
+					+ " 	where atratio.polprocessid=atrationongas.polprocessid"
+					+ " 	and fuelformulation.fuelsubtypeid=atrationongas.fuelsubtypeid"
+					+ " 	and minmodelyearid <= round(modelyeargroupid/10000,0)"
+					+ " 	and maxmodelyearid >= mod(modelyeargroupid,10000)"
 					+ " )";
 			SQLRunner.executeSQL(db,sql);
 			Logger.log(LogMessageCategory.INFO,"Removed potential overlaps between ATRatioNonGas and ATRatio");
@@ -552,7 +552,7 @@ public class FuelEffectsGenerator extends Generator {
 			Logger.logError(e,"Fuel Effects Generation failed");
 		} finally {
 			if(didAddAltRVP) {
-				String sql = "alter table fuelFormulation drop altRVP";
+				String sql = "alter table fuelformulation drop altrvp";
 				try {
 					SQLRunner.executeSQL(db,sql);
 				} catch(Exception e) {
@@ -595,14 +595,14 @@ public class FuelEffectsGenerator extends Generator {
 		 * altRVP=RVP.
 		 * @output fuelFormulation
 		**/
-		sql = "alter table fuelFormulation add altRVP float null";
+		sql = "alter table fuelformulation add altrvp float null";
 		SQLRunner.executeSQL(db,sql);
-		sql = "update fuelFormulation set altRVP=RVP";
+		sql = "update fuelformulation set altrvp=rvp";
 		SQLRunner.executeSQL(db,sql);
 		alterHighEthanolFuelProperties(db,highEthanolUsages); // steps 020-049
 
 		// Load allowed pollutant/processes
-		sql = "select polProcessID from RunSpecPollutantProcess";
+		sql = "select polprocessid from runspecpollutantprocess";
 		allowedPolProcesses = DatabaseUtilities.getIntegerSet(db,sql);
 		allowedProcesses.clear();
 		for(Iterator<Integer> i=allowedPolProcesses.iterator();i.hasNext();) {
@@ -618,7 +618,7 @@ public class FuelEffectsGenerator extends Generator {
 			 * @algorithm
 			 * @input modelYearCutPoints
 			**/
-			sql = "select cutPointName, modelYearID from modelYearCutPoints";
+			sql = "select cutpointname, modelyearid from modelyearcutpoints";
 			query.open(db,sql);
 			while(query.rs.next()) {
 				String cutPointName = query.rs.getString(1);
@@ -626,7 +626,7 @@ public class FuelEffectsGenerator extends Generator {
 				if(cutPointName == null || cutPointName.length() <= 0 || modelYearID == null) {
 					continue;
 				}
-				if(cutPointName.equalsIgnoreCase("HighestFuelPredictiveModelYear")) {
+				if(cutPointName.equalsIgnoreCase("highestfuelpredictivemodelyear")) {
 					try {
 						highestFuelPredictiveModelYear = Integer.parseInt(modelYearID);
 					} catch(Exception e) {
@@ -671,7 +671,7 @@ public class FuelEffectsGenerator extends Generator {
 	**/
 	void loadAllowedModelYears() throws SQLException {
 		allowedModelYears.clear();
-		String sql = "select modelYearID from RunSpecModelYear";
+		String sql = "select modelyearid from runspecmodelyear";
 		allowedModelYears = DatabaseUtilities.getIntegerSet(db,sql);
 	}
 
@@ -767,9 +767,9 @@ public class FuelEffectsGenerator extends Generator {
 		fuelModelIDs.clear();
 		fuelModelIDsCSV = "";
 
-		String sql = "select fuelModelID from fuelModelName"
-				+ " where calculationEngines like '%|" + calculationEngine + "|%'"
-				+ " order by fuelModelID";
+		String sql = "select fuelmodelid from fuelmodelname"
+				+ " where calculationengines like '%|" + calculationEngine + "|%'"
+				+ " order by fuelmodelid";
 		SQLRunner.Query query = new SQLRunner.Query();
 		try {
 			query.open(db,sql);
@@ -794,8 +794,8 @@ public class FuelEffectsGenerator extends Generator {
 	 * @throws SQLException if anything goes wrong
 	**/
 	void loadFuelParameters() throws SQLException {
-		loadParameters("select fuelParameterID, fuelParameterName, fuelParameterExpression"
-				+ " from fuelParameterName", fuelParameters);
+		loadParameters("select fuelparameterid, fuelparametername, fuelparameterexpression"
+				+ " from fuelparametername", fuelParameters);
 	}
 
 	/**
@@ -803,8 +803,8 @@ public class FuelEffectsGenerator extends Generator {
 	 * @throws SQLException if anything goes wrong
 	**/
 	void loadComplexModelParameters() throws SQLException {
-		loadParameters("select cmpID, cmpName, cmpExpression"
-				+ " from complexModelParameterName", cmParameters);
+		loadParameters("select cmpid, cmpname, cmpexpression"
+				+ " from complexmodelparametername", cmParameters);
 	}
 
 	/**
@@ -1098,10 +1098,10 @@ public class FuelEffectsGenerator extends Generator {
 	**/
 	void setComplexModelParameterVariables(ExpressionHolder holder, int polProcessID)
 			throws Exception {
-		String sql = "select fuelModelID, cmpID, coeff1, coeff2, coeff3"
-				+ " from complexModelParameters"
-				+ " where polProcessID=" + polProcessID
-				+ " and fuelModelID in (" + fuelModelIDsCSV + ")";
+		String sql = "select fuelmodelid, cmpid, coeff1, coeff2, coeff3"
+				+ " from complexmodelparameters"
+				+ " where polprocessid=" + polProcessID
+				+ " and fuelmodelid in (" + fuelModelIDsCSV + ")";
 		SQLRunner.Query query = new SQLRunner.Query();
 		try {
 			query.open(db,sql);
@@ -1131,16 +1131,16 @@ public class FuelEffectsGenerator extends Generator {
 			int modelYearGroupID) throws Exception {
 		TreeSet<Integer> loadedIDs = new TreeSet<Integer>();
 		String[] statements = {
-			"select fuelParameterID, baseValue, centeringValue, stdDevValue"
-					+ " from meanFuelParameters"
-					+ " where polProcessID=" + polProcessID
-					+ " and fuelTypeID=" + fuelTypeID
-					+ " and modelYearGroupID=" + modelYearGroupID,
-			"select fuelParameterID, baseValue, centeringValue, stdDevValue"
-					+ " from meanFuelParameters"
-					+ " where polProcessID=" + polProcessID
-					+ " and fuelTypeID=" + fuelTypeID
-					+ " and modelYearGroupID=0"
+			"select fuelparameterid, basevalue, centeringvalue, stddevvalue"
+					+ " from meanfuelparameters"
+					+ " where polprocessid=" + polProcessID
+					+ " and fueltypeid=" + fuelTypeID
+					+ " and modelyeargroupid=" + modelYearGroupID,
+			"select fuelparameterid, basevalue, centeringvalue, stddevvalue"
+					+ " from meanfuelparameters"
+					+ " where polprocessid=" + polProcessID
+					+ " and fueltypeid=" + fuelTypeID
+					+ " and modelyeargroupid=0"
 		};
 		String sql = "";
 		SQLRunner.Query query = new SQLRunner.Query();
@@ -1228,16 +1228,16 @@ public class FuelEffectsGenerator extends Generator {
 		holder.set("maxModelYear",maxModelYearID);
 
 		String[] statements = {
-			"select fuelModelID, fuelModelWtFactor"
-					+ " from fuelModelWtFactor"
-					+ " where modelYearGroupID=" + modelYearGroupID
-					+ " and ageID=" + ageID
-					+ " and fuelModelID in (" + fuelModelIDsCSV + ")",
-			"select fuelModelID, fuelModelWtFactor"
-					+ " from fuelModelWtFactor"
-					+ " where modelYearGroupID=0"
-					+ " and ageID=" + ageID
-					+ " and fuelModelID in (" + fuelModelIDsCSV + ")"
+			"select fuelmodelid, fuelmodelwtfactor"
+					+ " from fuelmodelwtfactor"
+					+ " where modelyeargroupid=" + modelYearGroupID
+					+ " and ageid=" + ageID
+					+ " and fuelmodelid in (" + fuelModelIDsCSV + ")",
+			"select fuelmodelid, fuelmodelwtfactor"
+					+ " from fuelmodelwtfactor"
+					+ " where modelyeargroupid=0"
+					+ " and ageid=" + ageID
+					+ " and fuelmodelid in (" + fuelModelIDsCSV + ")"
 		};
 		String sql = "";
 		SQLRunner.Query query = new SQLRunner.Query();
@@ -1287,9 +1287,9 @@ public class FuelEffectsGenerator extends Generator {
 	 * @throws SQLException if anything goes wrong
 	**/
 	TreeSet<Integer> getFuelTypeIDs(String restrictedPolProcessIDs) throws SQLException {
-		String sql = "select distinct fuelTypeID from meanFuelParameters";
+		String sql = "select distinct fueltypeid from meanfuelparameters";
 		if(restrictedPolProcessIDs != null && restrictedPolProcessIDs.length() > 0) {
-			sql += " where polProcessID in (" + restrictedPolProcessIDs + ")";
+			sql += " where polprocessid in (" + restrictedPolProcessIDs + ")";
 		}
 		return DatabaseUtilities.getIntegerSet(db,sql);
 	}
@@ -1301,10 +1301,10 @@ public class FuelEffectsGenerator extends Generator {
 	 * @throws SQLException if anything goes wrong
 	**/
 	int getBaseFormulation(int fuelTypeID) throws SQLException {
-		String sql = "select fuelFormulationID"
-				+ " from baseFuel"
-				+ " where calculationEngine='" + calculationEngine + "'"
-				+ " and fuelTypeID=" + fuelTypeID;
+		String sql = "select fuelformulationid"
+				+ " from basefuel"
+				+ " where calculationengine='" + calculationEngine + "'"
+				+ " and fueltypeid=" + fuelTypeID;
 		return (int)SQLRunner.executeScalar(db,sql);
 	}
 
@@ -1323,16 +1323,16 @@ public class FuelEffectsGenerator extends Generator {
 			return cacheID.intValue();
 		}
 		String[] statements = {
-			"select fuelFormulationID"
-					+ " from baseFuel"
-					+ " where calculationEngine='" + calculationEngine + "'"
-					+ " and fuelTypeID=" + fuelTypeID
-					+ " and modelYearGroupID=" + modelYearGroupID,
-			"select fuelFormulationID"
-					+ " from baseFuel"
-					+ " where calculationEngine='" + calculationEngine + "'"
-					+ " and fuelTypeID=" + fuelTypeID
-					+ " and modelYearGroupID=0"
+			"select fuelformulationid"
+					+ " from basefuel"
+					+ " where calculationengine='" + calculationEngine + "'"
+					+ " and fueltypeid=" + fuelTypeID
+					+ " and modelyeargroupid=" + modelYearGroupID,
+			"select fuelformulationid"
+					+ " from basefuel"
+					+ " where calculationengine='" + calculationEngine + "'"
+					+ " and fueltypeid=" + fuelTypeID
+					+ " and modelyeargroupid=0"
 		};
 		String sql = "";
 		int result = 0;
@@ -1357,10 +1357,10 @@ public class FuelEffectsGenerator extends Generator {
 		if(fuelHandler != null) {
 			return fuelHandler.getFuelFormulations(fuelTypeID);
 		}
-		String sql = "select fuelFormulationID"
-				+ " from fuelSubtype fst"
-				+ " inner join fuelFormulation ff on ff.fuelSubtypeID=fst.fuelSubtypeID"
-				+ " where fst.fuelTypeID=" + fuelTypeID;
+		String sql = "select fuelformulationid"
+				+ " from fuelsubtype fst"
+				+ " inner join fuelformulation ff on ff.fuelsubtypeid=fst.fuelsubtypeid"
+				+ " where fst.fueltypeid=" + fuelTypeID;
 		return DatabaseUtilities.getIntegerSet(db,sql);
 	}
 
@@ -1375,14 +1375,14 @@ public class FuelEffectsGenerator extends Generator {
 		if(fuelHandler != null) {
 			return fuelHandler.getFuelFormulations(fuelTypeID);
 		}
-		String sql = "select distinct ff.fuelFormulationID"
-				+ " from fuelSubtype fst"
-				+ " inner join fuelFormulation ff on ff.fuelSubtypeID=fst.fuelSubtypeID"
-				+ " inner join fuelSupply fs on fs.fuelFormulationID=ff.fuelFormulationID"
-				+ " inner join year y on y.fuelYearID=fs.fuelYearID"
-				+ " inner join runSpecYear rsy on rsy.yearID=y.yearID"
-				+ " where fst.fuelTypeID=" + fuelTypeID
-				+ " and marketShare > 0";
+		String sql = "select distinct ff.fuelformulationid"
+				+ " from fuelsubtype fst"
+				+ " inner join fuelformulation ff on ff.fuelsubtypeid=fst.fuelsubtypeid"
+				+ " inner join fuelsupply fs on fs.fuelformulationid=ff.fuelformulationid"
+				+ " inner join year y on y.fuelyearid=fs.fuelyearid"
+				+ " inner join runspecyear rsy on rsy.yearid=y.yearid"
+				+ " where fst.fueltypeid=" + fuelTypeID
+				+ " and marketshare > 0";
 		return DatabaseUtilities.getIntegerSet(db,sql);
 	}
 
@@ -1394,11 +1394,11 @@ public class FuelEffectsGenerator extends Generator {
 	 * @throws SQLException if anything goes wrong
 	**/
 	TreeSet<Integer> getPolProcessIDs(String restrictedPolProcessIDs) throws SQLException {
-		String sql = "select distinct polProcessID"
-				+ " from complexModelParameters"
-				+ " where fuelModelID in (" + fuelModelIDsCSV + ")";
+		String sql = "select distinct polprocessid"
+				+ " from complexmodelparameters"
+				+ " where fuelmodelid in (" + fuelModelIDsCSV + ")";
 		if(restrictedPolProcessIDs != null && restrictedPolProcessIDs.length() > 0) {
-			sql += " and polProcessID in (" + restrictedPolProcessIDs + ")";
+			sql += " and polprocessid in (" + restrictedPolProcessIDs + ")";
 		}
 		return DatabaseUtilities.getIntegerSet(db,sql);
 	}
@@ -1411,9 +1411,9 @@ public class FuelEffectsGenerator extends Generator {
 	 * @throws SQLException if anything goes wrong
 	**/
 	TreeSet<Integer> getModelYearGroupIDs(String restrictedPolProcessIDs) throws SQLException {
-		String sql = "select distinct modelYearGroupID from meanFuelParameters";
+		String sql = "select distinct modelyeargroupid from meanfuelparameters";
 		if(restrictedPolProcessIDs != null && restrictedPolProcessIDs.length() > 0) {
-			sql += " where polProcessID in (" + restrictedPolProcessIDs + ")";
+			sql += " where polprocessid in (" + restrictedPolProcessIDs + ")";
 		}
 		// get the model year groups, but try again in fuelModelWtFactor if the only model
 		// year group found is the generic 0.
@@ -1427,9 +1427,9 @@ public class FuelEffectsGenerator extends Generator {
 			return results;
 		}
 //Logger.log(LogMessageCategory.INFO,"Did not find modelYearGroupIDs using " + sql);
-		sql = "select distinct modelYearGroupID"
-				+ " from fuelModelWtFactor"
-				+ " where fuelModelID in (" + fuelModelIDsCSV + ")";
+		sql = "select distinct modelyeargroupid"
+				+ " from fuelmodelwtfactor"
+				+ " where fuelmodelid in (" + fuelModelIDsCSV + ")";
 		results = DatabaseUtilities.getIntegerSet(db,sql);
 //Logger.log(LogMessageCategory.INFO,"Found#3 " + results.size() + " modelYearGroupIDs using " + sql);
 		return results;
@@ -1441,7 +1441,7 @@ public class FuelEffectsGenerator extends Generator {
 	 * @throws SQLException if anything goes wrong
 	**/
 	TreeSet<Integer> getAgeIDs() throws SQLException {
-		String sql = "select distinct ageID from fuelModelWtFactor";
+		String sql = "select distinct ageid from fuelmodelwtfactor";
 		return DatabaseUtilities.getIntegerSet(db,sql);
 	}
 
@@ -1456,7 +1456,7 @@ public class FuelEffectsGenerator extends Generator {
 	void loadFuelFormulation(ExpressionHolder holder, int formulationID, String namePrefix)
 			throws Exception {
 		if(fuelFormulations.size() == 0) {
-			String sql = "select * from fuelFormulation";
+			String sql = "select * from fuelformulation";
 			SQLRunner.Query query = new SQLRunner.Query();
 			try {
 				query.open(db,sql);
@@ -1501,11 +1501,11 @@ public class FuelEffectsGenerator extends Generator {
 	 * @throws SQLException if anything goes wrong
 	**/
 	public void changeFuelFormulationNulls() throws SQLException {
-		String[] columnNames = { "RVP","sulfurLevel","ETOHVolume","MTBEVolume","ETBEVolume",
-				"TAMEVolume","aromaticContent","olefinContent","benzeneContent","e200","e300",
-				"volToWtPercentOxy","BioDieselEsterVolume","CetaneIndex","PAHContent","T50","T90"
+		String[] columnNames = { "rvp","sulfurlevel","etohvolume","mtbevolume","etbevolume",
+				"tamevolume","aromaticcontent","olefincontent","benzenecontent","e200","e300",
+				"voltowtpercentoxy","biodieselestervolume","cetaneindex","pahcontent","t50","t90"
 		};
-		String sql = "update fuelFormulation set ";
+		String sql = "update fuelformulation set ";
 		for(int i=0;i<columnNames.length;i++) {
 			if(i > 0) {
 				sql += ",";
@@ -1555,53 +1555,53 @@ Logger.log(LogMessageCategory.INFO,"doAirToxicsCalculations");
 		createComplexModelParameterVariables(holder);
 
 		String[] setupStatements = {
-			"drop table if exists tempAirToxicsA",
-			"create table if not exists tempAirToxicsA ("
-					+ " fuelTypeID int not null,"
-					+ " fuelFormulationID int not null,"
-					+ " polProcessID int not null,"
-					+ " pollutantID int not null,"
-					+ " processID int not null,"
-					+ " modelYearGroupID int not null,"
-					+ " minModelYearID int not null,"
-					+ " maxModelYearID int not null,"
-					+ " ageID int not null,"
-					+ " atDifferenceFraction double null"
+			"drop table if exists tempairtoxicsa",
+			"create table if not exists tempairtoxicsa ("
+					+ " fueltypeid int not null,"
+					+ " fuelformulationid int not null,"
+					+ " polprocessid int not null,"
+					+ " pollutantid int not null,"
+					+ " processid int not null,"
+					+ " modelyeargroupid int not null,"
+					+ " minmodelyearid int not null,"
+					+ " maxmodelyearid int not null,"
+					+ " ageid int not null,"
+					+ " atdifferencefraction double null"
 					//+ ", key (fuelFormulationID), key(polProcessID),"
 					//+ " key (pollutantID), key(processID),"
 					//+ " key(modelYearGroupID), key(ageID)"
 					+ " )",
 
-			"drop table if exists tempAirToxicsAVOC",
-			"create table if not exists tempAirToxicsAVOC ("
-					//+ " fuelTypeID int not null,"
-					+ " fuelFormulationID int not null,"
-					//+ " polProcessID int not null,"
-					+ " processID int not null,"
-					+ " modelYearGroupID int not null,"
-					//+ " minModelYearID int not null,"
-					//+ " maxModelYearID int not null,"
-					+ " ageID int not null,"
-					+ " monthGroupID int not null,"
-					+ " relATEmissionsVOC double null"
+			"drop table if exists tempairtoxicsavoc",
+			"create table if not exists tempairtoxicsavoc ("
+					//+ " fueltypeid int not null,"
+					+ " fuelformulationid int not null,"
+					//+ " polprocessid int not null,"
+					+ " processid int not null,"
+					+ " modelyeargroupid int not null,"
+					//+ " minmodelyearid int not null,"
+					//+ " maxmodelyearid int not null,"
+					+ " ageid int not null,"
+					+ " monthgroupid int not null,"
+					+ " relatemissionsvoc double null"
 					//+ ", key (processID, fuelFormulationID, modelYearGroupID, ageID, monthGroupID)"
 					//+ ", key (fuelFormulationID, modelYearGroupID, ageID, monthGroupID, relATEmissionsVOC)" // spanning index
 					+ " )",
 
-			"drop table if exists tempAirToxicsANonVOC",
-			"create table if not exists tempAirToxicsANonVOC ("
-					+ " fuelTypeID int not null,"
-					+ " fuelFormulationID int not null,"
-					+ " polProcessID int not null,"
-					+ " pollutantID int not null,"
-					+ " processID int not null,"
-					+ " modelYearGroupID int not null,"
-					+ " minModelYearID int not null,"
-					+ " maxModelYearID int not null,"
-					+ " ageID int not null,"
-					+ " monthGroupID int not null,"
-					+ " relATEmissions double null"
-					//+ ", key (polProcessID)"
+			"drop table if exists tempairtoxicsanonvoc",
+			"create table if not exists tempairtoxicsanonvoc ("
+					+ " fueltypeid int not null,"
+					+ " fuelformulationid int not null,"
+					+ " polprocessid int not null,"
+					+ " pollutantid int not null,"
+					+ " processid int not null,"
+					+ " modelyeargroupid int not null,"
+					+ " minmodelyearid int not null,"
+					+ " maxmodelyearid int not null,"
+					+ " ageid int not null,"
+					+ " monthgroupid int not null,"
+					+ " relatemissions double null"
+					//+ ", key (polprocessid)"
 					//+ ", key (fuelFormulationID, modelYearGroupID, ageID, monthGroupID)"
 					+ " )"
 		};
@@ -1623,7 +1623,7 @@ Logger.log(LogMessageCategory.INFO,"doAirToxicsCalculations");
 		TreeSet<Integer> modelYearGroupIDs = getModelYearGroupIDs(polProcessIDsLimitCSV);
 		ArrayList<ModelYearRange> modelYearRanges = getModelYearRanges(modelYearGroupIDs);
 		TreeSet<IntegerPair> fuelFormulationsRatioed = getIntegerPairSet(db,
-				"select distinct fuelFormulationID, polProcessID from atRatio");
+				"select distinct fuelformulationid, polprocessid from atratio");
 
 		TreeSet<Integer> candidatePolProcessIDs = getPolProcessIDs(polProcessIDsLimitCSV);
 		TreeSet<Integer> processIDs = new TreeSet<Integer>();
@@ -1668,9 +1668,9 @@ Logger.log(LogMessageCategory.INFO,"doAirToxicsCalculations");
 
 			for(Iterator<Integer> pi=processIDs.iterator();pi.hasNext();) {
 				int currentProcessID = pi.next().intValue();
-				sql = "truncate tempAirToxicsAVOC";
+				sql = "truncate tempairtoxicsavoc";
 				SQLRunner.executeSQL(db,sql);
-				sql = "truncate tempAirToxicsANonVOC";
+				sql = "truncate tempairtoxicsanonvoc";
 				SQLRunner.executeSQL(db,sql);
 
 				// Fill tempAirToxicsAVOC and tempAirToxicsANonVOC, filling VOC first
@@ -1707,7 +1707,7 @@ Logger.log(LogMessageCategory.INFO,"doAirToxicsCalculations");
 							continue;
 						}
 
-						sql = "truncate tempAirToxicsA";
+						sql = "truncate tempairtoxicsa";
 						SQLRunner.executeSQL(db,sql);
 
 						/**
@@ -1733,10 +1733,10 @@ Logger.log(LogMessageCategory.INFO,"doAirToxicsCalculations");
 							// These existing entries are most likely from GeneralFuelRatioExpression
 							int existingMinModelYearID = 0;
 							int existingMaxModelYearID = 0;
-							sql = "select min(minModelYearID), max(maxModelYearID)"
-									+ " from ATRatio"
-									+ " where polProcessID=" + polProcessID
-									+ " and fuelFormulationID in (" + formulationIDsCSV + ")";
+							sql = "select min(minmodelyearid), max(maxmodelyearid)"
+									+ " from atratio"
+									+ " where polprocessid=" + polProcessID
+									+ " and fuelformulationid in (" + formulationIDsCSV + ")";
 							try {
 								query.open(db,sql);
 								if(query.rs.next()) {
@@ -1816,7 +1816,7 @@ Logger.log(LogMessageCategory.INFO,"doAirToxicsCalculations");
 								**/
 								Optimizer optimizer = new Optimizer(holder,
 										new String[] { "ff_target." },null);
-								IExpressionNode node = holder.getExpression("atDifferenceFraction").deepCopy();
+								IExpressionNode node = holder.getExpression("atdifferencefraction").deepCopy();
 								node = optimizer.optimize(node);
 								String expressionText = node.getExpressionText(holder);
 /*
@@ -1835,23 +1835,23 @@ if(ageID == 0) {
 								 * @input fuelFormulation
 								 * @input Complex Model expressions
 								**/
-								sql = "insert into tempAirToxicsA (fuelTypeID, fuelFormulationID,"
-										+ " polProcessID, pollutantID, processID,"
-										+ " modelYearGroupID, minModelYearID, maxModelYearID, ageID, "
-										+ " atDifferenceFraction)"
-										+ " select " + fuelTypeID + ", fuelFormulationID"
+								sql = "insert into tempairtoxicsa (fueltypeid, fuelformulationid,"
+										+ " polprocessid, pollutantid, processid,"
+										+ " modelyeargroupid, minmodelyearid, maxmodelyearid, ageid, "
+										+ " atdifferencefraction)"
+										+ " select " + fuelTypeID + ", fuelformulationid"
 										+ "," + polProcessID + "," + pollutantID + "," + processID
 										+ "," + modelYearGroupID + "," + minModelYearID
 										+ "," + maxModelYearID + "," + ageID
-										+ ",(" + expressionText + ") as atDifferenceFraction"
-										+ " from fuelFormulation as ff_target"
-										+ " where fuelFormulationID in (" + formulationIDsCSV + ")";
+										+ ",(" + expressionText + ") as atdifferencefraction"
+										+ " from fuelformulation as ff_target"
+										+ " where fuelformulationid in (" + formulationIDsCSV + ")";
 								//Logger.log(LogMessageCategory.INFO,"sql=" + sql);
 								SQLRunner.executeSQL(db,sql);
 							} // end of ageID loop
 						} // enf of modelYearGroupID loop
 
-						sql = "alter table tempAirToxicsA add key idx1 (polProcessID)";
+						sql = "alter table tempairtoxicsa add key idx1 (polprocessid)";
 						SQLRunner.executeSQL(db,sql);
 
 						// Standardize entries that have no effect
@@ -1861,7 +1861,7 @@ if(ageID == 0) {
 						 * @algorithm Provide default atDifference entries. atDifference = 0 when null.
 						 * @output tempAirToxicsA
 						**/
-						sql = "update tempAirToxicsA set atDifferenceFraction=0 where atDifferenceFraction is null";
+						sql = "update tempairtoxicsa set atdifferencefraction=0 where atdifferencefraction is null";
 						SQLRunner.executeSQL(db,sql);
 
 						if(pollutantPhase == 0) { // If doing VOCs
@@ -1876,19 +1876,19 @@ if(ageID == 0) {
 							 * @input tempAirToxicsA
 							 * @condition VOC
 							**/
-							sql = "insert into tempAirToxicsAVOC (processID,"
-									+ " 	fuelFormulationID,"
-									+ " 	modelYearGroupID, ageID,"
-									+ " 	monthGroupID,"
-									+ " 	relATEmissionsVOC)"
-									//+ " select b.polProcessID, t.processID, "
-									+ " select t.processID, "
-									+ " 	t.fuelFormulationID,"
-									+ " 	t.modelYearGroupID, t.ageID,"
-									+ " 	b.monthGroupID,"
-									+ " 	(atBaseEmissions*(1.0+atDifferenceFraction)) as relATEmissionsVOC"
-									+ " from atBaseEmissions b"
-									+ " inner join tempAirToxicsA t on t.polProcessID=b.polProcessID";
+							sql = "insert into tempairtoxicsavoc (processid,"
+									+ " 	fuelformulationid,"
+									+ " 	modelyeargroupid, ageid,"
+									+ " 	monthgroupid,"
+									+ " 	relatemissionsvoc)"
+									//+ " select b.polprocessid, t.processid, "
+									+ " select t.processid, "
+									+ " 	t.fuelformulationid,"
+									+ " 	t.modelyeargroupid, t.ageid,"
+									+ " 	b.monthgroupid,"
+									+ " 	(atbaseemissions*(1.0+atdifferencefraction)) as relatemissionsvoc"
+									+ " from atbaseemissions b"
+									+ " inner join tempairtoxicsa t on t.polprocessid=b.polprocessid";
 									//+ " where pollutantID=87"; filtering is already done via pollutantPhase
 							SQLRunner.executeSQL(db,sql);
 
@@ -1903,18 +1903,18 @@ if(ageID == 0) {
 							 * @input tempAirToxicsA
 							 * @condition Non-VOC pollutants
 							**/
-							sql = "insert into tempAirToxicsANonVOC (polProcessID, pollutantID, processID,"
-									+ " 	fuelTypeID, fuelFormulationID,"
-									+ " 	modelYearGroupID, minModelYearID, maxModelYearID, ageID,"
-									+ " 	monthGroupID,"
-									+ " 	relATEmissions)"
-									+ " select b.polProcessID, t.pollutantID, t.processID, "
-									+ " 	t.fuelTypeID, t.fuelFormulationID,"
-									+ " 	t.modelYearGroupID, t.minModelYearID, t.maxModelYearID, t.ageID,"
-									+ " 	b.monthGroupID,"
-									+ " 	(atBaseEmissions*(1.0+atDifferenceFraction)) as relATEmissions"
-									+ " from atBaseEmissions b"
-									+ " inner join tempAirToxicsA t on t.polProcessID=b.polProcessID";
+							sql = "insert into tempairtoxicsanonvoc (polprocessid, pollutantid, processid,"
+									+ " 	fueltypeid, fuelformulationid,"
+									+ " 	modelyeargroupid, minmodelyearid, maxmodelyearid, ageid,"
+									+ " 	monthgroupid,"
+									+ " 	relatemissions)"
+									+ " select b.polprocessid, t.pollutantid, t.processid, "
+									+ " 	t.fueltypeid, t.fuelformulationid,"
+									+ " 	t.modelyeargroupid, t.minmodelyearid, t.maxmodelyearid, t.ageid,"
+									+ " 	b.monthgroupid,"
+									+ " 	(atbaseemissions*(1.0+atdifferencefraction)) as relatemissions"
+									+ " from atbaseemissions b"
+									+ " inner join tempairtoxicsa t on t.polprocessid=b.polprocessid";
 									//+ " where pollutantID<>87"; filtering is already done via pollutantPhase
 							SQLRunner.executeSQL(db,sql);
 
@@ -1922,23 +1922,23 @@ if(ageID == 0) {
 							//SQLRunner.executeSQL(db,sql);
 						}
 
-						sql = "alter table tempAirToxicsA drop index idx1";
+						sql = "alter table tempairtoxicsa drop index idx1";
 						SQLRunner.executeSQL(db,sql);
 					} // end polProcess
 				} // end of pollutantPhase
 
-				sql = "alter table tempAirToxicsAVOC"
-						+ " add key idx3 (fuelFormulationID, modelYearGroupID, ageID, monthGroupID)";
+				sql = "alter table tempairtoxicsavoc"
+						+ " add key idx3 (fuelformulationid, modelyeargroupid, ageid, monthgroupid)";
 				SQLRunner.executeSQL(db,sql);
 
-				sql = "analyze table tempAirToxicsAVOC";
+				sql = "analyze table tempairtoxicsavoc";
 				SQLRunner.executeSQL(db,sql);
 
-				sql = "alter table tempAirToxicsANonVOC"
-						+ " add key idx4 (fuelFormulationID, modelYearGroupID, ageID, monthGroupID)";
+				sql = "alter table tempairtoxicsanonvoc"
+						+ " add key idx4 (fuelformulationid, modelyeargroupid, ageid, monthgroupid)";
 				SQLRunner.executeSQL(db,sql);
 
-				sql = "analyze table tempAirToxicsANonVOC";
+				sql = "analyze table tempairtoxicsanonvoc";
 				SQLRunner.executeSQL(db,sql);
 
 				if(!didDropATRatioIndexes) {
@@ -1955,24 +1955,24 @@ if(ageID == 0) {
 				 * @input tempAirToxicsAVOC
 				 * @output ATRatio
 				**/
-				sql = "insert into ATRatio (fuelTypeID, fuelFormulationID, polProcessID, "
-						+ " 	minModelYearID, maxModelYearID, ageID, monthGroupID, atRatio)"
-						+ " select b.fuelTypeID, b.fuelFormulationID, b.polProcessID, "
-						+ " 	b.minModelYearID, b.maxModelYearID, b.ageID, b.monthGroupID,"
-						+ " 	(case when relATEmissionsVOC <> 0 then (relATEmissions/relATEmissionsVOC) else 0 end) as atRatio"
-						+ " from tempAirToxicsANonVOC as b"
-						+ " inner join tempAirToxicsAVOC v on ("
-						//+ " 	v.processID=b.processID and " the processes are always the same due to process looping logic
-						+ " 	v.fuelFormulationID=b.fuelFormulationID"
-						+ " 	and v.modelYearGroupID=b.modelYearGroupID and v.ageID=b.ageID"
-						+ " 	and v.monthGroupID=b.monthGroupID"
+				sql = "insert into atratio (fueltypeid, fuelformulationid, polprocessid, "
+						+ " 	minmodelyearid, maxmodelyearid, ageid, monthgroupid, atratio)"
+						+ " select b.fueltypeid, b.fuelformulationid, b.polprocessid, "
+						+ " 	b.minmodelyearid, b.maxmodelyearid, b.ageid, b.monthgroupid,"
+						+ " 	(case when relatemissionsvoc <> 0 then (relatemissions/relatemissionsvoc) else 0 end) as atratio"
+						+ " from tempairtoxicsanonvoc as b"
+						+ " inner join tempairtoxicsavoc v on ("
+						//+ " 	v.processid=b.processid and " the processes are always the same due to process looping logic
+						+ " 	v.fuelformulationid=b.fuelformulationid"
+						+ " 	and v.modelyeargroupid=b.modelyeargroupid and v.ageid=b.ageid"
+						+ " 	and v.monthgroupid=b.monthgroupid"
 						+ " )";
 				SQLRunner.executeSQL(db,sql);
 
-				sql = "alter table tempAirToxicsAVOC drop index idx3";
+				sql = "alter table tempairtoxicsavoc drop index idx3";
 				SQLRunner.executeSQL(db,sql);
 
-				sql = "alter table tempAirToxicsANonVOC drop index idx4";
+				sql = "alter table tempairtoxicsanonvoc drop index idx4";
 				SQLRunner.executeSQL(db,sql);
 			} // end pi iteration of process IDs
 		} // end fuelTypeIDs iteration
@@ -2008,8 +2008,8 @@ if(ageID == 0) {
 		}
 		Logger.log(LogMessageCategory.INFO,"Creating ATRatio indexes");
 		String[] statements = {
-			"alter table ATRatio add key atratio_key1 (fuelFormulationID, polProcessID, minModelYearID)",
-			"alter table ATRatio add key atratio_key2 (polProcessID, fuelTypeID, monthGroupID, minModelYearID, ageID, maxModelYearID, fuelFormulationID)"
+			"alter table atratio add key atratio_key1 (fuelformulationid, polprocessid, minmodelyearid)",
+			"alter table atratio add key atratio_key2 (polprocessid, fueltypeid, monthgroupid, minmodelyearid, ageid, maxmodelyearid, fuelformulationid)"
 		};
 		long startMillis, endMillis;
 		for(int i=0;i<statements.length;i++) {
@@ -2031,8 +2031,8 @@ if(ageID == 0) {
 		}
 		// Here upon transition from 0 to -1, i.e. the first drop
 		String[] statements = {
-			"alter table ATRatio drop index atratio_key1",
-			"alter table ATRatio drop index atratio_key2"
+			"alter table atratio drop index atratio_key1",
+			"alter table atratio drop index atratio_key2"
 		};
 		Logger.log(LogMessageCategory.INFO,"Dropping ATRatio indexes");
 		for(int i=0;i<statements.length;i++) {
@@ -2074,8 +2074,8 @@ if(ageID == 0) {
 		}
 		Logger.log(LogMessageCategory.INFO,"Creating criteriaRatio indexes");
 		String[] statements = {
-			"alter table criteriaRatio add key crFuelFormulation (polProcessID, fuelFormulationID)",
-			"alter table criteriaRatio add key crCommon (polProcessID, modelYearID, ageID)"
+			"alter table criteriaratio add key crfuelformulation (polprocessid, fuelformulationid)",
+			"alter table criteriaratio add key crcommon (polprocessid, modelyearid, ageid)"
 		};
 		long startMillis, endMillis;
 		for(int i=0;i<statements.length;i++) {
@@ -2097,8 +2097,8 @@ if(ageID == 0) {
 		}
 		// Here upon transition from 0 to -1, i.e. the first drop
 		String[] statements = {
-			"alter table criteriaRatio drop index crFuelFormulation",
-			"alter table criteriaRatio drop index crCommon"
+			"alter table criteriaratio drop index crfuelformulation",
+			"alter table criteriaratio drop index crcommon"
 		};
 		Logger.log(LogMessageCategory.INFO,"Dropping criteriaRatio indexes");
 		for(int i=0;i<statements.length;i++) {
@@ -2154,19 +2154,19 @@ Logger.log(LogMessageCategory.INFO,"doCOCalculations");
 		createComplexModelParameterVariables(holder);
 
 		String[] setupStatements = {
-			"drop table if exists tempCOA",
-			"create table if not exists tempCOA ("
-					+ " fuelTypeID int not null,"
-					+ " fuelFormulationID int not null,"
-					+ " baseFuelFormulationID int not null,"
-					+ " polProcessID int not null,"
-					+ " pollutantID int not null,"
-					+ " processID int not null,"
-					+ " modelYearGroupID int not null,"
-					+ " minModelYearID int not null,"
-					+ " maxModelYearID int not null,"
-					+ " ageID int not null,"
-					+ " ratioNoSulfur double null"
+			"drop table if exists tempcoa",
+			"create table if not exists tempcoa ("
+					+ " fueltypeid int not null,"
+					+ " fuelformulationid int not null,"
+					+ " basefuelformulationid int not null,"
+					+ " polprocessid int not null,"
+					+ " pollutantid int not null,"
+					+ " processid int not null,"
+					+ " modelyeargroupid int not null,"
+					+ " minmodelyearid int not null,"
+					+ " maxmodelyearid int not null,"
+					+ " ageid int not null,"
+					+ " rationosulfur double null"
 					//+ ", key (fuelFormulationID), key(polProcessID),"
 					//+ " key (pollutantID), key(processID),"
 					//+ " key(modelYearGroupID), key(ageID)"
@@ -2204,9 +2204,9 @@ Logger.log(LogMessageCategory.INFO,"doCOCalculations");
 		ArrayList<ModelYearRange> modelYearRanges = getModelYearRanges(modelYearGroupIDs);
 		TreeSet<Integer> candidatePolProcessIDs = getPolProcessIDs(polProcessIDsLimitCSV);
 		TreeSet<IntegerPair> fuelFormulationsRatioed = getIntegerPairSet(db,
-				"select distinct fuelFormulationID, polProcessID"
-				+ " from criteriaRatio"
-				+ " where polProcessID in (" + polProcessIDsLimitCSV + ")");
+				"select distinct fuelformulationid, polprocessid"
+				+ " from criteriaratio"
+				+ " where polprocessid in (" + polProcessIDsLimitCSV + ")");
 		TreeMapIgnoreCase aliases = new TreeMapIgnoreCase();
 		aliases.put("ff_target.sulfurLevel","ff_base.sulfurLevel");
 
@@ -2311,7 +2311,7 @@ Logger.log(LogMessageCategory.INFO,"doCOCalculations");
 						**/
 						setMeanFuelParameterVariables(holder,polProcessID,fuelTypeID,modelYearGroupID);
 
-						sql = "truncate tempCOA";
+						sql = "truncate tempcoa";
 						SQLRunner.executeSQL(db,sql);
 
 						for(Iterator<Integer> ai=ageIDs.iterator();ai.hasNext();) {
@@ -2352,19 +2352,19 @@ Logger.log(LogMessageCategory.INFO,"doCOCalculations");
 							 * @input fuelFormulation
 							 * @input Complex Model expressions
 							**/
-							sql = "insert into tempCOA (fuelTypeID, fuelFormulationID,"
-									+ " baseFuelFormulationID,"
-									+ " polProcessID, pollutantID, processID,"
-									+ " modelYearGroupID, minModelYearID, maxModelYearID, ageID, "
-									+ " ratioNoSulfur)"
-									+ " select " + fuelTypeID + ", fuelFormulationID"
+							sql = "insert into tempcoa (fueltypeid, fuelformulationid,"
+									+ " basefuelformulationid,"
+									+ " polprocessid, pollutantid, processid,"
+									+ " modelyeargroupid, minmodelyearid, maxmodelyearid, ageid, "
+									+ " rationosulfur)"
+									+ " select " + fuelTypeID + ", fuelformulationid"
 									+ "," + baseFormulationID
 									+ "," + polProcessID + "," + pollutantID + "," + processID
 									+ "," + modelYearGroupID + "," + minModelYearID
 									+ "," + maxModelYearID + "," + ageID
-									+ ",1+(" + expressionText + ") as ratioNoSulfur"
-									+ " from fuelFormulation as ff_target"
-									+ " where fuelFormulationID in (" + formulationIDsCSV
+									+ ",1+(" + expressionText + ") as rationosulfur"
+									+ " from fuelformulation as ff_target"
+									+ " where fuelformulationid in (" + formulationIDsCSV
 									+ "," + baseFormulationID + ")";
 							//Logger.log(LogMessageCategory.INFO,"sql=" + sql);
 							SQLRunner.executeSQL(db,sql);
@@ -2400,7 +2400,7 @@ Logger.log(LogMessageCategory.INFO,"sql=" + sql);
 							 * @algorithm Provide default ratioNoSulfur entries. ratioNoSulfur = 1 when null.
 							 * @output tempCOA
 							**/
-							sql = "update tempCOA set ratioNoSulfur=1 where ratioNoSulfur is null";
+							sql = "update tempcoa set rationosulfur=1 where rationosulfur is null";
 							SQLRunner.executeSQL(db,sql);
 
 							// Build criteriaRatio by using the sulfur model on tempCOA's data
@@ -2552,17 +2552,17 @@ Logger.log(LogMessageCategory.INFO,"doPredictiveCalculations: " + engineName + "
 		String[] setupStatements = {
 			"drop table if exists temp" + tableBaseName + "A",
 			"create table if not exists temp" + tableBaseName + "A ("
-					+ " fuelTypeID int not null,"
-					+ " fuelFormulationID int not null,"
-					+ " baseFuelFormulationID int not null,"
-					+ " polProcessID int not null,"
-					+ " pollutantID int not null,"
-					+ " processID int not null,"
-					+ " modelYearGroupID int not null,"
-					+ " minModelYearID int not null,"
-					+ " maxModelYearID int not null,"
-					+ " ageID int not null,"
-					+ " ratioNoSulfur double null"
+					+ " fueltypeid int not null,"
+					+ " fuelformulationid int not null,"
+					+ " basefuelformulationid int not null,"
+					+ " polprocessid int not null,"
+					+ " pollutantid int not null,"
+					+ " processid int not null,"
+					+ " modelyeargroupid int not null,"
+					+ " minmodelyearid int not null,"
+					+ " maxmodelyearid int not null,"
+					+ " ageid int not null,"
+					+ " rationosulfur double null"
 					//+ ", key (fuelFormulationID), key(polProcessID),"
 					//+ " key (pollutantID), key(processID),"
 					//+ " key(modelYearGroupID), key(ageID)"
@@ -2583,9 +2583,9 @@ Logger.log(LogMessageCategory.INFO,"doPredictiveCalculations: " + engineName + "
 		ArrayList<ModelYearRange> modelYearRanges = getModelYearRanges(modelYearGroupIDs);
 		TreeSet<Integer> candidatePolProcessIDs = getPolProcessIDs(polProcessIDsLimitCSV);
 		TreeSet<IntegerPair> fuelFormulationsRatioed = getIntegerPairSet(db,
-				"select distinct fuelFormulationID, polProcessID"
-				+ " from criteriaRatio"
-				+ " where polProcessID in (" + polProcessIDsLimitCSV + ")");
+				"select distinct fuelformulationid, polprocessid"
+				+ " from criteriaratio"
+				+ " where polprocessid in (" + polProcessIDsLimitCSV + ")");
 
 		TreeSet<Integer> processIDs = new TreeSet<Integer>();
 		TreeSet<Integer> polProcessIDs = new TreeSet<Integer>();
@@ -2742,76 +2742,76 @@ if(ageID == 0) {
 									// Make a table of fuelFormulationID, polProcessID, modelYearGroupID,
 									// ageID, ratio
 									sql = "insert into temp" + tableBaseName
-											+ "A (fuelTypeID,fuelFormulationID,"
-											+ " baseFuelFormulationID,"
-											+ " polProcessID,pollutantID,processID,"
-											+ " modelYearGroupID,minModelYearID,maxModelYearID,ageID,"
-											+ " ratioNoSulfur)"
-											+ " select " + fuelTypeID + ", fuelFormulationID"
+											+ "A (fueltypeid,fuelformulationid,"
+											+ " basefuelformulationid,"
+											+ " polprocessid,pollutantid,processid,"
+											+ " modelyeargroupid,minmodelyearid,maxmodelyearid,ageid,"
+											+ " rationosulfur)"
+											+ " select " + fuelTypeID + ", fuelformulationid"
 											+ "," + baseFormulationID
 											+ "," + polProcessID + "," + pollutantID + "," + processID
 											+ "," + modelYearGroupID + "," + minModelYearID
 											+ "," + maxModelYearID + "," + ageID
-											+ ",(" + expressionText + ") as ratioNoSulfur"
-											+ " from fuelFormulation as ff_target"
-											+ " where fuelFormulationID in (" + formulationIDsCSV
+											+ ",(" + expressionText + ") as rationosulfur"
+											+ " from fuelformulation as ff_target"
+											+ " where fuelformulationid in (" + formulationIDsCSV
 											+ "," + baseFormulationID + ")";
 									//Logger.log(LogMessageCategory.INFO,"sql=" + sql);
 									SQLRunner.executeSQL(db,sql);
 								} else {
 									if(minModelYearID > highestFuelPredictiveModelYear) { // No split needed, use 1.0
 										sql = "insert into temp" + tableBaseName
-												+ "A (fuelTypeID,fuelFormulationID,"
-												+ " baseFuelFormulationID,"
-												+ " polProcessID,pollutantID,processID,"
-												+ " modelYearGroupID,minModelYearID,maxModelYearID,ageID,"
-												+ " ratioNoSulfur)"
-												+ " select " + fuelTypeID + ", fuelFormulationID"
+												+ "A (fueltypeid,fuelformulationid,"
+												+ " basefuelformulationid,"
+												+ " polprocessid,pollutantid,processid,"
+												+ " modelyeargroupid,minmodelyearid,maxmodelyearid,ageid,"
+												+ " rationosulfur)"
+												+ " select " + fuelTypeID + ", fuelformulationid"
 												+ "," + baseFormulationID
 												+ "," + polProcessID + "," + pollutantID + "," + processID
 												+ "," + modelYearGroupID + "," + minModelYearID
 												+ "," + maxModelYearID + "," + ageID
-												+ ", 1.0 as ratioNoSulfur"
-												+ " from fuelFormulation as ff_target"
-												+ " where fuelFormulationID in (" + formulationIDsCSV
+												+ ", 1.0 as rationosulfur"
+												+ " from fuelformulation as ff_target"
+												+ " where fuelformulationid in (" + formulationIDsCSV
 												+ "," + baseFormulationID + ")";
 										//Logger.log(LogMessageCategory.INFO,"sql=" + sql);
 										SQLRunner.executeSQL(db,sql);
 									} else {
 										// minModelYear - highestFuelPredictiveModelYear get a calculated ratio
 										sql = "insert into temp" + tableBaseName
-												+ "A (fuelTypeID,fuelFormulationID,"
-												+ " baseFuelFormulationID,"
-												+ " polProcessID,pollutantID,processID,"
-												+ " modelYearGroupID,minModelYearID,maxModelYearID,ageID,"
-												+ " ratioNoSulfur)"
-												+ " select " + fuelTypeID + ", fuelFormulationID"
+												+ "A (fueltypeid,fuelformulationid,"
+												+ " basefuelformulationid,"
+												+ " polprocessid,pollutantid,processid,"
+												+ " modelyeargroupid,minmodelyearid,maxmodelyearid,ageid,"
+												+ " rationosulfur)"
+												+ " select " + fuelTypeID + ", fuelformulationid"
 												+ "," + baseFormulationID
 												+ "," + polProcessID + "," + pollutantID + "," + processID
 												+ "," + modelYearGroupID + "," + minModelYearID
 												+ ", " + highestFuelPredictiveModelYear + "," + ageID
-												+ ",(" + expressionText + ") as ratioNoSulfur"
-												+ " from fuelFormulation as ff_target"
-												+ " where fuelFormulationID in (" + formulationIDsCSV
+												+ ",(" + expressionText + ") as rationosulfur"
+												+ " from fuelformulation as ff_target"
+												+ " where fuelformulationid in (" + formulationIDsCSV
 												+ "," + baseFormulationID + ")";
 										//Logger.log(LogMessageCategory.INFO,"sql=" + sql);
 										SQLRunner.executeSQL(db,sql);
 
 										// (highestFuelPredictiveModelYear+1) - maxModelYear get a ratio of 1.0
 										sql = "insert into temp" + tableBaseName
-												+ "A (fuelTypeID,fuelFormulationID,"
-												+ " baseFuelFormulationID,"
-												+ " polProcessID,pollutantID,processID,"
-												+ " modelYearGroupID,minModelYearID,maxModelYearID,ageID,"
-												+ " ratioNoSulfur)"
-												+ " select " + fuelTypeID + ", fuelFormulationID"
+												+ "A (fueltypeid,fuelformulationid,"
+												+ " basefuelformulationid,"
+												+ " polprocessid,pollutantid,processid,"
+												+ " modelyeargroupid,minmodelyearid,maxmodelyearid,ageid,"
+												+ " rationosulfur)"
+												+ " select " + fuelTypeID + ", fuelformulationid"
 												+ "," + baseFormulationID
 												+ "," + polProcessID + "," + pollutantID + "," + processID
 												+ "," + modelYearGroupID + "," + (highestFuelPredictiveModelYear+1)
 												+ "," + maxModelYearID + "," + ageID
-												+ ",1.0 as ratioNoSulfur"
-												+ " from fuelFormulation as ff_target"
-												+ " where fuelFormulationID in (" + formulationIDsCSV
+												+ ",1.0 as rationosulfur"
+												+ " from fuelformulation as ff_target"
+												+ " where fuelformulationid in (" + formulationIDsCSV
 												+ "," + baseFormulationID + ")";
 										//Logger.log(LogMessageCategory.INFO,"sql=" + sql);
 										SQLRunner.executeSQL(db,sql);
@@ -2838,7 +2838,7 @@ if(ageID == 0) {
 							 * @output temporary table
 							 * @condition Predictive Calculations
 							**/
-							sql = "update temp" + tableBaseName + "A set ratioNoSulfur=1 where ratioNoSulfur is null";
+							sql = "update temp" + tableBaseName + "A set rationosulfur=1 where rationosulfur is null";
 							SQLRunner.executeSQL(db,sql);
 
 							// Build criteriaRatio by using the sulfur model on temp*A's data
@@ -3363,17 +3363,17 @@ Logger.log(LogMessageCategory.INFO,"FuelTypeID " + fuelTypeID + " has " + fuelFo
 		public String fuelSubtypes;
 
 		public GeneralFuelRatioExpression(ResultSet rs) throws SQLException {
-			fuelTypeID = rs.getInt("fuelTypeID");
-			polProcessID = rs.getInt("polProcessID");
+			fuelTypeID = rs.getInt("fueltypeid");
+			polProcessID = rs.getInt("polprocessid");
 			pollutantID = polProcessID / 100;
 			processID = polProcessID % 100;
-			minModelYearID = rs.getInt("minModelYearID");
-			maxModelYearID = rs.getInt("maxModelYearID");
-			minAgeID = rs.getInt("minAgeID");
-			maxAgeID = rs.getInt("maxAgeID");
-			sourceTypeID = rs.getInt("sourceTypeID");
-			fuelEffectRatioExpression = StringUtilities.safeGetString(rs.getString("fuelEffectRatioExpression"));
-			fuelEffectRatioGPAExpression = StringUtilities.safeGetString(rs.getString("fuelEffectRatioGPAExpression"));
+			minModelYearID = rs.getInt("minmodelyearid");
+			maxModelYearID = rs.getInt("maxmodelyearid");
+			minAgeID = rs.getInt("minageid");
+			maxAgeID = rs.getInt("maxageid");
+			sourceTypeID = rs.getInt("sourcetypeid");
+			fuelEffectRatioExpression = StringUtilities.safeGetString(rs.getString("fueleffectratioexpression"));
+			fuelEffectRatioGPAExpression = StringUtilities.safeGetString(rs.getString("fueleffectratiogpaexpression"));
 		}
 
 		public GeneralFuelRatioExpression(GeneralFuelRatioExpression other) {
@@ -3404,7 +3404,7 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 		SQLRunner.Query query = new SQLRunner.Query();
 		ArrayList<GeneralFuelRatioExpression> expressions = new ArrayList<GeneralFuelRatioExpression>();
 		TreeSet<IntegerPair> fuelFormulationsRatioed = getIntegerPairSet(db,
-				"select distinct fuelFormulationID, polProcessID from GeneralFuelRatio");
+				"select distinct fuelformulationid, polprocessid from generalfuelratio");
 		try {
 			/**
 			 * @step 050
@@ -3412,7 +3412,7 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input GeneralFuelRatioExpression
 			 * @output list of expressions
 			**/
-			sql = "select * from GeneralFuelRatioExpression";
+			sql = "select * from generalfuelratioexpression";
 			query.open(db,sql);
 			while(query.rs.next()) {
 				expressions.add(new GeneralFuelRatioExpression(query.rs));
@@ -3524,21 +3524,21 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 				 * @input fuelFormulation
 				 * @output GeneralFuelRatio
 				**/
-				sql = "insert into GeneralFuelRatio ("
-						+ " fuelTypeID, fuelFormulationID, polProcessID, pollutantID, processID,"
-						+ "  minModelYearID, maxModelYearID, minAgeID, maxAgeID,"
-						+ "  sourceTypeID, fuelEffectRatio, fuelEffectRatioGPA)"
-						+ " select " + exp.fuelTypeID + ", fuelFormulationID"
+				sql = "insert into generalfuelratio ("
+						+ " fueltypeid, fuelformulationid, polprocessid, pollutantid, processid,"
+						+ "  minmodelyearid, maxmodelyearid, minageid, maxageid,"
+						+ "  sourcetypeid, fueleffectratio, fueleffectratiogpa)"
+						+ " select " + exp.fuelTypeID + ", fuelformulationid"
 						+ "," + exp.polProcessID + "," + exp.pollutantID + "," + exp.processID
 						+ "," + exp.minModelYearID + "," + exp.maxModelYearID
 						+ "," + exp.minAgeID + "," + exp.maxAgeID
 						+ "," + exp.sourceTypeID
 						+ ",(" + exp.fuelEffectRatioExpression + ")"
 						+ ",(" + exp.fuelEffectRatioGPAExpression + ")"
-						+ " from fuelFormulation"
-						+ " where fuelFormulationID in (" + formulationIDsCSV + ")";
+						+ " from fuelformulation"
+						+ " where fuelformulationid in (" + formulationIDsCSV + ")";
 				if(exp.fuelSubtypes != null && exp.fuelSubtypes.length() > 0) {
-					sql += " and fuelSubtypeID in (" + exp.fuelSubtypes + ")";
+					sql += " and fuelsubtypeid in (" + exp.fuelSubtypes + ")";
 				}
 				SQLRunner.executeSQL(db,sql);
 			}
@@ -3623,24 +3623,24 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 		if(polProcessIDsCSV == null) {
 			return;
 		}
-		String sql = "insert ignore into criteriaRatio ("
-				+ " 	fuelTypeID, fuelFormulationID, polProcessID, pollutantID, processID,"
-				+ " 	sourceTypeID, modelYearID, ageID,"
-				+ " 	ratio, ratioGPA, ratioNoSulfur)"
-				+ " select fuelTypeID, fuelFormulationID, polProcessID, pollutantID, processID,"
-				+ " 	sourceTypeID, mya.modelYearID, mya.ageID,"
-				+ " 	fuelEffectRatio, fuelEffectRatioGPA, 1.0 as ratioNoSulfur"
-				+ " from generalFuelRatio gfr"
-				+ " inner join runSpecModelYearAge mya on ("
-				+ " 	mya.modelYearID >= gfr.minModelYearID"
-				+ " 	and mya.modelYearID <= gfr.maxModelYearID"
-				+ " 	and mya.ageID >= gfr.minAgeID"
-				+ " 	and mya.ageID <= gfr.maxAgeID"
+		String sql = "insert ignore into criteriaratio ("
+				+ " 	fueltypeid, fuelformulationid, polprocessid, pollutantid, processid,"
+				+ " 	sourcetypeid, modelyearid, ageid,"
+				+ " 	ratio, ratiogpa, rationosulfur)"
+				+ " select fueltypeid, fuelformulationid, polprocessid, pollutantid, processid,"
+				+ " 	sourcetypeid, mya.modelyearid, mya.ageid,"
+				+ " 	fueleffectratio, fueleffectratiogpa, 1.0 as rationosulfur"
+				+ " from generalfuelratio gfr"
+				+ " inner join runspecmodelyearage mya on ("
+				+ " 	mya.modelyearid >= gfr.minmodelyearid"
+				+ " 	and mya.modelyearid <= gfr.maxmodelyearid"
+				+ " 	and mya.ageid >= gfr.minageid"
+				+ " 	and mya.ageid <= gfr.maxageid"
 				+ " )"
-				+ " where gfr.polProcessID in (" + polProcessIDsCSV + ")";
+				+ " where gfr.polprocessid in (" + polProcessIDsCSV + ")";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "delete from generalFuelRatio where polProcessID in (" + polProcessIDsCSV + ")";
+		sql = "delete from generalfuelratio where polprocessid in (" + polProcessIDsCSV + ")";
 		SQLRunner.executeSQL(db,sql);
 	}
 
@@ -3657,27 +3657,27 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 		if(polProcessIDsCSV == null) {
 			return;
 		}
-		String sql = "insert ignore into altCriteriaRatio ("
-				+ " 	fuelTypeID, fuelFormulationID, polProcessID, pollutantID, processID,"
-				+ " 	sourceTypeID, modelYearID, ageID,"
-				+ " 	ratio, ratioGPA, ratioNoSulfur)"
-				+ " select fuelTypeID, fuelFormulationID,"
-				+ "		(if(pollutantID>10000,pollutantID-10000,pollutantID)*100+processID) as polProcessID,"
-				+ "		if(pollutantID>10000,pollutantID-10000,pollutantID) as pollutantID, processID,"
-				+ " 	sourceTypeID, mya.modelYearID, mya.ageID,"
-				+ " 	fuelEffectRatio, fuelEffectRatioGPA, 1.0 as ratioNoSulfur"
-				+ " from generalFuelRatio gfr"
-				+ " inner join runSpecModelYearAge mya on ("
-				+ " 	mya.modelYearID >= gfr.minModelYearID"
-				+ " 	and mya.modelYearID <= gfr.maxModelYearID"
-				+ " 	and mya.ageID >= gfr.minAgeID"
-				+ " 	and mya.ageID <= gfr.maxAgeID"
+		String sql = "insert ignore into altcriteriaratio ("
+				+ " 	fueltypeid, fuelformulationid, polprocessid, pollutantid, processid,"
+				+ " 	sourcetypeid, modelyearid, ageid,"
+				+ " 	ratio, ratiogpa, rationosulfur)"
+				+ " select fueltypeid, fuelformulationid,"
+				+ "		(if(pollutantid>10000,pollutantid-10000,pollutantid)*100+processid) as polprocessid,"
+				+ "		if(pollutantid>10000,pollutantid-10000,pollutantid) as pollutantid, processid,"
+				+ " 	sourcetypeid, mya.modelyearid, mya.ageid,"
+				+ " 	fueleffectratio, fueleffectratiogpa, 1.0 as rationosulfur"
+				+ " from generalfuelratio gfr"
+				+ " inner join runspecmodelyearage mya on ("
+				+ " 	mya.modelyearid >= gfr.minmodelyearid"
+				+ " 	and mya.modelyearid <= gfr.maxmodelyearid"
+				+ " 	and mya.ageid >= gfr.minageid"
+				+ " 	and mya.ageid <= gfr.maxageid"
 				+ " )"
-				+ " where gfr.polProcessID in (" + polProcessIDsCSV + ")"
-				+ " and mya.modelYearID >= 2001";
+				+ " where gfr.polprocessid in (" + polProcessIDsCSV + ")"
+				+ " and mya.modelyearid >= 2001";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "delete from generalFuelRatio where polProcessID in (" + polProcessIDsCSV + ")";
+		sql = "delete from generalfuelratio where polprocessid in (" + polProcessIDsCSV + ")";
 		SQLRunner.executeSQL(db,sql);
 	}
 
@@ -3691,30 +3691,30 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 		if(polProcessIDsCSV == null) {
 			return;
 		}
-		String sql = "insert ignore into ATRatio ("
-				+ " 	fuelTypeID, fuelFormulationID, polProcessID,"
-				+ " 	minModelYearID, maxModelYearID,"
-				+ " 	ageID, monthGroupID,"
-				+ " 	atRatio)"
-				+ " select fuelTypeID, fuelFormulationID, polProcessID,"
-				+ " 	minModelYearID, maxModelYearID,"
-				+ " 	mya.ageID, mg.monthGroupID,"
-				+ " 	avg(fuelEffectRatio) as atRatio"
-				+ " from generalFuelRatio gfr"
-				+ " inner join runSpecModelYearAge mya on ("
-				+ " 	mya.modelYearID >= gfr.minModelYearID"
-				+ " 	and mya.modelYearID <= gfr.maxModelYearID"
-				+ " 	and mya.ageID >= gfr.minAgeID"
-				+ " 	and mya.ageID <= gfr.maxAgeID"
+		String sql = "insert ignore into atratio ("
+				+ " 	fueltypeid, fuelformulationid, polprocessid,"
+				+ " 	minmodelyearid, maxmodelyearid,"
+				+ " 	ageid, monthgroupid,"
+				+ " 	atratio)"
+				+ " select fueltypeid, fuelformulationid, polprocessid,"
+				+ " 	minmodelyearid, maxmodelyearid,"
+				+ " 	mya.ageid, mg.monthgroupid,"
+				+ " 	avg(fueleffectratio) as atratio"
+				+ " from generalfuelratio gfr"
+				+ " inner join runspecmodelyearage mya on ("
+				+ " 	mya.modelyearid >= gfr.minmodelyearid"
+				+ " 	and mya.modelyearid <= gfr.maxmodelyearid"
+				+ " 	and mya.ageid >= gfr.minageid"
+				+ " 	and mya.ageid <= gfr.maxageid"
 				+ " )"
-				+ " inner join runSpecMonthGroup mg"
-				+ " where gfr.polProcessID in (" + polProcessIDsCSV + ")"
-				+ " group by fuelTypeID, fuelFormulationID, polProcessID,"
-				+ " 	minModelYearID, maxModelYearID,"
-				+ " 	mya.ageID, mg.monthGroupID";
+				+ " inner join runspecmonthgroup mg"
+				+ " where gfr.polprocessid in (" + polProcessIDsCSV + ")"
+				+ " group by fueltypeid, fuelformulationid, polprocessid,"
+				+ " 	minmodelyearid, maxmodelyearid,"
+				+ " 	mya.ageid, mg.monthgroupid";
 		SQLRunner.executeSQL(db,sql);
 
-		sql = "delete from generalFuelRatio where polProcessID in (" + polProcessIDsCSV + ")";
+		sql = "delete from generalfuelratio where polprocessid in (" + polProcessIDsCSV + ")";
 		SQLRunner.executeSQL(db,sql);
 	}
 
@@ -3729,7 +3729,7 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 		 * @input dioxinEmissionRate
 		 * @output list of dioxin polProcessIDs
 		**/
-		String polProcessIDsCSV = getCSV(DatabaseUtilities.getIntegerSet(db,"select distinct polProcessID from dioxinEmissionRate"));
+		String polProcessIDsCSV = getCSV(DatabaseUtilities.getIntegerSet(db,"select distinct polprocessid from dioxinemissionrate"));
 		if(polProcessIDsCSV.length() <= 0 || polProcessIDsCSV.equals("0")) { // If there is nothing needed, then do nothing
 			return;
 		}
@@ -3740,8 +3740,8 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input dioxinEmissionRate
 			 * @output tempDioxinEmissionRate
 			**/
-			"drop table if exists tempDioxinEmissionRate",
-			"create table tempDioxinEmissionRate like dioxinEmissionRate",
+			"drop table if exists tempdioxinemissionrate",
+			"create table tempdioxinemissionrate like dioxinemissionrate",
 
 			/**
 			 * @step 100
@@ -3751,15 +3751,15 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input list of dioxin polProcessIDs
 			 * @output tempDioxinEmissionRate
 			**/
-			"insert into tempDioxinEmissionRate ("
-				+ " 	polProcessID, fuelTypeID, modelYearGroupID, units, meanBaseRate)"
-				+ " select polProcessID, fuelTypeID,"
-				+ " 	(minModelYearID * 10000 + maxModelYearID) as modelYearGroupID,"
-				+ " 	'TEQ/mile' as units,"
-				+ " 	fuelEffectRatio as meanBaseRate"
-				+ " from generalFuelRatio"
-				+ " where polProcessID in (" + polProcessIDsCSV + ")"
-				+ " group by fuelTypeID, polProcessID, minModelYearID, maxModelYearID",
+			"insert into tempdioxinemissionrate ("
+				+ " 	polprocessid, fueltypeid, modelyeargroupid, units, meanbaserate)"
+				+ " select polprocessid, fueltypeid,"
+				+ " 	(minmodelyearid * 10000 + maxmodelyearid) as modelyeargroupid,"
+				+ " 	'teq/mile' as units,"
+				+ " 	fueleffectratio as meanbaserate"
+				+ " from generalfuelratio"
+				+ " where polprocessid in (" + polProcessIDsCSV + ")"
+				+ " group by fueltypeid, polprocessid, minmodelyearid, maxmodelyearid",
 
 			/**
 			 * @step 100
@@ -3769,8 +3769,8 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input tempDioxinEmissionRate
 			 * @output dioxinEmissionRate
 			**/
-			"delete dioxinEmissionRate from dioxinEmissionRate"
-				+ " inner join tempDioxinEmissionRate using (polProcessID, fuelTypeID)",
+			"delete dioxinemissionrate from dioxinemissionrate"
+				+ " inner join tempdioxinemissionrate using (polprocessid, fueltypeid)",
 
 			/**
 			 * @step 100
@@ -3779,11 +3779,11 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input tempDioxinEmissionRate
 			 * @output dioxinEmissionRate
 			**/
-			"replace into dioxinEmissionRate (polProcessID, fuelTypeID, modelYearGroupID, units, meanBaseRate)"
-				+ " select polProcessID, fuelTypeID, modelYearGroupID, units, meanBaseRate"
-				+ " from tempDioxinEmissionRate",
+			"replace into dioxinemissionrate (polprocessid, fueltypeid, modelyeargroupid, units, meanbaserate)"
+				+ " select polprocessid, fueltypeid, modelyeargroupid, units, meanbaserate"
+				+ " from tempdioxinemissionrate",
 
-			"drop table tempDioxinEmissionRate",
+			"drop table tempdioxinemissionrate",
 
 			/**
 			 * @step 100
@@ -3791,7 +3791,7 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @output generalFuelRatio
 			 * @input list of dioxin polProcessIDs
 			**/
-			"delete from generalFuelRatio where polProcessID in (" + polProcessIDsCSV + ")"
+			"delete from generalfuelratio where polprocessid in (" + polProcessIDsCSV + ")"
 		};
 
 		for(int i=0;i<statements.length;i++) {
@@ -3810,7 +3810,7 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 		 * @input metalEmissionRate
 		 * @output list of metal polProcessIDs
 		**/
-		String polProcessIDsCSV = getCSV(DatabaseUtilities.getIntegerSet(db,"select distinct polProcessID from metalEmissionRate"));
+		String polProcessIDsCSV = getCSV(DatabaseUtilities.getIntegerSet(db,"select distinct polprocessid from metalemissionrate"));
 		if(polProcessIDsCSV.length() <= 0 || polProcessIDsCSV.equals("0")) { // If there is nothing needed, then do nothing
 			return;
 		}
@@ -3821,8 +3821,8 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input metalEmissionRate
 			 * @output tempMetalEmissionRate
 			**/
-			"drop table if exists tempMetalEmissionRate",
-			"create table tempMetalEmissionRate like metalEmissionRate",
+			"drop table if exists tempmetalemissionrate",
+			"create table tempmetalemissionrate like metalemissionrate",
 
 			/**
 			 * @step 101
@@ -3832,15 +3832,15 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input list of metal polProcessIDs
 			 * @output tempMetalEmissionRate
 			**/
-			"insert into tempMetalEmissionRate ("
-				+ " 	polProcessID, fuelTypeID, sourceTypeID, modelYearGroupID, units, meanBaseRate)"
-				+ " select polProcessID, fuelTypeID, sourceTypeID,"
-				+ " 	(minModelYearID * 10000 + maxModelYearID) as modelYearGroupID,"
+			"insert into tempmetalemissionrate ("
+				+ " 	polprocessid, fueltypeid, sourcetypeid, modelyeargroupid, units, meanbaserate)"
+				+ " select polprocessid, fueltypeid, sourcetypeid,"
+				+ " 	(minmodelyearid * 10000 + maxmodelyearid) as modelyeargroupid,"
 				+ " 	'g/mile' as units,"
-				+ " 	fuelEffectRatio as meanBaseRate"
-				+ " from generalFuelRatio"
-				+ " where polProcessID in (" + polProcessIDsCSV + ")"
-				+ " group by fuelTypeID, polProcessID, sourceTypeID, minModelYearID, maxModelYearID",
+				+ " 	fueleffectratio as meanbaserate"
+				+ " from generalfuelratio"
+				+ " where polprocessid in (" + polProcessIDsCSV + ")"
+				+ " group by fueltypeid, polprocessid, sourcetypeid, minmodelyearid, maxmodelyearid",
 
 			/**
 			 * @step 101
@@ -3850,8 +3850,8 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input tempMetalEmissionRate
 			 * @output metalEmissionRate
 			**/
-			"delete metalEmissionRate from metalEmissionRate"
-				+ " inner join tempMetalEmissionRate using (polProcessID, fuelTypeID, sourceTypeID)",
+			"delete metalemissionrate from metalemissionrate"
+				+ " inner join tempmetalemissionrate using (polprocessid, fueltypeid, sourcetypeid)",
 
 			/**
 			 * @step 101
@@ -3860,11 +3860,11 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input tempMetalEmissionRate
 			 * @output metalEmissionRate
 			**/
-			"replace into metalEmissionRate (polProcessID, fuelTypeID, sourceTypeID, modelYearGroupID, units, meanBaseRate)"
-				+ " select polProcessID, fuelTypeID, sourceTypeID, modelYearGroupID, units, meanBaseRate"
-				+ " from tempMetalEmissionRate",
+			"replace into metalemissionrate (polprocessid, fueltypeid, sourcetypeid, modelyeargroupid, units, meanbaserate)"
+				+ " select polprocessid, fueltypeid, sourcetypeid, modelyeargroupid, units, meanbaserate"
+				+ " from tempmetalemissionrate",
 
-			"drop table tempMetalEmissionRate",
+			"drop table tempmetalemissionrate",
 
 			/**
 			 * @step 101
@@ -3872,7 +3872,7 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @output generalFuelRatio
 			 * @input list of metal polProcessIDs
 			**/
-			"delete from generalFuelRatio where polProcessID in (" + polProcessIDsCSV + ")"
+			"delete from generalfuelratio where polprocessid in (" + polProcessIDsCSV + ")"
 		};
 
 		for(int i=0;i<statements.length;i++) {
@@ -3891,7 +3891,7 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 		 * @input minorHapRatio
 		 * @output list of minor HAP polProcessIDs
 		**/
-		String polProcessIDsCSV = getCSV(DatabaseUtilities.getIntegerSet(db,"select distinct polProcessID from minorHapRatio"));
+		String polProcessIDsCSV = getCSV(DatabaseUtilities.getIntegerSet(db,"select distinct polprocessid from minorhapratio"));
 		if(polProcessIDsCSV.length() <= 0 || polProcessIDsCSV.equals("0")) { // If there is nothing needed, then do nothing
 			return;
 		}
@@ -3902,8 +3902,8 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input minorHapRatio
 			 * @output tempMinorHapRatio
 			**/
-			"drop table if exists tempminorHapRatio",
-			"create table tempminorHapRatio like minorHapRatio",
+			"drop table if exists tempminorhapratio",
+			"create table tempminorhapratio like minorhapratio",
 
 			/**
 			 * @step 102
@@ -3913,15 +3913,15 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input list of minor HAP polProcessIDs
 			 * @output tempMinorHapRatio
 			**/
-			"insert into tempminorHapRatio ("
-				+ " 	polProcessID, fuelTypeID, fuelSubtypeID, modelYearGroupID, atRatio)"
-				+ " select polProcessID, fuelTypeID, fuelSubtypeID,"
-				+ " 	(minModelYearID * 10000 + maxModelYearID) as modelYearGroupID,"
-				+ " 	fuelEffectRatio as atRatio"
-				+ " from generalFuelRatio"
-				+ " inner join fuelFormulation using (fuelFormulationID)"
-				+ " where polProcessID in (" + polProcessIDsCSV + ")"
-				+ " group by fuelTypeID, polProcessID, minModelYearID, maxModelYearID, fuelSubtypeID",
+			"insert into tempminorhapratio ("
+				+ " 	polprocessid, fueltypeid, fuelsubtypeid, modelyeargroupid, atratio)"
+				+ " select polprocessid, fueltypeid, fuelsubtypeid,"
+				+ " 	(minmodelyearid * 10000 + maxmodelyearid) as modelyeargroupid,"
+				+ " 	fueleffectratio as atratio"
+				+ " from generalfuelratio"
+				+ " inner join fuelformulation using (fuelformulationid)"
+				+ " where polprocessid in (" + polProcessIDsCSV + ")"
+				+ " group by fueltypeid, polprocessid, minmodelyearid, maxmodelyearid, fuelsubtypeid",
 
 			/**
 			 * @step 102
@@ -3931,8 +3931,8 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input tempMinorHapRatio
 			 * @output minorHapRatio
 			**/
-			"delete minorHapRatio from minorHapRatio"
-				+ " inner join tempminorHapRatio using (polProcessID, fuelTypeID, fuelSubtypeID)",
+			"delete minorhapratio from minorhapratio"
+				+ " inner join tempminorhapratio using (polprocessid, fueltypeid, fuelsubtypeid)",
 
 			/**
 			 * @step 102
@@ -3941,11 +3941,11 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input tempMinorHapRatio
 			 * @output minorHapRatio
 			**/
-			"replace into minorHapRatio (polProcessID, fuelTypeID, fuelSubtypeID, modelYearGroupID, atRatio)"
-				+ " select polProcessID, fuelTypeID, fuelSubtypeID, modelYearGroupID, atRatio"
-				+ " from tempminorHapRatio",
+			"replace into minorhapratio (polprocessid, fueltypeid, fuelsubtypeid, modelyeargroupid, atratio)"
+				+ " select polprocessid, fueltypeid, fuelsubtypeid, modelyeargroupid, atratio"
+				+ " from tempminorhapratio",
 
-			"drop table tempminorHapRatio",
+			"drop table tempminorhapratio",
 
 			/**
 			 * @step 102
@@ -3953,7 +3953,7 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @output generalFuelRatio
 			 * @input list of minor HAP polProcessIDs
 			**/
-			"delete from generalFuelRatio where polProcessID in (" + polProcessIDsCSV + ")"
+			"delete from generalfuelratio where polprocessid in (" + polProcessIDsCSV + ")"
 		};
 
 		for(int i=0;i<statements.length;i++) {
@@ -3972,7 +3972,7 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 		 * @input pahGasRatio
 		 * @output list of gaseous PAH polProcessIDs
 		**/
-		String polProcessIDsCSV = getCSV(DatabaseUtilities.getIntegerSet(db,"select distinct polProcessID from pahGasRatio"));
+		String polProcessIDsCSV = getCSV(DatabaseUtilities.getIntegerSet(db,"select distinct polprocessid from pahgasratio"));
 		if(polProcessIDsCSV.length() <= 0 || polProcessIDsCSV.equals("0")) { // If there is nothing needed, then do nothing
 			return;
 		}
@@ -3983,8 +3983,8 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input pahGasRatio
 			 * @output tempPahGasRatio
 			**/
-			"drop table if exists temppahGasRatio",
-			"create table temppahGasRatio like pahGasRatio",
+			"drop table if exists temppahgasratio",
+			"create table temppahgasratio like pahgasratio",
 
 			/**
 			 * @step 103
@@ -3994,14 +3994,14 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input list of gaseous PAH polProcessIDs
 			 * @output tempPahGasRatio
 			**/
-			"insert into temppahGasRatio ("
-				+ " 	polProcessID, fuelTypeID, modelYearGroupID, atRatio)"
-				+ " select polProcessID, fuelTypeID, "
-				+ " 	(minModelYearID * 10000 + maxModelYearID) as modelYearGroupID,"
-				+ " 	fuelEffectRatio as atRatio"
-				+ " from generalFuelRatio"
-				+ " where polProcessID in (" + polProcessIDsCSV + ")"
-				+ " group by fuelTypeID, polProcessID, minModelYearID, maxModelYearID",
+			"insert into temppahgasratio ("
+				+ " 	polprocessid, fueltypeid, modelyeargroupid, atratio)"
+				+ " select polprocessid, fueltypeid, "
+				+ " 	(minmodelyearid * 10000 + maxmodelyearid) as modelyeargroupid,"
+				+ " 	fueleffectratio as atratio"
+				+ " from generalfuelratio"
+				+ " where polprocessid in (" + polProcessIDsCSV + ")"
+				+ " group by fueltypeid, polprocessid, minmodelyearid, maxmodelyearid",
 
 			/**
 			 * @step 103
@@ -4011,8 +4011,8 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input tempPahGasRatio
 			 * @output pahGasRatio
 			**/
-			"delete pahGasRatio from pahGasRatio"
-				+ " inner join temppahGasRatio using (polProcessID, fuelTypeID)",
+			"delete pahgasratio from pahgasratio"
+				+ " inner join temppahgasratio using (polprocessid, fueltypeid)",
 
 			/**
 			 * @step 103
@@ -4021,11 +4021,11 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input tempPahGasRatio
 			 * @output pahGasRatio
 			**/
-			"replace into pahGasRatio (polProcessID, fuelTypeID, modelYearGroupID, atRatio)"
-				+ " select polProcessID, fuelTypeID, modelYearGroupID, atRatio"
-				+ " from temppahGasRatio",
+			"replace into pahgasratio (polprocessid, fueltypeid, modelyeargroupid, atratio)"
+				+ " select polprocessid, fueltypeid, modelyeargroupid, atratio"
+				+ " from temppahgasratio",
 
-			"drop table temppahGasRatio",
+			"drop table temppahgasratio",
 
 			/**
 			 * @step 103
@@ -4033,7 +4033,7 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @output generalFuelRatio
 			 * @input list of gaseous PAH polProcessIDs
 			**/
-			"delete from generalFuelRatio where polProcessID in (" + polProcessIDsCSV + ")"
+			"delete from generalfuelratio where polprocessid in (" + polProcessIDsCSV + ")"
 		};
 
 		for(int i=0;i<statements.length;i++) {
@@ -4052,7 +4052,7 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 		 * @input pahParticleRatio
 		 * @output list of particulate PAH polProcessIDs
 		**/
-		String polProcessIDsCSV = getCSV(DatabaseUtilities.getIntegerSet(db,"select distinct polProcessID from pahParticleRatio"));
+		String polProcessIDsCSV = getCSV(DatabaseUtilities.getIntegerSet(db,"select distinct polprocessid from pahparticleratio"));
 		if(polProcessIDsCSV.length() <= 0 || polProcessIDsCSV.equals("0")) { // If there is nothing needed, then do nothing
 			return;
 		}
@@ -4063,8 +4063,8 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input pahParticleRatio
 			 * @output tempPahParticleRatio
 			**/
-			"drop table if exists temppahParticleRatio",
-			"create table temppahParticleRatio like pahParticleRatio",
+			"drop table if exists temppahparticleratio",
+			"create table temppahparticleratio like pahparticleratio",
 
 			/**
 			 * @step 104
@@ -4074,14 +4074,14 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input list of particulate PAH polProcessIDs
 			 * @output tempPahParticleRatio
 			**/
-			"insert into temppahParticleRatio ("
-				+ " 	polProcessID, fuelTypeID, modelYearGroupID, atRatio)"
-				+ " select polProcessID, fuelTypeID, "
-				+ " 	(minModelYearID * 10000 + maxModelYearID) as modelYearGroupID,"
-				+ " 	fuelEffectRatio as atRatio"
-				+ " from generalFuelRatio"
-				+ " where polProcessID in (" + polProcessIDsCSV + ")"
-				+ " group by fuelTypeID, polProcessID, minModelYearID, maxModelYearID",
+			"insert into temppahparticleratio ("
+				+ " 	polprocessid, fueltypeid, modelyeargroupid, atratio)"
+				+ " select polprocessid, fueltypeid, "
+				+ " 	(minmodelyearid * 10000 + maxmodelyearid) as modelyeargroupid,"
+				+ " 	fueleffectratio as atratio"
+				+ " from generalfuelratio"
+				+ " where polprocessid in (" + polProcessIDsCSV + ")"
+				+ " group by fueltypeid, polprocessid, minmodelyearid, maxmodelyearid",
 
 			/**
 			 * @step 104
@@ -4091,8 +4091,8 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input tempPahParticleRatio
 			 * @output pahParticleRatio
 			**/
-			"delete pahParticleRatio from pahParticleRatio"
-				+ " inner join temppahParticleRatio using (polProcessID, fuelTypeID)",
+			"delete pahparticleratio from pahparticleratio"
+				+ " inner join temppahparticleratio using (polprocessid, fueltypeid)",
 
 			/**
 			 * @step 104
@@ -4101,11 +4101,11 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input tempPahParticleRatio
 			 * @output pahParticleRatio
 			**/
-			"replace into pahParticleRatio (polProcessID, fuelTypeID, modelYearGroupID, atRatio)"
-				+ " select polProcessID, fuelTypeID, modelYearGroupID, atRatio"
-				+ " from temppahParticleRatio",
+			"replace into pahparticleratio (polprocessid, fueltypeid, modelyeargroupid, atratio)"
+				+ " select polprocessid, fueltypeid, modelyeargroupid, atratio"
+				+ " from temppahparticleratio",
 
-			"drop table temppahParticleRatio",
+			"drop table temppahparticleratio",
 
 			/**
 			 * @step 104
@@ -4113,7 +4113,7 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @output generalFuelRatio
 			 * @input list of particulate PAH polProcessIDs
 			**/
-			"delete from generalFuelRatio where polProcessID in (" + polProcessIDsCSV + ")"
+			"delete from generalfuelratio where polprocessid in (" + polProcessIDsCSV + ")"
 		};
 
 		for(int i=0;i<statements.length;i++) {
@@ -4186,11 +4186,11 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 		String sql = "";
 		int t;
 
-		sql = "select fuelFormulationID, baseFuelFormulationID, polProcessID,"
-				+ " modelYearGroupID, minModelYearID, maxModelYearID, ageID, count(*)"
+		sql = "select fuelformulationid, basefuelformulationid, polprocessid,"
+				+ " modelyeargroupid, minmodelyearid, maxmodelyearid, ageid, count(*)"
 				+ " from " + inputTable
-				+ " group by fuelFormulationID, baseFuelFormulationID, polProcessID,"
-				+ " modelYearGroupID,minModelYearID, maxModelYearID, ageID"
+				+ " group by fuelformulationid, basefuelformulationid, polprocessid,"
+				+ " modelyeargroupid,minmodelyearid, maxmodelyearid, ageid"
 				+ " having count(*) > 1"
 				+ " limit 1";
 		t = (int)SQLRunner.executeScalar(db,sql);
@@ -4199,7 +4199,7 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 					+ " has duplicate records");
 		}
 
-		sql = "select count(*) from " + inputTable + " where ratioNoSulfur is null";
+		sql = "select count(*) from " + inputTable + " where rationosulfur is null";
 		t = (int)SQLRunner.executeScalar(db,sql);
 		if(t > 0) {
 			throw new Exception("Sulfur model input table " + inputTable
@@ -4229,9 +4229,9 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 		String sql = "";
 		int t;
 
-		sql = "select fuelFormulationID, polProcessID, sourceTypeID, modelYearID, ageID, count(*)"
+		sql = "select fuelformulationid, polprocessid, sourcetypeid, modelyearid, ageid, count(*)"
 				+ " from " + outputTable
-				+ " group by fuelFormulationID, polProcessID, sourceTypeID, modelYearID, ageID"
+				+ " group by fuelformulationid, polprocessid, sourcetypeid, modelyearid, ageid"
 				+ " having count(*) > 1"
 				+ " limit 1";
 		t = (int)SQLRunner.executeScalar(db,sql);
@@ -4247,14 +4247,14 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 					+ " has " + t + " null entries in ratio");
 		}
 
-		sql = "select count(*) from " + outputTable + " where ratioGPA is null";
+		sql = "select count(*) from " + outputTable + " where ratiogpa is null";
 		t = (int)SQLRunner.executeScalar(db,sql);
 		if(t > 0) {
 			throw new Exception("Sulfur model output table " + outputTable
 					+ " has " + t + " null entries in ratioGPA");
 		}
 
-		sql = "select count(*) from " + outputTable + " where ratio > ratioGPA";
+		sql = "select count(*) from " + outputTable + " where ratio > ratiogpa";
 		t = (int)SQLRunner.executeScalar(db,sql);
 		if(t > 0) {
 			throw new Exception("Sulfur model output table " + outputTable
@@ -4291,11 +4291,11 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 		 * @input fuelSupply
 		 * @input fuelFormulation
 		**/
-		String sql = "select fuelFormulationID, fuelRegionID, fuelYearID, monthGroupID"
-				+ " from fuelSupply fs"
-				+ " inner join fuelFormulation ff using (fuelFormulationID)"
-				+ " where ff.fuelSubtypeID in (51,52)"
-				+ " order by fuelFormulationID, fuelRegionID, fuelYearID, monthGroupID";
+		String sql = "select fuelformulationid, fuelregionid, fuelyearid, monthgroupid"
+				+ " from fuelsupply fs"
+				+ " inner join fuelformulation ff using (fuelformulationid)"
+				+ " where ff.fuelsubtypeid in (51,52)"
+				+ " order by fuelformulationid, fuelregionid, fuelyearid, monthgroupid";
 		SQLRunner.Query query = new SQLRunner.Query();
 		ArrayList<FuelUsageEntry> fuelUsages = new ArrayList<FuelUsageEntry>();
 		try {
@@ -4314,7 +4314,7 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 					previous = f;
 				}
 			}
-			int nextFuelFormulationID = (int)SQLRunner.executeScalar(db,"select 1+max(fuelFormulationID) from fuelFormulation");
+			int nextFuelFormulationID = (int)SQLRunner.executeScalar(db,"select 1+max(fuelformulationid) from fuelformulation");
 			for(FuelUsageEntry f : toBeCloned) {
 				// Clone the fuel formulation
 
@@ -4330,16 +4330,16 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 				 * @input fuelSupply
 				 * @output fuelFormulation
 				**/
-				sql = "insert into fuelFormulation (fuelFormulationID,fuelSubtypeID,RVP,sulfurLevel,"
-						+ " ETOHVolume,MTBEVolume,ETBEVolume,TAMEVolume,aromaticContent,olefinContent,"
-						+ " benzeneContent,e200,e300,volToWtPercentOxy,BioDieselEsterVolume,CetaneIndex,"
-						+ " PAHContent,T50,T90)"
-						+ " select " + nextFuelFormulationID + " as fuelFormulationID,fuelSubtypeID,RVP,sulfurLevel,"
-						+ " ETOHVolume,MTBEVolume,ETBEVolume,TAMEVolume,aromaticContent,olefinContent,"
-						+ " benzeneContent,e200,e300,volToWtPercentOxy,BioDieselEsterVolume,CetaneIndex,"
-						+ " PAHContent,T50,T90"
-						+ " from fuelFormulation"
-						+ " where fuelFormulationID=" + f.fuelFormulationID;
+				sql = "insert into fuelformulation (fuelformulationid,fuelsubtypeid,rvp,sulfurlevel,"
+						+ " etohvolume,mtbevolume,etbevolume,tamevolume,aromaticcontent,olefincontent,"
+						+ " benzenecontent,e200,e300,voltowtpercentoxy,biodieselestervolume,cetaneindex,"
+						+ " pahcontent,t50,t90)"
+						+ " select " + nextFuelFormulationID + " as fuelformulationid,fuelsubtypeid,rvp,sulfurlevel,"
+						+ " etohvolume,mtbevolume,etbevolume,tamevolume,aromaticcontent,olefincontent,"
+						+ " benzenecontent,e200,e300,voltowtpercentoxy,biodieselestervolume,cetaneindex,"
+						+ " pahcontent,t50,t90"
+						+ " from fuelformulation"
+						+ " where fuelformulationid=" + f.fuelFormulationID;
 				SQLRunner.executeSQL(db,sql);
 				// Bind the new formulation to the old fuel supply
 
@@ -4349,11 +4349,11 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 				 * fuel supply to reference the new fuel formulation created previously.
 				 * @output fuelSupply
 				**/
-				sql = "update fuelSupply set fuelFormulationID=" + nextFuelFormulationID
-						+ " where fuelFormulationID=" + f.fuelFormulationID
-						+ " and fuelRegionID=" + f.fuelRegionID
-						+ " and fuelYearID=" + f.fuelYearID
-						+ " and monthGroupID=" + f.monthGroupID;
+				sql = "update fuelsupply set fuelformulationid=" + nextFuelFormulationID
+						+ " where fuelformulationid=" + f.fuelFormulationID
+						+ " and fuelregionid=" + f.fuelRegionID
+						+ " and fuelyearid=" + f.fuelYearID
+						+ " and monthgroupid=" + f.monthGroupID;
 				SQLRunner.executeSQL(db,sql);
 
 				// Advance
@@ -4396,31 +4396,31 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 			 * @input e10FuelProperties as e1 where e1.fuelRegionID= fuelSupply.fuelRegionID.
 			 * @input fuelSupply
 			**/
-			sql = "update fuelFormulation ff,"
-					+ " e10FuelProperties e0 left outer join e10FuelProperties e1 on ("
-					+ " 	e1.fuelYearID=e0.fuelYearID"
-					+ " 	and e1.monthGroupID=e0.monthGroupID"
-					+ " 	and e1.fuelRegionID=" + f.fuelRegionID + ")"
-					+ " set ff.altRVP=coalesce(e1.RVP,e0.RVP,ff.RVP),"
-					+ " ff.sulfurLevel=coalesce(e1.sulfurLevel,e0.sulfurLevel,ff.sulfurLevel),"
-					+ " ff.ETOHVolume=coalesce(e1.ETOHVolume,e0.ETOHVolume,ff.ETOHVolume),"
-					+ " ff.MTBEVolume=coalesce(e1.MTBEVolume,e0.MTBEVolume,ff.MTBEVolume),"
-					+ " ff.ETBEVolume=coalesce(e1.ETBEVolume,e0.ETBEVolume,ff.ETBEVolume),"
-					+ " ff.TAMEVolume=coalesce(e1.TAMEVolume,e0.TAMEVolume,ff.TAMEVolume),"
-					+ " ff.aromaticContent=coalesce(e1.aromaticContent,e0.aromaticContent,ff.aromaticContent),"
-					+ " ff.olefinContent=coalesce(e1.olefinContent,e0.olefinContent,ff.olefinContent),"
-					+ " ff.benzeneContent=coalesce(e1.benzeneContent,e0.benzeneContent,ff.benzeneContent),"
+			sql = "update fuelformulation ff,"
+					+ " e10fuelproperties e0 left outer join e10fuelproperties e1 on ("
+					+ " 	e1.fuelyearid=e0.fuelyearid"
+					+ " 	and e1.monthgroupid=e0.monthgroupid"
+					+ " 	and e1.fuelregionid=" + f.fuelRegionID + ")"
+					+ " set ff.altrvp=coalesce(e1.rvp,e0.rvp,ff.rvp),"
+					+ " ff.sulfurlevel=coalesce(e1.sulfurlevel,e0.sulfurlevel,ff.sulfurlevel),"
+					+ " ff.etohvolume=coalesce(e1.etohvolume,e0.etohvolume,ff.etohvolume),"
+					+ " ff.mtbevolume=coalesce(e1.mtbevolume,e0.mtbevolume,ff.mtbevolume),"
+					+ " ff.etbevolume=coalesce(e1.etbevolume,e0.etbevolume,ff.etbevolume),"
+					+ " ff.tamevolume=coalesce(e1.tamevolume,e0.tamevolume,ff.tamevolume),"
+					+ " ff.aromaticcontent=coalesce(e1.aromaticcontent,e0.aromaticcontent,ff.aromaticcontent),"
+					+ " ff.olefincontent=coalesce(e1.olefincontent,e0.olefincontent,ff.olefincontent),"
+					+ " ff.benzenecontent=coalesce(e1.benzenecontent,e0.benzenecontent,ff.benzenecontent),"
 					+ " ff.e200=coalesce(e1.e200,e0.e200,ff.e200),"
 					+ " ff.e300=coalesce(e1.e300,e0.e300,ff.e300),"
-					+ " ff.BioDieselEsterVolume=coalesce(e1.BioDieselEsterVolume,e0.BioDieselEsterVolume,ff.BioDieselEsterVolume),"
-					+ " ff.CetaneIndex=coalesce(e1.CetaneIndex,e0.CetaneIndex,ff.CetaneIndex),"
-					+ " ff.PAHContent=coalesce(e1.PAHContent,e0.PAHContent,ff.PAHContent),"
-					+ " ff.T50=coalesce(e1.T50,e0.T50,ff.T50),"
-					+ " ff.T90=coalesce(e1.T90,e0.T90,ff.T90)"
-					+ " where ff.fuelFormulationID=" + f.fuelFormulationID
-					+ " and e0.fuelRegionID=0"
-					+ " and e0.fuelYearID=" + f.fuelYearID
-					+ " and e0.monthGroupID=" + f.monthGroupID;
+					+ " ff.biodieselestervolume=coalesce(e1.biodieselestervolume,e0.biodieselestervolume,ff.biodieselestervolume),"
+					+ " ff.cetaneindex=coalesce(e1.cetaneindex,e0.cetaneindex,ff.cetaneindex),"
+					+ " ff.pahcontent=coalesce(e1.pahcontent,e0.pahcontent,ff.pahcontent),"
+					+ " ff.t50=coalesce(e1.t50,e0.t50,ff.t50),"
+					+ " ff.t90=coalesce(e1.t90,e0.t90,ff.t90)"
+					+ " where ff.fuelformulationid=" + f.fuelFormulationID
+					+ " and e0.fuelregionid=0"
+					+ " and e0.fuelyearid=" + f.fuelYearID
+					+ " and e0.monthgroupid=" + f.monthGroupID;
 			SQLRunner.executeSQL(db,sql);
 		}
 		/**
