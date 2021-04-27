@@ -47,49 +47,49 @@ public class FuelImporter extends ImporterBase {
 	 * The format is compatible with BasicDataHandler.
 	**/
 	static String[] dataTableDescriptor = {
-		BasicDataHandler.BEGIN_TABLE, "FuelSupply",
-		"fuelRegionID", "Region", ImporterManager.FILTER_FUEL_REGION,
-		"fuelYearID", "FuelSupplyYear", ImporterManager.FILTER_FUEL_YEAR,
-		"monthGroupID", "MonthGroupOfAnyYear", ImporterManager.FILTER_MONTH_GROUP,
-		"fuelFormulationID", "", "", // ImporterManager.FILTER_FUEL_FORMULATION,
-		"marketShare", "", ImporterManager.FILTER_MARKET_SHARE,
-		"marketShareCV", "", "",
+		BasicDataHandler.BEGIN_TABLE, "fuelsupply",
+		"fuelregionid", "region", ImporterManager.FILTER_FUEL_REGION,
+		"fuelyearid", "fuelsupplyyear", ImporterManager.FILTER_FUEL_YEAR,
+		"monthgroupid", "monthgroupofanyyear", ImporterManager.FILTER_MONTH_GROUP,
+		"fuelformulationid", "", "", // ImporterManager.FILTER_FUEL_FORMULATION,
+		"marketshare", "", ImporterManager.FILTER_MARKET_SHARE,
+		"marketsharecv", "", "",
 
-		BasicDataHandler.BEGIN_TABLE, "FuelFormulation",
-		"fuelFormulationID", "", "",
-		"fuelSubtypeID", "FuelSubtype", ImporterManager.FILTER_FUEL_SUBTYPE,
-		"RVP", "", "",
-		"sulfurLevel", "", "",
-		"ETOHVolume", "", "",
-		"MTBEVolume", "", "",
-		"ETBEVolume", "", "",
-		"TAMEVolume", "", "",
-		"aromaticContent", "", "",
-		"olefinContent", "", "",
-		"benzeneContent", "", "",
+		BasicDataHandler.BEGIN_TABLE, "fuelformulation",
+		"fuelformulationid", "", "",
+		"fuelsubtypeid", "fuelsubtype", ImporterManager.FILTER_FUEL_SUBTYPE,
+		"rvp", "", "",
+		"sulfurlevel", "", "",
+		"etohvolume", "", "",
+		"mtbevolume", "", "",
+		"etbevolume", "", "",
+		"tamevolume", "", "",
+		"aromaticcontent", "", "",
+		"olefincontent", "", "",
+		"benzenecontent", "", "",
 		"e200", "", "",
 		"e300", "", "",
-		"*volToWtPercentOxy", "", "",
-		"bioDieselEsterVolume", "", "",
-		"cetaneIndex", "", "",
-		"PAHContent", "", "",
-		"T50", "", "",
-		"T90", "", "",
+		"*voltowtpercentoxy", "", "",
+		"biodieselestervolume", "", "",
+		"cetaneindex", "", "",
+		"pahcontent", "", "",
+		"t50", "", "",
+		"t90", "", "",
 
-		BasicDataHandler.BEGIN_TABLE, "FuelUsageFraction",
-		"countyID", "County", ImporterManager.FILTER_COUNTY,
-		"fuelYearID", "FuelSupplyYear", ImporterManager.FILTER_FUEL_YEAR,
-		"modelYearGroupID", "", ImporterManager.FILTER_MODEL_YEAR_RANGE,
-		"sourceBinFuelTypeID", "FuelType", ImporterManager.FILTER_FUEL,
-		"fuelSupplyFuelTypeID", "FuelType", ImporterManager.FILTER_FUEL,
-		"usageFraction", "", ImporterManager.FILTER_0_TO_1_FRACTION,
+		BasicDataHandler.BEGIN_TABLE, "fuelusagefraction",
+		"countyid", "county", ImporterManager.FILTER_COUNTY,
+		"fuelyearid", "fuelsupplyyear", ImporterManager.FILTER_FUEL_YEAR,
+		"modelyeargroupid", "", ImporterManager.FILTER_MODEL_YEAR_RANGE,
+		"sourcebinfueltypeid", "fueltype", ImporterManager.FILTER_FUEL,
+		"fuelsupplyfueltypeid", "fueltype", ImporterManager.FILTER_FUEL,
+		"usagefraction", "", ImporterManager.FILTER_0_TO_1_FRACTION,
 
 		BasicDataHandler.BEGIN_TABLE, "avft",
-		"sourceTypeID", "SourceUseType", ImporterManager.FILTER_SOURCE,
-		"modelYearID", "", ImporterManager.FILTER_MODELYEARID,
-		"fuelTypeID", "FuelType", "", // ImporterManager.FILTER_FUEL,
-		"engTechID", "EngineTech", "",
-		"fuelEngFraction", "", ImporterManager.FILTER_NON_NEGATIVE
+		"sourcetypeid", "sourceusetype", ImporterManager.FILTER_SOURCE,
+		"modelyearid", "", ImporterManager.FILTER_MODELYEARID,
+		"fueltypeid", "fueltype", "", // ImporterManager.FILTER_FUEL,
+		"engtechid", "enginetech", "",
+		"fuelengfraction", "", ImporterManager.FILTER_NON_NEGATIVE
 	};
 
 	/**
@@ -98,41 +98,41 @@ public class FuelImporter extends ImporterBase {
 	 * The format is compatible with BasicDataHandler.
 	**/
 	static String[] dataTableDescriptorNoUsage = {
-		BasicDataHandler.BEGIN_TABLE, "FuelSupply",
-		"fuelRegionID", "Region", ImporterManager.FILTER_FUEL_REGION,
-		"fuelYearID", "FuelSupplyYear", ImporterManager.FILTER_FUEL_YEAR,
-		"monthGroupID", "MonthGroupOfAnyYear", ImporterManager.FILTER_MONTH_GROUP,
-		"fuelFormulationID", "", "", // ImporterManager.FILTER_FUEL_FORMULATION,
-		"marketShare", "", ImporterManager.FILTER_MARKET_SHARE,
-		"marketShareCV", "", "",
+		BasicDataHandler.BEGIN_TABLE, "fuelsupply",
+		"fuelregionid", "region", ImporterManager.FILTER_FUEL_REGION,
+		"fuelyearid", "fuelsupplyyear", ImporterManager.FILTER_FUEL_YEAR,
+		"monthgroupid", "monthgroupofanyyear", ImporterManager.FILTER_MONTH_GROUP,
+		"fuelformulationid", "", "", // ImporterManager.FILTER_FUEL_FORMULATION,
+		"marketshare", "", ImporterManager.FILTER_MARKET_SHARE,
+		"marketsharecv", "", "",
 
-		BasicDataHandler.BEGIN_TABLE, "FuelFormulation",
-		"fuelFormulationID", "", "",
-		"fuelSubtypeID", "FuelSubtype", ImporterManager.FILTER_FUEL_SUBTYPE,
-		"RVP", "", "",
-		"sulfurLevel", "", "",
-		"ETOHVolume", "", "",
-		"MTBEVolume", "", "",
-		"ETBEVolume", "", "",
-		"TAMEVolume", "", "",
-		"aromaticContent", "", "",
-		"olefinContent", "", "",
-		"benzeneContent", "", "",
+		BasicDataHandler.BEGIN_TABLE, "fuelformulation",
+		"fuelformulationid", "", "",
+		"fuelsubtypeid", "fuelsubtype", ImporterManager.FILTER_FUEL_SUBTYPE,
+		"rvp", "", "",
+		"sulfurlevel", "", "",
+		"etohvolume", "", "",
+		"mtbevolume", "", "",
+		"etbevolume", "", "",
+		"tamevolume", "", "",
+		"aromaticcontent", "", "",
+		"olefincontent", "", "",
+		"benzenecontent", "", "",
 		"e200", "", "",
 		"e300", "", "",
-		//"volToWtPercentOxy", "", "",
-		"bioDieselEsterVolume", "", "",
-		"cetaneIndex", "", "",
-		"PAHContent", "", "",
-		"T50", "", "",
-		"T90", "", "",
+		//"voltowtpercentoxy", "", "",
+		"biodieselestervolume", "", "",
+		"cetaneindex", "", "",
+		"pahcontent", "", "",
+		"t50", "", "",
+		"t90", "", "",
 
 		BasicDataHandler.BEGIN_TABLE, "avft",
-		"sourceTypeID", "SourceUseType", ImporterManager.FILTER_SOURCE,
-		"modelYearID", "", ImporterManager.FILTER_MODELYEARID,
-		"fuelTypeID", "FuelType", "", // ImporterManager.FILTER_FUEL,
-		"engTechID", "EngineTech", "",
-		"fuelEngFraction", "", ImporterManager.FILTER_NON_NEGATIVE
+		"sourcetypeid", "sourceusetype", ImporterManager.FILTER_SOURCE,
+		"modelyearid", "", ImporterManager.FILTER_MODELYEARID,
+		"fueltypeid", "fueltype", "", // importermanager.filter_fuel,
+		"engtechid", "enginetech", "",
+		"fuelengfraction", "", ImporterManager.FILTER_NON_NEGATIVE
 	};
 
 	/**
@@ -140,34 +140,34 @@ public class FuelImporter extends ImporterBase {
 	 * The format is compatible with BasicDataHandler.
 	**/
 	static String[] nonroadDataTableDescriptor = {
-		BasicDataHandler.BEGIN_TABLE, "nrFuelSupply",
-		"fuelRegionID", "Region", ImporterManager.FILTER_FUEL_REGION,
-		"fuelYearID", "FuelSupplyYear", ImporterManager.FILTER_FUEL_YEAR,
-		"monthGroupID", "MonthGroupOfAnyYear", ImporterManager.FILTER_MONTH_GROUP,
-		"fuelFormulationID", "", "", // ImporterManager.FILTER_FUEL_FORMULATION,
-		"marketShare", "", ImporterManager.FILTER_MARKET_SHARE,
-		"marketShareCV", "", "",
+		BasicDataHandler.BEGIN_TABLE, "nrfuelsupply",
+		"fuelregionid", "region", ImporterManager.FILTER_FUEL_REGION,
+		"fuelyearid", "fuelsupplyyear", ImporterManager.FILTER_FUEL_YEAR,
+		"monthgroupid", "monthgroupofanyyear", ImporterManager.FILTER_MONTH_GROUP,
+		"fuelformulationid", "", "", // ImporterManager.FILTER_FUEL_FORMULATION,
+		"marketshare", "", ImporterManager.FILTER_MARKET_SHARE,
+		"marketsharecv", "", "",
 
-		BasicDataHandler.BEGIN_TABLE, "FuelFormulation",
-		"fuelFormulationID", "", "",
-		"fuelSubtypeID", "nrFuelSubtype", ImporterManager.FILTER_FUEL_SUBTYPE,
-		"RVP", "", "",
-		"sulfurLevel", "", "",
-		"ETOHVolume", "", "",
-		"MTBEVolume", "", "",
-		"ETBEVolume", "", "",
-		"TAMEVolume", "", "",
-		"aromaticContent", "", "",
-		"olefinContent", "", "",
-		"benzeneContent", "", "",
+		BasicDataHandler.BEGIN_TABLE, "fuelformulation",
+		"fuelformulationid", "", "",
+		"fuelsubtypeid", "nrfuelsubtype", ImporterManager.FILTER_FUEL_SUBTYPE,
+		"rvp", "", "",
+		"sulfurlevel", "", "",
+		"etohvolume", "", "",
+		"mtbevolume", "", "",
+		"etbevolume", "", "",
+		"tamevolume", "", "",
+		"aromaticcontent", "", "",
+		"olefincontent", "", "",
+		"benzenecontent", "", "",
 		"e200", "", "",
 		"e300", "", "",
-		"*volToWtPercentOxy", "", "",
-		"bioDieselEsterVolume", "", "",
-		"cetaneIndex", "", "",
-		"PAHContent", "", "",
-		"T50", "", "",
-		"T90", "", ""
+		"*voltowtpercentoxy", "", "",
+		"biodieselestervolume", "", "",
+		"cetaneindex", "", "",
+		"pahcontent", "", "",
+		"t50", "", "",
+		"t90", "", ""
 	};
 
 	/** Class for editing the data source **/
@@ -177,7 +177,7 @@ public class FuelImporter extends ImporterBase {
 		 * @return the name of the table being managed
 		**/
 		public String getTableName() {
-			return "FuelSupply";
+			return "fuelsupply";
 		}
 
 		/**
@@ -198,7 +198,7 @@ public class FuelImporter extends ImporterBase {
 		 * @return the name of the table being managed
 		**/
 		public String getTableName() {
-			return "nrFuelSupply";
+			return "nrfuelsupply";
 		}
 
 		/**
@@ -219,7 +219,7 @@ public class FuelImporter extends ImporterBase {
 		 * @return the name of the table being managed
 		**/
 		public String getTableName() {
-			return "FuelFormulation";
+			return "fuelformulation";
 		}
 
 		/**
@@ -240,7 +240,7 @@ public class FuelImporter extends ImporterBase {
 		 * @return the name of the table being managed
 		**/
 		public String getTableName() {
-			return "FuelUsageFraction";
+			return "fuelusagefraction";
 		}
 
 		/**
@@ -261,7 +261,7 @@ public class FuelImporter extends ImporterBase {
 		 * @return the name of the table being managed
 		**/
 		public String getTableName() {
-			return "AVFT";
+			return "avft";
 		}
 
 		/**
@@ -284,13 +284,13 @@ public class FuelImporter extends ImporterBase {
 		 * no file has been specified.
 		**/
 		public String getTableFileSource(String tableName) {
-			if(tableName.equalsIgnoreCase("FuelSupply") || tableName.equalsIgnoreCase("nrFuelSupply")) {
+			if(tableName.equalsIgnoreCase("fuelsupply") || tableName.equalsIgnoreCase("nrfuelsupply")) {
 				return fuelSupplyPart.fileName;
-			} else if(tableName.equalsIgnoreCase("FuelFormulation")) {
+			} else if(tableName.equalsIgnoreCase("fuelformulation")) {
 				return fuelFormulationPart.fileName;
-			} else if(CompilationFlags.USE_FUELUSAGEFRACTION && tableName.equalsIgnoreCase("FuelUsageFraction")) {
+			} else if(CompilationFlags.USE_FUELUSAGEFRACTION && tableName.equalsIgnoreCase("fuelusagefraction")) {
 				return fuelUsageFractionPart.fileName;
-			} else if(tableName.equalsIgnoreCase("AVFT")) {
+			} else if(tableName.equalsIgnoreCase("avft")) {
 				return avftPart.fileName;
 			}
 			return null;
@@ -303,13 +303,13 @@ public class FuelImporter extends ImporterBase {
 		 * worksheet has been specified or if the file is not an XLS file.
 		**/
 		public String getTableWorksheetSource(String tableName) {
-			if(tableName.equalsIgnoreCase("FuelSupply") || tableName.equalsIgnoreCase("nrFuelSupply")) {
+			if(tableName.equalsIgnoreCase("fuelsupply") || tableName.equalsIgnoreCase("nrfuelsupply")) {
 				return fuelSupplyPart.worksheetName;
-			} else if(tableName.equalsIgnoreCase("FuelFormulation")) {
+			} else if(tableName.equalsIgnoreCase("fuelformulation")) {
 				return fuelFormulationPart.worksheetName;
-			} else if(CompilationFlags.USE_FUELUSAGEFRACTION && tableName.equalsIgnoreCase("FuelUsageFraction")) {
+			} else if(CompilationFlags.USE_FUELUSAGEFRACTION && tableName.equalsIgnoreCase("fuelusagefraction")) {
 				return fuelUsageFractionPart.worksheetName;
-			} else if(tableName.equalsIgnoreCase("AVFT")) {
+			} else if(tableName.equalsIgnoreCase("avft")) {
 				return avftPart.worksheetName;
 			}
 			return null;
@@ -326,21 +326,21 @@ public class FuelImporter extends ImporterBase {
 		**/
 		public String getAlternateExportSQL(MOVESDatabaseType type, Connection db,
 				String tableName) {
-			if(type == MOVESDatabaseType.DEFAULT && tableName.equalsIgnoreCase("AVFT")) {
+			if(type == MOVESDatabaseType.DEFAULT && tableName.equalsIgnoreCase("avft")) {
 				String sourceTypesCSV = manager.getFilterValuesCSV(ImporterManager.FILTER_SOURCE);
 				if( sourceTypesCSV == null || sourceTypesCSV.length() <= 0) {
 					return null;
 				}
 	
-				String sql = "select svp.sourceTypeID, svp.modelYearID, fuelTypeID, engTechID, sum(stmyFraction) as fuelEngFraction"
-						+ " from sampleVehiclePopulation svp"
-						+ " where sourceTypeID in (" + sourceTypesCSV + ")"
-						+ " group by svp.sourceTypeModelYearID, fuelTypeID, engTechID"
-						+ " order by svp.sourceTypeModelYearID, fuelTypeID, engTechID";
+				String sql = "select svp.sourcetypeid, svp.modelyearid, fueltypeid, engtechid, sum(stmyfraction) as fuelengfraction"
+						+ " from samplevehiclepopulation svp"
+						+ " where sourcetypeid in (" + sourceTypesCSV + ")"
+						+ " group by svp.sourcetypemodelyearid, fueltypeid, engtechid"
+						+ " order by svp.sourcetypemodelyearid, fueltypeid, engtechid";
 	
 				return sql;
 			}
-			if(tableName.equalsIgnoreCase("FuelSupply") || tableName.equalsIgnoreCase("nrFuelSupply")) {
+			if(tableName.equalsIgnoreCase("fuelsupply") || tableName.equalsIgnoreCase("nrfuelsupply")) {
 				String regionIDs = manager.getFilterValuesCSV(ImporterManager.FILTER_FUEL_REGION);
 				String fuelYearIDs = manager.getFilterValuesCSV(ImporterManager.FILTER_FUEL_YEAR);
 				String monthGroupIDs = manager.getFilterValuesCSV(ImporterManager.FILTER_MONTH_GROUP);
@@ -353,21 +353,21 @@ public class FuelImporter extends ImporterBase {
 					return null;
 				}
 
-				String sql = "select fuelRegionID, fuelYearID, monthGroupID, fuelFormulationID, marketShare, marketShareCV"
+				String sql = "select fuelregionid, fuelyearid, monthgroupid, fuelformulationid, marketshare, marketsharecv"
 						+ " from " + tableName
-						+ " where fuelRegionID in (" + regionIDs + ")"
-						+ " and fuelYearID in (" + fuelYearIDs + ")"
-						+ " and monthGroupID in (" + monthGroupIDs + ")"
+						+ " where fuelregionid in (" + regionIDs + ")"
+						+ " and fuelyearid in (" + fuelYearIDs + ")"
+						+ " and monthgroupid in (" + monthGroupIDs + ")"
 						+ (type == MOVESDatabaseType.DEFAULT?
-							" and fuelFormulationID in (" + formulationIDs + ")"
+							" and fuelformulationid in (" + formulationIDs + ")"
 							:
 							"")
-						+ " order by fuelRegionID, fuelYearID, monthGroupID, fuelFormulationID";
+						+ " order by fuelregionid, fuelyearid, monthgroupid, fuelformulationid";
 				//System.out.println(sql);
 				return sql;
 			}
-			if(tableName.equalsIgnoreCase("FuelFormulation")) {
-				String fuelSupplyTable = manager.isNonroad()? "nrFuelSupply" : "fuelSupply";
+			if(tableName.equalsIgnoreCase("fuelformulation")) {
+				String fuelSupplyTable = manager.isNonroad()? "nrfuelsupply" : "fuelsupply";
 				String subtypes = manager.getFilterValuesCSV(ImporterManager.FILTER_FUEL_SUBTYPE);
 				//System.out.println("subtypes=" + subtypes);
 
@@ -384,11 +384,11 @@ public class FuelImporter extends ImporterBase {
 					if(regionIDs != null && regionIDs.length() > 0
 							&& fuelYearIDs != null && fuelYearIDs.length() > 0
 							&& monthGroupIDs != null && monthGroupIDs.length() > 0) {
-						String sql = "select distinct fuelFormulationID"
+						String sql = "select distinct fuelformulationid"
 								+ " from " + fuelSupplyTable
-								+ " where fuelRegionID in (" + regionIDs + ")"
-								+ " and fuelYearID in (" + fuelYearIDs + ")"
-								+ " and monthGroupID in (" + monthGroupIDs + ")";
+								+ " where fuelregionid in (" + regionIDs + ")"
+								+ " and fuelyearid in (" + fuelYearIDs + ")"
+								+ " and monthgroupid in (" + monthGroupIDs + ")";
 						//System.out.println(sql);
 						SQLRunner.Query query = new SQLRunner.Query();
 						String formulationIDs = "0";
@@ -399,13 +399,13 @@ public class FuelImporter extends ImporterBase {
 							}
 							query.close();
 
-							sql = "select fuelFormulationID, fuelSubtypeID, RVP, sulfurLevel, ETOHVolume, MTBEVolume,"
-									+ " ETBEVolume, TAMEVolume, aromaticContent, olefinContent, benzeneContent, e200, e300,"
-									+ " BioDieselEsterVolume, CetaneIndex, PAHContent, T50, T90"
-									+ " from fuelFormulation"
-									+ " where fuelSubtypeID in (" + subtypes + ")"
-									+ " and (fuelFormulationID < 100 or fuelFormulationID in (" + formulationIDs + "))"
-									+ " order by fuelFormulationID";
+							sql = "select fuelformulationid, fuelsubtypeid, rvp, sulfurlevel, etohvolume, mtbevolume,"
+									+ " etbevolume, tamevolume, aromaticcontent, olefincontent, benzenecontent, e200, e300,"
+									+ " biodieselestervolume, cetaneindex, pahcontent, t50, t90"
+									+ " from fuelformulation"
+									+ " where fuelsubtypeid in (" + subtypes + ")"
+									+ " and (fuelformulationid < 100 or fuelformulationid in (" + formulationIDs + "))"
+									+ " order by fuelformulationid";
 							//System.out.println(sql);
 							return sql;
 						} catch(Exception e) {
@@ -418,12 +418,12 @@ public class FuelImporter extends ImporterBase {
 				}
 				// Export formulations in the requested database filtered only by the
 				// subtypes needed for the runspec.
-				return "select fuelFormulationID, fuelSubtypeID, RVP, sulfurLevel, ETOHVolume, MTBEVolume,"
-						+ " ETBEVolume, TAMEVolume, aromaticContent, olefinContent, benzeneContent, e200, e300,"
-						+ " BioDieselEsterVolume, CetaneIndex, PAHContent, T50, T90"
-						+ " from fuelFormulation"
-						+ " where fuelSubtypeID in (" + subtypes + ")"
-						+ " order by fuelFormulationID";
+				return "select fuelformulationid, fuelsubtypeid, rvp, sulfurlevel, etohvolume, mtbevolume,"
+						+ " etbevolume, tamevolume, aromaticcontent, olefincontent, benzenecontent, e200, e300,"
+						+ " biodieselestervolume, cetaneindex, pahcontent, t50, t90"
+						+ " from fuelformulation"
+						+ " where fuelsubtypeid in (" + subtypes + ")"
+						+ " order by fuelformulationid";
 			}
 			return null;
 		}
@@ -463,7 +463,7 @@ public class FuelImporter extends ImporterBase {
 		 * @return the name of the ImporterManager filter to be used.  Never null, never blank.
 		**/
 		public String adjustTemplateFilterName(String tableName, String filterName) {
-			if(!tableName.equalsIgnoreCase("AVFT")) {
+			if(!tableName.equalsIgnoreCase("avft")) {
 				return filterName;
 			}
 
@@ -485,11 +485,11 @@ public class FuelImporter extends ImporterBase {
 		 * @return true if the filter should be used
 		**/
 		public boolean shouldUseFilterForExport(String tableName, String filterName) {
-			if(tableName.equalsIgnoreCase("AVFT")) {
+			if(tableName.equalsIgnoreCase("avft")) {
 				if(filterName.equalsIgnoreCase(ImporterManager.FILTER_FUEL)) {
 					return false;
 				}
-			} else if(tableName.equalsIgnoreCase("FuelSupply") || tableName.equalsIgnoreCase("nrFuelSupply")) {
+			} else if(tableName.equalsIgnoreCase("fuelsupply") || tableName.equalsIgnoreCase("nrfuelsupply")) {
 				if(filterName.equalsIgnoreCase(ImporterManager.FILTER_FUEL_FORMULATION)) {
 					return false;
 				}
@@ -499,10 +499,10 @@ public class FuelImporter extends ImporterBase {
 	}
 
 	/** Tables needed by the Onroad model **/
-	static String[] onroadRequiredTables = new String[] { "FuelSupply", "FuelFormulation", "FuelUsageFraction", "AVFT" };
+	static String[] onroadRequiredTables = new String[] { "fuelsupply", "fuelformulation", "fuelusagefraction", "avft" };
 	
 	/** Tables needed by the Nonroad model **/
-	static String[] nonroadRequiredTables = new String[] { "nrFuelSupply", "FuelFormulation" };
+	static String[] nonroadRequiredTables = new String[] { "nrfuelsupply", "fuelformulation" };
 
 	/** Constructor **/
 	public FuelImporter() {
@@ -515,7 +515,7 @@ public class FuelImporter extends ImporterBase {
 			isNonroad = true;
 		}
 		if(!isNonroad && !CompilationFlags.USE_FUELUSAGEFRACTION) {
-			requiredTables = new String[] { "FuelSupply", "FuelFormulation", "AVFT" };
+			requiredTables = new String[] { "fuelsupply", "fuelformulation", "avft" };
 		}
 
 		customButtonName = "Fuels Wizard";
@@ -556,7 +556,7 @@ public class FuelImporter extends ImporterBase {
 	 * @return the base name of the importer's supporting database script file
 	**/
 	public String getScriptName() {
-		return "FuelSupply";
+		return "fuelsupply";
 	}
 
 	/**
@@ -579,15 +579,15 @@ public class FuelImporter extends ImporterBase {
 		}
 		*/
 		boolean hasYears = manager.tableHasYears(db,
-				"select distinct yearID from fuelSupply"
-				+ " inner join year using (fuelYearID)",
+				"select distinct yearid from fuelsupply"
+				+ " inner join year using (fuelyearid)",
 				this,"fuelSupply is missing fuels from year(s)");
 		if(!hasYears) {
 			return new RunSpecSectionStatus(RunSpecSectionStatus.NOT_READY);
 		}
 		
 		boolean hasMonths = manager.tableHasMonths(db,
-				"select distinct monthGroupID from fuelSupply ",
+				"select distinct monthgroupid from fuelsupply ",
 				this,"fuelSupply is missing fuels from months(s)");
 		if(!hasMonths) {
 			return new RunSpecSectionStatus(RunSpecSectionStatus.NOT_READY);
@@ -596,10 +596,10 @@ public class FuelImporter extends ImporterBase {
 		String defaultDatabaseName = SystemConfiguration.getTheSystemConfiguration().
 				databaseSelections[MOVESDatabaseType.DEFAULT.getIndex()].databaseName;
 		boolean hasFuels = manager.tableHasFuelTypes(db,
-				"select distinct fuelTypeID"
-				+ " from fuelSupply fs"
-				+ " inner join fuelFormulation ff using (fuelFormulationID)"
-				+ " inner join " + defaultDatabaseName + ".fuelSubType fst using (fuelSubTypeID)",
+				"select distinct fueltypeid"
+				+ " from fuelsupply fs"
+				+ " inner join fuelformulation ff using (fuelformulationid)"
+				+ " inner join " + defaultDatabaseName + ".fuelsubtype fst using (fuelsubtypeid)",
 				this,"fuelSupply is missing formulations for fuelTypeID(s)");
 		if(!hasFuels) {
 			return new RunSpecSectionStatus(RunSpecSectionStatus.NOT_READY);
@@ -609,7 +609,7 @@ public class FuelImporter extends ImporterBase {
 		// converted into an error)
 		SQLRunner.Query query = new SQLRunner.Query();
 		ArrayList<Integer> fuelRegionIDs = new ArrayList<Integer>();
-		String sql = "SELECT DISTINCT fuelRegionID FROM fuelsupply";
+		String sql = "SELECT DISTINCT fuelregionid from fuelsupply";
 		try {
 			query.open(db,sql);
 			while(query.rs.next()) {
@@ -638,12 +638,12 @@ public class FuelImporter extends ImporterBase {
 		}
 		
 		// Perform another check for unused fuelRegionIDs (because the ImporterBase's checks don't happen if you close and reopen the CDM/PDM)
-		int countyID = (int)SQLRunner.executeScalar(db,"select countyID from county");
+		int countyID = (int)SQLRunner.executeScalar(db,"select countyid from county");
 		int previousFuelRegionID = -1;
 		boolean fuelRegionUsed = true; // initialize to true so the -1 fuel region (above) doesn't end up in the error list
-		sql = "SELECT distinct fuelRegionID, countyID " + 
-			  "FROM fuelsupply JOIN " + defaultDatabaseName + ".regionCounty on fuelRegionID = regionID " + 
-			  "ORDER BY fuelRegionID, countyID";
+		sql = "SELECT distinct fuelregionid, countyid " + 
+			  "from fuelsupply join " + defaultDatabaseName + ".regioncounty on fuelregionid = regionid " + 
+			  "ORDER BY fuelregionid, countyid";
 		try {
 			query.open(db,sql);
 			while(query.rs.next()) {
@@ -685,7 +685,7 @@ public class FuelImporter extends ImporterBase {
 				// For MOVES3, you must import the FuelUsageFraction table, and it must have all required counties, fuel years, and fuel types.
 				boolean hasNonEmptyFuelUsageFractionTable = false;
 				try {
-					int count = (int)SQLRunner.executeScalar(db,"select count(*) from fuelUsageFraction");
+					int count = (int)SQLRunner.executeScalar(db,"select count(*) from fuelusagefraction");
 					if(count > 0) {
 						hasNonEmptyFuelUsageFractionTable = true;
 					}
@@ -696,27 +696,27 @@ public class FuelImporter extends ImporterBase {
 				}
 				if(hasNonEmptyFuelUsageFractionTable) {
 					boolean hasCounties = manager.tableHasCounties(db,
-							"select distinct countyID from fuelUsageFraction",
+							"select distinct countyid from fuelusagefraction",
 							this,"fuelUsageFraction is missing countyID(s)");
 					if(!hasCounties) {
 						return new RunSpecSectionStatus(RunSpecSectionStatus.NOT_READY);
 					}
 					hasYears = manager.tableHasYears(db,
-							"select distinct yearID from fuelUsageFraction"
-							+ " inner join year using (fuelYearID)",
+							"select distinct yearid from fuelusagefraction"
+							+ " inner join year using (fuelyearid)",
 							this,"fuelUsageFraction is missing entries for year(s)");
 					if(!hasYears) {
 						return new RunSpecSectionStatus(RunSpecSectionStatus.NOT_READY);
 					}
 	
 					hasFuels = manager.tableHasFuelTypes(db,
-							"select distinct sourceBinFuelTypeID from fuelUsageFraction",
+							"select distinct sourcebinfueltypeid from fuelusagefraction",
 							this,"fuelUsageFraction sourceBinFuelTypeID is missing fuelTypeID(s)");
 					if(!hasFuels) {
 						return new RunSpecSectionStatus(RunSpecSectionStatus.NOT_READY);
 					}
 					hasFuels = manager.tableHasFuelTypes(db,
-							"select distinct fuelSupplyFuelTypeID from fuelUsageFraction",
+							"select distinct fuelsupplyfueltypeid from fuelusagefraction",
 							this,"fuelUsageFraction fuelSupplyFuelTypeID is missing fuelTypeID(s)");
 					if(!hasFuels) {
 						return new RunSpecSectionStatus(RunSpecSectionStatus.NOT_READY);
@@ -744,7 +744,7 @@ public class FuelImporter extends ImporterBase {
 			}
 			if(hasNonEmptyAVFTTable) {
 				// Verify the user imported at least the fuels in the runspec.
-				hasFuels = manager.tableHasFuelTypes(db, "select distinct fuelTypeID from avft",
+				hasFuels = manager.tableHasFuelTypes(db, "select distinct fueltypeid from avft",
 						this,"AVFT is missing fuelTypeID(s)");
 				if(!hasFuels) {
 					return new RunSpecSectionStatus(RunSpecSectionStatus.NOT_READY);
@@ -758,10 +758,10 @@ public class FuelImporter extends ImporterBase {
 			// Check FuelFormulation
 			boolean hasUnsupportedDieselParameters = false;
 			try {
-				int count = (int)SQLRunner.executeScalar(db,"select count(*) from fuelformulation where fuelSubTypeID in (20,21,22,23,24) and ( " +
-                                                            "(RVP > 0) OR (ETOHVolume > 0) OR (MTBEVolume > 0) OR (ETBEVolume > 0) OR (TAMEVolume > 0) OR " +
-															"(aromaticContent > 0) OR (olefinContent > 0) OR (benzeneContent > 0) OR (e200 > 0) OR " +
-															"(e300 > 0) OR (volToWtPercentOxy > 0) OR (PAHContent > 0) OR (T50 > 0) OR (T90 > 0))");
+				int count = (int)SQLRunner.executeScalar(db,"select count(*) from fuelformulation where fuelsubtypeid in (20,21,22,23,24) and ( " +
+                                                            "(rvp > 0) or (etohvolume > 0) or (mtbevolume > 0) or (etbevolume > 0) or (tamevolume > 0) or " +
+															"(aromaticcontent > 0) or (olefincontent > 0) or (benzenecontent > 0) or (e200 > 0) or " +
+															"(e300 > 0) or (voltowtpercentoxy > 0) or (pahcontent > 0) or (t50 > 0) or (t90 > 0))");
 				if(count > 0) {
 					hasUnsupportedDieselParameters = true;
 				}

@@ -46,7 +46,7 @@ public class BundleUtilities {
 		try {
 			ArrayList<String> expressions = new ArrayList<String>();
 			db = DatabaseConnectionManager.checkOutConnection(MOVESDatabaseType.EXECUTION);
-			sql = "select distinct tempCorrectionExpression from temperatureFactorExpression";
+			sql = "select distinct tempcorrectionexpression from temperaturefactorexpression";
 			query.open(db,sql);
 			while(query.rs.next()) {
 				String t = StringUtilities.safeGetString(query.rs.getString(1));
@@ -64,12 +64,12 @@ public class BundleUtilities {
 			temperatureFactorExpressionCache = "(case \n";
 			for(int i=0;i<expressions.size();i++) {
 				String e = expressions.get(i);
-				sql = "update temperatureFactorExpression set tempCorrectionExpression='t" + i + "'"
-						+ " where tempCorrectionExpression="
+				sql = "update temperaturefactorexpression set tempcorrectionexpression='t" + i + "'"
+						+ " where tempcorrectionexpression="
 						+ DatabaseUtilities.escapeSQL(e,true);
 				SQLRunner.executeSQL(db,sql);
 				
-				temperatureFactorExpressionCache += " when tempCorrectionExpression='t" + i + "'"
+				temperatureFactorExpressionCache += " when tempcorrectionexpression='t" + i + "'"
 						+ " then (" + e + ") \n";
 			}
 			temperatureFactorExpressionCache += " when 1=0 then 1 else 1 end) \n";
@@ -98,7 +98,7 @@ public class BundleUtilities {
 		String sql = "";
 		try {
 			db = DatabaseConnectionManager.checkOutConnection(MOVESDatabaseType.EXECUTION);
-			sql = "select yearID, fuelYearID from year";
+			sql = "select yearid, fuelyearid from year";
 			query.open(db,sql);
 			while(query.rs.next()) {
 				int year = query.rs.getInt(1);
@@ -128,7 +128,7 @@ public class BundleUtilities {
 		int regionID = 0;
 		try {
 			db = DatabaseConnectionManager.checkOutConnection(MOVESDatabaseType.EXECUTION);
-			sql = "select regionID from regionCounty where regionCodeID=1 and countyID="+countyID+" and fuelYearID="+yearID;
+			sql = "select regionid from regioncounty where regioncodeid=1 and countyid="+countyID+" and fuelyearid="+yearID;
 			query.open(db,sql);
 			while(query.rs.next()) {
 				regionID = query.rs.getInt(1);

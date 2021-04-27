@@ -81,224 +81,224 @@ public class BasicDataHandler implements IDataHandler {
 	 * to identify the filter columns and purposes.
 	**/
 	public static String[] commonDecodeTablesAndQueries = {
-		"MonthGroupOfAnyYear",
-		"select monthGroupID, monthGroupName"
-		+ " from MonthGroupOfAnyYear"
-		+ " order by monthGroupID",
+		"monthgroupofanyyear",
+		"select monthgroupid, monthgroupname"
+		+ " from monthgroupofanyyear"
+		+ " order by monthgroupid",
 
-		"MonthOfAnyYear",
-		//"select monthID, monthName, (case when monthID=2 then (noOfDays+##isLeapYear##) else noOfDays end) as noOfDays"
-		"select monthID, monthName, noOfDays"
-		+ " from monthOfAnyYear"
-		+ " order by monthID",
+		"monthofanyyear",
+		//"select monthid, monthname, (case when monthid=2 then (noofdays+##isleapyear##) else noofdays end) as noofdays"
+		"select monthid, monthname, noofdays"
+		+ " from monthofanyyear"
+		+ " order by monthid",
 
-		"FuelFormulation",
-		"select ff.fuelFormulationID,"
-		+ " ft.fuelTypeID, ft.fuelTypeDesc,"
-		+ " ff.fuelSubTypeID, fuelSubtypeDesc,"
-		+ " RVP, sulfurLevel, ETOHVolume,"
-		+ " MTBEVolume, ETBEVolume,"
-		+ " TAMEVolume, aromaticContent, olefinContent,"
-		+ " benzeneContent, e200, e300, t50, t90,"
-		//+ " volToWtPercentOxy,"
-		+ " bioDieselEsterVolume,"
-		+ " cetaneIndex, PAHContent,"
-		+ " fuelSubtypePetroleumFraction,"
-		+ " fuelSubtypeFossilFraction,"
-		+ " carbonContent, oxidationFraction,"
-		+ " humidityCorrectionCoeff,"
-		+ " energyContent, fuelDensity"
-		+ " from FuelFormulation ff"
-		+ " inner join FuelSubType fs using (fuelSubTypeID)"
-		+ " inner join FuelType ft using (fuelTypeID)"
-		+ " order by ft.fuelTypeID, ff.fuelFormulationID",
+		"fuelformulation",
+		"select ff.fuelformulationid,"
+		+ " ft.fueltypeid, ft.fueltypedesc,"
+		+ " ff.fuelsubtypeid, fuelsubtypedesc,"
+		+ " rvp, sulfurlevel, etohvolume,"
+		+ " mtbevolume, etbevolume,"
+		+ " tamevolume, aromaticcontent, olefincontent,"
+		+ " benzenecontent, e200, e300, t50, t90,"
+		//+ " voltowtpercentoxy,"
+		+ " biodieselestervolume,"
+		+ " cetaneindex, pahcontent,"
+		+ " fuelsubtypepetroleumfraction,"
+		+ " fuelsubtypefossilfraction,"
+		+ " carboncontent, oxidationfraction,"
+		+ " humiditycorrectioncoeff,"
+		+ " energycontent, fueldensity"
+		+ " from fuelformulation ff"
+		+ " inner join fuelsubtype fs using (fuelsubtypeid)"
+		+ " inner join fueltype ft using (fueltypeid)"
+		+ " order by ft.fueltypeid, ff.fuelformulationid",
 
-		"FuelSubtype",
-		"select ft.fuelTypeID, ft.fuelTypeDesc,"
-		+ " fuelSubTypeID, fuelSubtypeDesc,"
-		+ " fuelSubtypePetroleumFraction,"
-		+ " fuelSubtypeFossilFraction,"
-		+ " carbonContent, oxidationFraction,"
-		+ " humidityCorrectionCoeff,"
-		+ " energyContent, fuelDensity"
-		+ " from FuelSubType fs"
-		+ " inner join FuelType ft using (fuelTypeID)"
-		+ " order by ft.fuelTypeID, fs.fuelSubtypeID",
+		"fuelsubtype",
+		"select ft.fueltypeid, ft.fueltypedesc,"
+		+ " fuelsubtypeid, fuelsubtypedesc,"
+		+ " fuelsubtypepetroleumfraction,"
+		+ " fuelsubtypefossilfraction,"
+		+ " carboncontent, oxidationfraction,"
+		+ " humiditycorrectioncoeff,"
+		+ " energycontent, fueldensity"
+		+ " from fuelsubtype fs"
+		+ " inner join fueltype ft using (fueltypeid)"
+		+ " order by ft.fueltypeid, fs.fuelsubtypeid",
 
-		"FuelType",
-		"select fuelTypeID, fuelTypeDesc,"
-		+ " humidityCorrectionCoeff,"
-		+ " fuelDensity"
-		+ " from FuelType ft"
-		+ " order by ft.fuelTypeID",
+		"fueltype",
+		"select fueltypeid, fueltypedesc,"
+		+ " humiditycorrectioncoeff,"
+		+ " fueldensity"
+		+ " from fueltype ft"
+		+ " order by ft.fueltypeid",
 
-		"nrFuelSubtype",
-		"select ft.fuelTypeID, ft.fuelTypeDesc,"
-		+ " fuelSubTypeID, fuelSubtypeDesc,"
-		+ " fuelSubtypePetroleumFraction,"
-		+ " fuelSubtypeFossilFraction,"
-		+ " carbonContent, oxidationFraction,"
-		+ " humidityCorrectionCoeff,"
-		+ " energyContent, fuelDensity"
-		+ " from nrFuelSubType fs"
-		+ " inner join nrFuelType ft using (fuelTypeID)"
-		+ " order by ft.fuelTypeID, fs.fuelSubtypeID",
+		"nrfuelsubtype",
+		"select ft.fueltypeid, ft.fueltypedesc,"
+		+ " fuelsubtypeid, fuelsubtypedesc,"
+		+ " fuelsubtypepetroleumfraction,"
+		+ " fuelsubtypefossilfraction,"
+		+ " carboncontent, oxidationfraction,"
+		+ " humiditycorrectioncoeff,"
+		+ " energycontent, fueldensity"
+		+ " from nrfuelsubtype fs"
+		+ " inner join nrfueltype ft using (fueltypeid)"
+		+ " order by ft.fueltypeid, fs.fuelsubtypeid",
 
-		"nrFuelType",
-		"select fuelTypeID, fuelTypeDesc,"
-		+ " humidityCorrectionCoeff,"
-		+ " fuelDensity"
-		+ " from nrFuelType ft"
-		+ " order by ft.fuelTypeID",
+		"nrfueltype",
+		"select fueltypeid, fueltypedesc,"
+		+ " humiditycorrectioncoeff,"
+		+ " fueldensity"
+		+ " from nrfueltype ft"
+		+ " order by ft.fueltypeid",
 
-		"FuelSupplyYear",
-		"select fuelYearID, yearID"
+		"fuelsupplyyear",
+		"select fuelyearid, yearid"
 		+ " from year"
-		+ " order by yearID",
+		+ " order by yearid",
 
-		"County",
-		"select countyID, stateName, countyName, countyTypeID, idleRegionID"
-		+ " from County"
-		+ " inner join State using (stateID)"
-		+ " order by stateName, countyName",
+		"county",
+		"select countyid, statename, countyname, countytypeid, idleregionid"
+		+ " from county"
+		+ " inner join state using (stateid)"
+		+ " order by statename, countyname",
 
-		"CountyState",
-		"select countyID, countyName, State.stateID, stateName, countyTypeID, idleRegionID"
-		+ " from County"
-		+ " inner join State using (stateID)"
-		+ " order by stateName, countyName",
+		"countystate",
+		"select countyid, countyname, state.stateid, statename, countytypeid, idleregionid"
+		+ " from county"
+		+ " inner join state using (stateid)"
+		+ " order by statename, countyname",
 
-		"Zone",
-		"select zoneID, z.countyID, stateName, countyName"
-		+ " from Zone z"
-		+ " inner join County c using (countyID)"
-		+ " inner join State s using (stateID)"
-		+ " order by stateName, countyName",
+		"zone",
+		"select zoneid, z.countyid, statename, countyname"
+		+ " from zone z"
+		+ " inner join county c using (countyid)"
+		+ " inner join state s using (stateid)"
+		+ " order by statename, countyname",
 
-		"HPMSVType",
-		"select HPMSVtypeID, HPMSVtypeName"
-		+ " from HPMSVType"
-		+ " order by HPMSVtypeID",
+		"hpmsvtype",
+		"select hpmsvtypeid, hpmsvtypename"
+		+ " from hpmsvtype"
+		+ " order by hpmsvtypeid",
 
-		"AgeCategory",
-		"select ageID, ageCategoryName"
-		+ " from ageCategory"
-		+ " order by ageID",
+		"agecategory",
+		"select ageid, agecategoryname"
+		+ " from agecategory"
+		+ " order by ageid",
 
-		"RoadType",
-		"select roadTypeID, roadDesc"
-		+ " from roadType"
-		+ " where roadTypeID <= 5"
-		+ " order by roadTypeID",
+		"roadtype",
+		"select roadtypeid, roaddesc"
+		+ " from roadtype"
+		+ " where roadtypeid <= 5"
+		+ " order by roadtypeid",
 
-		"RoadTypeHwy", // Not a real table, but a filtered version of RoadType
-		"select roadTypeID, roadDesc"
-		+ " from roadType"
-		+ " where roadTypeID in (2,4)"
-		+ " order by roadTypeID",
+		"roadtypehwy", // not a real table, but a filtered version of roadtype
+		"select roadtypeid, roaddesc"
+		+ " from roadtype"
+		+ " where roadtypeid in (2,4)"
+		+ " order by roadtypeid",
 
-		"AvgSpeedBin",
-		"select avgSpeedBinID, avgBinSpeed, avgSpeedBinDesc,"
-		+ " opModeIDTirewear, opModeIDRunning"
-		+ " from avgSpeedBin"
-		+ " order by avgSpeedBinID",
+		"avgspeedbin",
+		"select avgspeedbinid, avgbinspeed, avgspeedbindesc,"
+		+ " opmodeidtirewear, opmodeidrunning"
+		+ " from avgspeedbin"
+		+ " order by avgspeedbinid",
 
-		"SourceUseType",
-		"select sourceTypeID, sourceTypeName, s.HPMSVtypeID, h.HPMSVtypeName"
-		+ " from sourceUseType s"
-		+ " inner join HPMSVtype h on h.HPMSVtypeID=s.HPMSVtypeID"
-		+ " order by sourceTypeID",
+		"sourceusetype",
+		"select sourcetypeid, sourcetypename, s.hpmsvtypeid, h.hpmsvtypename"
+		+ " from sourceusetype s"
+		+ " inner join hpmsvtype h on h.hpmsvtypeid=s.hpmsvtypeid"
+		+ " order by sourcetypeid",
 
-		"HourOfAnyDay",
-		"select hourID, hourName"
-		+ " from hourOfAnyDay"
-		+ " order by hourID",
+		"hourofanyday",
+		"select hourid, hourname"
+		+ " from hourofanyday"
+		+ " order by hourid",
 
-		"HourDay",
-		"select hourDayID, hd.dayID, dayName, hd.hourID, hourName"
-		+ " from hourDay hd"
-		+ " inner join hourOfAnyDay h using (hourID)"
-		+ " inner join dayOfAnyWeek d using (dayID)"
-		+ " order by hd.dayID, hd.hourID",
+		"hourday",
+		"select hourdayid, hd.dayid, dayname, hd.hourid, hourname"
+		+ " from hourday hd"
+		+ " inner join hourofanyday h using (hourid)"
+		+ " inner join dayofanyweek d using (dayid)"
+		+ " order by hd.dayid, hd.hourid",
 
-		"PollutantProcessAssoc",
-		"select polProcessID, ppa.processID, processName, ppa.pollutantID, pollutantName"
-		+ " from PollutantProcessAssoc ppa"
-		+ " inner join EmissionProcess using (processID)"
-		+ " inner join Pollutant using (pollutantID)"
-		+ " order by polProcessID",
+		"pollutantprocessassoc",
+		"select polprocessid, ppa.processid, processname, ppa.pollutantid, pollutantname"
+		+ " from pollutantprocessassoc ppa"
+		+ " inner join emissionprocess using (processid)"
+		+ " inner join pollutant using (pollutantid)"
+		+ " order by polprocessid",
 
-		"Pollutant",
-		"select pollutantID, pollutantName, NEIPollutantCode, shortName"
+		"pollutant",
+		"select pollutantid, pollutantname, neipollutantcode, shortname"
 		+ " from pollutant"
-		+ " order by pollutantID",
+		+ " order by pollutantid",
 
-		"Process",
-		"select processID, processName, SCCProcID"
-		+ " from emissionProcess"
-		+ " order by processID",
+		"process",
+		"select processid, processname, sccprocid"
+		+ " from emissionprocess"
+		+ " order by processid",
 
-		"IMPollutantProcessAssoc",
-		"select polProcessID, ppa.processID, processName, ppa.pollutantID, pollutantName,"
-		+ " isAffectedByExhaustIM, isAffectedByEvapIM"
-		+ " from PollutantProcessAssoc ppa"
-		+ " inner join EmissionProcess using (processID)"
-		+ " inner join Pollutant using (pollutantID)"
-		+ " where (isAffectedByExhaustIM='Y' or isAffectedByEvapIM='Y')"
-		+ " order by polProcessID",
+		"impollutantprocessassoc",
+		"select polprocessid, ppa.processid, processname, ppa.pollutantid, pollutantname,"
+		+ " isaffectedbyexhaustim, isaffectedbyevapim"
+		+ " from pollutantprocessassoc ppa"
+		+ " inner join emissionprocess using (processid)"
+		+ " inner join pollutant using (pollutantid)"
+		+ " where (isaffectedbyexhaustim='Y' or isaffectedbyevapim='Y')"
+		+ " order by polprocessid",
 
-		"OperatingMode",
-		"select opModeID, opModeName, VSPLower, VSPUpper, speedLower, speedUpper,"
-		+ " brakeRate1Sec, brakeRate3Sec, minSoakTime, maxSoakTime"
-		+ " from OperatingMode"
-		+ " order by opModeID",
+		"operatingmode",
+		"select opmodeid, opmodename, vsplower, vspupper, speedlower, speedupper,"
+		+ " brakerate1sec, brakerate3sec, minsoaktime, maxsoaktime"
+		+ " from operatingmode"
+		+ " order by opmodeid",
 
-		"OperatingModeAux",
-		"select opModeID, opModeName"
-		+ " from OperatingMode"
-		+ " where opModeID >= 200 and opModeID <= 299"
-		+ " order by opModeID",
+		"operatingmodeaux",
+		"select opmodeid, opmodename"
+		+ " from operatingmode"
+		+ " where opmodeid >= 200 and opmodeid <= 299"
+		+ " order by opmodeid",
 
-		"StartsOperatingMode",
-		"select opModeID, opModeName, VSPLower, VSPUpper, speedLower, speedUpper,"
-		+ " brakeRate1Sec, brakeRate3Sec, minSoakTime, maxSoakTime"
-		+ " from OperatingMode"
-		+ " where opModeID >= 101 and opModeID < 150"
-		+ " order by opModeID",
+		"startsoperatingmode",
+		"select opmodeid, opmodename, vsplower, vspupper, speedlower, speedupper,"
+		+ " brakerate1sec, brakerate3sec, minsoaktime, maxsoaktime"
+		+ " from operatingmode"
+		+ " where opmodeid >= 101 and opmodeid < 150"
+		+ " order by opmodeid",
 
-		"State",
-		"SELECT stateID, stateName, stateAbbr, idleRegionID FROM state ORDER BY stateName",
+		"state",
+		"select stateid, statename, stateabbr, idleregionid from state order by statename",
 
-		"IMInspectFreq",
-		"select inspectFreq, inspectFreqDesc from IMInspectFreq order by inspectFreq",
+		"iminspectfreq",
+		"select inspectfreq, inspectfreqdesc from iminspectfreq order by inspectfreq",
 
-		"IMTestStandards",
-		"select testStandardsID, testStandardsDesc"
-		+ " from IMTestStandards order by testStandardsDesc",
+		"imteststandards",
+		"select teststandardsid, teststandardsdesc"
+		+ " from imteststandards order by teststandardsdesc",
 
-		"EngineTech",
-		"select engTechID, engTechName"
-		+ " from engineTech order by engTechID",
+		"enginetech",
+		"select engtechid, engtechname"
+		+ " from enginetech order by engtechid",
 
-		"DayOfAnyWeek",
-		"select dayID, dayName, noOfRealDays"
-		+ " from DayOfAnyWeek"
-		+ " order by dayID",
+		"dayofanyweek",
+		"select dayid, dayname, noofrealdays"
+		+ " from dayofanyweek"
+		+ " order by dayid",
 
-		"Region",
-		"select regionID, VV, WW, XX, YY, ZZ, description"
+		"region",
+		"select regionid, vv, ww, xx, yy, zz, description"
 		+ " from region"
-		+ " order by regionID",
+		+ " order by regionid",
 
-		"CountyType",
-		"select countyTypeID, countyTypeDescription"
-		+ " from countyType"
-		+ " order by countyTypeID",
+		"countytype",
+		"select countytypeid, countytypedescription"
+		+ " from countytype"
+		+ " order by countytypeid",
 
-		"IdleRegion",
-		"select idleRegionID, idleRegionDescription"
-		+ " from idleRegion"
-		+ " order by idleRegionID"
+		"idleregion",
+		"select idleregionid, idleregiondescription"
+		+ " from idleregion"
+		+ " order by idleregionid"
 
 		/* TODO reinstate once NRDB use is mandatory
 		"NRAgeCategory",
@@ -380,18 +380,18 @@ public class BasicDataHandler implements IDataHandler {
 		if(importer.getImporterManager().runSpec.isCustomDomain()) {
 			GenericCounty g = importer.getImporterManager().runSpec.genericCounty;
 			int countyID = g.getCountyID();
-			String sql = "select " + g.stateID + " as stateID, 'Generic' as stateName";
-			addDecodeTable("State",sql);
+			String sql = "select " + g.stateID + " as stateid, 'Generic' as statename";
+			addDecodeTable("state",sql);
 
-			sql = "select " + countyID + " as countyID, 'Generic' as stateName,"
-					+ DatabaseUtilities.escapeSQL(g.description,true) + " as countyName";
-			addDecodeTable("County",sql);
+			sql = "select " + countyID + " as countyid, 'Generic' as statename,"
+					+ DatabaseUtilities.escapeSQL(g.description,true) + " as countyname";
+			addDecodeTable("county",sql);
 
-			sql = "select " + (countyID*10) + " as zoneID,"
-					+ countyID + " as countyID,"
-					+ "'Generic' as stateName,"
-					+ DatabaseUtilities.escapeSQL(g.description,true) + " as countyName";
-			addDecodeTable("Zone",sql);
+			sql = "select " + (countyID*10) + " as zoneid,"
+					+ countyID + " as countyid,"
+					+ "'Generic' as statename,"
+					+ DatabaseUtilities.escapeSQL(g.description,true) + " as countyname";
+			addDecodeTable("zone",sql);
 		}
 	}
 
@@ -1269,7 +1269,7 @@ public class BasicDataHandler implements IDataHandler {
 			}
 
 			// Retrieve the results from importTempMessages
-			sql = "select message from importTempMessages";
+			sql = "select message from importtempmessages";
 			statement = db.createStatement();
 			rs = SQLRunner.executeQuery(db,sql);
 			TreeSetIgnoreCase messagesAlreadySeen = new TreeSetIgnoreCase();
@@ -1287,7 +1287,7 @@ public class BasicDataHandler implements IDataHandler {
 			statement.close();
 			statement = null;
 
-			sql = "drop table importTempMessages";
+			sql = "drop table importtempmessages";
 			SQLRunner.executeSQL(db,sql);
 		} catch(Exception e) {
 			// Nothing to do here
@@ -1425,7 +1425,7 @@ public class BasicDataHandler implements IDataHandler {
 
 			if(messages != null) {
 				// Retrieve the results from importTempMessages
-				sql = "select message from importTempMessages";
+				sql = "select message from importtempmessages";
 				query.open(db,sql);
 				TreeSetIgnoreCase messagesAlreadySeen = new TreeSetIgnoreCase();
 				while(query.rs.next()) {
@@ -1441,7 +1441,7 @@ public class BasicDataHandler implements IDataHandler {
 				query.close();
 			}
 
-			sql = "drop table importTempMessages";
+			sql = "drop table importtempmessages";
 			SQLRunner.executeSQL(db,sql);
 		} catch(Exception e) {
 			// Nothing to do here

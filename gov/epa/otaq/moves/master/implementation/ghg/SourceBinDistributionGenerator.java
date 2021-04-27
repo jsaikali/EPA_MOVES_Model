@@ -173,8 +173,8 @@ public class SourceBinDistributionGenerator extends Generator {
 		}
 
 		SQLRunner.Query query = new SQLRunner.Query();
-		String sql = "SELECT polProcessID FROM PollutantProcessAssoc "
-					+ "WHERE processID = " + priorProcessID;
+		String sql = "SELECT polprocessid from pollutantprocessassoc "
+					+ "WHERE processid = " + priorProcessID;
 		try {
 			db = DatabaseConnectionManager.checkOutConnection(MOVESDatabaseType.EXECUTION);
 			query.open(db,sql);
@@ -189,10 +189,10 @@ public class SourceBinDistributionGenerator extends Generator {
 			}
 			query.close();
 			if (pollutantProcessID != "") {
-				sql = "DELETE FROM SourceBinDistribution WHERE polProcessID IN (" +
+				sql = "DELETE FROM sourcebindistribution where polprocessid in (" +
 						pollutantProcessID + ")";
 			} else {
-				sql = "DELETE FROM SourceBinDistribution WHERE isUserInput = 'N'";
+				sql = "DELETE FROM sourcebindistribution where isuserinput = 'N'";
 			}
 			SQLRunner.executeSQL(db, sql);
 
@@ -228,11 +228,11 @@ public class SourceBinDistributionGenerator extends Generator {
 		try {
 
 			/* Simply return if not in SourceTypePolProcessTable */
-			sql = "SELECT stpp.polProcessID "
-				 + " FROM SourceTypePolProcess AS stpp, PollutantProcessAssoc AS ppa "
-				 + " WHERE stpp.polProcessID = ppa.polProcessID AND "
-				 + " ppa.processID = " + pProc.emissionProcess.databaseKey
-				 + " AND ppa.pollutantID = " + pProc.pollutant.databaseKey;
+			sql = "SELECT stpp.polprocessid "
+				 + " from sourcetypepolprocess as stpp, pollutantprocessassoc as ppa "
+				 + " where stpp.polprocessid = ppa.polprocessid and "
+				 + " ppa.processid = " + pProc.emissionProcess.databaseKey
+				 + " AND ppa.pollutantid = " + pProc.pollutant.databaseKey;
 			statement=db.createStatement();
 			rs = SQLRunner.executeQuery(statement,sql);
 			if(!rs.next()) {
@@ -256,7 +256,7 @@ public class SourceBinDistributionGenerator extends Generator {
 			/* Determine the set of SourceTypes which should be blocked
 			   because they already have output data for this pollutant process
 			   (ref paragraph h. of Task description). */
-			sql = "DROP TABLE IF EXISTS BlockSourceType" ;
+			sql = "DROP TABLE IF EXISTS blocksourcetype" ;
 			SQLRunner.executeSQL(db, sql);
 
 			/**
@@ -268,11 +268,11 @@ public class SourceBinDistributionGenerator extends Generator {
 			 * @input SourceTypeModelYear
 			 * @input current polProcessID
 			**/
-			sql = "CREATE TABLE BlockSourceType " +
-				"SELECT sourceTypeID " +
-				"FROM SourceBinDistribution INNER JOIN SourceTypeModelYear " +
-				"USING (sourceTypeModelYearID) WHERE polProcessID = " + polProcessID +
-				" GROUP BY sourceTypeID ";
+			sql = "CREATE TABLE blocksourcetype " +
+				"select sourcetypeid " +
+				"from sourcebindistribution inner join sourcetypemodelyear " +
+				"using (sourcetypemodelyearid) where polprocessid = " + polProcessID +
+				" GROUP BY sourcetypeid ";
 			SQLRunner.executeSQL(db, sql);
 
 			/**
@@ -287,12 +287,12 @@ public class SourceBinDistributionGenerator extends Generator {
 			**/
 			TreeSet<Integer> sourceTypesToUse =
 					new TreeSet<Integer>(); // sourceTypeID Integer objects
-			sql = "SELECT SourceTypePolProcess.sourceTypeID " +
-				"FROM SourceTypePolProcess LEFT JOIN BlockSourceType " +
-				"USING (sourceTypeID) " +
-				"WHERE polProcessID = " + polProcessID +
-				" AND ISNULL(BlockSourceType.sourceTypeID) " +
-				"GROUP BY sourceTypeID ";
+			sql = "SELECT sourcetypepolprocess.sourcetypeid " +
+				"from sourcetypepolprocess left join blocksourcetype " +
+				"using (sourcetypeid) " +
+				"where polprocessid = " + polProcessID +
+				" AND ISNULL(blocksourcetype.sourcetypeid) " +
+				"GROUP BY sourcetypeid ";
 			statement = db.createStatement();
 			rs = SQLRunner.executeQuery(statement,sql);
 			while(rs.next()) {
@@ -326,9 +326,9 @@ public class SourceBinDistributionGenerator extends Generator {
 				 * @input current sourceTypeID
 				 * @input current polProcessID
 				**/
-				sql = "select * from SourceTypePolProcess"
-						+ " where sourceTypeID=" + sourceTypeID
-						+ " and polProcessID=" + polProcessID;
+				sql = "select * from sourcetypepolprocess"
+						+ " where sourcetypeid=" + sourceTypeID
+						+ " and polprocessid=" + polProcessID;
 				statement = db.createStatement();
 				rs = SQLRunner.executeQuery(statement,sql);
 				boolean found = false;
@@ -387,47 +387,47 @@ public class SourceBinDistributionGenerator extends Generator {
 				 * @input isMYGroupRequired
 				**/
 				String coreSQL =
-					"insert into SBDGSVP (sourceTypeModelYearID, fuelTypeID, engTechID, "
-					+ " regClassID, "
-					+ " stmyFraction, "
-					+ " modelYearGroupID, shortModYrGroupID)"
+					"insert into sbdgsvp (sourcetypemodelyearid, fueltypeid, engtechid, "
+					+ " regclassid, "
+					+ " stmyfraction, "
+					+ " modelyeargroupid, shortmodyrgroupid)"
 					+ " select"
-						+ " svp.sourceTypeModelYearID, fuelTypeID, engTechID,";
-				coreSQL += (isRegClassRequired?"":"0 as") + " regClassID,";
-				coreSQL += " sum(stmyFraction),";
-				coreSQL += (isMYGroupRequired?" myg.":" 0 as ") + "modelYearGroupID,";
-				coreSQL += (isMYGroupRequired?"":"0 as") + " shortModYrGroupID";
+						+ " svp.sourcetypemodelyearid, fueltypeid, engtechid,";
+				coreSQL += (isRegClassRequired?"":"0 as") + " regclassid,";
+				coreSQL += " sum(stmyfraction),";
+				coreSQL += (isMYGroupRequired?" myg.":" 0 as ") + "modelyeargroupid,";
+				coreSQL += (isMYGroupRequired?"":"0 as") + " shortmodyrgroupid";
 				coreSQL +=
-					" from sampleVehiclePopulation svp"
-					+ " inner join pollutantProcessModelYear ppmy on (ppmy.modelYearID=svp.modelYearID)"
-					+ " inner join modelYearGroup myg on (myg.modelYearGroupID=ppmy.modelYearGroupID)"
-					+ " where svp.sourceTypeID=" + sourceTypeID
-					+ " and ppmy.polProcessID=" + polProcessID
-					+ " and svp.modelYearID <= " + lastModelYearNeeded
-					+ " and svp.modelYearID >= " + firstModelYearNeeded
-					+ " and fuelTypeID in (" + fuelTypeIDs + ")"
-					+ " and stmyFraction > 0.0"
-					+ " group by sourceTypeModelYearID, fuelTypeID, engTechID";
-				coreSQL += isRegClassRequired?",regClassID":"";
-				coreSQL += isMYGroupRequired?",shortModYrGroupID":"";
+					" from samplevehiclepopulation svp"
+					+ " inner join pollutantprocessmodelyear ppmy on (ppmy.modelyearid=svp.modelyearid)"
+					+ " inner join modelyeargroup myg on (myg.modelyeargroupid=ppmy.modelyeargroupid)"
+					+ " where svp.sourcetypeid=" + sourceTypeID
+					+ " and ppmy.polprocessid=" + polProcessID
+					+ " and svp.modelyearid <= " + lastModelYearNeeded
+					+ " and svp.modelyearid >= " + firstModelYearNeeded
+					+ " and fueltypeid in (" + fuelTypeIDs + ")"
+					+ " and stmyfraction > 0.0"
+					+ " group by sourcetypemodelyearid, fueltypeid, engtechid";
+				coreSQL += isRegClassRequired?",regclassid":"";
+				coreSQL += isMYGroupRequired?",shortmodyrgroupid":"";
 				coreSQL += " order by null";
 
 				String[] sqlBlock = {
-					"drop table if exists SBDGSVP",
+					"drop table if exists sbdgsvp",
 
 					// Since done for only one source type and pollutant/process at a time,
 					// those fields are not needed.
-					"create table if not exists SBDGSVP ("
-							+ "	sourceTypeModelYearID int(10) unsigned NOT NULL,"
-							+ "	fuelTypeID smallint(5) unsigned NOT NULL,"
-							+ "	engTechID smallint(6) NOT NULL,"
-							+ "	regClassID smallint(5) unsigned NOT NULL,"
-							+ "	stmyFraction double NOT NULL,"
-							+ "	modelYearGroupID int(11) NOT NULL,"
-							+ "	shortModYrGroupID SMALLINT NOT NULL,"
-							+ "	sourceBinID BIGINT NOT NULL DEFAULT 0,"
-							+ "	index (sourceBinID),"
-							+ "	index (sourceTypeModelYearID, sourceBinID)"
+					"create table if not exists sbdgsvp ("
+							+ "	sourcetypemodelyearid int(10) unsigned not null,"
+							+ "	fueltypeid smallint(5) unsigned not null,"
+							+ "	engtechid smallint(6) not null,"
+							+ "	regclassid smallint(5) unsigned not null,"
+							+ "	stmyfraction double not null,"
+							+ "	modelyeargroupid int(11) not null,"
+							+ "	shortmodyrgroupid smallint not null,"
+							+ "	sourcebinid bigint not null default 0,"
+							+ "	index (sourcebinid),"
+							+ "	index (sourcetypemodelyearid, sourcebinid)"
 							+ ")",
 
 					coreSQL,
@@ -438,15 +438,15 @@ public class SourceBinDistributionGenerator extends Generator {
 					 * sourceBinID= 1000000000000000000+ fuelTypeID*10000000000000000 + engTechID*100000000000000 + regClassID*1000000000000 + shortModYrGroupID*10000000000.
 					 * @output SBDGSVP
 					**/
-					"update SBDGSVP set sourceBinID= 1000000000000000000"
-							+ " + fuelTypeID		*10000000000000000"
-							+ " + engTechID			*100000000000000"
-							+ " + regClassID		*1000000000000"
-							+ " + shortModYrGroupID	*10000000000"
+					"update sbdgsvp set sourcebinid= 1000000000000000000"
+							+ " + fueltypeid		*10000000000000000"
+							+ " + engtechid			*100000000000000"
+							+ " + regclassid		*1000000000000"
+							+ " + shortmodyrgroupid	*10000000000"
 							+ " + 0      			*1000000"
 							+ " + 0					*100",
 
-					"drop table if exists NewSourceBin2",
+					"drop table if exists newsourcebin2",
 
 					/**
 					 * @step 200
@@ -455,13 +455,13 @@ public class SourceBinDistributionGenerator extends Generator {
 					 * @input SourceBin
 					 * @output NewSourceBin2
 					**/
-					"create table if not exists NewSourceBin2"
-							+ " select s.sourceBinID, 0 as engSizeID, s.fuelTypeID, s.engTechID,"
-							+ " s.regClassID, s.modelYearGroupID, 0 as weightClassID"
-							+ " from SBDGSVP s"
-							+ " left join SourceBin sb using (sourceBinID)"
-							+ " where isnull(sb.sourceBinID)"
-							+ " group by s.sourceBinID"
+					"create table if not exists newsourcebin2"
+							+ " select s.sourcebinid, 0 as engsizeid, s.fueltypeid, s.engtechid,"
+							+ " s.regclassid, s.modelyeargroupid, 0 as weightclassid"
+							+ " from sbdgsvp s"
+							+ " left join sourcebin sb using (sourcebinid)"
+							+ " where isnull(sb.sourcebinid)"
+							+ " group by s.sourcebinid"
 							+ " order by null",
 
 					/**
@@ -470,11 +470,11 @@ public class SourceBinDistributionGenerator extends Generator {
 					 * @output SourceBin
 					 * @input NewSourceBin2
 					**/
-					"insert into SourceBin (sourceBinID, engSizeID, fuelTypeID, engTechID, "
-							+ " regClassID, modelYearGroupID, weightClassID)"
-							+ " select sourceBinID, engSizeID, fuelTypeID, engTechID, regClassID,"
-							+ " modelYearGroupID, weightClassID"
-							+ " from NewSourceBin2",
+					"insert into sourcebin (sourcebinid, engsizeid, fueltypeid, engtechid, "
+							+ " regclassid, modelyeargroupid, weightclassid)"
+							+ " select sourcebinid, engsizeid, fueltypeid, engtechid, regclassid,"
+							+ " modelyeargroupid, weightclassid"
+							+ " from newsourcebin2",
 
 					/** @output SourceBinDistribution **/
 
@@ -486,12 +486,12 @@ public class SourceBinDistributionGenerator extends Generator {
 					 * @output SourceBinDistribution
 					 * @input SBDGSVP
 					**/
-					"insert into SourceBinDistribution (sourceTypeModelYearID,"
-							+ " polProcessID, sourceBinID, sourceBinActivityFraction)"
-							+ " select sourceTypeModelYearID, " + polProcessID + " as polProcessID,"
-							+ " sourceBinID, sum(stmyFraction)"
-							+ " from SBDGSVP"
-							+ " group by sourceTypeModelYearID, sourceBinID"
+					"insert into sourcebindistribution (sourcetypemodelyearid,"
+							+ " polprocessid, sourcebinid, sourcebinactivityfraction)"
+							+ " select sourcetypemodelyearid, " + polProcessID + " as polprocessid,"
+							+ " sourcebinid, sum(stmyfraction)"
+							+ " from sbdgsvp"
+							+ " group by sourcetypemodelyearid, sourcebinid"
 							+ " order by null"
 				};
 				for(int si=0;si < sqlBlock.length;si++) {
@@ -545,7 +545,7 @@ public class SourceBinDistributionGenerator extends Generator {
 		ResultSet rs = null;
 		try {
 			/** @input AgeCategory **/
-			sql="SELECT MAX(ageID) AS maxAge FROM AgeCategory";
+			sql="SELECT MAX(ageid) AS maxage from agecategory";
 			statement=db.createStatement();
 			rs=SQLRunner.executeQuery(statement,sql);
 			rs.next(); //we can assume there is one result
@@ -557,9 +557,9 @@ public class SourceBinDistributionGenerator extends Generator {
 
 			// Build list of fuels used by each source type.  This will help with
 			// optimizations later in the process.
-			sql = "select sourceTypeID, fuelTypeID"
-					+ " from RunSpecSourceFuelType"
-					+ " order by sourceTypeID, fuelTypeID";
+			sql = "select sourcetypeid, fueltypeid"
+					+ " from runspecsourcefueltype"
+					+ " order by sourcetypeid, fueltypeid";
 			statement=db.createStatement();
 			rs = SQLRunner.executeQuery(statement,sql);
 			while(rs.next()) {
@@ -613,16 +613,16 @@ public class SourceBinDistributionGenerator extends Generator {
 	 * @param year calendar year
 	**/
 	void doCountyYear(int processID, int countyID, int year) {
-		String newSBDTable = "sourceBinDistributionFuelUsage_" + processID + "_" + countyID + "_" + year;
+		String newSBDTable = "sourcebindistributionfuelusage_" + processID + "_" + countyID + "_" + year;
 
 		String[] statements = {
-			"drop table if exists sourceBinFuelUsage",
-			"create table sourceBinFuelUsage ("
-					+ " 	equippedSourceBinID bigint(20) not null,"
-					+ " 	usedSourceBinID bigint(20) not null,"
-					+ " 	usageFraction double not null,"
-					+ " 	key (equippedSourceBinID, usedSourceBinID),"
-					+ " 	key (usedSourceBinID, equippedSourceBinID)"
+			"drop table if exists sourcebinfuelusage",
+			"create table sourcebinfuelusage ("
+					+ " 	equippedsourcebinid bigint(20) not null,"
+					+ " 	usedsourcebinid bigint(20) not null,"
+					+ " 	usagefraction double not null,"
+					+ " 	key (equippedsourcebinid, usedsourcebinid),"
+					+ " 	key (usedsourcebinid, equippedsourcebinid)"
 					+ ")",
 
 			/**
@@ -634,26 +634,26 @@ public class SourceBinDistributionGenerator extends Generator {
 			 * @input sourceBin
 			**/
 			(CompilationFlags.USE_FUELUSAGEFRACTION?
-				"insert into sourceBinFuelUsage (equippedSourceBinID, usedSourceBinID, usageFraction)"
-						+ " select e.sourceBinID, u.sourceBinID, usageFraction"
-						+ " from fuelUsageFraction f"
-						+ " inner join sourceBin e on ("
-						+ " 	e.fuelTypeID=f.sourceBinFuelTypeID"
-						+ "	and (f.modelYearGroupID=0 or e.modelYearGroupID=f.modelYearGroupID))"
-						+ " inner join sourceBin u on ("
-						+ " 	u.fuelTypeID=f.fuelSupplyFuelTypeID"
-						+ " 	and u.engTechID=e.engTechID"
-						+ " 	and u.regClassID=e.regClassID"
-						+ " 	and u.modelYearGroupID=e.modelYearGroupID"
-						+ " 	and u.engSizeID=e.engSizeID"
-						+ " 	and u.weightClassID=e.weightClassID)"
-						+ " where f.countyID = " + countyID
-						+ " and f.fuelYearID = (select fuelYearID from year where yearID=" + year + ")"
+				"insert into sourcebinfuelusage (equippedsourcebinid, usedsourcebinid, usagefraction)"
+						+ " select e.sourcebinid, u.sourcebinid, usagefraction"
+						+ " from fuelusagefraction f"
+						+ " inner join sourcebin e on ("
+						+ " 	e.fueltypeid=f.sourcebinfueltypeid"
+						+ "	and (f.modelyeargroupid=0 or e.modelyeargroupid=f.modelyeargroupid))"
+						+ " inner join sourcebin u on ("
+						+ " 	u.fueltypeid=f.fuelsupplyfueltypeid"
+						+ " 	and u.engtechid=e.engtechid"
+						+ " 	and u.regclassid=e.regclassid"
+						+ " 	and u.modelyeargroupid=e.modelyeargroupid"
+						+ " 	and u.engsizeid=e.engsizeid"
+						+ " 	and u.weightclassid=e.weightclassid)"
+						+ " where f.countyid = " + countyID
+						+ " and f.fuelyearid = (select fuelyearid from year where yearid=" + year + ")"
 				:
 				null
 			),
 			"drop table if exists " + newSBDTable,
-			"create table " + newSBDTable + " like sourceBinDistribution",
+			"create table " + newSBDTable + " like sourcebindistribution",
 
 			/**
 			 * @step 300
@@ -667,33 +667,33 @@ public class SourceBinDistributionGenerator extends Generator {
 			**/
 			(CompilationFlags.USE_FUELUSAGEFRACTION?
 				"insert into " + newSBDTable + " ("
-						+ " 	sourceTypeModelYearID, polProcessID, sourceBinID,"
-						+ " 	sourceBinActivityFraction,"
-						+ " 	sourceBinActivityFractionCV, isUserInput)"
-						+ " select sourceTypeModelYearID, d.polProcessID, u.usedSourceBinID,"
-						+ " 	sum(u.usageFraction * sourceBinActivityFraction),"
+						+ " 	sourcetypemodelyearid, polprocessid, sourcebinid,"
+						+ " 	sourcebinactivityfraction,"
+						+ " 	sourcebinactivityfractioncv, isuserinput)"
+						+ " select sourcetypemodelyearid, d.polprocessid, u.usedsourcebinid,"
+						+ " 	sum(u.usagefraction * sourcebinactivityfraction),"
 						+ " 	null, 'N'"
-						+ " from sourceBinDistribution d"
-						+ " inner join sourceBinFuelUsage u on (u.equippedSourceBinID = d.sourceBinID)"
-						+ " inner join pollutantProcessAssoc ppa on ("
-						+ " 	ppa.processID = " + processID
-						+ " 	and ppa.polProcessID = d.polProcessID)"
-						+ " group by sourceTypeModelYearID, d.polProcessID, u.usedSourceBinID"
+						+ " from sourcebindistribution d"
+						+ " inner join sourcebinfuelusage u on (u.equippedsourcebinid = d.sourcebinid)"
+						+ " inner join pollutantprocessassoc ppa on ("
+						+ " 	ppa.processid = " + processID
+						+ " 	and ppa.polprocessid = d.polprocessid)"
+						+ " group by sourcetypemodelyearid, d.polprocessid, u.usedsourcebinid"
 				:
 				"insert into " + newSBDTable + " ("
-						+ " 	sourceTypeModelYearID, polProcessID, sourceBinID,"
-						+ " 	sourceBinActivityFraction,"
-						+ " 	sourceBinActivityFractionCV, isUserInput)"
-						+ " select sourceTypeModelYearID, d.polProcessID, sourceBinID,"
-						+ " 	sourceBinActivityFraction,"
+						+ " 	sourcetypemodelyearid, polprocessid, sourcebinid,"
+						+ " 	sourcebinactivityfraction,"
+						+ " 	sourcebinactivityfractioncv, isuserinput)"
+						+ " select sourcetypemodelyearid, d.polprocessid, sourcebinid,"
+						+ " 	sourcebinactivityfraction,"
 						+ " 	null, 'N'"
-						+ " from sourceBinDistribution d"
-						+ " inner join pollutantProcessAssoc ppa on ("
-						+ " 	ppa.processID = " + processID
-						+ " 	and ppa.polProcessID = d.polProcessID)"
+						+ " from sourcebindistribution d"
+						+ " inner join pollutantprocessassoc ppa on ("
+						+ " 	ppa.processid = " + processID
+						+ " 	and ppa.polprocessid = d.polprocessid)"
 			),
 
-			"drop table if exists sourceBinFuelUsage"
+			"drop table if exists sourcebinfuelusage"
 		};
 		String sql = "";
 		try {
