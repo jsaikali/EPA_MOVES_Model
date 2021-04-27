@@ -262,7 +262,7 @@ VALUES (16, "shi", "Source Hours Idle");
 
 
 
-CREATE TABLE movesworkersused (x
+CREATE TABLE movesworkersused (
 	movesrunid           smallint unsigned not null,
 	workerversion        varchar(100) not null,
 	workercomputerid     varchar(255) not null,
