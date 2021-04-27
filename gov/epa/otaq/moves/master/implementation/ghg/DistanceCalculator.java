@@ -109,10 +109,10 @@ public class DistanceCalculator extends EmissionCalculator
 
 		// Get the first Pollutant/Process for the Running Exhaust process that is in the
 		// SourceBinDistribution and runspec.
-		String sql = "SELECT sbd.polProcessID FROM SourceBinDistribution sbd"
-				+ " INNER JOIN PollutantProcessAssoc ppa ON ppa.polProcessID = sbd.polProcessID"
-				+ " INNER JOIN RunspecPollutantProcess rpp ON rpp.polProcessID = sbd.polProcessID"
-				+ " WHERE ppa.processID = 1 LIMIT 1";
+		String sql = "select sbd.polprocessid from sourcebindistribution sbd"
+				+ " inner join pollutantprocessassoc ppa on ppa.polprocessid = sbd.polprocessid"
+				+ " inner join runspecpollutantprocess rpp on rpp.polprocessid = sbd.polprocessid"
+				+ " where ppa.processid = 1 limit 1";
 
 		String pollutantProcessID = "";
 		SQLRunner.Query query = new SQLRunner.Query();
