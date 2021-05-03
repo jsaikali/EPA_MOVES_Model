@@ -4138,7 +4138,7 @@ Logger.log(LogMessageCategory.INFO,"doGeneralFuelRatio");
 		replacements.put("##sulfurInputTable##",inputTable);
 		replacements.put("##sulfurOutputTable##",outputTable);
 
-		String mymapText = "MYMAP(tempSulfurBaseLookup.modelYearID)";
+		String mymapText = "MYMAP(tempsulfurbaselookup.modelyearid)";
 		replacements.put(mymapText,ExecutionRunSpec.theExecutionRunSpec.findAndConvertModelYearMapping(mymapText));
 
 		for(Iterator<String> i=modelYearCutPoints.keySet().iterator();i.hasNext();) {
