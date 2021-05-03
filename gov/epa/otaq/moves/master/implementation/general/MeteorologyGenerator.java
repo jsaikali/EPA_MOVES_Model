@@ -121,13 +121,13 @@ public class MeteorologyGenerator extends Generator {
 			 * @condition Counties with barometricPressure of null or <= 0.
 			 * @output County
 			**/
-			sql="update County set barometricPressure=("
+			sql="update county set barometricpressure=("
 					+ " case"
 					+ "	when altitude='H' then 24.59"
 					+ "	else 28.94"
 					+ " end"
 					+ " )"
-					+ " where (barometricPressure is null) or barometricPressure<=0";
+					+ " where (barometricpressure is null) or barometricpressure<=0";
 			SQLRunner.executeSQL(db,sql);
 
 			/**
@@ -137,12 +137,12 @@ public class MeteorologyGenerator extends Generator {
 			 * @condition Counties where altitude is null or altitude is neither H nor L.
 			 * @output County
 			**/
-			sql = "update County set altitude=("
-					+ " case when barometricPressure >= 25.8403 then 'L'"
+			sql = "update county set altitude=("
+					+ " case when barometricpressure >= 25.8403 then 'L'"
 					+ " else 'H'"
 					+ " end"
 					+ " )"
-					+ " where barometricPressure is not null"
+					+ " where barometricpressure is not null"
 					+ " and (altitude is null or altitude not in ('H','L'))";
 			SQLRunner.executeSQL(db,sql);
 
@@ -152,8 +152,8 @@ public class MeteorologyGenerator extends Generator {
 			 * @condition temperature < 78F.
 			 * @output ZoneMonthHour
 			**/
-			sql="UPDATE ZoneMonthHour SET heatIndex = temperature " +
-					" WHERE temperature < 78 ";
+			sql="UPDATE zonemonthhour set heatindex = temperature " +
+					" where temperature < 78 ";
 			SQLRunner.executeSQL(db,sql);
 
 			/**
@@ -169,18 +169,18 @@ public class MeteorologyGenerator extends Generator {
 			 * @condition temperature >= 78F.
 			 * @output ZoneMonthHour
 			**/
-			sql="UPDATE ZoneMonthHour SET heatIndex = least(" +
-					"-42.379 + 2.04901523*temperature + 10.14333127*relHumidity + " +
-					"- 0.22475541*temperature*relHumidity + " +
+			sql="UPDATE zonemonthhour SET heatindex = least(" +
+					"-42.379 + 2.04901523*temperature + 10.14333127*relhumidity + " +
+					"- 0.22475541*temperature*relhumidity + " +
 					"-0.00683783*temperature*temperature + " +
-					"-0.05481717 * relHumidity * relHumidity + " +
-					"0.00122874*temperature*temperature*relHumidity + " +
-					"0.00085282*temperature*relHumidity*relHumidity + " +
-					"-0.00000199*temperature*temperature*relHumidity*relHumidity, 120) " +
-					" WHERE temperature >= 78.0 ";
+					"-0.05481717 * relhumidity * relhumidity + " +
+					"0.00122874*temperature*temperature*relhumidity + " +
+					"0.00085282*temperature*relhumidity*relhumidity + " +
+					"-0.00000199*temperature*temperature*relhumidity*relhumidity, 120) " +
+					" where temperature >= 78.0 ";
 			SQLRunner.executeSQL(db,sql);
 
-			sql = "DROP TABLE IF EXISTS TKT0";
+			sql = "DROP TABLE IF EXISTS tkt0";
 			SQLRunner.executeSQL(db,sql);
 
 			/**
@@ -190,12 +190,12 @@ public class MeteorologyGenerator extends Generator {
 			 * @input ZoneMonthHour
 			 * @output TKT0
 			**/
-			sql = "CREATE TABLE TKT0 SELECT monthID, zoneID, hourID, relHumidity, " +
-					"0.56*(temperature-32)+273 AS TK, 374.27-0.56*(temperature-32) AS T0 " +
-					"FROM ZoneMonthHour";
+			sql = "CREATE TABLE tkt0 select monthid, zoneid, hourid, relhumidity, " +
+					"0.56*(temperature-32)+273 as tk, 374.27-0.56*(temperature-32) as t0 " +
+					"from zonemonthhour";
 			SQLRunner.executeSQL(db,sql);
 
-			sql = "DROP TABLE IF EXISTS PV";
+			sql = "DROP TABLE IF EXISTS pv";
 			SQLRunner.executeSQL(db,sql);
 
 			/**
@@ -207,17 +207,17 @@ public class MeteorologyGenerator extends Generator {
 			 * @input TKT0
 			 * @output PV
 			**/
-			sql = "CREATE TABLE PV SELECT monthID, z.zoneID, hourID, barometricPressure AS PB, " +
-					"(relHumidity/100)*6527.557*POW(10,(-T0/TK)*((3.2437+0.00588*T0+ " +
-					"0.000000011702*POW(T0,3))/(1+0.00219*T0))) AS PV FROM TKT0 " +
-					"INNER JOIN Zone z USING (zoneID) INNER JOIN County USING (countyID)";
+			sql = "CREATE TABLE pv select monthid, z.zoneid, hourid, barometricpressure as pb, " +
+					"(relhumidity/100)*6527.557*pow(10,(-t0/tk)*((3.2437+0.00588*t0+ " +
+					"0.000000011702*pow(t0,3))/(1+0.00219*t0))) as pv from tkt0 " +
+					"inner join zone z using (zoneid) inner join county using (countyid)";
 			SQLRunner.executeSQL(db,sql);
 
-			sql = "CREATE UNIQUE INDEX XPKPV ON PV"
-					+ "(monthID ASC, zoneID ASC, hourID ASC)";
+			sql = "CREATE UNIQUE INDEX xpkpv on pv"
+					+ "(monthid asc, zoneid asc, hourid asc)";
 			SQLRunner.executeSQL(db,sql);
 
-			sql = "DROP TABLE TKT0";
+			sql = "DROP TABLE tkt0";
 			SQLRunner.executeSQL(db,sql);
 
 			/**
@@ -226,12 +226,12 @@ public class MeteorologyGenerator extends Generator {
 			 * @input PV
 			 * @output ZoneMonthHour
 			**/
-			sql = "UPDATE ZoneMonthHour, PV SET ZoneMonthHour.specificHumidity=4347.8*PV/(PB-PV) "+
-					"WHERE ZoneMonthHour.monthID = PV.monthID AND ZoneMonthHour.zoneID = " +
-					"PV.zoneID AND ZoneMonthHour.hourID = PV.hourID";
+			sql = "UPDATE zonemonthhour, pv set zonemonthhour.specifichumidity=4347.8*pv/(pb-pv) "+
+					"where zonemonthhour.monthid = pv.monthid and zonemonthhour.zoneid = " +
+					"pv.zoneid and zonemonthhour.hourid = pv.hourid";
 			SQLRunner.executeSQL(db,sql);
 
-			sql = "DROP TABLE PV";
+			sql = "DROP TABLE pv";
 			SQLRunner.executeSQL(db,sql);
 		} catch (SQLException e) {
 			Logger.logSqlError(e, "SQL error in heat index.calculation", sql);

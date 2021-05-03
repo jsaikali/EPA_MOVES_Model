@@ -2412,7 +2412,7 @@ Logger.log(LogMessageCategory.INFO,"sql=" + sql);
 							 * @input tempCOA
 							 * @output criteriaRatio
 							**/
-							runSulfurModel(db,"tempCOA","criteriaRatio",useRateOfProgress);
+							runSulfurModel(db,"tempcoa","criteriaratio",useRateOfProgress);
 
 							didInsert = false;
 						}
