@@ -158,7 +158,7 @@ public class SourceTypePhysics {
 	 * @throws SQLException if anything goes wrong
 	**/
 	public void updateOperatingModeDistribution(Connection db, String tableName, String whereClause) throws SQLException {
-		String alreadyKey = "updateomd|" + tablename + "|" + StringUtilities.safeGetString(whereClause);
+		String alreadyKey = "updateomd|" + tableName + "|" + StringUtilities.safeGetString(whereClause);
 		if(alreadyDoneFlags.contains(alreadyKey)) {
 			//return;
 		}
@@ -173,7 +173,7 @@ public class SourceTypePhysics {
 					+ " on (omd.sourcetypeid = realsourcetypeid or omd.sourcetypeid = tempsourcetypeid)"
 					+ " where realsourcetypeid <> tempsourcetypeid";
 					if(whereClause != null && whereClause.length() > 0) {
-						sql += " and (" + whereclause + ")";
+						sql += " and (" + whereClause + ")";
 					}
 					sql += " order by realsourcetypeid, beginmodelyearid";
 			ArrayList<String> updateStatements = new ArrayList<String>();
@@ -185,12 +185,12 @@ public class SourceTypePhysics {
 				int opModeIDOffset = query.rs.getInt("opmodeidoffset");
 
 				// Change source types for any new operating modes
-				sql = "update " + tablename + " set sourcetypeid=" + realSourceTypeID
+				sql = "update " + tableName + " set sourcetypeid=" + realSourceTypeID
 						+ " where sourcetypeid=" + tempSourceTypeID
 						+ " and opmodeid >= 0+" + opmodeidoffset + " and opmodeid < 100+" + opModeIDOffset
 						+ " and (polprocessid < 0 or mod(polprocessid,100) = 1)";
 				if(whereClause != null && whereClause.length() > 0) {
-					sql += " and (" + whereclause + ")";
+					sql += " and (" + whereClause + ")";
 				}
 				updateStatements.add(sql);
 				
@@ -208,7 +208,7 @@ public class SourceTypePhysics {
 						+ " where sourcetypeid=" + tempSourceTypeID
 						+ " and polprocessid = 11609";
 				if(whereClause != null && whereClause.length() > 0) {
-					sql += " and (" + whereclause + ")";
+					sql += " and (" + whereClause + ")";
 				}
 				updateStatements.add(sql);
 				
@@ -216,31 +216,31 @@ public class SourceTypePhysics {
 						+ " where sourcetypeid=" + tempSourceTypeID
 						+ " and polprocessid = 11609";
 				if(whereClause != null && whereClause.length() > 0) {
-					sql += " and (" + whereclause + ")";
+					sql += " and (" + whereClause + ")";
 				}
 				updateStatements.add(sql);
 
-				sql = "update physics_" + tablename + " set sourcetypeid=" + realSourceTypeID
+				sql = "update physics_" + tableName + " set sourcetypeid=" + realSourceTypeID
 					+ ", opmodeid=opmodeid+ " + opModeIDOffset
 					+ " where opmodeid <> 501";
 				if(whereClause != null && whereClause.length() > 0) {
-					sql += " and (" + whereclause + ")";
+					sql += " and (" + whereClause + ")";
 				}
 				updateStatements.add(sql);
 
-				sql = "insert ignore into " + tablename + " select * from physics_" + tableName;
+				sql = "insert ignore into " + tableName + " select * from physics_" + tableName;
 				updateStatements.add(sql);
 
 				// Promote old operating modes and change source types
 				// This statement fail (which is ok and can be ignored) if
 				// entries exist with extended operating modes already.
-				sql = "update " + tablename + " set sourcetypeid=" + realSourceTypeID
+				sql = "update " + tableName + " set sourcetypeid=" + realSourceTypeID
 						+ ", opmodeid=opmodeid + " + opModeIDOffset
 						+ " where sourcetypeid=" + tempSourceTypeID
 						+ " and opmodeid >= 0 and opmodeid < 100"
 						+ " and (polprocessid < 0 or mod(polprocessid,100) = 1)";
 				if(whereClause != null && whereClause.length() > 0) {
-					sql += " and (" + whereclause + ")";
+					sql += " and (" + whereClause + ")";
 				}
 				updateStatements.add(sql);
 				
@@ -251,7 +251,7 @@ public class SourceTypePhysics {
 							+ " and (polprocessid < 0 or mod(polprocessid,100) = 1)"
 							+ " and isuserinput = 'N'";
 					if(whereClause != null && whereClause.length() > 0) {
-						sql += " and (" + whereclause + ")";
+						sql += " and (" + whereClause + ")";
 					}
 					updateStatements.add(sql);
 
@@ -262,7 +262,7 @@ public class SourceTypePhysics {
 							+ " and (polprocessid < 0 or mod(polprocessid,100) = 1)"
 							+ " and isuserinput = 'N'";
 					if(whereClause != null && whereClause.length() > 0) {
-						sql += " and (" + whereclause + ")";
+						sql += " and (" + whereClause + ")";
 					}
 					updateStatements.add(sql);
 				}
@@ -322,7 +322,7 @@ public class SourceTypePhysics {
 				sql = "drop table if exists physics_" + tableName;
 				updateStatements.add(sql);
 
-				sql = "create table physics_" + tablename + " like " + tableName;
+				sql = "create table physics_" + tableName + " like " + tableName;
 				updateStatements.add(sql);
 				
 				sql = "insert into physics_" + tableName
@@ -332,10 +332,10 @@ public class SourceTypePhysics {
 						+ " and (polprocessid < 0 or mod(polprocessid,100) = 1)";
 				updateStatements.add(sql);
 		
-				sql = "update physics_" + tablename + " set opmodeid=opmodeid+" + opModeIDOffset;
+				sql = "update physics_" + tableName + " set opmodeid=opmodeid+" + opModeIDOffset;
 				updateStatements.add(sql);
 				
-				sql = "insert ignore into " + tablename + " select * from physics_" + tableName;
+				sql = "insert ignore into " + tableName + " select * from physics_" + tableName;
 				updateStatements.add(sql);
 				
 				Integer t = Integer.valueOf(realSourceTypeID);
@@ -483,7 +483,7 @@ public class SourceTypePhysics {
 				+ " inner join pollutantprocessassoc ppa on ("
 				+ " 	ppa.polprocessid=stpp.polprocessid"
 				+ " 	and ppa.processid=" + processID
-				+ " 	and stpp.ismygroupreqd='" + mygroupyesorno + "')"
+				+ " 	and stpp.ismygroupreqd='" + MYGroupYesOrNo + "')"
 				+ " inner join sourcebindistribution sbd on ("
 				+ " 	sbd.polprocessid=ppa.polprocessid)"
 				+ " inner join sourcetypemodelyear stmy on ("
@@ -647,7 +647,7 @@ public class SourceTypePhysics {
 							+ " and sourcebinid in ("
 							+ " 	select sourcebinid"
 							+ " 	from sourcebin"
-							+ " 	where regclassid in (" + regclassidscsv + ")"
+							+ " 	where regclassid in (" + regClassIDsCSV + ")"
 							+ " )";
 					updateStatements.add(sql);
 				}
@@ -714,20 +714,20 @@ public class SourceTypePhysics {
 		sql = "drop table if exists physics_" + tableName;
 		updateStatements.add(sql);
 		
-		sql = "create table physics_" + tablename + " like " + tableName;
+		sql = "create table physics_" + tableName + " like " + tableName;
 		updateStatements.add(sql);
 		
 		sql = "insert into physics_" + tableName
 				+ " select * from " + tableName
 				+ " where opmodeid >= 0 and opmodeid < 100"
 				+ " and polprocessid=" + polProcessID
-				+ " and sourcebinid in (" + sourcebinids + ")";
+				+ " and sourcebinid in (" + sourceBinIDs + ")";
 		updateStatements.add(sql);
 
-		sql = "update physics_" + tablename + " set opmodeid=opmodeid+" + opModeIDOffset;
+		sql = "update physics_" + tableName + " set opmodeid=opmodeid+" + opModeIDOffset;
 		updateStatements.add(sql);
 		
-		sql = "insert ignore into " + tablename + " select * from physics_" + tableName;
+		sql = "insert ignore into " + tableName + " select * from physics_" + tableName;
 		updateStatements.add(sql);
 	}
 
