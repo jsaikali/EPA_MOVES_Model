@@ -1024,7 +1024,7 @@ public class SourceTypePhysics {
 		// Step 2: Put the corect offset OpModeIDs in the temporary table using the non-offset table
 		for (SourceTypeOpMode s : gottenOpModeUpdates) {
 			String sql = "insert into tempopmodeupdates values (" + 
-				s.sourceTypeID + ", " + s.opmodeid + ", " + s.newopmodeid + ", " + s.beginmodelyearid + ", " + s.endmodelyearid + ")";
+				s.sourceTypeID + ", " + s.opModeID + ", " + s.newOpModeID + ", " + s.beginModelYearID + ", " + s.endModelYearID + ")";
 			SQLRunner.executeSQL(db,sql);
 		}
 		// join the update table with the existing op mode distribution table
