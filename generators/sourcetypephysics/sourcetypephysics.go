@@ -45,7 +45,7 @@ var SourceUseTypePhysicsMappingByRealSourceType map[int]*SourceUseTypePhysicsMap
 // to modelyear-specific modes.
 func UpdateOperatingModeDistribution_RatesOpModeDistribution(sqlToWrite chan string) {
 	globalevents.GeneratorStarting()
-	textFilePath, _ := filepath.Abs("genRatesOpModeDistribution")
+	textFilePath, _ := filepath.Abs("genratesopmodedistribution")
 	setupTables(textFilePath)
 	go coreUpdateOperatingModeDistribution_RatesOpModeDistribution(sqlToWrite,textFilePath)
 }
@@ -83,9 +83,9 @@ func coreUpdateOperatingModeDistribution_RatesOpModeDistribution(sqlToWrite chan
 	// ----- those in the normal 0-100 range. This ORDER BY is the most efficient given the table's
 	// primary key (it is the exact desc of all fields so is fast to process).
 	// Without the ORDER BY, that natural order does not ensure the required sequence.
-	querySql := "select sourceTypeID,roadTypeID,avgSpeedBinID,hourDayID,polProcessID,opModeID,opModeFraction,coalesce(opModeFractionCV,0) as opModeFractionCV,avgBinSpeed,avgSpeedFraction" +
-			" from RatesOpModeDistribution" +
-			" order by sourceTypeID desc, polProcessID desc, roadTypeID desc, hourDayID desc, opModeID desc, avgSpeedBinID desc"
+	querySql := "select sourcetypeid,roadtypeid,avgspeedbinid,hourdayid,polprocessid,opmodeid,opmodefraction,coalesce(opmodefractioncv,0) as opmodefractioncv,avgbinspeed,avgspeedfraction" +
+			" from ratesopmodedistribution" +
+			" order by sourcetypeid desc, polprocessid desc, roadtypeid desc, hourdayid desc, opmodeid desc, avgspeedbinid desc"
 	rows, err := db.Query(querySql)
 	configuration.CheckErr(err)
     defer rows.Close()
@@ -203,8 +203,8 @@ func coreUpdateOperatingModeDistribution_RatesOpModeDistribution(sqlToWrite chan
 
 			globalevents.SqlStarting()
 			sqlToWrite <- "load data infile '" + filepath.ToSlash(fileName) + "'" +
-					" ignore into table genRatesOpModeDistribution (" +
-					" sourceTypeID,roadTypeID,avgSpeedBinID,hourDayID,polProcessID,opModeID,opModeFraction,opModeFractionCV,avgBinSpeed,avgSpeedFraction" +
+					" ignore into table genratesopmodedistribution (" +
+					" sourcetypeid,roadtypeid,avgspeedbinid,hourdayid,polprocessid,opmodeid,opmodefraction,opmodefractioncv,avgbinspeed,avgspeedfraction" +
 					")"
 
 			fileIndex++
@@ -230,16 +230,16 @@ func coreUpdateOperatingModeDistribution_RatesOpModeDistribution(sqlToWrite chan
 	if hasFinalRecords {
 		globalevents.SqlStarting()
 		sqlToWrite <- "load data infile '" + filepath.ToSlash(fileName) + "'" +
-				" ignore into table genRatesOpModeDistribution (" +
-				" sourceTypeID,roadTypeID,avgSpeedBinID,hourDayID,polProcessID,opModeID,opModeFraction,opModeFractionCV,avgBinSpeed,avgSpeedFraction" +
+				" ignore into table genratesopmodedistribution (" +
+				" sourcetypeid,roadtypeid,avgspeedbinid,hourdayid,polprocessid,opmodeid,opmodefraction,opmodefractioncv,avgbinspeed,avgspeedfraction" +
 				")"
 	}
 
-	sqlutility.AddFinalSql("drop table if exists RatesOpModeDistributionBackup")
-	sqlutility.AddFinalSql("rename table RatesOpModeDistribution to RatesOpModeDistributionBackup")
+	sqlutility.AddFinalSql("drop table if exists ratesopmodedistributionbackup")
+	sqlutility.AddFinalSql("rename table ratesopmodedistribution to ratesopmodedistributionbackup")
 
-	sqlutility.AddFinalSql("drop table if exists RatesOpModeDistribution")
-	sqlutility.AddFinalSql("rename table genRatesOpModeDistribution to RatesOpModeDistribution")
+	sqlutility.AddFinalSql("drop table if exists ratesopmodedistribution")
+	sqlutility.AddFinalSql("rename table genratesopmodedistribution to ratesopmodedistribution")
 
 	fmt.Println("Done reading RatesOpModeDistribution. Row Count=",rowCount)
 }
@@ -250,18 +250,18 @@ func setupTables(textFilePath string) {
 	db := configuration.OpenExecutionDatabase()
 	defer db.Close()
 
-	db.Exec("drop table if exists genRatesOpModeDistribution")
-	db.Exec("create table genRatesOpModeDistribution like RatesOpModeDistribution")
+	db.Exec("drop table if exists genratesopmodedistribution")
+	db.Exec("create table genratesopmodedistribution like ratesopmodedistribution")
 
 	// Read the SourceUseTypePhysicsMapping table into memory.
 	fmt.Println("Querying SourceUseTypePhysicsMapping...")
 	SourceUseTypePhysicsMapping = make([]*SourceUseTypePhysicsMappingDetail,0,10000)
 	SourceUseTypePhysicsMappingByTempSourceType = make(map[int]*SourceUseTypePhysicsMappingDetail)
 	SourceUseTypePhysicsMappingByRealSourceType = make(map[int]*SourceUseTypePhysicsMappingDetail)
-	rows, err := db.Query("select distinct realSourceTypeID, tempSourceTypeID, opModeIDOffset" +
-			" from sourceUseTypePhysicsMapping" +
-			" where realSourceTypeID <> tempSourceTypeID" +
-			" order by realSourceTypeID, beginModelYearID")
+	rows, err := db.Query("select distinct realsourcetypeid, tempsourcetypeid, opmodeidoffset" +
+			" from sourceusetypephysicsmapping" +
+			" where realsourcetypeid <> tempsourcetypeid" +
+			" order by realsourcetypeid, beginmodelyearid")
 	configuration.CheckErr(err)
 
     defer rows.Close()

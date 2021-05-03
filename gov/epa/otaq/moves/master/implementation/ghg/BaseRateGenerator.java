@@ -1397,7 +1397,7 @@ public class BaseRateGenerator extends Generator {
 		}
 
 		String[] statements = {
-			"truncate table distanceEmissionRate",
+			"truncate table distanceemissionrate",
 
 			/**
 			 * @step 015

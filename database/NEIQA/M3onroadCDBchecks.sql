@@ -25,586 +25,586 @@ select '  .. M3onroadCDBchecks.sql',curTime(), database();
 -- ##############################################################################
 -- Check the IMCoverage table for overlaps and gaps
 -- ##############################################################################
-DROP   PROCEDURE IF EXISTS checkImCoverage;
+DROP   PROCEDURE IF EXISTS checkimcoverage;
 BeginBlock
-CREATE PROCEDURE checkImCoverage()
+CREATE PROCEDURE checkimcoverage()
 BEGIN
   DECLARE done INT DEFAULT FALSE;
-  declare Cpol, Ccou, Cyea, Csou, Cfue, CBEGMY, CENDMY int;  -- C is for current (row of data)
-  declare Lpol, Lcou, Lyea, Lsou, Lfue, LBEGMY, LENDMY int;  -- L is for last     "   "  "
+  declare cpol, ccou, cyea, csou, cfue, cbegmy, cendmy int;  -- c is for current (row of data)
+  declare lpol, lcou, lyea, lsou, lfue, lbegmy, lendmy int;  -- l is for last     "   "  "
   declare rows_processed,
           rows_skipped   int default 0;
-  declare CuseIMyn char(1);
+  declare cuseimyn char(1);
   declare reason char(40);
-  declare sameSet int;
-  DECLARE curIMCov CURSOR FOR SELECT polProcessId,
-                                     countyId,
-                                     yearId,
-                                     sourceTypeId,
-                                     fuelTypeId,
-                                     begModelYearId,
-                                     endModelYearId,
-                                     useIMyn
-                                FROM imCoverage
-                            ORDER BY useIMyn,
-                                     polProcessId,
-                                     countyId,
-                                     yearId,
-                                     sourceTypeId,
-                                     fuelTypeId,
-                                     begModelYearId,
-                                     endModelYearId;
+  declare sameset int;
+  declare curimcov cursor for select polprocessid,
+                                     countyid,
+                                     yearid,
+                                     sourcetypeid,
+                                     fueltypeid,
+                                     begmodelyearid,
+                                     endmodelyearid,
+                                     useimyn
+                                from imcoverage
+                            order by useimyn,
+                                     polprocessid,
+                                     countyid,
+                                     yearid,
+                                     sourcetypeid,
+                                     fueltypeid,
+                                     begmodelyearid,
+                                     endmodelyearid;
 
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-  OPEN curIMCov;
-  SET Lpol   = -1;
-  SET Lcou   = -1;
-  SET Lyea   = -1;
-  SET Lsou   = -1;
-  SET Lfue   = -1;
-  SET LENDMY = -1;
+  declare continue handler for not found set done = true;
+  open curimcov;
+  set lpol   = -1;
+  set lcou   = -1;
+  set lyea   = -1;
+  set lsou   = -1;
+  set lfue   = -1;
+  set lendmy = -1;
 
-  read_loop: LOOP
-    FETCH curIMCov INTO Cpol, Ccou, Cyea, Csou, Cfue, CBEGMY, CENDMY, CuseIMyn;
-    IF done THEN LEAVE read_loop; END IF;
-    if CuseIMyn = 'Y' then
+  read_loop: loop
+    fetch curimcov into cpol, ccou, cyea, csou, cfue, cbegmy, cendmy, cuseimyn;
+    if done then leave read_loop; end if;
+    if cuseimyn = 'Y' then
         set rows_processed = rows_processed + 1;
         
         -- Order Error:  (regardless of sameSet or not)
         if CBEGMY > CENDMY
         then
-          Set reason = 'CbegModelYearId>CendModelYearId,';
-          INSERT INTO qa_checks_im values ( Cpol, Ccou, Cyea, Csou, Cfue, LENDMY, CBEGMY, CENDMY, CuseIMyn, reason );
-		else
-          if Cpol=Lpol and Ccou=Lcou and Cyea=Lyea and Csou=Lsou and Cfue=Lfue
-		  then  -- in set:
+          set reason = 'cbegmodelyearid>cendmodelyearid,';
+          insert into qa_checks_im values ( cpol, ccou, cyea, csou, cfue, lendmy, cbegmy, cendmy, cuseimyn, reason );
+    else
+          if cpol=lpol and ccou=lcou and cyea=lyea and csou=lsou and cfue=lfue
+      then  -- in set:
 
             -- overlap error from consecutive rows
-            IF CBEGMY<=LENDMY      then  -- overlap error:
-            Set reason = 'CBEGMY<=LENDMY (Overlap)';
-            INSERT INTO qa_checks_im values ( Cpol, Ccou, Cyea, Csou, Cfue, LENDMY, CBEGMY, CENDMY, CuseIMyn, reason );
+            if cbegmy<=lendmy      then  -- overlap error:
+            set reason = 'cbegmy<=lendmy (overlap)';
+            insert into qa_checks_im values ( cpol, ccou, cyea, csou, cfue, lendmy, cbegmy, cendmy, cuseimyn, reason );
 
-            -- Gap from BEGMY to LENDMY > 1
-            elseif CBEGMY>LENDMY+1
+            -- gap from begmy to lendmy > 1
+            elseif cbegmy>lendmy+1
             then  -- gap error:
-               Set Reason = 'CBEGMY>LENDMY+1 (GAP)';
-               INSERT INTO qa_checks_im values ( Cpol, Ccou, Cyea, Csou, Cfue, LENDMY, CBEGMY, CENDMY, CuseIMyn, reason );
-			end if;  -- end of overlap & gap checking
+               set reason = 'cbegmy>lendmy+1 (gap)';
+               insert into qa_checks_im values ( cpol, ccou, cyea, csou, cfue, lendmy, cbegmy, cendmy, cuseimyn, reason );
+      end if;  -- end of overlap & gap checking
 
-		  else  -- not in set:
-			SET Lpol   =   Cpol;
-            SET Lcou   =   Ccou;
-            SET Lyea   =   Cyea;
-            SET Lsou   =   Csou;
-            SET Lfue   =   Cfue;
-		  end if;  -- end of set
+      else  -- not in set:
+      set lpol   =   cpol;
+            set lcou   =   ccou;
+            set lyea   =   cyea;
+            set lsou   =   csou;
+            set lfue   =   cfue;
+      end if;  -- end of set
 
-		  set LENDMY = CENDMY;
+      set lendmy = cendmy;
           
-		end if;  -- end of order check
+    end if;  -- end of order check
         
-	 else     -- CuseIMyn check
-		set rows_skipped = rows_skipped + 1;
-     end if;  -- CuseIMyn check
+   else     -- cuseimyn check
+    set rows_skipped = rows_skipped + 1;
+     end if;  -- cuseimyn check
 
-  END LOOP;
-  CLOSE curIMCov;
+  end loop;
+  close curimcov;
 
-END
-EndBlock
+end
+endblock
 -- ##############################################################################
 
 
 -- ##############################################################################
--- Check the HotellingActivityDistribution table for overlaps and gaps in MYs
+-- check the hotellingactivitydistribution table for overlaps and gaps in mys
 -- ##############################################################################
-DROP   PROCEDURE IF EXISTS checkHotellingActivityDistribution;
-BeginBlock
-CREATE PROCEDURE checkHotellingActivityDistribution()
-BEGIN
-  DECLARE done INT DEFAULT FALSE;
-  declare Czone, CBEGMY, CENDMY int;  -- C is for current (row of data)
-  declare Lzone, LBEGMY, LENDMY int;  -- L is for last     "   "  "
+drop   procedure if exists checkhotellingactivitydistribution;
+beginblock
+create procedure checkhotellingactivitydistribution()
+begin
+  declare done int default false;
+  declare czone, cbegmy, cendmy int;  -- c is for current (row of data)
+  declare lzone, lbegmy, lendmy int;  -- l is for last     "   "  "
   declare rows_processed,
           rows_skipped   int default 0;
   declare reason char(40);
-  declare sameSet int;
-  DECLARE curHAD CURSOR FOR SELECT distinct zoneID,
-                                     beginModelYearId,
-                                     endModelYearId
-                                FROM hotellingactivitydistribution
-                            ORDER BY zoneID,
-                                     beginModelYearId,
-                                     endModelYearId;
+  declare sameset int;
+  declare curhad cursor for select distinct zoneid,
+                                     beginmodelyearid,
+                                     endmodelyearid
+                                from hotellingactivitydistribution
+                            order by zoneid,
+                                     beginmodelyearid,
+                                     endmodelyearid;
 
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-  OPEN curHAD;
-  SET Lzone   = -1;
-  SET LENDMY = -1;
+  declare continue handler for not found set done = true;
+  open curhad;
+  set lzone   = -1;
+  set lendmy = -1;
 
-  read_loop: LOOP
-    FETCH curHAD INTO Czone, CBEGMY, CENDMY;
-    IF done THEN LEAVE read_loop; END IF;
+  read_loop: loop
+    fetch curhad into czone, cbegmy, cendmy;
+    if done then leave read_loop; end if;
 
-	set rows_processed = rows_processed + 1;
-	
-	-- Order Error:  (regardless of sameSet or not)
-	if CBEGMY > CENDMY
-	then
-	  Set reason = 'CbegModelYearId>CendModelYearId,';
-	  INSERT INTO qa_checks_had values ( Czone, LENDMY, CBEGMY, CENDMY, reason );
-	else
-	  if Czone=Lzone
-	  then  -- in set:
+  set rows_processed = rows_processed + 1;
+  
+  -- order error:  (regardless of sameset or not)
+  if cbegmy > cendmy
+  then
+    set reason = 'cbegmodelyearid>cendmodelyearid,';
+    insert into qa_checks_had values ( czone, lendmy, cbegmy, cendmy, reason );
+  else
+    if czone=lzone
+    then  -- in set:
 
-		-- overlap error from consecutive rows
-		IF CBEGMY<=LENDMY      then  -- overlap error:
-		Set reason = 'CBEGMY<=LENDMY (Overlap)';
-		INSERT INTO qa_checks_had values ( Czone, LENDMY, CBEGMY, CENDMY, reason );
+    -- overlap error from consecutive rows
+    if cbegmy<=lendmy      then  -- overlap error:
+    set reason = 'cbegmy<=lendmy (overlap)';
+    insert into qa_checks_had values ( czone, lendmy, cbegmy, cendmy, reason );
 
-		-- Gap from BEGMY to LENDMY > 1
-		elseif CBEGMY>LENDMY+1
-		then  -- gap error:
-		   Set Reason = 'CBEGMY>LENDMY+1 (GAP)';
-		   INSERT INTO qa_checks_had values ( Czone, LENDMY, CBEGMY, CENDMY, reason );
-		end if;  -- end of overlap & gap checking
+    -- gap from begmy to lendmy > 1
+    elseif cbegmy>lendmy+1
+    then  -- gap error:
+       set reason = 'cbegmy>lendmy+1 (gap)';
+       insert into qa_checks_had values ( czone, lendmy, cbegmy, cendmy, reason );
+    end if;  -- end of overlap & gap checking
 
-	  else  -- not in set:
-		SET Lzone   =   Czone;
-	  end if;  -- end of set
+    else  -- not in set:
+    set lzone   =   czone;
+    end if;  -- end of set
 
-	  set LENDMY = CENDMY;
-	  
-	end if;  -- end of order check
-	
-  END LOOP;
-  CLOSE curHAD;
+    set lendmy = cendmy;
+    
+  end if;  -- end of order check
+  
+  end loop;
+  close curhad;
 
-END
-EndBlock
+end
+endblock
 -- ##############################################################################
 
 
 -- ##############################################################################
--- Check the idleModelYearGrouping table for overlaps and gaps in MYs
+-- check the idlemodelyeargrouping table for overlaps and gaps in mys
 -- ##############################################################################
-DROP PROCEDURE IF EXISTS checkIdleModelYearGrouping;
-BeginBlock
-CREATE PROCEDURE checkIdleModelYearGrouping()
-BEGIN
-  DECLARE done INT DEFAULT FALSE;
-  declare Cst, CBEGMY, CENDMY int;  -- C is for current (row of data)
-  declare Lst, LBEGMY, LENDMY int;  -- L is for last     "   "  "
+drop procedure if exists checkidlemodelyeargrouping;
+beginblock
+create procedure checkidlemodelyeargrouping()
+begin
+  declare done int default false;
+  declare cst, cbegmy, cendmy int;  -- c is for current (row of data)
+  declare lst, lbegmy, lendmy int;  -- l is for last     "   "  "
   declare rows_processed,
           rows_skipped   int default 0;
   declare reason char(40);
-  declare sameSet int;
-  DECLARE curIMYG CURSOR FOR SELECT distinct sourceTypeID,
-											 minModelYearID,
-											 maxModelYearID
-										FROM idlemodelyeargrouping
-									ORDER BY sourceTypeID,
-											 minModelYearId,
-											 maxModelYearId;
+  declare sameset int;
+  declare curimyg cursor for select distinct sourcetypeid,
+                       minmodelyearid,
+                       maxmodelyearid
+                    from idlemodelyeargrouping
+                  order by sourcetypeid,
+                       minmodelyearid,
+                       maxmodelyearid;
 
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-  OPEN curIMYG;
-  SET Lst    = -1;
-  SET LENDMY = -1;
+  declare continue handler for not found set done = true;
+  open curimyg;
+  set lst    = -1;
+  set lendmy = -1;
 
-  read_loop: LOOP
-    FETCH curIMYG INTO Cst, CBEGMY, CENDMY;
-    IF done THEN LEAVE read_loop; END IF;
+  read_loop: loop
+    fetch curimyg into cst, cbegmy, cendmy;
+    if done then leave read_loop; end if;
 
-	set rows_processed = rows_processed + 1;
-	
-	-- Order Error:  (regardless of sameSet or not)
-	if CBEGMY > CENDMY
-	then
-	  Set reason = 'CminModelYearId>CmaxModelYearId,';
-	  INSERT INTO qa_checks_imyg values ( Cst, LENDMY, CBEGMY, CENDMY, reason );
-	else
-	  if Cst=Lst
-	  then  -- in set:
+  set rows_processed = rows_processed + 1;
+  
+  -- order error:  (regardless of sameset or not)
+  if cbegmy > cendmy
+  then
+    set reason = 'cminmodelyearid>cmaxmodelyearid,';
+    insert into qa_checks_imyg values ( cst, lendmy, cbegmy, cendmy, reason );
+  else
+    if cst=lst
+    then  -- in set:
 
-		-- overlap error from consecutive rows
-		IF CBEGMY<=LENDMY      then  -- overlap error:
-		Set reason = 'CMinMY<=LMaxMY (Overlap)';
-		INSERT INTO qa_checks_imyg values ( Cst, LENDMY, CBEGMY, CENDMY, reason );
+    -- overlap error from consecutive rows
+    if cbegmy<=lendmy      then  -- overlap error:
+    set reason = 'cminmy<=lmaxmy (overlap)';
+    insert into qa_checks_imyg values ( cst, lendmy, cbegmy, cendmy, reason );
 
-		-- Gap from BEGMY to LENDMY > 1
-		elseif CBEGMY>LENDMY+1
-		then  -- gap error:
-		   Set Reason = 'CMinMY>LMaxMY+1 (GAP)';
-		   INSERT INTO qa_checks_imyg values ( Cst, LENDMY, CBEGMY, CENDMY, reason );
-		end if;  -- end of overlap & gap checking
+    -- gap from begmy to lendmy > 1
+    elseif cbegmy>lendmy+1
+    then  -- gap error:
+       set reason = 'cminmy>lmaxmy+1 (gap)';
+       insert into qa_checks_imyg values ( cst, lendmy, cbegmy, cendmy, reason );
+    end if;  -- end of overlap & gap checking
 
-	  else  -- not in set:
-		SET Lst   =   Cst;
-	  end if;  -- end of set
+    else  -- not in set:
+    set lst   =   cst;
+    end if;  -- end of set
 
-	  set LENDMY = CENDMY;
-	  
-	end if;  -- end of order check
-	
-  END LOOP;
-  CLOSE curIMYG;
+    set lendmy = cendmy;
+    
+  end if;  -- end of order check
+  
+  end loop;
+  close curimyg;
 
-END
-EndBlock
+end
+endblock
 -- ##############################################################################
 
 
 -- ##############################################################################
--- Check the totalidlefraction table for overlaps and gaps
+-- check the totalidlefraction table for overlaps and gaps
 -- ##############################################################################
-DROP   PROCEDURE IF EXISTS checkTotalIdleFraction;
-BeginBlock
-CREATE PROCEDURE checkTotalIdleFraction()
-BEGIN
-  DECLARE done INT DEFAULT FALSE;
-  declare Cst, Cmonth, Cday, CBEGMY, CENDMY int;  -- C is for current (row of data)
-  declare Lst, Lmonth, Lday, LBEGMY, LENDMY int;  -- L is for last     "   "  "
+drop   procedure if exists checktotalidlefraction;
+beginblock
+create procedure checktotalidlefraction()
+begin
+  declare done int default false;
+  declare cst, cmonth, cday, cbegmy, cendmy int;  -- c is for current (row of data)
+  declare lst, lmonth, lday, lbegmy, lendmy int;  -- l is for last     "   "  "
   declare rows_processed,
           rows_skipped   int default 0;
   declare reason char(40);
-  declare sameSet int;
-  DECLARE curTIF CURSOR FOR SELECT sourceTypeID,
-                                     monthID,
-                                     dayID,
-                                     minModelYearId,
-                                     maxModelYearId
-                                FROM totalidlefraction
-                            ORDER BY sourceTypeID,
-                                     monthID,
-                                     dayID,
-                                     minModelYearId,
-                                     maxModelYearId;
+  declare sameset int;
+  declare curtif cursor for select sourcetypeid,
+                                     monthid,
+                                     dayid,
+                                     minmodelyearid,
+                                     maxmodelyearid
+                                from totalidlefraction
+                            order by sourcetypeid,
+                                     monthid,
+                                     dayid,
+                                     minmodelyearid,
+                                     maxmodelyearid;
 
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-  OPEN curTIF;
-  SET Lst    = -1;
-  SET Lmonth = -1;
-  SET Lday   = -1;
-  SET LENDMY = -1;
+  declare continue handler for not found set done = true;
+  open curtif;
+  set lst    = -1;
+  set lmonth = -1;
+  set lday   = -1;
+  set lendmy = -1;
 
-  read_loop: LOOP
-    FETCH curTIF INTO Cst, Cmonth, Cday, CBEGMY, CENDMY;
-    IF done THEN LEAVE read_loop; END IF;
+  read_loop: loop
+    fetch curtif into cst, cmonth, cday, cbegmy, cendmy;
+    if done then leave read_loop; end if;
 
-	set rows_processed = rows_processed + 1;
-	
-	-- Order Error:  (regardless of sameSet or not)
-	if CBEGMY > CENDMY
-	then
-	  Set reason = 'CminModelYearId>CmaxModelYearId,';
-	  INSERT INTO qa_checks_tif values ( Cst, Cmonth, Cday, LENDMY, CBEGMY, CENDMY, reason );
-	else
-	  if Cst=Lst and Cmonth=Lmonth and Cday=Lday
-	  then  -- in set:
+  set rows_processed = rows_processed + 1;
+  
+  -- order error:  (regardless of sameset or not)
+  if cbegmy > cendmy
+  then
+    set reason = 'cminmodelyearid>cmaxmodelyearid,';
+    insert into qa_checks_tif values ( cst, cmonth, cday, lendmy, cbegmy, cendmy, reason );
+  else
+    if cst=lst and cmonth=lmonth and cday=lday
+    then  -- in set:
 
-		-- overlap error from consecutive rows
-		IF CBEGMY<=LENDMY      then  -- overlap error:
-		Set reason = 'CMaxMY<=LMinMY (Overlap)';
-		INSERT INTO qa_checks_tif values ( Cst, Cmonth, Cday, LENDMY, CBEGMY, CENDMY, reason );
+    -- overlap error from consecutive rows
+    if cbegmy<=lendmy      then  -- overlap error:
+    set reason = 'cmaxmy<=lminmy (overlap)';
+    insert into qa_checks_tif values ( cst, cmonth, cday, lendmy, cbegmy, cendmy, reason );
 
-		-- Gap from BEGMY to LENDMY > 1
-		elseif CBEGMY>LENDMY+1
-		then  -- gap error:
-		   Set Reason = 'CMinMY>LMaxMY+1 (GAP)';
-		   INSERT INTO qa_checks_tif values ( Cst, Cmonth, Cday, LENDMY, CBEGMY, CENDMY, reason );
-		end if;  -- end of overlap & gap checking
+    -- gap from begmy to lendmy > 1
+    elseif cbegmy>lendmy+1
+    then  -- gap error:
+       set reason = 'cminmy>lmaxmy+1 (gap)';
+       insert into qa_checks_tif values ( cst, cmonth, cday, lendmy, cbegmy, cendmy, reason );
+    end if;  -- end of overlap & gap checking
 
-	  else  -- not in set:
-		SET Lst    =   Cst;
-		SET Lmonth =   Cmonth;
-		SET Lday   =   Cday;
-	  end if;  -- end of set
+    else  -- not in set:
+    set lst    =   cst;
+    set lmonth =   cmonth;
+    set lday   =   cday;
+    end if;  -- end of set
 
-	  set LENDMY = CENDMY;
-	  
-	end if;  -- end of order check
+    set lendmy = cendmy;
+    
+  end if;  -- end of order check
 
-  END LOOP;
-  CLOSE curTIF;
+  end loop;
+  close curtif;
 
-END
-EndBlock
+end
+endblock
 -- ##############################################################################
 
 
 -- ##############################################################################
--- The overlaps and gaps checking store procedures create temporary tables to
+-- the overlaps and gaps checking store procedures create temporary tables to
 -- store the detailed results of their checks; drop these tables if they are
 -- empty, but keep them if they have useful data showing where the errors are
 --
--- Perform other cleanup
+-- perform other cleanup
 -- ##############################################################################
-DROP   PROCEDURE IF EXISTS emptyTableCleanUp;
-BeginBlock
-CREATE PROCEDURE emptyTableCleanUp()
-BEGIN
+drop   procedure if exists emptytablecleanup;
+beginblock
+create procedure emptytablecleanup()
+begin
   -- holds rows of the qa_checks_x tables that exist and are empty
-  drop table if exists tempC;
-  create table tempC
-	select distinct
-		   table_Name as TableName,
-		   table_rows
-	from   information_schema.TABLES
-	where  TABLE_SCHEMA = (select database())
-	  and  TABLE_ROWS = 0
-	  and  Table_Name in ( 'qa_checks_im', 'qa_checks_had', 'qa_checks_imyg', 'qa_checks_tif');
+  drop table if exists tempc;
+  create table tempc
+  select distinct
+       table_name as tablename,
+       table_rows
+  from   information_schema.tables
+  where  table_schema = (select database())
+    and  table_rows = 0
+    and  table_name in ( 'qa_checks_im', 'qa_checks_had', 'qa_checks_imyg', 'qa_checks_tif');
 
-  -- drop qa_checks_x tables if they appear in tempC; otherwise, save them
-  if (select count(*) from tempC where TableName = 'qa_checks_im') = 1 then
-	drop table qa_checks_im;
+  -- drop qa_checks_x tables if they appear in tempc; otherwise, save them
+  if (select count(*) from tempc where tablename = 'qa_checks_im') = 1 then
+  drop table qa_checks_im;
   end if;
-  if (select count(*) from tempC where TableName = 'qa_checks_had') = 1 then
-	drop table qa_checks_had;
+  if (select count(*) from tempc where tablename = 'qa_checks_had') = 1 then
+  drop table qa_checks_had;
   end if;
-  if (select count(*) from tempC where TableName = 'qa_checks_imyg') = 1 then
-	drop table qa_checks_imyg;
+  if (select count(*) from tempc where tablename = 'qa_checks_imyg') = 1 then
+  drop table qa_checks_imyg;
   end if;
-  if (select count(*) from tempC where TableName = 'qa_checks_tif') = 1 then
-	drop table qa_checks_tif;
+  if (select count(*) from tempc where tablename = 'qa_checks_tif') = 1 then
+  drop table qa_checks_tif;
   end if;
   
   -- drop tables that get added to the input database if they are missing (so the script doesn't exit early)
   -- but we don't actually want them after the script runs if they are not necessary
-  if (select count(*) from CDB_Checks where status = 'todo' and testDescription='table added by QA script and should be removed' and tableName = 'countyyear') = 1 then
-	delete from CDB_Checks where status = 'todo' and testDescription='table added by QA script and should be removed' and tableName = 'countyyear';
+  if (select count(*) from cdb_checks where status = 'todo' and testdescription='table added by qa script and should be removed' and tablename = 'countyyear') = 1 then
+  delete from cdb_checks where status = 'todo' and testdescription='table added by qa script and should be removed' and tablename = 'countyyear';
     drop table if exists countyyear;
   end if;
-  if (select count(*) from CDB_Checks where status = 'todo' and testDescription='table added by QA script and should be removed' and tableName = 'emissionratebyage') = 1 then
-	delete from CDB_Checks where status = 'todo' and testDescription='table added by QA script and should be removed' and tableName = 'emissionratebyage';
+  if (select count(*) from cdb_checks where status = 'todo' and testdescription='table added by qa script and should be removed' and tablename = 'emissionratebyage') = 1 then
+  delete from cdb_checks where status = 'todo' and testdescription='table added by qa script and should be removed' and tablename = 'emissionratebyage';
     drop table if exists emissionratebyage;
   end if;
-  if (select count(*) from CDB_Checks where status = 'todo' and testDescription='table added by QA script and should be removed' and tableName = 'hotellinghours') = 1 then
-	delete from CDB_Checks where status = 'todo' and testDescription='table added by QA script and should be removed' and tableName = 'hotellinghours';
+  if (select count(*) from cdb_checks where status = 'todo' and testdescription='table added by qa script and should be removed' and tablename = 'hotellinghours') = 1 then
+  delete from cdb_checks where status = 'todo' and testdescription='table added by qa script and should be removed' and tablename = 'hotellinghours';
     drop table if exists hotellinghours;
   end if;
   
   -- drop temporary table
-  drop table if exists tempC;
+  drop table if exists tempc;
 
-END
-EndBlock
+end
+endblock
 -- ##############################################################################
 
 
 -- ##############################################################################
--- Check for missing tables or warn if certain tables are present but unexpected
+-- check for missing tables or warn if certain tables are present but unexpected
 -- ##############################################################################
--- Create a table to contain the results of the table checks.
-drop table if exists CDB_Checks;
-CREATE TABLE CDB_Checks (
-   countyID          int(11),
+-- create a table to contain the results of the table checks.
+drop table if exists cdb_checks;
+create table cdb_checks (
+   countyid          int(11),
    `status`          char(20),
-   tableName         char(100),
-   checkNumber       smallint(6),
-   testDescription   char(250),
-   testValue         text,
+   tablename         char(100),
+   checknumber       smallint(6),
+   testdescription   char(250),
+   testvalue         text,
    `count`           int(11),
-   dataBaseName      char(100),
-   dayID             smallint(6),
-   fuelFormulationID smallint(6),
-   fuelTypeId        smallint(6),
-   fuelSubtypeID     smallint(6),
-   fuelYearID        smallint(6),
-   hourDayID         smallint(6),
-   hourID            smallint(6),
-   HPMSVtypeID       smallint(6),
-   monthGroupID      smallint(6),
-   monthID           smallint(6),
-   roadTypeID        smallint(6),
-   sourceTypeID      smallint(6),
-   stateID           smallint(6),
-   yearID            smallint(6),
-   zoneID            int(11),
-   msgType           char(50),
-   msgDate           date,
-   msgTime           time,
+   databasename      char(100),
+   dayid             smallint(6),
+   fuelformulationid smallint(6),
+   fueltypeid        smallint(6),
+   fuelsubtypeid     smallint(6),
+   fuelyearid        smallint(6),
+   hourdayid         smallint(6),
+   hourid            smallint(6),
+   hpmsvtypeid       smallint(6),
+   monthgroupid      smallint(6),
+   monthid           smallint(6),
+   roadtypeid        smallint(6),
+   sourcetypeid      smallint(6),
+   stateid           smallint(6),
+   yearid            smallint(6),
+   zoneid            int(11),
+   msgtype           char(50),
+   msgdate           date,
+   msgtime           time,
    version           char(8),
-   sumKeyID          int(11),
-   sumKeyDescription char(50)
- ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+   sumkeyid          int(11),
+   sumkeydescription char(50)
+ ) engine=myisam default charset=latin1;
 
--- This table contains entries for every QA check, so if this script fails, looking at the last row
+-- this table contains entries for every qa check, so if this script fails, looking at the last row
 -- should help determine where the error occurred.
-drop table if exists QA_Checks_Log;
-create table QA_Checks_Log (
-    checkNo    int(11),
+drop table if exists qa_checks_log;
+create table qa_checks_log (
+    checkno    int(11),
     status     char(20),
     version    char(8),
-    msgDate    date,
-    msgTime    time
-  ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+    msgdate    date,
+    msgtime    time
+  ) engine=myisam default charset=latin1;
 
--- The first set of rows in the the CDB_Checks simply list the tables we are checking along with 
--- how many rows are in each table. This chunk creates the entries for each table; the number of
--- rows are added to these rows below. The reason why this is done in a two-step process is because
+-- the first set of rows in the the cdb_checks simply list the tables we are checking along with 
+-- how many rows are in each table. this chunk creates the entries for each table; the number of
+-- rows are added to these rows below. the reason why this is done in a two-step process is because
 -- we don't want the script to crash if a table is missing (so get the information about them from
 -- table schema instead of directly)
-Insert into CDB_Checks set tableName = 'auditlog';
-Insert into CDB_Checks set tableName = 'county';
-Insert into CDB_Checks set tableName = 'countyyear';
-Insert into CDB_Checks set tableName = 'state';
-Insert into CDB_Checks set tableName = 'zone';
-Insert into CDB_Checks set tableName = 'zonemonthhour';
-Insert into CDB_Checks set tableName = 'zoneroadtype';
-Insert into CDB_Checks set tableName = 'year';
-Insert into CDB_Checks set tableName = 'avft';
-Insert into CDB_Checks set tableName = 'fuelformulation';
-Insert into CDB_Checks set tableName = 'fuelsupply';
-Insert into CDB_Checks set tableName = 'fuelusagefraction';
-Insert into CDB_Checks set tableName = 'hourvmtfraction';
-Insert into CDB_Checks set tableName = 'dayvmtfraction';
-Insert into CDB_Checks set tableName = 'monthvmtfraction';
-Insert into CDB_Checks set tableName = 'hpmsVTypeYear';
-Insert into CDB_Checks set tableName = 'hotellingactivitydistribution';
-Insert into CDB_Checks set tableName = 'hotellingagefraction';
-Insert into CDB_Checks set tableName = 'hotellinghoursperday';
-Insert into CDB_Checks set tableName = 'hotellinghourfraction';
-Insert into CDB_Checks set tableName = 'hotellingmonthadjust';
-Insert into CDB_Checks set tableName = 'starts';
-Insert into CDB_Checks set tableName = 'startsageadjustment';
-Insert into CDB_Checks set tableName = 'startshourfraction';
-Insert into CDB_Checks set tableName = 'startsmonthadjust';
-Insert into CDB_Checks set tableName = 'startsperday';
-Insert into CDB_Checks set tableName = 'startsperdaypervehicle';
-Insert into CDB_Checks set tableName = 'startsopmodedistribution';
-Insert into CDB_Checks set tableName = 'idledayadjust';
-Insert into CDB_Checks set tableName = 'idlemodelyeargrouping';
-Insert into CDB_Checks set tableName = 'idlemonthadjust';
-Insert into CDB_Checks set tableName = 'totalidlefraction';
-Insert into CDB_Checks set tableName = 'avgspeeddistribution';
-Insert into CDB_Checks set tableName = 'imcoverage';
-Insert into CDB_Checks set tableName = 'onroadretrofit';
-Insert into CDB_Checks set tableName = 'roadtypedistribution';
-Insert into CDB_Checks set tableName = 'sourcetypeagedistribution';
-Insert into CDB_Checks set tableName = 'sourcetypeyear';
-Insert into CDB_Checks set tableName = 'emissionratebyage';
-Insert into CDB_Checks set tableName = 'hotellinghours';
+insert into cdb_checks set tablename = 'auditlog';
+insert into cdb_checks set tablename = 'county';
+insert into cdb_checks set tablename = 'countyyear';
+insert into cdb_checks set tablename = 'state';
+insert into cdb_checks set tablename = 'zone';
+insert into cdb_checks set tablename = 'zonemonthhour';
+insert into cdb_checks set tablename = 'zoneroadtype';
+insert into cdb_checks set tablename = 'year';
+insert into cdb_checks set tablename = 'avft';
+insert into cdb_checks set tablename = 'fuelformulation';
+insert into cdb_checks set tablename = 'fuelsupply';
+insert into cdb_checks set tablename = 'fuelusagefraction';
+insert into cdb_checks set tablename = 'hourvmtfraction';
+insert into cdb_checks set tablename = 'dayvmtfraction';
+insert into cdb_checks set tablename = 'monthvmtfraction';
+insert into cdb_checks set tablename = 'hpmsvtypeyear';
+insert into cdb_checks set tablename = 'hotellingactivitydistribution';
+insert into cdb_checks set tablename = 'hotellingagefraction';
+insert into cdb_checks set tablename = 'hotellinghoursperday';
+insert into cdb_checks set tablename = 'hotellinghourfraction';
+insert into cdb_checks set tablename = 'hotellingmonthadjust';
+insert into cdb_checks set tablename = 'starts';
+insert into cdb_checks set tablename = 'startsageadjustment';
+insert into cdb_checks set tablename = 'startshourfraction';
+insert into cdb_checks set tablename = 'startsmonthadjust';
+insert into cdb_checks set tablename = 'startsperday';
+insert into cdb_checks set tablename = 'startsperdaypervehicle';
+insert into cdb_checks set tablename = 'startsopmodedistribution';
+insert into cdb_checks set tablename = 'idledayadjust';
+insert into cdb_checks set tablename = 'idlemodelyeargrouping';
+insert into cdb_checks set tablename = 'idlemonthadjust';
+insert into cdb_checks set tablename = 'totalidlefraction';
+insert into cdb_checks set tablename = 'avgspeeddistribution';
+insert into cdb_checks set tablename = 'imcoverage';
+insert into cdb_checks set tablename = 'onroadretrofit';
+insert into cdb_checks set tablename = 'roadtypedistribution';
+insert into cdb_checks set tablename = 'sourcetypeagedistribution';
+insert into cdb_checks set tablename = 'sourcetypeyear';
+insert into cdb_checks set tablename = 'emissionratebyage';
+insert into cdb_checks set tablename = 'hotellinghours';
 
-Update      CDB_Checks set msgType   = 'Table Check';
-Update      CDB_Checks set msgDate   = curDate();
-Update      CDB_Checks set msgTime   = curTime();
+update      cdb_checks set msgtype   = 'table check';
+update      cdb_checks set msgdate   = curdate();
+update      cdb_checks set msgtime   = curtime();
 
--- tempB holds the number of rows for each table that we are checking
-Drop   table if exists tempB;
-Create table           tempB
+-- tempb holds the number of rows for each table that we are checking
+drop   table if exists tempb;
+create table           tempb
 select distinct
-       table_Name as TableName,
+       table_name as tablename,
        table_rows
-from   information_schema.TABLES
-where  TABLE_SCHEMA = (select database())
-  and  TABLE_ROWS >= 0
-  and  Table_Name in ( 'auditlog',
-					   'county',
-					   'countyyear',
-					   'state',
-					   'zone',
-					   'zonemonthhour',
-					   'zoneroadtype',
-					   'year',
-					   'avft',
-					   'fuelformulation',
-					   'fuelsupply',
-					   'fuelusagefraction',
-					   'hourvmtfraction',
-					   'dayvmtfraction',
-					   'monthvmtfraction',
-					   'hpmsVTypeYear',
-					   'hotellingactivitydistribution',
-					   'hotellingagefraction',
-					   'hotellinghoursperday',
-					   'hotellinghourfraction',
-					   'hotellingmonthadjust',
-					   'starts',
-					   'startsageadjustment',
-					   'startshourfraction',
-					   'startsmonthadjust',
-					   'startsperday',
-					   'startsperdaypervehicle',
-					   'startsopmodedistribution',
-					   'idledayadjust',
-					   'idlemodelyeargrouping',
-					   'idlemonthadjust',
-					   'totalidlefraction',
-					   'avgspeeddistribution',
-					   'imcoverage',
-					   'onroadretrofit',
-					   'roadtypedistribution',
-					   'sourcetypeagedistribution',
-					   'sourcetypeyear',
-					   'emissionratebyage',
-					   'hotellinghours'
+from   information_schema.tables
+where  table_schema = (select database())
+  and  table_rows >= 0
+  and  table_name in ( 'auditlog',
+             'county',
+             'countyyear',
+             'state',
+             'zone',
+             'zonemonthhour',
+             'zoneroadtype',
+             'year',
+             'avft',
+             'fuelformulation',
+             'fuelsupply',
+             'fuelusagefraction',
+             'hourvmtfraction',
+             'dayvmtfraction',
+             'monthvmtfraction',
+             'hpmsvtypeyear',
+             'hotellingactivitydistribution',
+             'hotellingagefraction',
+             'hotellinghoursperday',
+             'hotellinghourfraction',
+             'hotellingmonthadjust',
+             'starts',
+             'startsageadjustment',
+             'startshourfraction',
+             'startsmonthadjust',
+             'startsperday',
+             'startsperdaypervehicle',
+             'startsopmodedistribution',
+             'idledayadjust',
+             'idlemodelyeargrouping',
+             'idlemonthadjust',
+             'totalidlefraction',
+             'avgspeeddistribution',
+             'imcoverage',
+             'onroadretrofit',
+             'roadtypedistribution',
+             'sourcetypeagedistribution',
+             'sourcetypeyear',
+             'emissionratebyage',
+             'hotellinghours'
                      );
 
--- This chunk updates the first set of entries in CDB_Checks to contain the number of rows in each table
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'auditlog' and  b.TableName = 'auditlog'; 
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'county' and  b.TableName = 'county';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'countyyear' and  b.TableName = 'countyyear';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'state' and  b.TableName = 'state';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'zone' and  b.TableName = 'zone';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'zonemonthhour' and  b.TableName = 'zonemonthhour';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'zoneroadtype' and  b.TableName = 'zoneroadtype';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'year' and  b.TableName = 'year';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'avft' and  b.TableName = 'avft';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'fuelformulation' and  b.TableName = 'fuelformulation';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'fuelsupply' and  b.TableName = 'fuelsupply';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'fuelusagefraction' and  b.TableName = 'fuelusagefraction';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'hourvmtfraction' and  b.TableName = 'hourvmtfraction';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'dayvmtfraction' and  b.TableName = 'dayvmtfraction';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'monthvmtfraction' and  b.TableName = 'monthvmtfraction';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'hpmsVTypeYear' and  b.TableName = 'hpmsVTypeYear';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'hotellingactivitydistribution' and  b.TableName = 'hotellingactivitydistribution';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'hotellingagefraction' and  b.TableName = 'hotellingagefraction';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'hotellinghoursperday' and  b.TableName = 'hotellinghoursperday';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'hotellinghourfraction' and  b.TableName = 'hotellinghourfraction';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'hotellingmonthadjust' and  b.TableName = 'hotellingmonthadjust';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'starts' and  b.TableName = 'starts';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'startsageadjustment' and  b.TableName = 'startsageadjustment';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'startshourfraction' and  b.TableName = 'startshourfraction';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'startsmonthadjust' and  b.TableName = 'startsmonthadjust';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'startsperday' and  b.TableName = 'startsperday';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'startsperdaypervehicle' and  b.TableName = 'startsperdaypervehicle';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'startsopmodedistribution' and  b.TableName = 'startsopmodedistribution';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'idledayadjust' and  b.TableName = 'idledayadjust';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'idlemodelyeargrouping' and  b.TableName = 'idlemodelyeargrouping';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'idlemonthadjust' and  b.TableName = 'idlemonthadjust';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'totalidlefraction' and  b.TableName = 'totalidlefraction';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'avgspeeddistribution' and  b.TableName = 'avgspeeddistribution';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'imcoverage' and  b.TableName = 'imcoverage';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'onroadretrofit' and  b.TableName = 'onroadretrofit';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'roadtypedistribution' and  b.TableName = 'roadtypedistribution';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'sourcetypeagedistribution' and  b.TableName = 'sourcetypeagedistribution';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'sourcetypeyear' and  b.TableName = 'sourcetypeyear';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'emissionratebyage' and  b.TableName = 'emissionratebyage';
-Update CDB_Checks as a, tempb as b set a.count = b.table_rows Where a.tableName = 'hotellinghours' and  b.TableName = 'hotellinghours';
+-- this chunk updates the first set of entries in cdb_checks to contain the number of rows in each table
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'auditlog' and  b.tablename = 'auditlog'; 
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'county' and  b.tablename = 'county';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'countyyear' and  b.tablename = 'countyyear';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'state' and  b.tablename = 'state';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'zone' and  b.tablename = 'zone';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'zonemonthhour' and  b.tablename = 'zonemonthhour';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'zoneroadtype' and  b.tablename = 'zoneroadtype';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'year' and  b.tablename = 'year';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'avft' and  b.tablename = 'avft';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'fuelformulation' and  b.tablename = 'fuelformulation';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'fuelsupply' and  b.tablename = 'fuelsupply';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'fuelusagefraction' and  b.tablename = 'fuelusagefraction';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'hourvmtfraction' and  b.tablename = 'hourvmtfraction';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'dayvmtfraction' and  b.tablename = 'dayvmtfraction';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'monthvmtfraction' and  b.tablename = 'monthvmtfraction';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'hpmsvtypeyear' and  b.tablename = 'hpmsvtypeyear';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'hotellingactivitydistribution' and  b.tablename = 'hotellingactivitydistribution';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'hotellingagefraction' and  b.tablename = 'hotellingagefraction';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'hotellinghoursperday' and  b.tablename = 'hotellinghoursperday';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'hotellinghourfraction' and  b.tablename = 'hotellinghourfraction';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'hotellingmonthadjust' and  b.tablename = 'hotellingmonthadjust';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'starts' and  b.tablename = 'starts';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'startsageadjustment' and  b.tablename = 'startsageadjustment';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'startshourfraction' and  b.tablename = 'startshourfraction';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'startsmonthadjust' and  b.tablename = 'startsmonthadjust';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'startsperday' and  b.tablename = 'startsperday';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'startsperdaypervehicle' and  b.tablename = 'startsperdaypervehicle';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'startsopmodedistribution' and  b.tablename = 'startsopmodedistribution';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'idledayadjust' and  b.tablename = 'idledayadjust';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'idlemodelyeargrouping' and  b.tablename = 'idlemodelyeargrouping';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'idlemonthadjust' and  b.tablename = 'idlemonthadjust';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'totalidlefraction' and  b.tablename = 'totalidlefraction';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'avgspeeddistribution' and  b.tablename = 'avgspeeddistribution';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'imcoverage' and  b.tablename = 'imcoverage';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'onroadretrofit' and  b.tablename = 'onroadretrofit';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'roadtypedistribution' and  b.tablename = 'roadtypedistribution';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'sourcetypeagedistribution' and  b.tablename = 'sourcetypeagedistribution';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'sourcetypeyear' and  b.tablename = 'sourcetypeyear';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'emissionratebyage' and  b.tablename = 'emissionratebyage';
+update cdb_checks as a, tempb as b set a.count = b.table_rows where a.tablename = 'hotellinghours' and  b.tablename = 'hotellinghours';
 
--- Present tables
-Update CDB_Checks set testDescription = 'Present'       where `count` is not null;
-																	
-Update CDB_Checks set testDescription = 'Table likely to be overwritten',
+-- present tables
+update cdb_checks set testdescription = 'Present'       where `count` is not null;
+                                  
+update cdb_checks set testdescription = 'Table likely to be overwritten',
 					  `status` = 'Warning'
 														where `count` > 0
-														and tableName in ('emissionratebyage', 'fuelsupply', 'fuelformulation', 'zonemonthhour');
+														and tablename in ('emissionratebyage', 'fuelsupply', 'fuelformulation', 'zonemonthhour');
                                                         
-Update CDB_Checks set testDescription = 'Table no longer used as user input',
+Update cdb_checks set testdescription = 'Table no longer used as user input',
 					  `status` = 'Error'
 														where `count` > 0
-														and tableName in ('hotellinghours');
+														and tablename in ('hotellinghours');
                                                         
 -- Missing tables
-Update CDB_Checks set testDescription = 'Table Missing' where count is null;
-Update CDB_Checks set status          = 'Error'         where count is null and tableName not in ('countyyear');
-Update CDB_Checks set status          = 'Warning'       where count is null and tableName in ('countyyear');
+update cdb_checks set testdescription = 'Table Missing' where count is null;
+update cdb_checks set status          = 'Error'         where count is null and tablename not in ('countyyear');
+update cdb_checks set status          = 'Warning'       where count is null and tablename in ('countyyear');
 
 -- These tables are okay if they are missing
-Update CDB_Checks set status = 'todo', testDescription='table added by QA script and should be removed' WHERE count is null and tableName in ('countyyear', 'emissionratebyage', 'hotellinghours');
+Update cdb_checks set status = 'todo', testdescription='table added by QA script and should be removed' WHERE count is null and tableName in ('countyyear', 'emissionratebyage', 'hotellinghours');
 
-Delete from CDB_Checks where testDescription = 'Present';
+Delete from cdb_checks where testdescription = 'Present';
 
 
 -- ----------------------------------------------------------------------------------------
@@ -615,663 +615,663 @@ Delete from CDB_Checks where testDescription = 'Present';
 -- AuditLog is the only input database table that is not in the default database
 -- Ideally, we'd like to get this via SOURCE "database/CreateAuditLogTables.sql" but that isn't working at the moment
 CREATE TABLE IF NOT EXISTS `auditlog` (
-  `whenHappened`     datetime          NOT NULL,
-  `importerName`     varchar(100)      NOT NULL,
-  `briefDescription` varchar(100)  DEFAULT NULL,
-  `fullDescription`  varchar(4096) DEFAULT NULL,
-  KEY `logByDate`     (`whenHappened`),
-  KEY `logByImporter` (`importerName`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 DELAY_KEY_WRITE=1;
+  `whenhappened`     datetime          not null,
+  `importername`     varchar(100)      not null,
+  `briefdescription` varchar(100)  default null,
+  `fulldescription`  varchar(4096) default null,
+  key `logbydate`     (`whenhappened`),
+  key `logbyimporter` (`importername`)
+) engine=myisam default charset=latin1 delay_key_write=1;
 
 -- geography
-CREATE TABLE IF NOT EXISTS `county` LIKE ##defaultdb##.county;
-CREATE TABLE IF NOT EXISTS `countyyear` LIKE ##defaultdb##.countyyear;
-CREATE TABLE IF NOT EXISTS `state` LIKE ##defaultdb##.state;
-CREATE TABLE IF NOT EXISTS `zone` LIKE ##defaultdb##.zone;
-CREATE TABLE IF NOT EXISTS `zonemonthhour` LIKE ##defaultdb##.zonemonthhour;
-CREATE TABLE IF NOT EXISTS `zoneroadtype` LIKE ##defaultdb##.zoneroadtype;
-CREATE TABLE IF NOT EXISTS `year` LIKE ##defaultdb##.year;
+create table if not exists `county` like ##defaultdb##.county;
+create table if not exists `countyyear` like ##defaultdb##.countyyear;
+create table if not exists `state` like ##defaultdb##.state;
+create table if not exists `zone` like ##defaultdb##.zone;
+create table if not exists `zonemonthhour` like ##defaultdb##.zonemonthhour;
+create table if not exists `zoneroadtype` like ##defaultdb##.zoneroadtype;
+create table if not exists `year` like ##defaultdb##.year;
 
 -- fuels
-CREATE TABLE IF NOT EXISTS `avft` LIKE ##defaultdb##.avft;
-CREATE TABLE IF NOT EXISTS `fuelformulation` LIKE ##defaultdb##.fuelformulation;
-CREATE TABLE IF NOT EXISTS `fuelsupply` LIKE ##defaultdb##.fuelsupply;
-CREATE TABLE IF NOT EXISTS `fuelusagefraction` LIKE ##defaultdb##.fuelusagefraction;
+create table if not exists `avft` like ##defaultdb##.avft;
+create table if not exists `fuelformulation` like ##defaultdb##.fuelformulation;
+create table if not exists `fuelsupply` like ##defaultdb##.fuelsupply;
+create table if not exists `fuelusagefraction` like ##defaultdb##.fuelusagefraction;
 
 -- vmt
-CREATE TABLE IF NOT EXISTS `hourvmtfraction` LIKE ##defaultdb##.hourvmtfraction;
-CREATE TABLE IF NOT EXISTS `dayvmtfraction` LIKE ##defaultdb##.dayvmtfraction;
-CREATE TABLE IF NOT EXISTS `monthvmtfraction` LIKE ##defaultdb##.monthvmtfraction;
-CREATE TABLE IF NOT EXISTS `hpmsVTypeYear` LIKE ##defaultdb##.hpmsVTypeYear;
+create table if not exists `hourvmtfraction` like ##defaultdb##.hourvmtfraction;
+create table if not exists `dayvmtfraction` like ##defaultdb##.dayvmtfraction;
+create table if not exists `monthvmtfraction` like ##defaultdb##.monthvmtfraction;
+create table if not exists `hpmsvtypeyear` like ##defaultdb##.hpmsvtypeyear;
 
 -- hotelling
-CREATE TABLE IF NOT EXISTS `hotellingactivitydistribution` LIKE ##defaultdb##.hotellingactivitydistribution;
-CREATE TABLE IF NOT EXISTS `hotellingagefraction` LIKE ##defaultdb##.hotellingagefraction;
-CREATE TABLE IF NOT EXISTS `hotellinghoursperday` LIKE ##defaultdb##.hotellinghoursperday;
-CREATE TABLE IF NOT EXISTS `hotellinghourfraction` LIKE ##defaultdb##.hotellinghourfraction;
-CREATE TABLE IF NOT EXISTS `hotellingmonthadjust` LIKE ##defaultdb##.hotellingmonthadjust;
+create table if not exists `hotellingactivitydistribution` like ##defaultdb##.hotellingactivitydistribution;
+create table if not exists `hotellingagefraction` like ##defaultdb##.hotellingagefraction;
+create table if not exists `hotellinghoursperday` like ##defaultdb##.hotellinghoursperday;
+create table if not exists `hotellinghourfraction` like ##defaultdb##.hotellinghourfraction;
+create table if not exists `hotellingmonthadjust` like ##defaultdb##.hotellingmonthadjust;
 
 -- starts
-CREATE TABLE IF NOT EXISTS `starts` LIKE ##defaultdb##.`starts`;
-CREATE TABLE IF NOT EXISTS `startsageadjustment` LIKE ##defaultdb##.startsageadjustment;
-CREATE TABLE IF NOT EXISTS `startshourfraction` LIKE ##defaultdb##.startshourfraction;
-CREATE TABLE IF NOT EXISTS `startsmonthadjust` LIKE ##defaultdb##.startsmonthadjust;
-CREATE TABLE IF NOT EXISTS `startsperday` LIKE ##defaultdb##.startsperday;
-CREATE TABLE IF NOT EXISTS `startsperdaypervehicle` LIKE ##defaultdb##.startsperdaypervehicle;
-CREATE TABLE IF NOT EXISTS `startsopmodedistribution` LIKE ##defaultdb##.startsopmodedistribution;
+create table if not exists `starts` like ##defaultdb##.`starts`;
+create table if not exists `startsageadjustment` like ##defaultdb##.startsageadjustment;
+create table if not exists `startshourfraction` like ##defaultdb##.startshourfraction;
+create table if not exists `startsmonthadjust` like ##defaultdb##.startsmonthadjust;
+create table if not exists `startsperday` like ##defaultdb##.startsperday;
+create table if not exists `startsperdaypervehicle` like ##defaultdb##.startsperdaypervehicle;
+create table if not exists `startsopmodedistribution` like ##defaultdb##.startsopmodedistribution;
 
 -- idle
-CREATE TABLE IF NOT EXISTS `idledayadjust` LIKE ##defaultdb##.idledayadjust;
-CREATE TABLE IF NOT EXISTS `idlemodelyeargrouping` LIKE ##defaultdb##.idlemodelyeargrouping;
-CREATE TABLE IF NOT EXISTS `idlemonthadjust` LIKE ##defaultdb##.idlemonthadjust;
-CREATE TABLE IF NOT EXISTS `totalidlefraction` LIKE ##defaultdb##.totalidlefraction;
+create table if not exists `idledayadjust` like ##defaultdb##.idledayadjust;
+create table if not exists `idlemodelyeargrouping` like ##defaultdb##.idlemodelyeargrouping;
+create table if not exists `idlemonthadjust` like ##defaultdb##.idlemonthadjust;
+create table if not exists `totalidlefraction` like ##defaultdb##.totalidlefraction;
 
 -- other input tables
-CREATE TABLE IF NOT EXISTS `avgspeeddistribution` LIKE ##defaultdb##.avgspeeddistribution;
-CREATE TABLE IF NOT EXISTS `imcoverage` LIKE ##defaultdb##.imcoverage;
-CREATE TABLE IF NOT EXISTS `onroadretrofit` LIKE ##defaultdb##.onroadretrofit;
-CREATE TABLE IF NOT EXISTS `roadtypedistribution` LIKE ##defaultdb##.roadtypedistribution;
-CREATE TABLE IF NOT EXISTS `sourcetypeagedistribution` LIKE ##defaultdb##.sourcetypeagedistribution;
-CREATE TABLE IF NOT EXISTS `sourcetypeyear` LIKE ##defaultdb##.sourcetypeyear;
-CREATE TABLE IF NOT EXISTS `emissionratebyage` LIKE ##defaultdb##.emissionratebyage;
+create table if not exists `avgspeeddistribution` like ##defaultdb##.avgspeeddistribution;
+create table if not exists `imcoverage` like ##defaultdb##.imcoverage;
+create table if not exists `onroadretrofit` like ##defaultdb##.onroadretrofit;
+create table if not exists `roadtypedistribution` like ##defaultdb##.roadtypedistribution;
+create table if not exists `sourcetypeagedistribution` like ##defaultdb##.sourcetypeagedistribution;
+create table if not exists `sourcetypeyear` like ##defaultdb##.sourcetypeyear;
+create table if not exists `emissionratebyage` like ##defaultdb##.emissionratebyage;
 
 
 -- ##############################################################################
--- Start data QA checks
+-- start data qa checks
 -- ##############################################################################
 
---       check no. 1001 -- check that one and only one of HPMSVtypeYear, HPMSVtypeDay, SourceTypeYearVMT, SourceTypeDayVMT has at least 1 row
-INSERT INTO QA_Checks_Log values ( 1001, 'OK', @hVersion, curDate(), curTime() );   
-Insert into CDB_Checks
- ( TableName,
-   checkNumber,
-   TestDescription,
-   testValue,
+--       check no. 1001 -- check that one and only one of hpmsvtypeyear, hpmsvtypeday, sourcetypeyearvmt, sourcetypedayvmt has at least 1 row
+insert into qa_checks_log values ( 1001, 'OK', @hVersion, curDate(), curTime() );   
+Insert into cdb_checks
+ ( tablename,
+   checknumber,
+   testdescription,
+   testvalue,
    `count`   )
- SELECT
-  "VMT Tables" as TableName,
-   1001											  as checkNumber,
-  "# VMT tables with data <> 1"                       as TestDescription,
-  GROUP_CONCAT(DISTINCT tableName SEPARATOR ', ') as testValue,
-  sum(tableIsUsed)                                as `count`
+ select
+  "vmt tables" as tablename,
+   1001                       as checknumber,
+  "# vmt tables with data <> 1"                       as testdescription,
+  group_concat(distinct tablename separator ', ') as testvalue,
+  sum(tableisused)                                as `count`
 from (
-	select distinct 'hpmsvtypeday' as tableName, 1 as tableIsUsed from `hpmsvtypeday`
-	UNION
-	select distinct 'hpmsvtypeyear' as tableName, 1 as tableIsUsed from `hpmsvtypeyear`
-	UNION
-	select distinct 'sourcetypedayvmt' as tableName, 1 as tableIsUsed from `sourcetypedayvmt`
-	UNION
-	select distinct 'sourcetypeyearvmt' as tableName, 1 as tableIsUsed from `sourcetypeyearvmt`
+  select distinct 'hpmsvtypeday' as tablename, 1 as tableisused from `hpmsvtypeday`
+  union
+  select distinct 'hpmsvtypeyear' as tablename, 1 as tableisused from `hpmsvtypeyear`
+  union
+  select distinct 'sourcetypedayvmt' as tablename, 1 as tableisused from `sourcetypedayvmt`
+  union
+  select distinct 'sourcetypeyearvmt' as tablename, 1 as tableisused from `sourcetypeyearvmt`
 ) as t1
 having `count` <> 1;
 
 --       check no. 1002 -- Record number of rows in HPMSVTypeDay
-INSERT INTO QA_Checks_Log values ( 1002, 'OK', @hVersion, curDate(), curTime() );
-Insert into CDB_Checks
- ( TableName,
-   checkNumber,
-   TestDescription,
-   testValue,
+INSERT INTO qa_checks_log values ( 1002, 'OK', @hVersion, curDate(), curTime() );
+Insert into cdb_checks
+ ( tablename,
+   checknumber,
+   testdescription,
+   testvalue,
    msgtype   )
  values
- ("hpmsVTypeDay",
+ ("hpmsvtypeday",
    1002,
-  "Number of Rows",
-  (Select count(*) from hpmsVTypeDay),
-  "Info" );
+  "number of rows",
+  (select count(*) from hpmsvtypeday),
+  "info" );
 
 --       check no. 1003 -- Record number of rows in HPMSVtypeYear
-INSERT INTO QA_Checks_Log values ( 1003, 'OK', @hVersion, curDate(), curTime() );
-Insert into CDB_Checks
- ( TableName,
-   checkNumber,
-   TestDescription,
-   testValue,
+INSERT INTO qa_checks_log values ( 1003, 'OK', @hVersion, curDate(), curTime() );
+Insert into cdb_checks
+ ( tablename,
+   checknumber,
+   testdescription,
+   testvalue,
    msgtype   )
  values
- ("hpmsVTypeYear",
+ ("hpmsvtypeyear",
    1003,
-  "Number of Rows",
-  (Select count(*) from hpmsVTypeYear),
-  "Info" );
+  "number of rows",
+  (select count(*) from hpmsvtypeyear),
+  "info" );
 
 --       check no. 1004 -- Record number of rows in SourceTypeDayVMT
-INSERT INTO QA_Checks_Log values ( 1004, 'OK', @hVersion, curDate(), curTime() );
-Insert into CDB_Checks
- ( TableName,
-   checkNumber,
-   TestDescription,
-   testValue,
+INSERT INTO qa_checks_log values ( 1004, 'OK', @hVersion, curDate(), curTime() );
+Insert into cdb_checks
+ ( tablename,
+   checknumber,
+   testdescription,
+   testvalue,
    msgtype   )
  values
- ("sourceTypeDayVmt",
+ ("sourcetypedayvmt",
    1004,
-  "Number of Rows",
-  (Select count(*) from sourceTypeDayVmt), 
-  "Info" );
+  "number of rows",
+  (select count(*) from sourcetypedayvmt), 
+  "info" );
 
 --       check no. 1005 -- Record number of rows in SourceTypeYearVMT
-INSERT INTO QA_Checks_Log values ( 1005, 'OK', @hVersion, curDate(), curTime() );
-Insert into CDB_Checks
- ( TableName,
-   checkNumber,
-   TestDescription,
-   testValue,
+INSERT INTO qa_checks_log values ( 1005, 'OK', @hVersion, curDate(), curTime() );
+Insert into cdb_checks
+ ( tablename,
+   checknumber,
+   testdescription,
+   testvalue,
    msgtype   )
  values
- ("sourceTypeYearVmt",
+ ("sourcetypeyearvmt",
    1005,
-  "Number of Rows",
-  (Select count(*) from sourceTypeYearVmt),
-  "Info" );
+  "number of rows",
+  (select count(*) from sourcetypeyearvmt),
+  "info" );
 
 --       check no. 1006 -- Check that 0 or 1 total of startsPerDay or startsPerDayPerVehicle or starts are included
-INSERT INTO QA_Checks_Log values ( 1006, 'OK', @hVersion, curDate(), curTime() );
-Insert into CDB_Checks
- ( TableName,
-   checkNumber,
-   TestDescription,
-   testValue,
+INSERT INTO qa_checks_log values ( 1006, 'OK', @hVersion, curDate(), curTime() );
+Insert into cdb_checks
+ ( tablename,
+   checknumber,
+   testdescription,
+   testvalue,
    `count`   )
- SELECT
-  "starts OR startsPerDay OR startsPerDayPerVehicle" as TableName,
-   1006												 as checkNumber,
-  "Number of starts tables used"                     as TestDescription,
-  GROUP_CONCAT(DISTINCT tableName SEPARATOR ', ')    as testValue,
-  sum(tableIsUsed)                                   as `count`
+ select
+  "starts or startsperday or startsperdaypervehicle" as tablename,
+   1006                        as checknumber,
+  "number of starts tables used"                     as testdescription,
+  group_concat(distinct tablename separator ', ')    as testvalue,
+  sum(tableisused)                                   as `count`
 from (
-	select distinct 'starts' as tableName, 1 as tableIsUsed from `starts`
-	UNION
-	select distinct 'StartsPerDay' as tableName, 1 as tableIsUsed from `StartsPerDay`
-	UNION
-	select distinct 'StartsPerDayPerVehicle' as tableName, 1 as tableIsUsed from `StartsPerDayPerVehicle`
+  select distinct 'starts' as tablename, 1 as tableisused from `starts`
+  union
+  select distinct 'startsperday' as tablename, 1 as tableisused from `startsperday`
+  union
+  select distinct 'startsperdaypervehicle' as tablename, 1 as tableisused from `startsperdaypervehicle`
 ) as t1
 having `count` > 1;
 
 --       check no. 1007 -- Record number of rows in starts
-INSERT INTO QA_Checks_Log values ( 1007, 'OK', @hVersion, curDate(), curTime() );
+INSERT INTO qa_checks_log values ( 1007, 'OK', @hVersion, curDate(), curTime() );
 Insert into CDB_Checks
- ( TableName,
-   checkNumber,
-   TestDescription,
-   testValue,
+ ( tablename,
+   checknumber,
+   testdescription,
+   testvalue,
    msgtype   )
  values
  ("starts",
    1007,
-  "Number of Rows",
-  (Select count(*) from `starts`),
-  "Info" );
+  "number of rows",
+  (select count(*) from `starts`),
+  "info" );
 
---       check no. 1008 -- Record number of rows in StartsPerDay
-INSERT INTO QA_Checks_Log values ( 1008, 'OK', @hVersion, curDate(), curTime() );
-Insert into CDB_Checks
- ( TableName,
-   checkNumber,
-   TestDescription,
-   testValue,
+--       check no. 1008 -- record number of rows in startsperday
+insert into qa_checks_log values ( 1008, 'OK', @hVersion, curDate(), curTime() );
+Insert into cdb_checks
+ ( tablename,
+   checknumber,
+   testdescription,
+   testvalue,
    msgtype   )
  values
- ("StartsPerDay",
+ ("startsperday",
    1008,
-  "Number of Rows",
-  (Select count(*) from `StartsPerDay`),
-  "Info" );
+  "number of rows",
+  (select count(*) from `startsperday`),
+  "info" );
 
---       check no. 1009 -- Record number of rows in StartsPerDayPerVehicle
-INSERT INTO QA_Checks_Log values ( 1009, 'OK', @hVersion, curDate(), curTime() );
-Insert into CDB_Checks
- ( TableName,
-   checkNumber,
-   TestDescription,
-   testValue,
+--       check no. 1009 -- record number of rows in startsperdaypervehicle
+insert into qa_checks_log values ( 1009, 'OK', @hVersion, curDate(), curTime() );
+Insert into cdb_checks
+ ( tablename,
+   checknumber,
+   testdescription,
+   testvalue,
    msgtype   )
  values
- ("StartsPerDayPerVehicle",
+ ("startsperdaypervehicle",
    1009,
-  "Number of Rows",
-  (Select count(*) from `StartsPerDayPerVehicle`),
-  "Info" );
+  "number of rows",
+  (select count(*) from `startsperdaypervehicle`),
+  "info" );
 
 
 -- year
-Insert into CDB_Checks (CheckNumber, TableName, TestDescription) values (1100, "year", "Table Check:");
+insert into cdb_checks (checknumber, tablename, testdescription) values (1100, "year", "Table Check:");
 
 --       check no. 1101 -- check that isBaseYear is either Y, N, y, n
-INSERT INTO QA_Checks_Log values ( 1101, 'OK', @hVersion, curDate(), curTime() );
-Drop table if exists tempA;
-Create table tempA
-Select   isBaseYear   as isBaseYear2,
-         'no '        as aMatch,
+INSERT INTO qa_checks_log values ( 1101, 'OK', @hVersion, curDate(), curTime() );
+Drop table if exists tempa;
+create table tempa
+select   isbaseyear   as isbaseyear2,
+         'no '        as amatch,
          count(*)     as n
-From     year
-Group by isBaseYear2;
+from     year
+group by isbaseyear2;
 
-Update tempA as a set aMatch='yes' where isBaseYear2 in ('Y', 'N', 'y', 'n');
+update tempa as a set amatch='yes' where isbaseyear2 in ('Y', 'N', 'y', 'n');
 
-Insert into CDB_Checks
-       ( TableName,
-         CheckNumber,
-         TestDescription,
-         testValue,
+Insert into cdb_checks
+       ( tablename,
+         checknumber,
+         testdescription,
+         testvalue,
          count  )
-Select   "year"                  as tableName,
+select   "year"                  as tablename,
          1101,
-         "isBaseYear not Y or N" as testDescription,
-         null                    as testValue,
+         "isbaseyear not Y or N" as testdescription,
+         null                    as testvalue,
          n                       as count
-From     tempA
-Where    aMatch <> 'yes';
+from     tempa
+where    amatch <> 'yes';
 
 --       check no. 1102 -- check that fuelYearID is the same as yearID in this table
-INSERT INTO QA_Checks_Log values ( 1102, 'OK', @hVersion, curDate(), curTime() );
-Drop table if exists tempA;
-Create table tempA
-Select   fuelYearId   as fuelYearId2,
-         yearId       as yearId2,
-         'no '        as aMatch,
+INSERT INTO qa_checks_log values ( 1102, 'OK', @hVersion, curDate(), curTime() );
+Drop table if exists tempa;
+create table tempa
+select   fuelyearid   as fuelyearid2,
+         yearid       as yearid2,
+         'no '        as amatch,
          count(*)     as n
-From     year
-Group by fuelYearId2,
-         yearId2;
+from     year
+group by fuelyearid2,
+         yearid2;
 
-Update tempA set aMatch='yes' where fuelYearId2=yearId2;
+Update tempa set amatch='yes' where fuelyearid2=yearid2;
 
-Insert into CDB_Checks
-       ( TableName,
-         CheckNumber,
-         TestDescription,
-         testValue,
+insert into cdb_checks
+       ( tablename,
+         checknumber,
+         testdescription,
+         testvalue,
          count     )
-Select   "year"                          as tableName,
-         1102                             as checkNumber,
-        "fuelYearId not equal to yearId" as testDescription,
-         fuelYearId2                     as testValue,
+Select   "year"                          as tablename,
+         1102                             as checknumber,
+        "fuelyearid not equal to yearid" as testdescription,
+         fuelyearid2                     as testvalue,
          n                               as count
-From     tempA
-Where    aMatch <> 'yes';
+from     tempa
+where    amatch <> 'yes';
 
 --       check no. 1103 -- check for unknown yearIDs
-INSERT INTO QA_Checks_Log values ( 1103, 'OK', @hVersion, curDate(), curTime() );
-Drop table if exists tempA;
-Create table tempA
-Select   yearId       as yearId2,
-         'no '        as aMatch,
+INSERT INTO qa_checks_log values ( 1103, 'OK', @hVersion, curDate(), curTime() );
+Drop table if exists tempa;
+create table tempa
+select   yearid       as yearid2,
+         'no '        as amatch,
          count(*)     as n
-From     year
-Group by yearId2;
-							  
-Update tempA as a 
+from     year
+group by yearid2;
+                
+update tempa as a 
 inner join ##defaultdb##.year as m on a.yearId2 = m.yearId
-set aMatch='yes';
+set amatch='yes';
 
-Insert into CDB_Checks
-       ( TableName,
-         CheckNumber,
-         TestDescription,
-         testValue,
+Insert into cdb_checks
+       ( tablename,
+         checknumber,
+         testdescription,
+         testvalue,
          count  )
-Select   "year"   as tableName,
+select   "year"   as tablename,
          1103,
-        "yearId"  as testDescription,
-         yearId2  as testValue,
+        "yearid"  as testdescription,
+         yearid2  as testvalue,
          n        as count
-From     tempA
-Where    aMatch <> 'yes';
+from     tempa
+where    amatch <> 'yes';
 
 --       check no. 1104 -- check that yearID matches the name of the database (cXXXXXyYYYY)
-INSERT INTO QA_Checks_Log values ( 1104, 'OK', @hVersion, curDate(), curTime() );
-Drop table if exists tempA;
-Create table tempA
-Select   yearId       as yearId2,
-         'no '        as aMatch,
+INSERT INTO qa_checks_log values ( 1104, 'OK', @hVersion, curDate(), curTime() );
+Drop table if exists tempa;
+create table tempa
+select   yearid       as yearid2,
+         'no '        as amatch,
          count(*)     as n
-From     year
-Group by yearId2;
+from     year
+group by yearid2;
 
-Update tempA as a set aMatch='yes' where mid((select DATABASE() from dual), 7, 5) = CONCAT('y', yearID2);
+update tempa as a set amatch='yes' where mid((select database() from dual), 7, 5) = concat('y', yearid2);
 
-Insert into CDB_Checks
-       ( TableName,
-         CheckNumber,
-         TestDescription,
-         testValue,
+Insert into cdb_checks
+       ( tablename,
+         checknumber,
+         testdescription,
+         testvalue,
          count  )
-Select   "year"   as tableName,
+select   "year"   as tablename,
          1104,
-        "yearID doesn't match database name"  as testDescription,
-         yearId2  as testValue,
+        "yearid doesn't match database name"  as testdescription,
+         yearid2  as testvalue,
          n        as count
-From     tempA
-Where    aMatch <> 'yes';
+from     tempa
+where    amatch <> 'yes';
 
 -- state
-Insert into CDB_Checks (CheckNumber, TableName, TestDescription) values (1200, "state", "Table Check:");
+Insert into cdb_checks (checknumber, tablename, testdescription) values (1200, "state", "Table Check:");
 
 --       check no. 1201 -- check for unknown stateID
-INSERT INTO QA_Checks_Log values ( 1201, 'OK', @hVersion, curDate(), curTime() );
-Drop table if exists tempA;
-Create table tempA
-Select   stateId      as stateId2,
-         'no '        as aMatch,
+INSERT INTO qa_checks_log values ( 1201, 'OK', @hVersion, curDate(), curTime() );
+Drop table if exists tempa;
+create table tempa
+select   stateid      as stateid2,
+         'no '        as amatch,
          count(*)     as n
-From     state
-Group by stateId2;
-									  
-Update tempA as a 
-inner join ##defaultdb##.state as m on a.stateId2 = m.stateId
-set aMatch='yes';
+from     state
+group by stateid2;
+                    
+Update tempa as a 
+inner join ##defaultdb##.state as m on a.stateid2 = m.stateid
+set amatch='yes';
 
-Insert into CDB_Checks
-       ( TableName,
-         CheckNumber,
-         TestDescription,
-         testValue,
+Insert into cdb_checks
+       ( tablename,
+         checknumber,
+         testdescription,
+         testvalue,
          count  )
-Select   "state"             as tableName,
+select   "state"             as tablename,
          1201,
-         "stateId not valid" as testDescription,
-         stateId2            as testValue,
+         "stateid not valid" as testdescription,
+         stateid2            as testvalue,
          n                   as count
-From     tempA
-Where    aMatch <> 'yes';
+from     tempa
+where    amatch <> 'yes';
 
 --       check no. 1202 -- check for unknown idleRegionID
-INSERT INTO QA_Checks_Log values ( 1202, 'OK', @hVersion, curDate(), curTime() );
-Drop table if exists tempA;
-Create table tempA
-Select   idleRegionID as idleRegionID2,
-         'no '        as aMatch,
+INSERT INTO qa_checks_log values ( 1202, 'OK', @hVersion, curDate(), curTime() );
+Drop table if exists tempa;
+create table tempa
+select   idleregionid as idleregionid2,
+         'no '        as amatch,
          count(*)     as n
-From     state
-Group by idleRegionID2;
+from     state
+group by idleregionid2;
 
-Update tempA as a 
-inner join ##defaultdb##.idleregion as m on a.idleRegionID2 = m.idleRegionID
-set aMatch='yes';
+update tempa as a 
+inner join ##defaultdb##.idleregion as m on a.idleregionid2 = m.idleregionid
+set amatch='yes';
 
-Insert into CDB_Checks
-       ( TableName,
-         CheckNumber,
-         TestDescription,
-         testValue,
+Insert into Cdb_checks
+       ( tablename,
+         checknumber,
+         testdescription,
+         testvalue,
          count  )
-Select   "state"             as tableName,
+select   "state"             as tablename,
          1202,
-         "idleRegionID not valid" as testDescription,
-         idleRegionID2       as testValue,
+         "idleregionid not valid" as testdescription,
+         idleregionid2       as testvalue,
          n                   as count
-From     tempA
-Where    aMatch <> 'yes';
+from     tempa
+where    amatch <> 'yes';
 
 --       check no. 1203 -- check that state has at least 1 row
-INSERT INTO QA_Checks_Log values ( 1203, 'OK', @hVersion, curDate(), curTime() );
-Insert into CDB_Checks
- ( TableName,
-   checkNumber,
-   TestDescription,
-   testValue )
+insert into qa_checks_log values ( 1203, 'OK', @hVersion, curDate(), curTime() );
+Insert into cdb_checks
+ ( tablename,
+   checknumber,
+   testdescription,
+   testvalue )
  values
  ("state",
    1203,
-  "Number of Rows",
-  (Select count(*) from state) );
-Delete from CDB_Checks where checkNumber=1203 and testValue>0;
+  "number of rows",
+  (select count(*) from state) );
+delete from cdb_checks where checknumber=1203 and testvalue>0;
 
 
--- Check for the county table
-Insert into CDB_Checks (CheckNumber, TableName, TestDescription) values (1300, "county", "Table Check:");
+-- check for the county table
+insert into cdb_checks (checknumber, tablename, testdescription) values (1300, "county", "Table Check:");
 
 --       check no. 1301: check for unknown countyIDs
-INSERT INTO QA_Checks_Log values ( 1301, 'OK', @hVersion, curDate(), curTime() );
-Drop table if exists tempA;
-Create table tempA
-Select   countyId    as countyId2,
-         'no '       as aMatch,
+INSERT INTO qa_checks_log values ( 1301, 'OK', @hVersion, curDate(), curTime() );
+Drop table if exists tempa;
+create table tempa
+select   countyid    as countyid2,
+         'no '       as amatch,
          count(*)    as n
-From     county
-Group by countyId2;
+from     county
+group by countyid2;
 
-Update tempA as a 
-inner join ##defaultdb##.county as m on a.countyId2 = m.countyId
-set aMatch='yes';
+update tempa as a 
+inner join ##defaultdb##.county as m on a.countyid2 = m.countyid
+set amatch='yes';
 
-Insert into CDB_Checks
-       ( TableName,
-         CheckNumber,
-         TestDescription,
-         testValue,
+insert into cdb_checks
+       ( tablename,
+         checknumber,
+         testdescription,
+         testvalue,
          count  )
-Select   "county"   as tableName,
+select   "county"   as tablename,
          1301,
-         "countyId" as testDescription,
-         countyId2  as testValue,
+         "countyid" as testdescription,
+         countyid2  as testvalue,
          n          as count
-From     tempA
-Where    aMatch <> 'yes';
+from     tempa
+where    amatch <> 'yes';
 
 --       check no. 1302 -- check that countyID matches the name of the database (cXXXXXyYYYY)
-INSERT INTO QA_Checks_Log values ( 1302, 'OK', @hVersion, curDate(), curTime() );
-Drop table if exists tempA;
-Create table tempA
-Select   countyID     as countyID2,
-         'no '        as aMatch,
+INSERT INTO qa_checks_log values ( 1302, 'OK', @hVersion, curDate(), curTime() );
+Drop table if exists tempa;
+create table tempa
+select   countyid     as countyid2,
+         'no '        as amatch,
          count(*)     as n
-From     county
-Group by countyID2;
+from     county
+group by countyid2;
 
-Update tempA as a set aMatch='yes' where convert(mid((select DATABASE() from dual), 2, 5), UNSIGNED) = countyID2;
+Update tempa as a set amatch='yes' where convert(mid((select DATABASE() from dual), 2, 5), UNSIGNED) = countyid2;
 
-Insert into CDB_Checks
-       ( TableName,
-         CheckNumber,
-         TestDescription,
-         testValue,
+insert into cdb_checks
+       ( tablename,
+         checknumber,
+         testdescription,
+         testvalue,
          count  )
-Select   "county"   as tableName,
+select   "county"   as tablename,
          1302,
-        "countyID doesn't match database name"  as testDescription,
-         countyID2  as testValue,
+        "countyid doesn't match database name"  as testdescription,
+         countyid2  as testvalue,
          n        as count
-From     tempA
-Where    aMatch <> 'yes';
+from     tempa
+where    amatch <> 'yes';
 
---       check no. 1303: check to make sure the altitude field is L or H
-INSERT INTO QA_Checks_Log values ( 1303, 'OK', @hVersion, curDate(), curTime() );
-Drop table if exists tempA;
-Create table tempA
-Select   altitude     as altitude2,
-         'no '        as aMatch,
+--       check no. 1303: check to make sure the altitude field is l or h
+insert into qa_checks_log values ( 1303, 'OK', @hVersion, curDate(), curTime() );
+Drop table if exists tempa;
+create table tempa
+select   altitude     as altitude2,
+         'no '        as amatch,
          count(*)     as n
-From     county
-Group by altitude2;
+from     county
+group by altitude2;
 
-Update tempA as a set aMatch='yes' where altitude2 in ('L','H');
+Update tempa as a set amatch='yes' where altitude2 in ('L','H');
 
-Insert into CDB_Checks
-       ( TableName,
-         CheckNumber,
-         TestDescription,
-         -- testValue,
+insert into cdb_checks
+       ( tablename,
+         checknumber,
+         testdescription,
+         -- testvalue,
          count  )
-Select   "county"              as tableName,
+select   "county"              as tablename,
          1303,
-         "altitude not L or H" as testDescription,
-         -- altitude2          as testValue,
+         "altitude not L or H" as testdescription,
+         -- altitude2          as testvalue,
          n                     as count
-From     tempA
-Where    aMatch <> 'yes';
+from     tempa
+where    amatch <> 'yes';
 
---       check no. 1304: make sure GPAFract is between 0 and 1
-INSERT INTO QA_Checks_Log values ( 1304, 'OK', @hVersion, curDate(), curTime() );
-Drop table if exists tempA;
-Create table tempA
-Select   GPAFract     as GPAFract2,
-         'no '        as aMatch,
+--       check no. 1304: make sure gpafract is between 0 and 1
+insert into qa_checks_log values ( 1304, 'OK', @hVersion, curDate(), curTime() );
+Drop table if exists tempa;
+create table tempa
+select   gpafract     as gpafract2,
+         'no '        as amatch,
          count(*)     as n
-From     county
-Group by GPAFract2;
+from     county
+group by gpafract2;
 
-Update tempA set aMatch='yes' where GPAFract2>=0.0 and GPAFract2<=1.0;
+update tempa set amatch='yes' where gpafract2>=0.0 and gpafract2<=1.0;
 
-Insert into CDB_Checks
-       ( TableName,
-         CheckNumber,
-         TestDescription,
-         testValue,
+Insert into Cdb_checks
+       ( tablename,
+         checknumber,
+         testdescription,
+         testvalue,
          count  )
-Select   "county"       as tableName,
+select   "county"       as tablename,
          1304,
-         "GPACFract"    as testDescription,
-         GPAFract2      as testValue,
+         "gpacfract"    as testdescription,
+         gpafract2      as testvalue,
          n              as count
-From     tempA
-Where    aMatch <> 'yes';
+from     tempa
+where    amatch <> 'yes';
 
 --       check no. 1305: make sure the barometricPressure field is between 20 and 33
-INSERT INTO QA_Checks_Log values ( 1305, 'OK', @hVersion, curDate(), curTime() );
-Drop table if exists tempA;
-Create table tempA
-Select   barometricPressure as barPre,
-         'no '              as aMatch,
+INSERT INTO qa_checks_log values ( 1305, 'OK', @hVersion, curDate(), curTime() );
+Drop table if exists tempa;
+create table tempa
+select   barometricpressure as barpre,
+         'no '              as amatch,
          count(*)           as n
-From     county
-Group by barPre;
+from     county
+group by barpre;
 
-Update tempA as a set aMatch='yes' where BarPre>=20.0 and BarPre<=33.0;
+Update tempa as a set amatch='yes' where barpre>=20.0 and barpre<=33.0;
 
-Insert into CDB_Checks
-       ( TableName,
-         CheckNumber,
-         TestDescription,
-         testValue,
+insert into cdb_checks
+       ( tablename,
+         checknumber,
+         testdescription,
+         testvalue,
          count  )
-Select   "county"             as tableName,
+select   "county"             as tablename,
          1305,
-         "barometricPressure" as testDescription,
-         BarPre               as testValue,
+         "barometricpressure" as testdescription,
+         barpre               as testvalue,
          n                    as count
-From     tempA
-Where    aMatch <> 'yes';
+from     tempa
+where    amatch <> 'yes';
 
 --       check no. 1306: check for unknown stateIDs
-INSERT INTO QA_Checks_Log values ( 1306, 'OK', @hVersion, curDate(), curTime() );
-Drop table if exists tempA;
-Create table tempA
-Select   stateId      as stateId2,
-         'no '        as aMatch,
+INSERT INTO qa_checks_log values ( 1306, 'OK', @hVersion, curDate(), curTime() );
+Drop table if exists tempa;
+Create table tempa
+select   stateid      as stateid2,
+         'no '        as amatch,
          count(*)     as n
-From     county
-Group by stateId2;
+from     county
+group by stateid2;
 
-Update tempA as a 
-inner join state as c on a.stateId2 = c.stateId
-set aMatch='yes';
+Update tempa as a 
+inner join state as c on a.stateid2 = c.stateid
+set amatch='yes';
 
-Insert into CDB_Checks
-       ( TableName,
-         CheckNumber,
-         TestDescription,
-         testValue,
+insert into cdb_checks
+       ( tablename,
+         checknumber,
+         testdescription,
+         testvalue,
          count  )
-Select   "county"            as tableName,
+select   "county"            as tablename,
          1306,
-         "stateId not valid" as testDescription,
-         stateId2            as testValue,
+         "stateid not valid" as testdescription,
+         stateid2            as testvalue,
          n                   as count
-From     tempA
-Where    aMatch <> 'yes';
+from     tempa
+where    amatch <> 'yes';
 
 --       check no. 1307 -- check that county has at least 1 row
-INSERT INTO QA_Checks_Log values ( 1307, 'OK', @hVersion, curDate(), curTime() );
-Insert into CDB_Checks
- ( TableName,
-   checkNumber,
-   TestDescription,
-   testValue )
+INSERT INTO qa_checks_log values ( 1307, 'OK', @hVersion, curDate(), curTime() );
+Insert into cdb_checks
+ ( tablename,
+   checknumber,
+   testdescription,
+   testvalue )
  values
  ("county",
    1307,
   "Number of Rows",
   (Select count(*) from county) );
-Delete from CDB_Checks where checkNumber=1307 and testValue>0;
+Delete from cdb_checks where checknumber=1307 and testvalue>0;
 
---       check no. 1308 -- check for unknown countyTypeID
-INSERT INTO QA_Checks_Log values ( 1308, 'OK', @hVersion, curDate(), curTime() );
-Drop table if exists tempA;
-Create table tempA
-Select   countyTypeID as countyTypeID2,
-         'no '        as aMatch,
+--       check no. 1308 -- check for unknown countytypeid
+insert into qa_checks_log values ( 1308, 'OK', @hVersion, curDate(), curTime() );
+Drop table if exists tempa;
+create table tempa
+select   countytypeid as countytypeid2,
+         'no '        as amatch,
          count(*)     as n
-From     county
-Group by countyTypeID2;
+from     county
+group by countytypeid2;
 
-Update tempA as a 
-inner join ##defaultdb##.countytype as m on a.countyTypeID2 = m.countyTypeID
-set aMatch='yes';
+Update tempa as a 
+inner join ##defaultdb##.countytype as m on a.countytypeid2 = m.countytypeid
+set amatch='yes';
 
-Insert into CDB_Checks
-       ( TableName,
-         CheckNumber,
-         TestDescription,
-         testValue,
+Insert into cdb_checks
+       ( tablename,
+         checknumber,
+         testdescription,
+         testvalue,
          count  )
-Select   "county"             as tableName,
+select   "county"             as tablename,
          1308,
-         "countyTypeID not valid" as testDescription,
-         countyTypeID2       as testValue,
+         "countytypeid not valid" as testdescription,
+         countytypeid2       as testvalue,
          n                   as count
-From     tempA
-Where    aMatch <> 'yes';
+from     tempa
+where    amatch <> 'yes';
 
 
 -- Zone
-Insert into CDB_Checks (CheckNumber, TableName, TestDescription) values (1400, "zone", "Table Check:");
+Insert into cdb_checks (checknumber, tablename, testdescription) values (1400, "zone", "Table Check:");
 
 --       check no. 1401 -- check for unknown countyIDs
-INSERT INTO QA_Checks_Log values ( 1401, 'OK', @hVersion, curDate(), curTime() );
-Drop table if exists tempA;
-Create table tempA
-Select   countyId        as countyId2,
-         'no '           as aMatch,
+INSERT INTO qa_checks_log values ( 1401, 'OK', @hVersion, curDate(), curTime() );
+Drop table if exists tempa;
+Create table tempa
+select   countyid        as countyid2,
+         'no '           as amatch,
          count(*)        as n
-From     zone
-Group by countyId2;
+from     zone
+group by countyid2;
 
-Update tempA as a 
-inner join county as c on a.countyId2 = c.countyId
-set aMatch='yes';
+Update tempa as a 
+inner join county as c on a.countyid2 = c.countyid
+set amatch='yes';
 
-Insert into CDB_Checks
-       ( TableName,
-         CheckNumber,
-         TestDescription,
-         testValue,
+Insert into Cdb_checks
+       ( tablename,
+         checknumber,
+         testdescription,
+         testvalue,
          count  )
-Select   "zone"     as tableName,
+select   "zone"     as tablename,
          1401,
-        "countyId"  as testDescription,
-         countyId2  as testValue,
+        "countyid"  as testdescription,
+         countyid2  as testvalue,
          n          as count               --
-From     tempA
-Where    aMatch <> 'yes';
+from     tempa
+where    amatch <> 'yes';
 
 --       check no. 1402 -- check that the startAllocFactor sums to 1
-INSERT INTO QA_Checks_Log values ( 1402, 'OK', @hVersion, curDate(), curTime() );
-Insert into CDB_Checks
-       ( tableName,
-         checkNumber,
-         testDescription,
-         testValue    )
-Select  "zone"                           as tableName,
-         1402                            as checkNumber,
-        "sum of startAllocFactor <> 1.0" as testDescription,
-         sum(startAllocFactor)           as testValue
-From     zone
-Having   testValue <0.99999 or testValue >1.00001;
+INSERT INTO qa_checks_log values ( 1402, 'OK', @hVersion, curDate(), curTime() );
+Insert into cdb_checks
+       ( tablename,
+         checknumber,
+         testdescription,
+         testvalue    )
+select  "zone"                           as tablename,
+         1402                            as checknumber,
+        "sum of startallocfactor <> 1.0" as testdescription,
+         sum(startallocfactor)           as testvalue
+from     zone
+having   testvalue <0.99999 or testvalue >1.00001;
 
 --       check no. 1403 -- checks that the idleAllocFactor sums to 1
-INSERT INTO QA_Checks_Log values ( 1403, 'OK', @hVersion, curDate(), curTime() );
+INSERT INTO qa_checks_log values ( 1403, 'OK', @hVersion, curDate(), curTime() );
 Insert into CDB_Checks
        ( tableName,
          checkNumber,

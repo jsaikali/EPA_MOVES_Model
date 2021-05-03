@@ -291,8 +291,8 @@ func coreBaseRateGeneratorFromRatesOpModeDistribution(romdForBaseRateQueue, romd
 	// ----- those in the normal 0-100 range. This ORDER BY is the most efficient given the table's
 	// primary key (it is the exact desc of all fields so is fast to process).
 	// Without the ORDER BY, that natural order does not ensure the required sequence.
-	querySql := "select sourceTypeID,roadTypeID,avgSpeedBinID,hourDayID,polProcessID,opModeID,opModeFraction,coalesce(opModeFractionCV,0) as opModeFractionCV,avgBinSpeed,avgSpeedFraction" +
-			" from RatesOpModeDistribution"
+	querySql := "select sourcetypeid,roadtypeid,avgspeedbinid,hourdayid,polprocessid,opmodeid,opmodefraction,coalesce(opmodefractioncv,0) as opmodefractioncv,avgbinspeed,avgspeedfraction" +
+			" from ratesopmodedistribution"
 	// Add WHERE with restrictions based upon passed parameters, some of which may be 0 and not used.
 	hasWhere := false
 	if flags.processID > 0 {
@@ -302,7 +302,7 @@ func coreBaseRateGeneratorFromRatesOpModeDistribution(romdForBaseRateQueue, romd
 			hasWhere = true
 			querySql += " where"
 		}
-		querySql += " (polProcessID % 100) = " +  strconv.Itoa(flags.processID)
+		querySql += " (polprocessid % 100) = " +  strconv.Itoa(flags.processID)
 	}
 	if flags.roadTypeID > 0 {
 		if hasWhere {
@@ -311,10 +311,10 @@ func coreBaseRateGeneratorFromRatesOpModeDistribution(romdForBaseRateQueue, romd
 			hasWhere = true
 			querySql += " where"
 		}
-		querySql += " roadTypeID = " +  strconv.Itoa(flags.roadTypeID)
+		querySql += " roadtypeid = " +  strconv.Itoa(flags.roadTypeID)
 	}
 	// Finish and query the table
-	querySql += " order by sourceTypeID desc, polProcessID desc, roadTypeID desc, hourDayID desc, opModeID desc, avgSpeedBinID desc"
+	querySql += " order by sourcetypeid desc, polprocessid desc, roadtypeid desc, hourdayid desc, opmodeid desc, avgspeedbinid desc"
 	rows, err := db.Query(querySql)
 	configuration.CheckErr(err)
     defer rows.Close()
@@ -666,8 +666,8 @@ func makeBaseRateByAgeFromSourceBinRates(romdQueue chan *romdBlock, sqlToWrite c
 
 	outputRecords := make(map[baseRateOutputKey]*baseRateOutputRecord)
 	files := newTempFiles(baseRateByAgeTableFileBase,baseRateByAgeTableName,
-			"sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID, polProcessID, modelYearID, fuelTypeID, ageGroupID, regClassID, opModeID," +
-			"opModeFraction, opModeFractionRate, MeanBaseRate, MeanBaseRateIM, MeanBaseRateACAdj, MeanBaseRateIMACAdj, emissionRate, emissionRateIM, emissionRateACAdj, emissionRateIMACAdj, processID, pollutantID",
+			"sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, polprocessid, modelyearid, fueltypeid, agegroupid, regclassid, opmodeid," +
+			"opmodefraction, opmodefractionrate, meanbaserate, meanbaserateim, meanbaserateacadj, meanbaserateimacadj, emissionrate, emissionrateim, emissionrateacadj, emissionrateimacadj, processid, pollutantid",
 			sqlToWrite)
 	var romdCount, writeCount int
 
@@ -912,8 +912,8 @@ func makeBaseRateFromSourceBinRates(romdQueue chan *romdBlock, sqlToWrite chan s
 
 	outputRecords := make(map[baseRateOutputKey]*baseRateOutputRecord)
 	files := newTempFiles(baseRateTableFileBase,baseRateTableName,
-			"sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID, polProcessID, modelYearID, fuelTypeID, regClassID, opModeID," +
-			"opModeFraction, opModeFractionRate, MeanBaseRate, MeanBaseRateIM, MeanBaseRateACAdj, MeanBaseRateIMACAdj, emissionRate, emissionRateIM, emissionRateACAdj, emissionRateIMACAdj, processID, pollutantID",
+			"sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, polprocessid, modelyearid, fueltypeid, regclassid, opmodeid," +
+			"opmodefraction, opmodefractionrate, meanbaserate, meanbaserateim, meanbaserateacadj, meanbaserateimacadj, emissionrate, emissionrateim, emissionrateacadj, emissionrateimacadj, processid, pollutantid",
 			sqlToWrite)
 	var romdCount, writeCount int
 
@@ -1168,19 +1168,19 @@ func makeBaseRateFromDistanceRates(sqlToWrite chan string) {
 
 	outputRecords := make(map[baseRateOutputKey]*baseRateOutputRecord)
 	files := newTempFiles(baseRateTableFileBase,baseRateTableName,
-			"sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID, polProcessID, modelYearID, fuelTypeID, regClassID, opModeID," +
-			"opModeFraction, opModeFractionRate, MeanBaseRate, MeanBaseRateIM, MeanBaseRateACAdj, MeanBaseRateIMACAdj, emissionRate, emissionRateIM, emissionRateACAdj, emissionRateIMACAdj, processID, pollutantID",
+			"sourcetypeid, roadtypeid, avgspeedbinid, hourdayid, polprocessid, modelyearid, fueltypeid, regclassid, opmodeid," +
+			"opmodefraction, opmodefractionrate, meanbaserate, meanbaserateim, meanbaserateacadj, meanbaserateimacadj, emissionrate, emissionrateim, emissionrateacadj, emissionrateimacadj, processid, pollutantid",
 			sqlToWrite)
 
 	db := configuration.OpenExecutionDatabase()
 	defer db.Close()
 
 	fmt.Println("Querying SBWeightedDistanceRate...")
-	sql := "select sourceTypeID,avgSpeedBinID,polProcessID,modelYearID,fuelTypeID,regClassID," +
-			" meanBaseRate,meanBaseRateIM,meanBaseRateACAdj,meanBaseRateIMACAdj,sumSBD,sumSBDRaw" +
-			" from SBWeightedDistanceRate" +
-			" where mod(polProcessID,100)=" + strconv.Itoa(flags.processID) +
-			" order by sourceTypeID,polProcessID,modelYearID,fuelTypeID,regClassID,avgSpeedBinID"
+	sql := "select sourcetypeid,avgspeedbinid,polprocessid,modelyearid,fueltypeid,regclassid," +
+			" meanbaserate,meanbaserateim,meanbaserateacadj,meanbaserateimacadj,sumsbd,sumsbdraw" +
+			" from sbweighteddistancerate" +
+			" where mod(polprocessid,100)=" + strconv.Itoa(flags.processID) +
+			" order by sourcetypeid,polprocessid,modelyearid,fueltypeid,regclassid,avgspeedbinid"
 	rows, err := db.Query(sql)
 	configuration.CheckErr(err)
 
@@ -1396,8 +1396,8 @@ func setupTables() {
 	db := configuration.OpenExecutionDatabase()
 	defer db.Close()
 
-	baseRateTableName = "baseRate_" + strconv.Itoa(flags.processID) + "_" + strconv.Itoa(flags.yearID)
-	baseRateByAgeTableName = "baseRateByAge_" + strconv.Itoa(flags.processID) + "_" + strconv.Itoa(flags.yearID)
+	baseRateTableName = "baserate_" + strconv.Itoa(flags.processID) + "_" + strconv.Itoa(flags.yearID)
+	baseRateByAgeTableName = "baseratebyage_" + strconv.Itoa(flags.processID) + "_" + strconv.Itoa(flags.yearID)
 
 	baseRateTableFileBase, _ = filepath.Abs(baseRateTableName)
 	baseRateByAgeTableFileBase, _ = filepath.Abs(baseRateByAgeTableName)
@@ -1421,7 +1421,7 @@ func setupTables() {
 // Read the AvgSpeedBin table into memory.
 func readAvgSpeedBin(db *sql.DB) {
 	fmt.Println("Querying AvgSpeedBin...")
-	sql := "select avgSpeedBinID, avgBinSpeed from avgspeedbin"
+	sql := "select avgspeedbinid, avgbinspeed from avgspeedbin"
 	rows, err := db.Query(sql)
 	configuration.CheckErr(err)
 
@@ -1441,7 +1441,7 @@ func readAvgSpeedBin(db *sql.DB) {
 // Read the DriveSchedule table into memory.
 func readDriveSchedule(db *sql.DB) {
 	fmt.Println("Querying DriveSchedule...")
-	sql := "select driveScheduleID, averageSpeed from driveSchedule"
+	sql := "select drivescheduleid, averagespeed from driveschedule"
 	rows, err := db.Query(sql)
 	configuration.CheckErr(err)
 
@@ -1461,11 +1461,11 @@ func readDriveSchedule(db *sql.DB) {
 // Read the AvgSpeedDistribution table into memory.
 func readAvgSpeedDistribution(db *sql.DB) {
 	fmt.Println("Querying AvgSpeedDistribution...")
-	sql := "select sourceTypeID,roadTypeID,hourDayID,avgSpeedBinID,avgSpeedFraction,avgBinSpeed" +
-			" from avgSpeedDistribution" +
-			" inner join avgSpeedBin using (avgSpeedBinID)"
+	sql := "select sourcetypeid,roadtypeid,hourdayid,avgspeedbinid,avgspeedfraction,avgbinspeed" +
+			" from avgspeeddistribution" +
+			" inner join avgspeedbin using (avgspeedbinid)"
 	if flags.roadTypeID > 0 {
-		sql += " where roadTypeID=" + strconv.Itoa(flags.roadTypeID)
+		sql += " where roadtypeid=" + strconv.Itoa(flags.roadTypeID)
 	}
 	rows, err := db.Query(sql)
 	configuration.CheckErr(err)
@@ -1489,12 +1489,12 @@ func readSourceUseTypePhysicsMapping(db *sql.DB) {
 	SourceUseTypePhysicsMapping = make([]*SourceUseTypePhysicsMappingDetail,0,10000)
 	SourceUseTypePhysicsMappingByTempSourceType = make(map[int]*SourceUseTypePhysicsMappingDetail)
 	SourceUseTypePhysicsMappingByRealSourceType = make(map[int]*SourceUseTypePhysicsMappingDetail)
-	rows, err := db.Query("select distinct realSourceTypeID, tempSourceTypeID, opModeIDOffset," +
-			" regClassID, beginModelYearID, endModelYearID," +
-			" rollingTermA, rotatingTermB, dragTermC, sourceMass, fixedMassFactor" +
-			" from sourceUseTypePhysicsMapping" +
+	rows, err := db.Query("select distinct realsourcetypeid, tempsourcetypeid, opmodeidoffset," +
+			" regclassid, beginmodelyearid, endmodelyearid," +
+			" rollingterma, rotatingtermb, dragtermc, sourcemass, fixedmassfactor" +
+			" from sourceusetypephysicsmapping" +
 			//" where realSourceTypeID <> tempSourceTypeID" +
-			" order by realSourceTypeID, beginModelYearID")
+			" order by realsourcetypeid, beginmodelyearid")
 	configuration.CheckErr(err)
 
 	defer rows.Close()
@@ -1516,12 +1516,12 @@ func readSourceUseTypePhysicsMapping(db *sql.DB) {
 // Read the SBWeightedEmissionRateByAge table into memory.
 func readSBWeightedEmissionRateByAge(db *sql.DB) {
 	fmt.Println("Querying SBWeightedEmissionRateByAge...")
-	rows, err := db.Query("select sourceTypeID, polProcessID, opModeID," +
-			" modelYearID, fuelTypeID, ageGroupID, regClassID," +
-			" sumSBD, sumSBDRaw, " +
-			" meanBaseRate, meanBaseRateIM, meanBaseRateACAdj, meanBaseRateIMACAdj " +
-			" from SBWeightedEmissionRateByAge" +
-			" where mod(polProcessID,100) = " + strconv.Itoa(flags.processID))
+	rows, err := db.Query("select sourcetypeid, polprocessid, opmodeid," +
+			" modelyearid, fueltypeid, agegroupid, regclassid," +
+			" sumsbd, sumsbdraw, " +
+			" meanbaserate, meanbaserateim, meanbaserateacadj, meanbaserateimacadj " +
+			" from sbweightedemissionratebyage" +
+			" where mod(polprocessid,100) = " + strconv.Itoa(flags.processID))
 	configuration.CheckErr(err)
 
 	defer rows.Close()
@@ -1551,12 +1551,12 @@ func readSBWeightedEmissionRateByAge(db *sql.DB) {
 // Read the SBWeightedEmissionRate table into memory.
 func readSBWeightedEmissionRate(db *sql.DB) {
 	fmt.Println("Querying SBWeightedEmissionRate...")
-	rows, err := db.Query("select sourceTypeID, polProcessID, opModeID," +
-			" modelYearID, fuelTypeID, regClassID," +
-			" sumSBD, sumSBDRaw, " +
-			" meanBaseRate, meanBaseRateIM, meanBaseRateACAdj, meanBaseRateIMACAdj " +
-			" from SBWeightedEmissionRate" +
-			" where mod(polProcessID,100) = " + strconv.Itoa(flags.processID))
+	rows, err := db.Query("select sourcetypeid, polprocessid, opmodeid," +
+			" modelyearid, fueltypeid, regclassid," +
+			" sumsbd, sumsbdraw, " +
+			" meanbaserate, meanbaserateim, meanbaserateacadj, meanbaserateimacadj " +
+			" from sbweightedemissionrate" +
+			" where mod(polprocessid,100) = " + strconv.Itoa(flags.processID))
 	configuration.CheckErr(err)
 
 	defer rows.Close()
@@ -1596,11 +1596,11 @@ func readSBWeightedEmissionRate(db *sql.DB) {
 // Read the runSpecRoadType table into memory.
 func readRunSpecRoadType(db *sql.DB) {
 	fmt.Println("Querying runSpecRoadType...")
-	sql := "select roadTypeID" +
-			" from runSpecRoadType" +
-			" where roadTypeID > 0 and roadTypeID < 100"
+	sql := "select roadtypeid" +
+			" from runspecroadtype" +
+			" where roadtypeid > 0 and roadtypeid < 100"
 	if flags.roadTypeID > 0 {
-		sql += " and roadTypeID=" + strconv.Itoa(flags.roadTypeID)
+		sql += " and roadtypeid=" + strconv.Itoa(flags.roadTypeID)
 	}
 	rows, err := db.Query(sql)
 	configuration.CheckErr(err)
@@ -1623,8 +1623,8 @@ func readRunSpecRoadType(db *sql.DB) {
 // Read the runSpecHourDay table into memory.
 func readRunSpecHourDay(db *sql.DB) {
 	fmt.Println("Querying runSpecHourDay...")
-	sql := "select hourDayID" +
-			" from runSpecHourDay"
+	sql := "select hourdayid" +
+			" from runspechourday"
 	rows, err := db.Query(sql)
 	configuration.CheckErr(err)
 
@@ -1643,8 +1643,8 @@ func readRunSpecHourDay(db *sql.DB) {
 // Read the runSpecSourceType table into memory.
 func readRunSpecSourceType(db *sql.DB) {
 	fmt.Println("Querying runSpecSourceType...")
-	sql := "select sourceTypeID" +
-			" from runSpecSourceType"
+	sql := "select sourcetypeid" +
+			" from runspecsourcetype"
 	rows, err := db.Query(sql)
 	configuration.CheckErr(err)
 
@@ -1665,12 +1665,12 @@ func readRunSpecSourceType(db *sql.DB) {
 // and further to those that need drive cycle calculations (operating modes 0-99).
 func readRunSpecPollutantProcess(db *sql.DB) {
 	fmt.Println("Querying runSpecPollutantProcess...")
-	rows, err := db.Query("select distinct polProcessID" +
+	rows, err := db.Query("select distinct polprocessid" +
 			" from runspecpollutantprocess" +
-			" inner join opmodepolprocassoc using (polProcessID)" +
-			" where polProcessID > 0" +
-			" and opModeID >= 0 and opModeID < 100" +
-			" and mod(polProcessID,100)=" + strconv.Itoa(flags.processID))
+			" inner join opmodepolprocassoc using (polprocessid)" +
+			" where polprocessid > 0" +
+			" and opmodeid >= 0 and opmodeid < 100" +
+			" and mod(polprocessid,100)=" + strconv.Itoa(flags.processID))
 	configuration.CheckErr(err)
 
 	defer rows.Close()
@@ -1688,7 +1688,7 @@ func readRunSpecPollutantProcess(db *sql.DB) {
 // Read the runSpecModelYear table into memory.
 func readRunSpecModelYear(db *sql.DB) {
 	fmt.Println("Querying runSpecModelYear...")
-	rows, err := db.Query("select modelYearID from runspecmodelyear")
+	rows, err := db.Query("select modelyearid from runspecmodelyear")
 	configuration.CheckErr(err)
 
 	defer rows.Close()
@@ -1706,9 +1706,9 @@ func readRunSpecModelYear(db *sql.DB) {
 // Read the DriveScheduleAssoc table into memory.
 func readDriveScheduleAssoc(db *sql.DB) {
 	fmt.Println("Querying DriveScheduleAssoc...")
-	sql := "select sourceTypeID, roadTypeID, driveScheduleID from driveScheduleAssoc inner join runspecRoadType using (roadTypeID)"
+	sql := "select sourcetypeid, roadtypeid, drivescheduleid from drivescheduleassoc inner join runspecroadtype using (roadtypeid)"
 	if flags.roadTypeID > 0 {
-		sql += " where roadTypeID=" + strconv.Itoa(flags.roadTypeID)
+		sql += " where roadtypeid=" + strconv.Itoa(flags.roadTypeID)
 	}
 	rows, err := db.Query(sql)
 	configuration.CheckErr(err)
@@ -1734,10 +1734,10 @@ func readDriveScheduleAssoc(db *sql.DB) {
 // Read the OperatingMode table into memory. Only modes > 1 and < 100 are read.
 func readOperatingMode(db *sql.DB) {
 	fmt.Println("Querying OperatingMode...")
-	sql := "select opModeID,ifnull(VSPLower,0),ifnull(VSPUpper,0),ifnull(speedLower,0),ifnull(speedUpper,0)," +
-	 		" isnull(VSPLower),isnull(VSPUpper),isnull(speedLower),isnull(speedUpper)" +
-			" from operatingMode" +
-			" where opModeID > 1 and opModeID < 100 and opModeID not in (26,36)"
+	sql := "select opmodeid,ifnull(vsplower,0),ifnull(vspupper,0),ifnull(speedlower,0),ifnull(speedupper,0)," +
+	 		" isnull(vsplower),isnull(vspupper),isnull(speedlower),isnull(speedupper)" +
+			" from operatingmode" +
+			" where opmodeid > 1 and opmodeid < 100 and opmodeid not in (26,36)"
 	rows, err := db.Query(sql)
 	configuration.CheckErr(err)
 
@@ -1923,7 +1923,7 @@ func calculateDriveCycleOpModeDistribution(db *sql.DB,pDetail *SourceUseTypePhys
 	*/
 
 	// Read the speed for each second...
-	sql := "select second, speed from driveScheduleSecond where driveScheduleID=" + strconv.Itoa(driveScheduleID)
+	sql := "select second, speed from driveschedulesecond where drivescheduleid=" + strconv.Itoa(driveScheduleID)
 	rows, err := db.Query(sql)
 	configuration.CheckErr(err)
 
@@ -2093,12 +2093,12 @@ func processDriveCycles(romdForBaseRateQueue, romdForBaseRateByAgeQueue chan *ro
 	var files *tempFiles
 	if configuration.Singleton.SaveROMD {
 		createROMDTable(sqlToWrite)
-		romdTableName := "ratesOpModeDistributionDetail"
+		romdTableName := "ratesopmodedistributiondetail"
 		romdFileBase, _ := filepath.Abs(romdTableName)
 		files = newTempFiles(romdFileBase,romdTableName,
-				"sourceTypeID, polProcessID, roadTypeID, hourDayID, opModeID, avgSpeedBinID," +
-				"beginModelYearID, endModelYearID, regClassID," +
-				"opModeFraction, avgBinSpeed, avgSpeedFraction",
+				"sourcetypeid, polprocessid, roadtypeid, hourdayid, opmodeid, avgspeedbinid," +
+				"beginmodelyearid, endmodelyearid, regclassid," +
+				"opmodefraction, avgbinspeed, avgspeedfraction",
 				sqlToWrite)
 	}
 
@@ -2171,10 +2171,10 @@ func processDriveCycles(romdForBaseRateQueue, romdForBaseRateByAgeQueue chan *ro
 	* @input operating mode distribution from drive cycles
 	* @output DrivingIdleFraction
 	**/
-	idleFractionTableName := "drivingIdleFraction"
+	idleFractionTableName := "drivingidlefraction"
 	idleFractionFileBase, _ := filepath.Abs(idleFractionTableName)
 	idleFractionFiles := newTempFiles(idleFractionFileBase,idleFractionTableName,
-			"hourDayID,yearID,roadTypeID,sourceTypeID,drivingIdleFraction",
+			"hourdayid,yearid,roadtypeid,sourcetypeid,drivingidlefraction",
 			sqlToWrite)
 	var avgSpeedKey avgSpeedDistributionKey
 	var dcbfk dcbFastKey
@@ -2397,19 +2397,19 @@ func processDriveCycles(romdForBaseRateQueue, romdForBaseRateByAgeQueue chan *ro
 // Create ROMD table to hold debugging information
 func createROMDTable(sqlToWrite chan string) {
 	globalevents.SqlStarting()
-	sqlToWrite <- "create table if not exists ratesOpModeDistributionDetail (" +
-			"sourceTypeID int," +
-			"polProcessID int," +
-			"roadTypeID int," +
-			"hourDayID int," +
-			"opModeID int," +
-			"avgSpeedBinID int," +
-			"beginModelYearID int," +
-			"endModelYearID int," +
-			"regClassID int," +
-			"opModeFraction double," +
-			"avgBinSpeed double," +
-			"avgSpeedFraction double" +
+	sqlToWrite <- "create table if not exists ratesopmodedistributiondetail (" +
+			"sourcetypeid int," +
+			"polprocessid int," +
+			"roadtypeid int," +
+			"hourdayid int," +
+			"opmodeid int," +
+			"avgspeedbinid int," +
+			"beginmodelyearid int," +
+			"endmodelyearid int," +
+			"regclassid int," +
+			"opmodefraction double," +
+			"avgbinspeed double," +
+			"avgspeedfraction double" +
 			")"
 }
 

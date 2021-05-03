@@ -170,239 +170,239 @@ public class OperatingModeDistributionGenerator extends Generator {
 			// The documentation doesn't mention this but, going from the spreadsheet, speed bins
 			// with values below and above the lowest and highest drive schedule values are bound
 			// to those values. The following query determines these bounded values.
-			sql = "CREATE TABLE IF NOT EXISTS DriveScheduleBounds ("+
-						"sourceTypeID     SMALLINT,"+
-						"roadTypeID       SMALLINT,"+
-						"scheduleBoundLo  FLOAT,"+
-						"scheduleBoundHi  FLOAT,"+
-						"UNIQUE INDEX XPKDriveScheduleBounds ("+
-							"sourceTypeID, roadTypeID))";
+			sql = "CREATE TABLE IF NOT EXISTS driveschedulebounds ("+
+						"sourcetypeid     smallint,"+
+						"roadtypeid       smallint,"+
+						"scheduleboundlo  float,"+
+						"scheduleboundhi  float,"+
+						"unique index xpkdriveschedulebounds ("+
+							"sourcetypeid, roadtypeid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE DriveScheduleBounds";
+			sql = "TRUNCATE driveschedulebounds";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO DriveScheduleBounds ("+
-						"sourceTypeID,"+
-						"roadTypeID,"+
-						"scheduleBoundLo,"+
-						"scheduleBoundHi) "+
-					"SELECT "+
-						"dsa.sourceTypeID,"+
-						"dsa.roadTypeID,"+
-						"MIN(ds.averageSpeed),"+
-						"MAX(ds.averageSpeed) "+
-					"FROM "+
-						"RunSpecRoadType rsrt,"+
-						"RunSpecSourceType rsst,"+
-						"DriveSchedule ds,"+
-						"DriveScheduleAssoc dsa "+
-					"WHERE "+
-						"rsrt.roadTypeID = dsa.roadTypeID AND "+
-						"rsst.sourceTypeID = dsa.sourceTypeID AND "+
+			sql = "INSERT INTO driveschedulebounds ("+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"scheduleboundlo,"+
+						"scheduleboundhi) "+
+					"select "+
+						"dsa.sourcetypeid,"+
+						"dsa.roadtypeid,"+
+						"min(ds.averagespeed),"+
+						"max(ds.averagespeed) "+
+					"from "+
+						"runspecroadtype rsrt,"+
+						"runspecsourcetype rsst,"+
+						"driveschedule ds,"+
+						"drivescheduleassoc dsa "+
+					"where "+
+						"rsrt.roadtypeid = dsa.roadtypeid and "+
+						"rsst.sourcetypeid = dsa.sourcetypeid and "+
 						"ds.drivescheduleid = dsa.drivescheduleid "+
-					"GROUP BY "+
-						"dsa.sourceTypeID,"+
-						"dsa.roadTypeID";
+					"group by "+
+						"dsa.sourcetypeid,"+
+						"dsa.roadtypeid";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE DriveScheduleBounds");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE driveschedulebounds");
 
-			sql = "CREATE TABLE IF NOT EXISTS BracketScheduleLo2 ("+
-						"sourceTypeID     SMALLINT,"+
-						"roadTypeID       SMALLINT,"+
-						"avgSpeedBinID    SMALLINT,"+
-						"driveScheduleID  SMALLINT,"+
-						"loScheduleSpeed  FLOAT,"+
-						"isOutOfBounds    SMALLINT,"+
-						"UNIQUE INDEX XPKBracketScheduleLo2 ("+
-							"sourceTypeID, roadTypeID, avgSpeedBinID, driveScheduleID))";
+			sql = "CREATE TABLE IF NOT EXISTS bracketschedulelo2 ("+
+						"sourcetypeid     smallint,"+
+						"roadtypeid       smallint,"+
+						"avgspeedbinid    smallint,"+
+						"drivescheduleid  smallint,"+
+						"loschedulespeed  float,"+
+						"isoutofbounds    smallint,"+
+						"unique index xpkbracketschedulelo2 ("+
+							"sourcetypeid, roadtypeid, avgspeedbinid, drivescheduleid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE BracketScheduleLo2";
+			sql = "TRUNCATE bracketschedulelo2";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO BracketScheduleLo2 ("+
-						"sourceTypeID,"+
-						"roadTypeID,"+
-						"avgSpeedBinID,"+
-						"loScheduleSpeed,"+
-						"isOutOfBounds) "+
-					"SELECT "+
-						"dsa.sourceTypeID,"+
-						"dsa.roadTypeID,"+
-						"asb.avgSpeedBinID,"+
-						"MAX(ds.averageSpeed),"+
-						"0 as isOutOfBounds "+
-					"FROM "+
-						"RunSpecRoadType rsrt,"+
-						"RunSpecSourceType rsst,"+
-						"DriveSchedule ds,"+
-						"DriveScheduleAssoc dsa,"+
-						"AvgSpeedBin asb "+
-					"WHERE "+
-						"rsrt.roadTypeID = dsa.roadTypeID AND "+
-						"rsst.sourceTypeID = dsa.sourceTypeID AND "+
-						"ds.driveScheduleID = dsa.driveScheduleID AND "+
-						"ds.averageSpeed <= asb.avgBinSpeed "+
-					"GROUP BY "+
-						"dsa.sourceTypeID,"+
-						"dsa.roadTypeID,"+
-						"asb.avgBinSpeed";
+			sql = "INSERT INTO bracketschedulelo2 ("+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"avgspeedbinid,"+
+						"loschedulespeed,"+
+						"isoutofbounds) "+
+					"select "+
+						"dsa.sourcetypeid,"+
+						"dsa.roadtypeid,"+
+						"asb.avgspeedbinid,"+
+						"max(ds.averagespeed),"+
+						"0 as isoutofbounds "+
+					"from "+
+						"runspecroadtype rsrt,"+
+						"runspecsourcetype rsst,"+
+						"driveschedule ds,"+
+						"drivescheduleassoc dsa,"+
+						"avgspeedbin asb "+
+					"where "+
+						"rsrt.roadtypeid = dsa.roadtypeid and "+
+						"rsst.sourcetypeid = dsa.sourcetypeid and "+
+						"ds.drivescheduleid = dsa.drivescheduleid and "+
+						"ds.averagespeed <= asb.avgbinspeed "+
+					"group by "+
+						"dsa.sourcetypeid,"+
+						"dsa.roadtypeid,"+
+						"asb.avgbinspeed";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE BracketScheduleLo2");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE bracketschedulelo2");
 				// changed to INSERT IGNORE to work properly with MySQL 4
-			sql = "INSERT IGNORE INTO BracketScheduleLo2 ("+
-						"sourceTypeID,"+
-						"roadTypeID,"+
-						"avgSpeedBinID,"+
-						"loScheduleSpeed,"+
-						"isOutOfBounds) "+
-					"SELECT "+
-						"dsa.sourceTypeID,"+
-						"dsa.roadTypeID,"+
-						"asb.avgSpeedBinID,"+
-						"dsb.scheduleBoundLo,"+
-						"1 as isOutOfBounds "+
-					"FROM "+
-						"RunSpecRoadType rsrt,"+
-						"RunSpecSourceType rsst,"+
-						"DriveSchedule ds,"+
-						"DriveScheduleAssoc dsa,"+
-						"DriveScheduleBounds dsb,"+
-						"AvgSpeedBin asb "+
-					"WHERE "+
-						"rsrt.roadTypeID = dsa.roadTypeID AND "+
-						"rsst.sourceTypeID = dsa.sourceTypeID AND "+
-						"ds.driveScheduleID = dsa.driveScheduleID AND "+
-						"dsb.sourceTypeID = dsa.sourceTypeID AND "+
-						"dsb.roadTypeID = dsa.roadTypeID AND "+
-						"asb.avgBinSpeed < dsb.scheduleBoundLo ";
+			sql = "INSERT IGNORE INTO bracketschedulelo2 ("+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"avgspeedbinid,"+
+						"loschedulespeed,"+
+						"isoutofbounds) "+
+					"select "+
+						"dsa.sourcetypeid,"+
+						"dsa.roadtypeid,"+
+						"asb.avgspeedbinid,"+
+						"dsb.scheduleboundlo,"+
+						"1 as isoutofbounds "+
+					"from "+
+						"runspecroadtype rsrt,"+
+						"runspecsourcetype rsst,"+
+						"driveschedule ds,"+
+						"drivescheduleassoc dsa,"+
+						"driveschedulebounds dsb,"+
+						"avgspeedbin asb "+
+					"where "+
+						"rsrt.roadtypeid = dsa.roadtypeid and "+
+						"rsst.sourcetypeid = dsa.sourcetypeid and "+
+						"ds.drivescheduleid = dsa.drivescheduleid and "+
+						"dsb.sourcetypeid = dsa.sourcetypeid and "+
+						"dsb.roadtypeid = dsa.roadtypeid and "+
+						"asb.avgbinspeed < dsb.scheduleboundlo ";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "CREATE TABLE IF NOT EXISTS BracketScheduleLo ("+
-					"sourceTypeID    SMALLINT,"+
-					"roadTypeID      SMALLINT,"+
-					"avgSpeedBinID   SMALLINT,"+
-					"driveScheduleID SMALLINT,"+
-					"loScheduleSpeed FLOAT,"+
-					"UNIQUE INDEX XPKBracketScheduleLo ("+
-							"sourceTypeID, roadTypeID, avgSpeedBinID, driveScheduleID))";
+			sql = "CREATE TABLE IF NOT EXISTS bracketschedulelo ("+
+					"sourcetypeid    smallint,"+
+					"roadtypeid      smallint,"+
+					"avgspeedbinid   smallint,"+
+					"drivescheduleid smallint,"+
+					"loschedulespeed float,"+
+					"unique index xpkbracketschedulelo ("+
+							"sourcetypeid, roadtypeid, avgspeedbinid, drivescheduleid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE BracketScheduleLo";
+			sql = "TRUNCATE bracketschedulelo";
 			SQLRunner.executeSQL(db, sql);
 			// changed to INSERT IGNORE to work with MySQL 4
-			sql = "INSERT IGNORE INTO BracketScheduleLo ("+
-						"sourceTypeID,"+
-						"roadTypeID,"+
-						"avgSpeedBinID,"+
-						"driveScheduleID,"+
-						"loScheduleSpeed) "+
-					"SELECT "+
-						"bsl.sourceTypeID,"+
-						"bsl.roadTypeID,"+
-						"bsl.avgSpeedBinID,"+
-						"ds.driveScheduleID,"+
-						"bsl.loScheduleSpeed "+
-					"FROM "+
-						"BracketScheduleLo2 bsl,"+
-						"DriveScheduleAssoc dsa,"+
-						"DriveSchedule ds "+
-					"WHERE "+
-						"dsa.driveScheduleID = ds.driveScheduleID AND "+
-						"dsa.sourceTypeID = bsl.sourceTypeID AND "+
-						"dsa.roadTypeID = bsl.roadTypeID AND "+
-						"ds.averageSpeed = bsl.loScheduleSpeed";
+			sql = "INSERT IGNORE INTO bracketschedulelo ("+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"avgspeedbinid,"+
+						"drivescheduleid,"+
+						"loschedulespeed) "+
+					"select "+
+						"bsl.sourcetypeid,"+
+						"bsl.roadtypeid,"+
+						"bsl.avgspeedbinid,"+
+						"ds.drivescheduleid,"+
+						"bsl.loschedulespeed "+
+					"from "+
+						"bracketschedulelo2 bsl,"+
+						"drivescheduleassoc dsa,"+
+						"driveschedule ds "+
+					"where "+
+						"dsa.drivescheduleid = ds.drivescheduleid and "+
+						"dsa.sourcetypeid = bsl.sourcetypeid and "+
+						"dsa.roadtypeid = bsl.roadtypeid and "+
+						"ds.averagespeed = bsl.loschedulespeed";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE BracketScheduleLo");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE bracketschedulelo");
 
-			sql = "CREATE TABLE IF NOT EXISTS BracketScheduleHi2 ("+
-					"sourceTypeID      SMALLINT,"+
-					"roadTypeID        SMALLINT,"+
-					"avgSpeedBinID     SMALLINT,"+
-					"driveScheduleID   SMALLINT,"+
-					"hiScheduleSpeed   FLOAT,"+
-					"isOutOfBounds	   SMALLINT,"+
-					"UNIQUE INDEX XPKBracketScheduleHi2 ("+
-							"sourceTypeID, roadTypeID, avgSpeedBinID, driveScheduleID))";
+			sql = "CREATE TABLE IF NOT EXISTS bracketschedulehi2 ("+
+					"sourcetypeid      smallint,"+
+					"roadtypeid        smallint,"+
+					"avgspeedbinid     smallint,"+
+					"drivescheduleid   smallint,"+
+					"hischedulespeed   float,"+
+					"isoutofbounds	   smallint,"+
+					"unique index xpkbracketschedulehi2 ("+
+							"sourcetypeid, roadtypeid, avgspeedbinid, drivescheduleid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE BracketScheduleHi2";
+			sql = "TRUNCATE bracketschedulehi2";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO BracketScheduleHi2 ("+
-						"sourceTypeID,"+
-						"roadTypeID,"+
-						"avgSpeedBinID,"+
-						"hiScheduleSpeed,"+
-						"isOutOfBounds) "+
-					"SELECT "+
-						"dsa.sourceTypeID,"+
-						"dsa.roadTypeID,"+
-						"asb.avgSpeedBinID,"+
-						"MIN(ds.averageSpeed),"+
-						"0 as isOutOfBounds "+
-					"FROM "+
-						"RunSpecRoadType rsrt,"+
-						"RunSpecSourceType rsst,"+
-						"DriveSchedule ds,"+
-						"DriveScheduleAssoc dsa,"+
-						"AvgSpeedBin asb "+
-					"WHERE "+
-						"rsrt.roadTypeID = dsa.roadTypeID AND "+
-						"rsst.sourceTypeID = dsa.sourceTypeID AND "+
-						"ds.driveScheduleID = dsa.driveScheduleID AND "+
-						"ds.averageSpeed > asb.avgBinSpeed "+
-					"GROUP BY "+
-						"dsa.sourceTypeID,"+
-						"dsa.roadTypeID,"+
-						"asb.avgBinSpeed";
+			sql = "INSERT INTO bracketschedulehi2 ("+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"avgspeedbinid,"+
+						"hischedulespeed,"+
+						"isoutofbounds) "+
+					"select "+
+						"dsa.sourcetypeid,"+
+						"dsa.roadtypeid,"+
+						"asb.avgspeedbinid,"+
+						"min(ds.averagespeed),"+
+						"0 as isoutofbounds "+
+					"from "+
+						"runspecroadtype rsrt,"+
+						"runspecsourcetype rsst,"+
+						"driveschedule ds,"+
+						"drivescheduleassoc dsa,"+
+						"avgspeedbin asb "+
+					"where "+
+						"rsrt.roadtypeid = dsa.roadtypeid and "+
+						"rsst.sourcetypeid = dsa.sourcetypeid and "+
+						"ds.drivescheduleid = dsa.drivescheduleid and "+
+						"ds.averagespeed > asb.avgbinspeed "+
+					"group by "+
+						"dsa.sourcetypeid,"+
+						"dsa.roadtypeid,"+
+						"asb.avgbinspeed";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE BracketScheduleHi2");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE bracketschedulehi2");
 				// changed to INSERT IGNORE to work with MySQL 4.0
-			sql = "INSERT IGNORE INTO BracketScheduleHi2 ("+
-						"sourceTypeID,"+
-						"roadTypeID,"+
-						"avgSpeedBinID,"+
-						"hiScheduleSpeed,"+
-						"isOutOfBounds) "+
-					"SELECT "+
-						"dsa.sourceTypeID,"+
-						"dsa.roadTypeID,"+
-						"asb.avgSpeedBinID,"+
-						"dsb.scheduleBoundHi,"+
-						"1 as isOutOfBounds "+
-					"FROM "+
-						"RunSpecRoadType rsrt,"+
-						"RunSpecSourceType rsst,"+
-						"DriveSchedule ds,"+
-						"DriveScheduleAssoc dsa,"+
-						"DriveScheduleBounds dsb,"+
-						"AvgSpeedBin asb "+
-					"WHERE "+
-						"rsrt.roadTypeID = dsa.roadTypeID AND "+
-						"rsst.sourceTypeID = dsa.sourceTypeID AND "+
-						"ds.driveScheduleID = dsa.driveScheduleID AND "+
-						"dsb.sourceTypeID = dsa.sourceTypeID AND "+
-						"dsb.roadTypeID = dsa.roadTypeID AND "+
-						"asb.avgBinSpeed > dsb.scheduleBoundHi";
+			sql = "INSERT IGNORE INTO bracketschedulehi2 ("+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"avgspeedbinid,"+
+						"hischedulespeed,"+
+						"isoutofbounds) "+
+					"select "+
+						"dsa.sourcetypeid,"+
+						"dsa.roadtypeid,"+
+						"asb.avgspeedbinid,"+
+						"dsb.scheduleboundhi,"+
+						"1 as isoutofbounds "+
+					"from "+
+						"runspecroadtype rsrt,"+
+						"runspecsourcetype rsst,"+
+						"driveschedule ds,"+
+						"drivescheduleassoc dsa,"+
+						"driveschedulebounds dsb,"+
+						"avgspeedbin asb "+
+					"where "+
+						"rsrt.roadtypeid = dsa.roadtypeid and "+
+						"rsst.sourcetypeid = dsa.sourcetypeid and "+
+						"ds.drivescheduleid = dsa.drivescheduleid and "+
+						"dsb.sourcetypeid = dsa.sourcetypeid and "+
+						"dsb.roadtypeid = dsa.roadtypeid and "+
+						"asb.avgbinspeed > dsb.scheduleboundhi";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE BracketScheduleHi2");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE bracketschedulehi2");
 
 			// Look for BracketScheduleLo2.isOutOfBounds=1 entries and complain.
 			// Look for BracketScheduleHi2.isOutOfBounds=1 entries and complain.
-			sql = "select distinct sourceTypeID, roadTypeID, avgSpeedBinID, 1 as isLow"
-					+ " from BracketScheduleLo2"
-					+ " where isOutOfBounds=1"
+			sql = "select distinct sourcetypeid, roadtypeid, avgspeedbinid, 1 as islow"
+					+ " from bracketschedulelo2"
+					+ " where isoutofbounds=1"
 					+ " union"
-					+ " select distinct sourceTypeID, roadTypeID, avgSpeedBinID, 0 as isLow"
-					+ " from BracketScheduleHi2"
-					+ " where isOutOfBounds=1";
+					+ " select distinct sourcetypeid, roadtypeid, avgspeedbinid, 0 as islow"
+					+ " from bracketschedulehi2"
+					+ " where isoutofbounds=1";
 			SQLRunner.Query query = new SQLRunner.Query();
 			try {
 				query.open(db,sql);
@@ -437,52 +437,52 @@ public class OperatingModeDistributionGenerator extends Generator {
 				query.onFinally();
 			}
 
-			sql = "CREATE TABLE IF NOT EXISTS BracketScheduleHi ("+
-					"sourceTypeID      SMALLINT,"+
-					"roadTypeID        SMALLINT,"+
-					"avgSpeedBinID     SMALLINT,"+
-					"driveScheduleID   SMALLINT,"+
-					"hiScheduleSpeed   FLOAT,"+
-					"UNIQUE INDEX XPKBracketScheduleHi ("+
-							"sourceTypeID, roadTypeID, avgSpeedBinID, driveScheduleID))";
+			sql = "CREATE TABLE IF NOT EXISTS bracketschedulehi ("+
+					"sourcetypeid      smallint,"+
+					"roadtypeid        smallint,"+
+					"avgspeedbinid     smallint,"+
+					"drivescheduleid   smallint,"+
+					"hischedulespeed   float,"+
+					"unique index xpkbracketschedulehi ("+
+							"sourcetypeid, roadtypeid, avgspeedbinid, drivescheduleid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE BracketScheduleHi";
+			sql = "TRUNCATE bracketschedulehi";
 			SQLRunner.executeSQL(db, sql);
 			// changed to INSERT IGNORE to work with MySQL 4.
-			sql = "INSERT IGNORE INTO BracketScheduleHi ("+
-						"sourceTypeID,"+
-						"roadTypeID,"+
-						"avgSpeedBinID,"+
-						"driveScheduleID,"+
-						"hiScheduleSpeed) "+
-					"SELECT "+
-						"bsl.sourceTypeID,"+
-						"bsl.roadTypeID,"+
-						"bsl.avgSpeedBinID,"+
-						"ds.driveScheduleID,"+
-						"bsl.hiScheduleSpeed "+
-					"FROM "+
-						"BracketScheduleHi2 bsl,"+
-						"DriveScheduleAssoc dsa,"+
-						"DriveSchedule ds "+
-					"WHERE "+
-						"dsa.driveScheduleID = ds.driveScheduleID AND "+
-						"dsa.sourceTypeID = bsl.sourceTypeID AND "+
-						"dsa.roadTypeID = bsl.roadTypeID AND "+
-						"ds.averageSpeed = bsl.hiScheduleSpeed";
+			sql = "INSERT IGNORE INTO bracketschedulehi ("+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"avgspeedbinid,"+
+						"drivescheduleid,"+
+						"hischedulespeed) "+
+					"select "+
+						"bsl.sourcetypeid,"+
+						"bsl.roadtypeid,"+
+						"bsl.avgspeedbinid,"+
+						"ds.drivescheduleid,"+
+						"bsl.hischedulespeed "+
+					"from "+
+						"bracketschedulehi2 bsl,"+
+						"drivescheduleassoc dsa,"+
+						"driveschedule ds "+
+					"where "+
+						"dsa.drivescheduleid = ds.drivescheduleid and "+
+						"dsa.sourcetypeid = bsl.sourcetypeid and "+
+						"dsa.roadtypeid = bsl.roadtypeid and "+
+						"ds.averagespeed = bsl.hischedulespeed";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE BracketScheduleHi");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE bracketschedulehi");
 
 			// Delete intermediate results for large tables. Normally, intermediate
 			// results are kept when possible for debugging purposes.
-			sql = "TRUNCATE BracketScheduleLo2";
+			sql = "TRUNCATE bracketschedulelo2";
 			SQLRunner.executeSQL(db, sql);
 
 			// Delete intermediate results for potentially large tables. Normally, intermediate
 			// results are kept when possible for debugging purposes.
-			sql = "TRUNCATE BracketScheduleHi2";
+			sql = "TRUNCATE bracketschedulehi2";
 			SQLRunner.executeSQL(db, sql);
 
 		} catch (SQLException e) {
@@ -511,181 +511,181 @@ public class OperatingModeDistributionGenerator extends Generator {
 		String sql = "";
 
 		try {
-			sql = "CREATE TABLE IF NOT EXISTS LoScheduleFraction2 ("+
-					"sourceTypeId       SMALLINT,"+
-					"roadTypeId         SMALLINT,"+
-					"avgSpeedBinID      SMALLINT,"+
-					"loScheduleFraction FLOAT,"+
-					"UNIQUE INDEX XPKLoScheduleFraction2 ("+
-							"sourceTypeID, roadTypeID, avgSpeedBinID))";
+			sql = "CREATE TABLE IF NOT EXISTS loschedulefraction2 ("+
+					"sourcetypeid       smallint,"+
+					"roadtypeid         smallint,"+
+					"avgspeedbinid      smallint,"+
+					"loschedulefraction float,"+
+					"unique index xpkloschedulefraction2 ("+
+							"sourcetypeid, roadtypeid, avgspeedbinid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE LoScheduleFraction2";
+			sql = "TRUNCATE loschedulefraction2";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO LoScheduleFraction2 ("+
-						"sourceTypeId,"+
-						"roadTypeId,"+
-						"avgSpeedBinID,"+
-						"loScheduleFraction) "+
-					"SELECT "+
-						"bsl.sourceTypeId,"+
-						"bsl.roadTypeId,"+
-						"bsl.avgSpeedBinID,"+
-						"(bsh.hiScheduleSpeed - asb.avgBinSpeed) / (bsh.hiScheduleSpeed -"+
-								"bsl.loScheduleSpeed) "+
-					"FROM "+
-						"BracketScheduleLo bsl,"+
-						"BracketScheduleHi bsh,"+
-						"AvgSpeedBin asb "+
-					"WHERE "+
-						"bsl.sourceTypeId = bsh.sourceTypeId AND "+
-						"bsl.roadTypeId = bsh.roadTypeId AND "+
-						"bsl.avgSpeedBinID = bsh.avgSpeedBinID AND "+
-						"bsl.avgSpeedBinID = asb.avgSpeedBinID AND "+
-						"bsh.hiScheduleSpeed <> bsl.loScheduleSpeed";
+			sql = "INSERT INTO loschedulefraction2 ("+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"avgspeedbinid,"+
+						"loschedulefraction) "+
+					"select "+
+						"bsl.sourcetypeid,"+
+						"bsl.roadtypeid,"+
+						"bsl.avgspeedbinid,"+
+						"(bsh.hischedulespeed - asb.avgbinspeed) / (bsh.hischedulespeed -"+
+								"bsl.loschedulespeed) "+
+					"from "+
+						"bracketschedulelo bsl,"+
+						"bracketschedulehi bsh,"+
+						"avgspeedbin asb "+
+					"where "+
+						"bsl.sourcetypeid = bsh.sourcetypeid and "+
+						"bsl.roadtypeid = bsh.roadtypeid and "+
+						"bsl.avgspeedbinid = bsh.avgspeedbinid and "+
+						"bsl.avgspeedbinid = asb.avgspeedbinid and "+
+						"bsh.hischedulespeed <> bsl.loschedulespeed";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE LoScheduleFraction2");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE loschedulefraction2");
 
-			sql = "INSERT INTO LoScheduleFraction2 ("+
-						"sourceTypeId,"+
-						"roadTypeId,"+
-						"avgSpeedBinID,"+
-						"loScheduleFraction) "+
-					"SELECT "+
-						"bsl.sourceTypeId,"+
-						"bsl.roadTypeId,"+
-						"bsl.avgSpeedBinID,"+
+			sql = "INSERT INTO loschedulefraction2 ("+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"avgspeedbinid,"+
+						"loschedulefraction) "+
+					"select "+
+						"bsl.sourcetypeid,"+
+						"bsl.roadtypeid,"+
+						"bsl.avgspeedbinid,"+
 						"1 "+
-					"FROM "+
-						"BracketScheduleLo bsl,"+
-						"BracketScheduleHi bsh "+
-					"WHERE "+
-						"bsl.sourceTypeId = bsh.sourceTypeId AND "+
-						"bsl.roadTypeId = bsh.roadTypeId AND "+
-						"bsl.avgSpeedBinID = bsh.avgSpeedBinID AND "+
-						"bsh.hiScheduleSpeed = bsl.loScheduleSpeed";
+					"from "+
+						"bracketschedulelo bsl,"+
+						"bracketschedulehi bsh "+
+					"where "+
+						"bsl.sourcetypeid = bsh.sourcetypeid and "+
+						"bsl.roadtypeid = bsh.roadtypeid and "+
+						"bsl.avgspeedbinid = bsh.avgspeedbinid and "+
+						"bsh.hischedulespeed = bsl.loschedulespeed";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE LoScheduleFraction2");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE loschedulefraction2");
 
-			sql = "CREATE TABLE IF NOT EXISTS HiScheduleFraction2 ("+
-					"sourceTypeId       SMALLINT,"+
-					"roadTypeId         SMALLINT,"+
-					"avgSpeedBinID      SMALLINT,"+
-					"hiScheduleFraction FLOAT,"+
-					"UNIQUE INDEX XPKHiScheduleFraction2 ("+
-							"sourceTypeID, roadTypeID, avgSpeedBinID))";
+			sql = "CREATE TABLE IF NOT EXISTS hischedulefraction2 ("+
+					"sourcetypeid       smallint,"+
+					"roadtypeid         smallint,"+
+					"avgspeedbinid      smallint,"+
+					"hischedulefraction float,"+
+					"unique index xpkhischedulefraction2 ("+
+							"sourcetypeid, roadtypeid, avgspeedbinid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE HiScheduleFraction2";
+			sql = "TRUNCATE hischedulefraction2";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO HiScheduleFraction2 ("+
-						"sourceTypeId,"+
-						"roadTypeId,"+
-						"avgSpeedBinID,"+
-						"hiScheduleFraction) "+
-					"SELECT "+
-						"bsh.sourceTypeId,"+
-						"bsh.roadTypeId,"+
-						"bsh.avgSpeedBinID,"+
-						"(1 - lsf2.loScheduleFraction) "+
-					"FROM "+
-						"BracketScheduleHi bsh,"+
-						"LoScheduleFraction2 lsf2 "+
-					"WHERE "+
-						"lsf2.sourceTypeId = bsh.sourceTypeId AND "+
-						"lsf2.roadTypeId = bsh.roadTypeId AND "+
-						"lsf2.avgSpeedBinID = bsh.avgSpeedBinID";
+			sql = "INSERT INTO hischedulefraction2 ("+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"avgspeedbinid,"+
+						"hischedulefraction) "+
+					"select "+
+						"bsh.sourcetypeid,"+
+						"bsh.roadtypeid,"+
+						"bsh.avgspeedbinid,"+
+						"(1 - lsf2.loschedulefraction) "+
+					"from "+
+						"bracketschedulehi bsh,"+
+						"loschedulefraction2 lsf2 "+
+					"where "+
+						"lsf2.sourcetypeid = bsh.sourcetypeid and "+
+						"lsf2.roadtypeid = bsh.roadtypeid and "+
+						"lsf2.avgspeedbinid = bsh.avgspeedbinid";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE HiScheduleFraction2");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE hischedulefraction2");
 
-			sql = "CREATE TABLE IF NOT EXISTS LoScheduleFraction ("+
-					"sourceTypeId       SMALLINT,"+
-					"roadTypeId         SMALLINT,"+
-					"avgSpeedBinID      SMALLINT,"+
-					"hourDayID          SMALLINT,"+
-					"loScheduleFraction FLOAT,"+
-					"UNIQUE INDEX XPKLoScheduleFraction ("+
-							"sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID))";
+			sql = "CREATE TABLE IF NOT EXISTS loschedulefraction ("+
+					"sourcetypeid       smallint,"+
+					"roadtypeid         smallint,"+
+					"avgspeedbinid      smallint,"+
+					"hourdayid          smallint,"+
+					"loschedulefraction float,"+
+					"unique index xpkloschedulefraction ("+
+							"sourcetypeid, roadtypeid, avgspeedbinid, hourdayid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE LoScheduleFraction";
+			sql = "TRUNCATE loschedulefraction";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO LoScheduleFraction ("+
-						"sourceTypeId,"+
-						"roadTypeId,"+
-						"avgSpeedBinID,"+
-						"hourDayID,"+
-						"loScheduleFraction) "+
-					"SELECT "+
-						"lsf2.sourceTypeId,"+
-						"lsf2.roadTypeId,"+
-						"lsf2.avgSpeedBinID,"+
-						"asd.hourDayID,"+
-						"lsf2.loScheduleFraction * asd.avgSpeedFraction "+
-					"FROM "+
-						"RunSpecHour rsh,"+
-						"RunSpecDay rsd,"+
-						"HourDay hd,"+
-						"LoScheduleFraction2 lsf2,"+
-						"AvgSpeedDistribution asd "+
-					"WHERE "+
-						"rsh.hourID = hd.hourID AND "+
-						"rsd.dayID = hd.dayID AND "+
-						"hd.hourDayID = asd.hourDayID AND "+
-						"lsf2.sourceTypeId = asd.sourceTypeID AND "+
-						"lsf2.roadTypeId = asd.roadTypeID AND "+
-						"lsf2.avgSpeedBinID = asd.avgSpeedBinID";
+			sql = "INSERT INTO loschedulefraction ("+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"avgspeedbinid,"+
+						"hourdayid,"+
+						"loschedulefraction) "+
+					"select "+
+						"lsf2.sourcetypeid,"+
+						"lsf2.roadtypeid,"+
+						"lsf2.avgspeedbinid,"+
+						"asd.hourdayid,"+
+						"lsf2.loschedulefraction * asd.avgspeedfraction "+
+					"from "+
+						"runspechour rsh,"+
+						"runspecday rsd,"+
+						"hourday hd,"+
+						"loschedulefraction2 lsf2,"+
+						"avgspeeddistribution asd "+
+					"where "+
+						"rsh.hourid = hd.hourid and "+
+						"rsd.dayid = hd.dayid and "+
+						"hd.hourdayid = asd.hourdayid and "+
+						"lsf2.sourcetypeid = asd.sourcetypeid and "+
+						"lsf2.roadtypeid = asd.roadtypeid and "+
+						"lsf2.avgspeedbinid = asd.avgspeedbinid";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE LoScheduleFraction");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE loschedulefraction");
 
-			sql = "CREATE TABLE IF NOT EXISTS HiScheduleFraction ("+
-					"sourceTypeId       SMALLINT,"+
-					"roadTypeId         SMALLINT,"+
-					"avgSpeedBinID      SMALLINT,"+
-					"hourDayID          SMALLINT,"+
-					"hiScheduleFraction FLOAT,"+
-					"UNIQUE INDEX XPKHiScheduleFraction ("+
-							"sourceTypeID, roadTypeID, avgSpeedBinID, hourDayID))";
+			sql = "CREATE TABLE IF NOT EXISTS hischedulefraction ("+
+					"sourcetypeid       smallint,"+
+					"roadtypeid         smallint,"+
+					"avgspeedbinid      smallint,"+
+					"hourdayid          smallint,"+
+					"hischedulefraction float,"+
+					"unique index xpkhischedulefraction ("+
+							"sourcetypeid, roadtypeid, avgspeedbinid, hourdayid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE HiScheduleFraction";
+			sql = "TRUNCATE hischedulefraction";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO HiScheduleFraction ("+
-						"sourceTypeId,"+
-						"roadTypeId,"+
-						"avgSpeedBinID,"+
-						"hourDayID,"+
-						"hiScheduleFraction) "+
-					"SELECT "+
-						"hsf2.sourceTypeId,"+
-						"hsf2.roadTypeId,"+
-						"hsf2.avgSpeedBinID,"+
-						"asd.hourDayID,"+
-						"hsf2.hiScheduleFraction * asd.avgSpeedFraction "+
-					"FROM "+
-						"RunSpecHour rsh,"+
-						"RunSpecDay rsd,"+
-						"HourDay hd,"+
-						"HiScheduleFraction2 hsf2,"+
-						"AvgSpeedDistribution asd "+
-					"WHERE "+
-						"rsh.hourID = hd.hourID AND "+
-						"rsd.dayID = hd.dayID AND "+
-						"hd.hourDayID = asd.hourDayID AND "+
-						"hsf2.sourceTypeId = asd.sourceTypeID AND "+
-						"hsf2.roadTypeId = asd.roadTypeID AND "+
-						"hsf2.avgSpeedBinID = asd.avgSpeedBinID";
+			sql = "insert into hischedulefraction ("+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"avgspeedbinid,"+
+						"hourdayid,"+
+						"hischedulefraction) "+
+					"select "+
+						"hsf2.sourcetypeid,"+
+						"hsf2.roadtypeid,"+
+						"hsf2.avgspeedbinid,"+
+						"asd.hourdayid,"+
+						"hsf2.hischedulefraction * asd.avgspeedfraction "+
+					"from "+
+						"runspechour rsh,"+
+						"runspecday rsd,"+
+						"hourday hd,"+
+						"hischedulefraction2 hsf2,"+
+						"avgspeeddistribution asd "+
+					"where "+
+						"rsh.hourid = hd.hourid and "+
+						"rsd.dayid = hd.dayid and "+
+						"hd.hourdayid = asd.hourdayid and "+
+						"hsf2.sourcetypeid = asd.sourcetypeid and "+
+						"hsf2.roadtypeid = asd.roadtypeid and "+
+						"hsf2.avgspeedbinid = asd.avgspeedbinid";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE HiScheduleFraction");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE hischedulefraction");
 		} catch (SQLException e) {
 			Logger.logSqlError(e,"Could not determine fraction of drive schedules in each "
 					+ "speed bin.", sql);
@@ -704,12 +704,12 @@ public class OperatingModeDistributionGenerator extends Generator {
 		int lastRoadType = -1;
 		int lastDriveScheduleID = -1;
 		try {
-			sql = "SELECT DISTINCT dsa.SourceTypeID, dsa.RoadTypeID "
-					+ " FROM DriveScheduleAssoc dsa, RunSpecRoadType rsrt, "
-					+ " RunSpecSourceType rsst "
-					+ " WHERE dsa.roadTypeID = rsrt.roadTypeID"
-					+ " AND dsa.sourceTypeID = rsst.sourceTypeID"
-					+ " ORDER BY dsa.SourceTypeID, dsa.RoadTypeID";
+			sql = "SELECT DISTINCT dsa.sourcetypeid, dsa.roadtypeid "
+					+ " from drivescheduleassoc dsa, runspecroadtype rsrt, "
+					+ " runspecsourcetype rsst "
+					+ " where dsa.roadtypeid = rsrt.roadtypeid"
+					+ " and dsa.sourcetypeid = rsst.sourcetypeid"
+					+ " order by dsa.sourcetypeid, dsa.roadtypeid";
 			statement = db.prepareStatement(sql);
 			result = SQLRunner.executeQuery(statement, sql);
 			lastSourceType = -1;
@@ -764,200 +764,200 @@ public class OperatingModeDistributionGenerator extends Generator {
 		String sql = "";
 
 		try {
-			sql = "CREATE TABLE IF NOT EXISTS DriveScheduleFractionLo ("+
-					"sourceTypeID          SMALLINT,"+
-					"roadTypeID            SMALLINT,"+
-					"hourDayID             SMALLINT,"+
-					"driveScheduleID       SMALLINT,"+
-					"driveScheduleFraction FLOAT,"+
-					"UNIQUE INDEX XPKDriveScheduleFractionLo ("+
-							"sourceTypeID, roadTypeID, hourDayID, driveScheduleID))";
+			sql = "CREATE TABLE IF NOT EXISTS driveschedulefractionlo ("+
+					"sourcetypeid          smallint,"+
+					"roadtypeid            smallint,"+
+					"hourdayid             smallint,"+
+					"drivescheduleid       smallint,"+
+					"driveschedulefraction float,"+
+					"unique index xpkdriveschedulefractionlo ("+
+							"sourcetypeid, roadtypeid, hourdayid, drivescheduleid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE DriveScheduleFractionLo";
+			sql = "TRUNCATE driveschedulefractionlo";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO DriveScheduleFractionLo ("+
-						"sourceTypeID,"+
-						"roadTypeID,"+
-						"hourDayID,"+
-						"driveScheduleID,"+
-						"driveScheduleFraction) "+
-					"SELECT "+
-						"bsl.sourceTypeID,"+
-						"bsl.roadTypeID,"+
-						"lsf.hourDayID,"+
-						"bsl.driveScheduleID,"+
-						"SUM(lsf.loScheduleFraction) "+
-					"FROM "+
-						"BracketScheduleLo bsl,"+
-						"LoScheduleFraction lsf "+
-					"WHERE "+
-						"bsl.sourceTypeid = lsf.sourceTypeID AND "+
-						"bsl.roadTypeID = lsf.roadTypeID AND "+
-						"bsl.avgSpeedBinID = lsf.avgSpeedBinID "+
-					"GROUP BY "+
-						"bsl.sourceTypeId,"+
-						"bsl.roadTypeId,"+
-						"lsf.hourDayId,"+
-						"bsl.driveScheduleId";
+			sql = "INSERT INTO driveschedulefractionlo ("+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"hourdayid,"+
+						"drivescheduleid,"+
+						"driveschedulefraction) "+
+					"select "+
+						"bsl.sourcetypeid,"+
+						"bsl.roadtypeid,"+
+						"lsf.hourdayid,"+
+						"bsl.drivescheduleid,"+
+						"sum(lsf.loschedulefraction) "+
+					"from "+
+						"bracketschedulelo bsl,"+
+						"loschedulefraction lsf "+
+					"where "+
+						"bsl.sourcetypeid = lsf.sourcetypeid and "+
+						"bsl.roadtypeid = lsf.roadtypeid and "+
+						"bsl.avgspeedbinid = lsf.avgspeedbinid "+
+					"group by "+
+						"bsl.sourcetypeid,"+
+						"bsl.roadtypeid,"+
+						"lsf.hourdayid,"+
+						"bsl.drivescheduleid";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE DriveScheduleFractionLo");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE driveschedulefractionlo");
 
-			sql = "CREATE TABLE IF NOT EXISTS DriveScheduleFractionHi ( "+
-					"sourceTypeID          SMALLINT, "+
-					"roadTypeID            SMALLINT, "+
-					"hourDayID             SMALLINT, "+
-					"driveScheduleID       SMALLINT, "+
-					"driveScheduleFraction FLOAT, "+
-					"UNIQUE INDEX XPKDriveScheduleFractionHi ( "+
-					"sourceTypeID, roadTypeID, hourDayID, driveScheduleID))";
+			sql = "CREATE TABLE IF NOT EXISTS driveschedulefractionhi ( "+
+					"sourcetypeid          smallint, "+
+					"roadtypeid            smallint, "+
+					"hourdayid             smallint, "+
+					"drivescheduleid       smallint, "+
+					"driveschedulefraction float, "+
+					"unique index xpkdriveschedulefractionhi ( "+
+					"sourcetypeid, roadtypeid, hourdayid, drivescheduleid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE DriveScheduleFractionHi";
+			sql = "TRUNCATE driveschedulefractionhi";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO DriveScheduleFractionHi ( "+
-						"sourceTypeID, "+
-						"roadTypeID, "+
-						"hourDayID, "+
-						"driveScheduleID, "+
-						"driveScheduleFraction) "+
-					"SELECT "+
-						"bsh.sourceTypeID, "+
-						"bsh.roadTypeID, "+
-						"hsf.hourDayID, "+
-						"bsh.driveScheduleID, "+
-						"SUM(hsf.hiScheduleFraction) "+
-					"FROM "+
-						"BracketScheduleHi bsh, "+
-						"HiScheduleFraction hsf "+
-					"WHERE "+
-						"bsh.sourceTypeid = hsf.sourceTypeID AND "+
-						"bsh.roadTypeID = hsf.roadTypeID AND "+
-						"bsh.avgSpeedBinID = hsf.avgSpeedBinID "+
-					"GROUP BY "+
-						"bsh.sourceTypeId, "+
-						"bsh.roadTypeId, "+
-						"hsf.hourDayId, "+
-						"bsh.driveScheduleId";
+			sql = "INSERT INTO driveschedulefractionhi ( "+
+						"sourcetypeid, "+
+						"roadtypeid, "+
+						"hourdayid, "+
+						"drivescheduleid, "+
+						"driveschedulefraction) "+
+					"select "+
+						"bsh.sourcetypeid, "+
+						"bsh.roadtypeid, "+
+						"hsf.hourdayid, "+
+						"bsh.drivescheduleid, "+
+						"sum(hsf.hischedulefraction) "+
+					"from "+
+						"bracketschedulehi bsh, "+
+						"hischedulefraction hsf "+
+					"where "+
+						"bsh.sourcetypeid = hsf.sourcetypeid and "+
+						"bsh.roadtypeid = hsf.roadtypeid and "+
+						"bsh.avgspeedbinid = hsf.avgspeedbinid "+
+					"group by "+
+						"bsh.sourcetypeid, "+
+						"bsh.roadtypeid, "+
+						"hsf.hourdayid, "+
+						"bsh.drivescheduleid";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE DriveScheduleFractionHi");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE driveschedulefractionhi");
 
-			sql = "CREATE TABLE IF NOT EXISTS DriveScheduleFraction ("+
-					"sourceTypeID          SMALLINT,"+
-					"roadTypeID            SMALLINT,"+
-					"hourDayID             SMALLINT,"+
-					"driveScheduleID       SMALLINT,"+
-					"driveScheduleFraction FLOAT,"+
-					"UNIQUE INDEX XPKDriveScheduleFraction ("+
-							"sourceTypeID, roadTypeID, hourDayID, driveScheduleID))";
+			sql = "CREATE TABLE IF NOT EXISTS driveschedulefraction ("+
+					"sourcetypeid          smallint,"+
+					"roadtypeid            smallint,"+
+					"hourdayid             smallint,"+
+					"drivescheduleid       smallint,"+
+					"driveschedulefraction float,"+
+					"unique index xpkdriveschedulefraction ("+
+							"sourcetypeid, roadtypeid, hourdayid, drivescheduleid))";
 			SQLRunner.executeSQL(db, sql);
 			// changed to INSERT IGNORE to work with MySQL 4, 
 			// because DriveScheduleFractionLo and Hi tables have multiple speed bins
-			sql = "INSERT IGNORE INTO DriveScheduleFraction ( "+
-						"sourceTypeID, "+
-						"roadTypeID, "+
-						"hourDayID, "+
-						"driveScheduleID, "+
-						"driveScheduleFraction) "+
-					"SELECT  "+
-						"bsh.sourceTypeID, "+
-						"bsh.roadTypeID, "+
-						"dsfh.hourDayID, "+
-						"bsh.driveScheduleID, "+
-						"(dsfl.driveScheduleFraction + dsfh.driveScheduleFraction) "+
-					"FROM  "+
-						"BracketScheduleHi bsh, "+
-						"DriveScheduleFractionLo dsfl, "+
-						"DriveScheduleFractionHi dsfh, "+
-						"RoadType rt, "+
-						"DriveScheduleAssoc dsa "+
-					"WHERE  "+
-						"bsh.sourceTypeID = dsfl.sourceTypeID AND "+
-						"bsh.roadTypeID = dsfl.roadTypeID AND  "+
-						"rt.roadTypeID = dsa.roadTypeID AND  "+
-						"bsh.driveScheduleID = dsfl.driveScheduleID AND  "+
-						"bsh.driveScheduleID = dsa.driveScheduleID AND "+
-						"bsh.sourceTypeID = dsfh.sourceTypeID AND "+
-						"bsh.roadTypeID = dsfh.roadTypeID AND  "+
-						"bsh.driveScheduleID = dsfh.driveScheduleID AND "+ 
-						"bsh.sourceTypeID = dsa.sourceTypeID AND "+
-						"bsh.roadTypeID = dsa.roadTypeID AND "+
-						"bsh.roadTypeID = rt.roadTypeID AND "+
-						"dsfl.hourDayID = dsfh.hourDayID";
+			sql = "INSERT IGNORE INTO driveschedulefraction ( "+
+						"sourcetypeid, "+
+						"roadtypeid, "+
+						"hourdayid, "+
+						"drivescheduleid, "+
+						"driveschedulefraction) "+
+					"select  "+
+						"bsh.sourcetypeid, "+
+						"bsh.roadtypeid, "+
+						"dsfh.hourdayid, "+
+						"bsh.drivescheduleid, "+
+						"(dsfl.driveschedulefraction + dsfh.driveschedulefraction) "+
+					"from  "+
+						"bracketschedulehi bsh, "+
+						"driveschedulefractionlo dsfl, "+
+						"driveschedulefractionhi dsfh, "+
+						"roadtype rt, "+
+						"drivescheduleassoc dsa "+
+					"where  "+
+						"bsh.sourcetypeid = dsfl.sourcetypeid and "+
+						"bsh.roadtypeid = dsfl.roadtypeid and  "+
+						"rt.roadtypeid = dsa.roadtypeid and  "+
+						"bsh.drivescheduleid = dsfl.drivescheduleid and  "+
+						"bsh.drivescheduleid = dsa.drivescheduleid and "+
+						"bsh.sourcetypeid = dsfh.sourcetypeid and "+
+						"bsh.roadtypeid = dsfh.roadtypeid and  "+
+						"bsh.drivescheduleid = dsfh.drivescheduleid and "+ 
+						"bsh.sourcetypeid = dsa.sourcetypeid and "+
+						"bsh.roadtypeid = dsa.roadtypeid and "+
+						"bsh.roadtypeid = rt.roadtypeid and "+
+						"dsfl.hourdayid = dsfh.hourdayid";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE DriveScheduleFraction");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE driveschedulefraction");
 
-			sql = "INSERT IGNORE INTO DriveScheduleFraction ( "+
-						"sourceTypeID, "+
-						"roadTypeID, "+
-						"hourDayID, "+
-						"driveScheduleID, "+
-						"driveScheduleFraction) "+
-					"SELECT  "+
-						"bsl.sourceTypeID, "+
-						"bsl.roadTypeID, "+
-						"dsfl.hourDayID, "+
-						"bsl.driveScheduleID, "+
-						"dsfl.driveScheduleFraction "+
-					"FROM  "+
-						"BracketScheduleLo bsl, "+
-						"DriveScheduleFractionLo dsfl, "+
-						"RoadType rt, "+
-						"DriveScheduleAssoc dsa "+
-					"WHERE  "+
-						"bsl.sourceTypeID = dsfl.sourceTypeID AND "+
-						"bsl.roadTypeID = dsfl.roadTypeID AND  "+
-						"bsl.roadTypeID = rt.roadTypeID AND "+
-						"bsl.roadTypeID = dsa.roadTypeID AND "+
-						"bsl.driveScheduleID = dsa.driveScheduleID AND "+
-						"rt.roadTypeID = dsa.roadTypeID AND  "+
-						"bsl.driveScheduleID = dsfl.driveScheduleID AND "+
-						"bsl.driveScheduleID = dsa.driveScheduleID ";
+			sql = "INSERT IGNORE INTO driveschedulefraction ( "+
+						"sourcetypeid, "+
+						"roadtypeid, "+
+						"hourdayid, "+
+						"drivescheduleid, "+
+						"driveschedulefraction) "+
+					"select  "+
+						"bsl.sourcetypeid, "+
+						"bsl.roadtypeid, "+
+						"dsfl.hourdayid, "+
+						"bsl.drivescheduleid, "+
+						"dsfl.driveschedulefraction "+
+					"from  "+
+						"bracketschedulelo bsl, "+
+						"driveschedulefractionlo dsfl, "+
+						"roadtype rt, "+
+						"drivescheduleassoc dsa "+
+					"where  "+
+						"bsl.sourcetypeid = dsfl.sourcetypeid and "+
+						"bsl.roadtypeid = dsfl.roadtypeid and  "+
+						"bsl.roadtypeid = rt.roadtypeid and "+
+						"bsl.roadtypeid = dsa.roadtypeid and "+
+						"bsl.drivescheduleid = dsa.drivescheduleid and "+
+						"rt.roadtypeid = dsa.roadtypeid and  "+
+						"bsl.drivescheduleid = dsfl.drivescheduleid and "+
+						"bsl.drivescheduleid = dsa.drivescheduleid ";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE DriveScheduleFraction");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE driveschedulefraction");
 
-			sql = "INSERT IGNORE INTO DriveScheduleFraction ( "+
-						"sourceTypeID, "+
-						"roadTypeID, "+
-						"hourDayID, "+
-						"driveScheduleID, "+
-						"driveScheduleFraction) "+
-					"SELECT  "+
-						"bsh.sourceTypeID, "+
-						"bsh.roadTypeID, "+
-						"dsfh.hourDayID, "+
-						"bsh.driveScheduleID, "+
-						"dsfh.driveScheduleFraction "+
-					"FROM  "+
-						"BracketScheduleHi bsh, "+
-						"DriveScheduleFractionHi dsfh, "+
-						"RoadType rt, "+
-						"DriveScheduleAssoc dsa "+
-					"WHERE  "+
-						"bsh.sourceTypeID = dsfh.sourceTypeID AND "+
-						"bsh.roadTypeID = dsfh.roadTypeID AND "+
-						"bsh.roadTypeID = rt.roadTypeID AND "+
-						"bsh.roadTypeID = dsa.roadTypeID AND "+
-						"rt.roadTypeID = dsa.roadTypeID AND  "+
-						"bsh.sourceTypeID = dsa.SourceTypeID AND "+
-						"bsh.driveScheduleID = dsfh.driveScheduleID AND "+
-						"bsh.driveScheduleID = dsa.driveScheduleID ";
+			sql = "INSERT IGNORE INTO driveschedulefraction ( "+
+						"sourcetypeid, "+
+						"roadtypeid, "+
+						"hourdayid, "+
+						"drivescheduleid, "+
+						"driveschedulefraction) "+
+					"select  "+
+						"bsh.sourcetypeid, "+
+						"bsh.roadtypeid, "+
+						"dsfh.hourdayid, "+
+						"bsh.drivescheduleid, "+
+						"dsfh.driveschedulefraction "+
+					"from  "+
+						"bracketschedulehi bsh, "+
+						"driveschedulefractionhi dsfh, "+
+						"roadtype rt, "+
+						"drivescheduleassoc dsa "+
+					"where  "+
+						"bsh.sourcetypeid = dsfh.sourcetypeid and "+
+						"bsh.roadtypeid = dsfh.roadtypeid and "+
+						"bsh.roadtypeid = rt.roadtypeid and "+
+						"bsh.roadtypeid = dsa.roadtypeid and "+
+						"rt.roadtypeid = dsa.roadtypeid and  "+
+						"bsh.sourcetypeid = dsa.sourcetypeid and "+
+						"bsh.drivescheduleid = dsfh.drivescheduleid and "+
+						"bsh.drivescheduleid = dsa.drivescheduleid ";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "insert ignore into DriveScheduleFraction (sourceTypeID, roadTypeID, hourDayID, driveScheduleID, driveScheduleFraction)"
-					+ " select tempSourceTypeID, roadTypeID, hourDayID, driveScheduleID, driveScheduleFraction"
-					+ " from DriveScheduleFraction"
-					+ " inner join sourceUseTypePhysicsMapping on (realSourceTypeID=sourceTypeID)"
-					+ " where tempSourceTypeID <> realSourceTypeID";
+			sql = "insert ignore into driveschedulefraction (sourcetypeid, roadtypeid, hourdayid, drivescheduleid, driveschedulefraction)"
+					+ " select tempsourcetypeid, roadtypeid, hourdayid, drivescheduleid, driveschedulefraction"
+					+ " from driveschedulefraction"
+					+ " inner join sourceusetypephysicsmapping on (realsourcetypeid=sourcetypeid)"
+					+ " where tempsourcetypeid <> realsourcetypeid";
 			SQLRunner.executeSQL(db,sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE DriveScheduleFraction");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE driveschedulefraction");
 		} catch(SQLException e) {
 			Logger.logSqlError(e,"Could not determine the distribution of drive schedules for "
 					+ "non ramp drive cycle.", sql);
@@ -975,155 +975,155 @@ public class OperatingModeDistributionGenerator extends Generator {
 		String sql="";
 
 		try {
-			sql = "CREATE TABLE IF NOT EXISTS SourceTypeDriveSchedule ("+
-					"sourceTypeID     SMALLINT,"+
-					"driveScheduleID  SMALLINT,"+
-					"UNIQUE INDEX XPKSourceTypeDriveSchedule ("+
-							"sourceTypeID, driveScheduleID))";
+			sql = "CREATE TABLE IF NOT EXISTS sourcetypedriveschedule ("+
+					"sourcetypeid     smallint,"+
+					"drivescheduleid  smallint,"+
+					"unique index xpksourcetypedriveschedule ("+
+							"sourcetypeid, drivescheduleid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE SourceTypeDriveSchedule";
+			sql = "TRUNCATE sourcetypedriveschedule";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO SourceTypeDriveSchedule ("+
-						"sourceTypeID,"+
-						"driveScheduleID) "+
-					"SELECT "+
-						"dsf.sourceTypeID,"+
-						"dsf.driveScheduleID "+
-					"FROM "+
-						"DriveScheduleFraction dsf "+
-					"GROUP BY "+
-						"dsf.sourceTypeID,"+
-						"dsf.driveScheduleID "+
-					"HAVING "+
-						"SUM(dsf.driveScheduleFraction) <> 0";
+			sql = "INSERT INTO sourcetypedriveschedule ("+
+						"sourcetypeid,"+
+						"drivescheduleid) "+
+					"select "+
+						"dsf.sourcetypeid,"+
+						"dsf.drivescheduleid "+
+					"from "+
+						"driveschedulefraction dsf "+
+					"group by "+
+						"dsf.sourcetypeid,"+
+						"dsf.drivescheduleid "+
+					"having "+
+						"sum(dsf.driveschedulefraction) <> 0";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "insert ignore into SourceTypeDriveSchedule ( sourceTypeID, driveScheduleID)"
-					+ " select tempSourceTypeID, driveScheduleID"
-					+ " from SourceTypeDriveSchedule"
-					+ " inner join sourceUseTypePhysicsMapping on (realSourceTypeID=sourceTypeID)"
-					+ " where tempSourceTypeID <> realSourceTypeID";
+			sql = "insert ignore into sourcetypedriveschedule ( sourcetypeid, drivescheduleid)"
+					+ " select tempsourcetypeid, drivescheduleid"
+					+ " from sourcetypedriveschedule"
+					+ " inner join sourceusetypephysicsmapping on (realsourcetypeid=sourcetypeid)"
+					+ " where tempsourcetypeid <> realsourcetypeid";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE SourceTypeDriveSchedule");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE sourcetypedriveschedule");
 
-			sql = "CREATE TABLE IF NOT EXISTS DriveScheduleFirstSecond ("+
-					"driveScheduleID	SMALLINT,"+
-					"second			SMALLINT,"+
-					"UNIQUE INDEX XPKDriveScheduleFirstSecond ("+
-							"driveScheduleID))";
+			sql = "CREATE TABLE IF NOT EXISTS driveschedulefirstsecond ("+
+					"drivescheduleid	smallint,"+
+					"second			smallint,"+
+					"unique index xpkdriveschedulefirstsecond ("+
+							"drivescheduleid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE DriveScheduleFirstSecond";
+			sql = "TRUNCATE driveschedulefirstsecond";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO DriveScheduleFirstSecond ("+
-						"driveScheduleID,"+
+			sql = "INSERT INTO driveschedulefirstsecond ("+
+						"drivescheduleid,"+
 						"second) "+
-					"SELECT "+
-						"dss.driveScheduleID,"+
-						"MIN(dss.second) "+
-					"FROM "+
-						"DriveScheduleSecond dss "+
-					"GROUP BY "+
-						"dss.driveScheduleID";
+					"select "+
+						"dss.drivescheduleid,"+
+						"min(dss.second) "+
+					"from "+
+						"driveschedulesecond dss "+
+					"group by "+
+						"dss.drivescheduleid";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE DriveScheduleFirstSecond");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE driveschedulefirstsecond");
 
-			sql = "CREATE TABLE IF NOT EXISTS DriveScheduleSecond2 ("+
-					"driveScheduleID SMALLINT,"+
-					"second          SMALLINT,"+
-					"speed           FLOAT,"+
-					"acceleration    FLOAT,"+
-					"UNIQUE INDEX XPKDriveScheduleSecond2 ("+
-							"driveScheduleID, second))";
+			sql = "CREATE TABLE IF NOT EXISTS driveschedulesecond2 ("+
+					"drivescheduleid smallint,"+
+					"second          smallint,"+
+					"speed           float,"+
+					"acceleration    float,"+
+					"unique index xpkdriveschedulesecond2 ("+
+							"drivescheduleid, second))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE DriveScheduleSecond2";
+			sql = "TRUNCATE driveschedulesecond2";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO DriveScheduleSecond2 ("+
-						"driveScheduleID,"+
+			sql = "INSERT INTO driveschedulesecond2 ("+
+						"drivescheduleid,"+
 						"second,"+
 						"speed,"+
 						"acceleration) "+
-					"SELECT "+
-						"dsfs.driveScheduleID,"+
+					"select "+
+						"dsfs.drivescheduleid,"+
 						"dsfs.second,"+
 						"dss.speed * 0.44704,"+
 						"0 "+
-					"FROM "+
-						"DriveScheduleFirstSecond dsfs,"+
-						"DriveScheduleSecond dss "+
-					"WHERE "+
-						"dsfs.driveScheduleID = dss.driveScheduleID AND "+
+					"from "+
+						"driveschedulefirstsecond dsfs,"+
+						"driveschedulesecond dss "+
+					"where "+
+						"dsfs.drivescheduleid = dss.drivescheduleid and "+
 						"dsfs.second = dss.second";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE DriveScheduleSecond2");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE driveschedulesecond2");
 
-			sql = "INSERT INTO DriveScheduleSecond2 ("+
-						"driveScheduleID,"+
+			sql = "INSERT INTO driveschedulesecond2 ("+
+						"drivescheduleid,"+
 						"second,"+
 						"speed,"+
 						"acceleration) "+
-					"SELECT "+
-						"dss.driveScheduleID,"+
+					"select "+
+						"dss.drivescheduleid,"+
 						"dss.second,"+
 						"dss.speed * 0.44704,"+
 						"(dss.speed - dss2.speed) * 0.44704 "+
-					"FROM "+
-						"DriveScheduleSecond dss,"+
-						"DriveScheduleSecond dss2 "+
-					"WHERE "+
-						"dss.driveScheduleID = dss2.driveScheduleID AND "+
+					"from "+
+						"driveschedulesecond dss,"+
+						"driveschedulesecond dss2 "+
+					"where "+
+						"dss.drivescheduleid = dss2.drivescheduleid and "+
 						"dss2.second = dss.second - 1";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE DriveScheduleSecond2");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE driveschedulesecond2");
 
-			sql = "CREATE TABLE IF NOT EXISTS VSP ("+
-					"sourceTypeID    SMALLINT,"+
-					"driveScheduleID SMALLINT,"+
-					"second          SMALLINT,"+
-					"VSP             FLOAT,"+
-					"UNIQUE INDEX XPKESP ("+
-							"sourceTypeID, driveScheduleID, second))";
+			sql = "CREATE TABLE IF NOT EXISTS vsp ("+
+					"sourcetypeid    smallint,"+
+					"drivescheduleid smallint,"+
+					"second          smallint,"+
+					"vsp             float,"+
+					"unique index xpkesp ("+
+							"sourcetypeid, drivescheduleid, second))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE VSP";
+			sql = "TRUNCATE vsp";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO VSP ("+
-						"sourceTypeID,"+
-						"driveScheduleID,"+
+			sql = "INSERT INTO vsp ("+
+						"sourcetypeid,"+
+						"drivescheduleid,"+
 						"second,"+
-						"VSP) "+
-					"SELECT "+
-						"stds.sourceTypeID,"+
-						"stds.driveScheduleID,"+
+						"vsp) "+
+					"select "+
+						"stds.sourcetypeid,"+
+						"stds.drivescheduleid,"+
 						"dss2.second,"+
-						"(sut.rollingTermA * dss2.speed +"+
-								"sut.rotatingTermB * POW(dss2.speed,2) + "+
-								"sut.dragTermC * POW(dss2.speed,3) + "+
-								"sut.sourceMass * dss2.speed * "+
-									// old line -  "dss2.acceleration) / sut.sourceMass "+
-								"dss2.acceleration) / sut.fixedMassFactor "+
-					"FROM "+				
-						"SourceTypeDriveSchedule stds,"+
-						"DriveScheduleSecond2 dss2,"+
-						"sourceUseTypePhysicsMapping sut "+
-					"WHERE "+
-						"dss2.driveScheduleID = stds.driveScheduleID AND "+
-						"sut.tempSourceTypeID = stds.sourceTypeID AND "+
-						"sut.sourceMass <> 0 AND "+
+						"(sut.rollingterma * dss2.speed +"+
+								"sut.rotatingtermb * pow(dss2.speed,2) + "+
+								"sut.dragtermc * pow(dss2.speed,3) + "+
+								"sut.sourcemass * dss2.speed * "+
+									// old line -  "dss2.acceleration) / sut.sourcemass "+
+								"dss2.acceleration) / sut.fixedmassfactor "+
+					"from "+				
+						"sourcetypedriveschedule stds,"+
+						"driveschedulesecond2 dss2,"+
+						"sourceusetypephysicsmapping sut "+
+					"where "+
+						"dss2.drivescheduleid = stds.drivescheduleid and "+
+						"sut.tempsourcetypeid = stds.sourcetypeid and "+
+						"sut.sourcemass <> 0 and "+
 						"dss2.second > 0";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE VSP");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE vsp");
 		} catch (SQLException e) {
 			Logger.logSqlError(e,"Could not calculate Engine Power Distribution.",sql);
 		}
@@ -1139,53 +1139,53 @@ public class OperatingModeDistributionGenerator extends Generator {
 		String sql = "";
 		PreparedStatement statement = null;
 		try {
-			sql = "CREATE TABLE IF NOT EXISTS DriveScheduleSecond3 ("+
-					"driveScheduleID SMALLINT,"+
-					"second          SMALLINT,"+
-					"speed           FLOAT,"+
-					"acceleration    FLOAT,"+
-					"UNIQUE INDEX XPKDriveScheduleSecond3 ("+
-							"driveScheduleID, second))";
+			sql = "CREATE TABLE IF NOT EXISTS driveschedulesecond3 ("+
+					"drivescheduleid smallint,"+
+					"second          smallint,"+
+					"speed           float,"+
+					"acceleration    float,"+
+					"unique index xpkdriveschedulesecond3 ("+
+							"drivescheduleid, second))";
 			SQLRunner.executeSQL(db, sql);
 			//System.out.println("######## Creating Drive Schedule Second 3 ##########");
 
-			sql = "TRUNCATE DriveScheduleSecond3";
+			sql = "TRUNCATE driveschedulesecond3";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO DriveScheduleSecond3 ("+
-						"driveScheduleID,"+
+			sql = "INSERT INTO driveschedulesecond3 ("+
+						"drivescheduleid,"+
 						"second,"+
 						"speed,"+
 						"acceleration) "+
-					"SELECT "+
-						"dss.driveScheduleID,"+
+					"select "+
+						"dss.drivescheduleid,"+
 						"dss.second,"+
 						"dss.speed,"+
 						"dss.speed - dss2.speed "+
-					"FROM "+
-						"DriveScheduleSecond dss,"+
-						"DriveScheduleSecond dss2 "+
-					"WHERE "+
-						"dss.driveScheduleID = dss2.driveScheduleID AND "+
+					"from "+
+						"driveschedulesecond dss,"+
+						"driveschedulesecond dss2 "+
+					"where "+
+						"dss.drivescheduleid = dss2.drivescheduleid and "+
 						"dss2.second = dss.second - 1";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE DriveScheduleSecond3");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE driveschedulesecond3");
 
-			sql = "CREATE TABLE IF NOT EXISTS OpModeIDBySecond ("+
-					"sourceTypeID    SMALLINT,"+
-					"driveScheduleID SMALLINT,"+
-					"second          SMALLINT,"+
-					"opModeID        SMALLINT,"+
-					"polProcessID    INT,"+
-					"speed           FLOAT,"+
-					"acceleration    FLOAT,"+
-					"VSP             FLOAT,"+
-					"UNIQUE INDEX XPKOpModeIDBySecond ("+
-							"sourceTypeID, driveScheduleID, second, polProcessID))";
+			sql = "CREATE TABLE IF NOT EXISTS opmodeidbysecond ("+
+					"sourcetypeid    smallint,"+
+					"drivescheduleid smallint,"+
+					"second          smallint,"+
+					"opmodeid        smallint,"+
+					"polprocessid    int,"+
+					"speed           float,"+
+					"acceleration    float,"+
+					"vsp             float,"+
+					"unique index xpkopmodeidbysecond ("+
+							"sourcetypeid, drivescheduleid, second, polprocessid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE OpModeIDBySecond";
+			sql = "TRUNCATE opmodeidbysecond";
 			SQLRunner.executeSQL(db, sql);
 /*
 			sql = "INSERT INTO OpModeIDBySecond ("+
@@ -1213,14 +1213,14 @@ public class OperatingModeDistributionGenerator extends Generator {
 						"dss.driveScheduleID = v.driveScheduleID AND "+
 						"dss.second = v.second";
 */
-			sql = "CREATE TABLE OMDGPollutantProcess ("
-					+ " polProcessID int not null,"
-					+ " unique index PKXOMDGPollutantProcess (polProcessID) )";
+			sql = "create table omdgpollutantprocess ("
+					+ " polprocessid int not null,"
+					+ " unique index pkxomdgpollutantprocess (polprocessid) )";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO OMDGPollutantProcess (polProcessID)"
-					+ " SELECT DISTINCT polProcessID"
-					+ " FROM OpModePolProcAssoc"; // RunSpecPollutantProcess
+			sql = "INSERT INTO omdgpollutantprocess (polprocessid)"
+					+ " select distinct polprocessid"
+					+ " from opmodepolprocassoc"; // RunSpecPollutantProcess
 			SQLRunner.executeSQL(db, sql);
 
 			// Note: We cannot remove anything that already has an operating mode distribution
@@ -1228,123 +1228,123 @@ public class OperatingModeDistributionGenerator extends Generator {
 
 			// Remove anything from OMDGPollutantProcess that has a representing pollutant/process.  Only
 			// its representing item should be calculated.
-			sql = "delete from OMDGPollutantProcess"
-					+ " using OMDGPollutantProcess"
-					+ " inner join OMDGPolProcessRepresented on (OMDGPollutantProcess.polProcessID = OMDGPolProcessRepresented.polProcessID)";
+			sql = "delete from omdgpollutantprocess"
+					+ " using omdgpollutantprocess"
+					+ " inner join omdgpolprocessrepresented on (omdgpollutantprocess.polprocessid = omdgpolprocessrepresented.polprocessid)";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE OMDGPollutantProcess");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE omdgpollutantprocess");
 
-			sql = "CREATE TABLE IF NOT EXISTS OpModePolProcAssocTrimmed ("
-					+ " 	polProcessID int NOT NULL DEFAULT '0',"
-					+ " 	opModeID smallint(6) NOT NULL DEFAULT '0',"
-					+ " 	PRIMARY KEY (opModeID,polProcessID),"
-					+ " 	KEY (polProcessID),"
-					+ " 	KEY (opModeID),"
-					+ " 	KEY (opModeID,polProcessID)"
+			sql = "CREATE TABLE IF NOT EXISTS opmodepolprocassoctrimmed ("
+					+ " 	polprocessid int not null default '0',"
+					+ " 	opmodeid smallint(6) not null default '0',"
+					+ " 	primary key (opmodeid,polprocessid),"
+					+ " 	key (polprocessid),"
+					+ " 	key (opmodeid),"
+					+ " 	key (opmodeid,polprocessid)"
 					+ " )";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "truncate OpModePolProcAssocTrimmed";
+			sql = "truncate opmodepolprocassoctrimmed";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "insert into OpModePolProcAssocTrimmed (polProcessID, opModeID)"
-					+ " select omp.polProcessID, omp.opModeID"
-					+ " from OpModePolProcAssoc omp"
-					+ " inner join OMDGPollutantProcess pp on pp.polProcessID=omp.polProcessID";
+			sql = "insert into opmodepolprocassoctrimmed (polprocessid, opmodeid)"
+					+ " select omp.polprocessid, omp.opmodeid"
+					+ " from opmodepolprocassoc omp"
+					+ " inner join omdgpollutantprocess pp on pp.polprocessid=omp.polprocessid";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO OpModeIDBySecond ("+
-						"sourceTypeID,"+
-						"driveScheduleID,"+
+			sql = "INSERT INTO opmodeidbysecond ("+
+						"sourcetypeid,"+
+						"drivescheduleid,"+
 						"second,"+
-						"opModeID,"+
-						"polProcessID,"+
+						"opmodeid,"+
+						"polprocessid,"+
 						"speed,"+
 						"acceleration,"+
-						"VSP) "+
-					"SELECT "+
-						"v.sourceTypeID,"+
-						"v.driveScheduleID,"+
+						"vsp) "+
+					"select "+
+						"v.sourcetypeid,"+
+						"v.drivescheduleid,"+
 						"v.second,"+
-						"NULL,"+
-						"rspp.polProcessID,"+
+						"null,"+
+						"rspp.polprocessid,"+
 						"dss.speed,"+
 						"dss.acceleration,"+
-						"v.VSP "+
-					"FROM "+
-						"DriveScheduleSecond3 dss,"+
-						"VSP v,"+
-						"OMDGPollutantProcess rspp "+
-					"WHERE "+
-						"dss.driveScheduleID = v.driveScheduleID AND "+
+						"v.vsp "+
+					"from "+
+						"driveschedulesecond3 dss,"+
+						"vsp v,"+
+						"omdgpollutantprocess rspp "+
+					"where "+
+						"dss.drivescheduleid = v.drivescheduleid and "+
 						"dss.second = v.second";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE OpModeIDBySecond");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE opmodeidbysecond");
 
-			sql = "DROP TABLE IF EXISTS OpModeIDBySecond_Temp";
+			sql = "DROP TABLE IF EXISTS opmodeidbysecond_temp";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "CREATE TABLE OpModeIDBySecond_Temp "+
+			sql = "CREATE TABLE opmodeidbysecond_temp "+
 					"SELECT " +
-						"opid3.sourceTypeID, " +
-						"opid3.driveScheduleID, " +
+						"opid3.sourcetypeid, " +
+						"opid3.drivescheduleid, " +
 						"opid3.second, " +
-						"0 AS OpModeID, " +
-						"opid3.polProcessID, "+
+						"0 as opmodeid, " +
+						"opid3.polprocessid, "+
 						"opid3.speed, " +
 						"opid3.acceleration, " +
 						"opid3.vsp " +
-					"FROM " +
-						"OpModeIDBySecond opid1, " +
-						"OpModeIDBySecond opid2, " +
-						"OpModeIDBySecond opid3 " +
-					"WHERE " +
-						"opid1.sourceTypeID = opid2.sourceTypeID AND " +
-						"opid2.sourceTypeID = opid3.sourceTypeID AND " +
-						"opid1.driveScheduleID = opid2.driveScheduleID AND " +
-						"opid2.driveScheduleID = opid3.driveScheduleID AND " +
-						"opid1.polProcessID = opid2.polProcessID AND " +
-						"opid2.polProcessID = opid3.polProcessID AND " +
-						"opid1.second = opid2.second-1 AND " +
-						"opid2.second = opid3.second-1 AND " +
-						"(opid3.acceleration <= -2 OR (opid1.acceleration<-1 AND " +
-						"opid2.acceleration<-1 AND " +
+					"from " +
+						"opmodeidbysecond opid1, " +
+						"opmodeidbysecond opid2, " +
+						"opmodeidbysecond opid3 " +
+					"where " +
+						"opid1.sourcetypeid = opid2.sourcetypeid and " +
+						"opid2.sourcetypeid = opid3.sourcetypeid and " +
+						"opid1.drivescheduleid = opid2.drivescheduleid and " +
+						"opid2.drivescheduleid = opid3.drivescheduleid and " +
+						"opid1.polprocessid = opid2.polprocessid and " +
+						"opid2.polprocessid = opid3.polprocessid and " +
+						"opid1.second = opid2.second-1 and " +
+						"opid2.second = opid3.second-1 and " +
+						"(opid3.acceleration <= -2 or (opid1.acceleration<-1 and " +
+						"opid2.acceleration<-1 and " +
 						"opid3.acceleration<-1))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "REPLACE INTO OpModeIDBySecond ( "+
-						"sourceTypeID, "+
-						"driveScheduleID, "+
+			sql = "REPLACE INTO opmodeidbysecond ( "+
+						"sourcetypeid, "+
+						"drivescheduleid, "+
 						"second, "+
-						"OpModeID, "+
-						"polProcessID, "+
+						"opmodeid, "+
+						"polprocessid, "+
 						"speed, "+
 						"acceleration, "+
-						"VSP "+
+						"vsp "+
 						") "+
-					"SELECT "+
-						"sourceTypeID, "+
-						"driveScheduleID, "+
+					"select "+
+						"sourcetypeid, "+
+						"drivescheduleid, "+
 						"second, "+
-						"opModeID, "+
-						"polProcessID, "+
+						"opmodeid, "+
+						"polprocessid, "+
 						"speed, "+
 						"acceleration, "+
-						"VSP "+
-					"FROM "+
-						"OpModeIDBySecond_Temp";
+						"vsp "+
+					"from "+
+						"opmodeidbysecond_temp";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE OpModeIDBySecond");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE opmodeidbysecond");
 
-			sql = "UPDATE OpModeIDBySecond SET OpModeID=0 WHERE acceleration <= -2";
+			sql = "UPDATE opmodeidbysecond set opmodeid=0 where acceleration <= -2";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "SELECT om.OpModeID, polProcessID, VSPLower, VSPUpper, speedLower, speedUpper " +
-					"FROM OperatingMode om INNER JOIN OpModePolProcAssocTrimmed USING (opModeID) " +
-					"WHERE om.opModeID > 1 AND om.opModeID < 100";
+			sql = "SELECT om.opmodeid, polprocessid, vsplower, vspupper, speedlower, speedupper " +
+					"from operatingmode om inner join opmodepolprocassoctrimmed using (opmodeid) " +
+					"where om.opmodeid > 1 and om.opmodeid < 100";
 			statement = db.prepareStatement(sql);
 			ResultSet result = SQLRunner.executeQuery(statement, sql);
 			while(result.next()) {
@@ -1358,26 +1358,26 @@ public class OperatingModeDistributionGenerator extends Generator {
 				boolean isSpeedLowerNull = result.wasNull();
 				float speedUpper = result.getFloat(6);
 				boolean isSpeedUpperNull = result.wasNull();
-				sql = "UPDATE OpModeIDBySecond SET opModeID = " + opModeID;
+				sql = "UPDATE opmodeidbysecond SET opmodeid = " + opModeID;
 				String whereClause = "";
 				String vspClause = "";
 				String speedClause = "";
 
 				if(!isVSPLowerNull) {
-					vspClause += "VSP >= " + vspLower;
+					vspClause += "vsp >= " + vspLower;
 				}
 				if(!isVSPUpperNull) {
 					if(vspClause.length() > 0) {
-						vspClause += " AND ";
+						vspClause += " and ";
 					}
-					vspClause += "VSP < " + vspUpper;
+					vspClause += "vsp < " + vspUpper;
 				}
 				if(!isSpeedLowerNull) {
 					speedClause += "speed >= " + speedLower;
 				}
 				if(!isSpeedUpperNull) {
 					if(speedClause.length() > 0) {
-						speedClause += " AND ";
+						speedClause += " and ";
 					}
 					speedClause += "speed < " + speedUpper;
 				}
@@ -1386,19 +1386,19 @@ public class OperatingModeDistributionGenerator extends Generator {
 				}
 				if(speedClause.length() > 0) {
 					if(whereClause.length() > 0) {
-						whereClause += " AND ";
+						whereClause += " and ";
 					}
 					whereClause += "(" + speedClause + ")";
 				}
-				sql += " WHERE " + whereClause + " AND polProcessID = " + polProcessID + 
-						" AND OpModeID IS NULL";
+				sql += " WHERE " + whereClause + " and polprocessid = " + polProcessID + 
+						" AND opmodeid IS NULL";
 				SQLRunner.executeSQL(db, sql);
 			}
 			statement.close();
 			statement = null;
 			result.close();
 
-			sql = "UPDATE OpModeIDBySecond SET OpModeID=IF(speed=0 and polProcessID=11609,501,if(speed<1.0,1,opModeID))";
+			sql = "UPDATE opmodeidbysecond set opmodeid=if(speed=0 and polprocessid=11609,501,if(speed<1.0,1,opmodeid))";
 			SQLRunner.executeSQL(db, sql);
 		} catch (SQLException e) {
 			Logger.logSqlError(e, "Could not determine Operating Mode ID distribution.", sql);
@@ -1424,81 +1424,81 @@ public class OperatingModeDistributionGenerator extends Generator {
 		String sql = "";
 
 		try {
-			sql = "CREATE TABLE IF NOT EXISTS OpModeFractionBySchedule2 ("+
-					"sourceTypeID       SMALLINT,"+
-					"driveScheduleID    SMALLINT,"+
-					"polProcessID       INT,"+
-					"secondSum          SMALLINT,"+
-					"UNIQUE INDEX XPKOpModeFractionBySchedule2 ("+
-							"sourceTypeID, driveScheduleID, polProcessID))";
+			sql = "CREATE TABLE IF NOT EXISTS opmodefractionbyschedule2 ("+
+					"sourcetypeid       smallint,"+
+					"drivescheduleid    smallint,"+
+					"polprocessid       int,"+
+					"secondsum          smallint,"+
+					"unique index xpkopmodefractionbyschedule2 ("+
+							"sourcetypeid, drivescheduleid, polprocessid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE OpModeFractionBySchedule2";
+			sql = "TRUNCATE opmodefractionbyschedule2";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO OpModeFractionBySchedule2 ("+
-						"sourceTypeID,"+
-						"driveScheduleID,"+
-						"polProcessID,"+
-						"secondSum) "+
-					"SELECT "+
-						"omis.sourceTypeID,"+
-						"omis.driveScheduleID,"+
-						"omis.polProcessID,"+
+			sql = "INSERT INTO opmodefractionbyschedule2 ("+
+						"sourcetypeid,"+
+						"drivescheduleid,"+
+						"polprocessid,"+
+						"secondsum) "+
+					"select "+
+						"omis.sourcetypeid,"+
+						"omis.drivescheduleid,"+
+						"omis.polprocessid,"+
 						"count(*) "+
-					"FROM "+
-						" OpModeIDBySecond omis "+
-					"GROUP BY "+
-						"omis.sourceTypeID,"+
-						"omis.driveScheduleID,"+
-						"omis.polProcessID";
+					"from "+
+						" opmodeidbysecond omis "+
+					"group by "+
+						"omis.sourcetypeid,"+
+						"omis.drivescheduleid,"+
+						"omis.polprocessid";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE OpModeFractionBySchedule2");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE opmodefractionbyschedule2");
 
-			sql = "CREATE TABLE IF NOT EXISTS OpModeFractionBySchedule ("+
-					"sourceTypeID      SMALLINT,"+
-					"driveScheduleID   SMALLINT,"+
-					"polProcessID      INT,"+
-					"opModeID          SMALLINT,"+
-					"modeFraction      FLOAT,"+
-					"UNIQUE INDEX XPKOpModeFractionBySchedule ("+
-							"sourceTypeID, driveScheduleID, polProcessID, opModeID))";
+			sql = "CREATE TABLE IF NOT EXISTS opmodefractionbyschedule ("+
+					"sourcetypeid      smallint,"+
+					"drivescheduleid   smallint,"+
+					"polprocessid      int,"+
+					"opmodeid          smallint,"+
+					"modefraction      float,"+
+					"unique index xpkopmodefractionbyschedule ("+
+							"sourcetypeid, drivescheduleid, polprocessid, opmodeid))";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "TRUNCATE OpModeFractionBySchedule";
+			sql = "TRUNCATE opmodefractionbyschedule";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "INSERT INTO OpModeFractionBySchedule ("+
-						"sourceTypeID,"+
-						"driveScheduleID,"+
-						"polProcessID,"+
-						"opModeID,"+
-						"modeFraction) "+
-					"SELECT "+
-						"omis.sourceTypeID,"+
-						"omis.driveScheduleID,"+
-						"omis.polProcessID,"+
-						"omis.opModeID,"+
-						"count(*) / omfs2.secondSum "+
-					"FROM "+
-						"OpModeIDBySecond omis,"+
-						"OpModeFractionBySchedule2 omfs2 "+
-					"WHERE "+
-						"omis.sourceTypeID = omfs2.sourceTypeID AND "+
-						"omis.driveScheduleID = omfs2.driveScheduleID AND "+
-						"omis.polProcessID = omfs2.polProcessID AND "+
-						"omfs2.secondSum <> 0 "+
-					"GROUP BY "+
-						"omis.sourceTypeID,"+
-						"omis.driveScheduleID,"+
-						"omis.polProcessID,"+
-						"omis.opModeID";
+			sql = "INSERT INTO opmodefractionbyschedule ("+
+						"sourcetypeid,"+
+						"drivescheduleid,"+
+						"polprocessid,"+
+						"opmodeid,"+
+						"modefraction) "+
+					"select "+
+						"omis.sourcetypeid,"+
+						"omis.drivescheduleid,"+
+						"omis.polprocessid,"+
+						"omis.opmodeid,"+
+						"count(*) / omfs2.secondsum "+
+					"from "+
+						"opmodeidbysecond omis,"+
+						"opmodefractionbyschedule2 omfs2 "+
+					"where "+
+						"omis.sourcetypeid = omfs2.sourcetypeid and "+
+						"omis.drivescheduleid = omfs2.drivescheduleid and "+
+						"omis.polprocessid = omfs2.polprocessid and "+
+						"omfs2.secondsum <> 0 "+
+					"group by "+
+						"omis.sourcetypeid,"+
+						"omis.drivescheduleid,"+
+						"omis.polprocessid,"+
+						"omis.opmodeid";
 			SQLRunner.executeSQL(db, sql);
 
-			SQLRunner.executeSQL(db,"ANALYZE TABLE OpModeFractionBySchedule");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE opmodefractionbyschedule");
 
-			sql = "TRUNCATE OpModeFractionBySchedule2";
+			sql = "TRUNCATE opmodefractionbyschedule2";
 			SQLRunner.executeSQL(db, sql);
 		} catch (SQLException e) {
 			Logger.logSqlError(e, "Could not determine fractions of Operating Modes per Drive"
@@ -1517,89 +1517,89 @@ public class OperatingModeDistributionGenerator extends Generator {
 		String sql = "";
 		try {
 			String[] statements = {
-				"drop table if exists OpModeFraction2",
-				"drop table if exists OpModeFraction2a",
+				"drop table if exists opmodefraction2",
+				"drop table if exists opmodefraction2a",
 
-				"CREATE TABLE IF NOT EXISTS OpModeFraction2 ("+
-					"sourceTypeID      SMALLINT,"+
-					"roadTypeID        SMALLINT,"+
-					"hourDayID         SMALLINT,"+
-					"opModeID          SMALLINT,"+
-					"polProcessID      INT,"+
-					"opModeFraction    FLOAT,"+
-					"UNIQUE INDEX XPKOpModeFraction2 ("+
-							"roadTypeID, sourceTypeID, hourDayID, opModeID, polProcessID))",
+				"CREATE TABLE IF NOT EXISTS opmodefraction2 ("+
+					"sourcetypeid      smallint,"+
+					"roadtypeid        smallint,"+
+					"hourdayid         smallint,"+
+					"opmodeid          smallint,"+
+					"polprocessid      int,"+
+					"opmodefraction    float,"+
+					"unique index xpkopmodefraction2 ("+
+							"roadtypeid, sourcetypeid, hourdayid, opmodeid, polprocessid))",
 				// NOTE: above, roadTypeID is the first in the index so that it will be used
 				// in calculateOpModeFractions which joins based on roadTypeID only.
 
-				"CREATE TABLE IF NOT EXISTS OpModeFraction2a ("+
-					"sourceTypeID      SMALLINT,"+
-					"roadTypeID        SMALLINT,"+
-					"hourDayID         SMALLINT,"+
-					"opModeID          SMALLINT,"+
-					"polProcessID      INT,"+
-					"opModeFraction    FLOAT,"+
-					"INDEX IdxOpModeFraction2a ("+
-							"roadTypeID, sourceTypeID, hourDayID, opModeID, polProcessID))",
+				"CREATE TABLE IF NOT EXISTS opmodefraction2a ("+
+					"sourcetypeid      smallint,"+
+					"roadtypeid        smallint,"+
+					"hourdayid         smallint,"+
+					"opmodeid          smallint,"+
+					"polprocessid      int,"+
+					"opmodefraction    float,"+
+					"index idxopmodefraction2a ("+
+							"roadtypeid, sourcetypeid, hourdayid, opmodeid, polprocessid))",
 
-				"TRUNCATE OpModeFraction2",
-				"TRUNCATE OpModeFraction2a",
+				"TRUNCATE opmodefraction2",
+				"truncate opmodefraction2a",
 
 				// Add non-ramp-based information
-				"INSERT INTO OpModeFraction2a ("+
-						"sourceTypeID,"+
-						"roadTypeID,"+
-						"hourDayID,"+
-						"opModeID,"+
-						"polProcessID,"+
-						"opModeFraction) "+
-					"SELECT "+
-						"dsf.sourceTypeID,"+
-						"dsf.roadTypeID,"+
-						"dsf.hourDayID,"+
-						"omfs.opModeID,"+
-						"omppa.polProcessID,"+
-						"sum(omfs.modeFraction * dsf.driveScheduleFraction) as opModeFraction "+
-					"FROM "+
-						"DriveScheduleFraction dsf,"+
-						"OpModeFractionBySchedule omfs, "+
-						"OpModePolProcAssocTrimmed omppa " +
-					"WHERE "+
-						"dsf.sourceTypeID = omfs.sourceTypeID AND "+
-						"dsf.driveScheduleID = omfs.driveScheduleID AND "+
-						"omfs.polProcessID = omppa.polProcessID AND "+
-						"omppa.opModeID = omfs.opModeID AND " +
-						"omppa.polProcessID not in (11710) " +
-					"GROUP BY "+
-						"dsf.sourceTypeID,"+
-						"dsf.roadTypeID,"+
-						"dsf.hourDayID,"+
-						"omppa.polProcessID,"+
-						"omfs.opModeID",
+				"INSERT INTO opmodefraction2a ("+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"hourdayid,"+
+						"opmodeid,"+
+						"polprocessid,"+
+						"opmodefraction) "+
+					"select "+
+						"dsf.sourcetypeid,"+
+						"dsf.roadtypeid,"+
+						"dsf.hourdayid,"+
+						"omfs.opmodeid,"+
+						"omppa.polprocessid,"+
+						"sum(omfs.modefraction * dsf.driveschedulefraction) as opmodefraction "+
+					"from "+
+						"driveschedulefraction dsf,"+
+						"opmodefractionbyschedule omfs, "+
+						"opmodepolprocassoctrimmed omppa " +
+					"where "+
+						"dsf.sourcetypeid = omfs.sourcetypeid and "+
+						"dsf.drivescheduleid = omfs.drivescheduleid and "+
+						"omfs.polprocessid = omppa.polprocessid and "+
+						"omppa.opmodeid = omfs.opmodeid and " +
+						"omppa.polprocessid not in (11710) " +
+					"group by "+
+						"dsf.sourcetypeid,"+
+						"dsf.roadtypeid,"+
+						"dsf.hourdayid,"+
+						"omppa.polprocessid,"+
+						"omfs.opmodeid",
 
-				"ANALYZE TABLE OpModeFraction2a",
+				"analyze table opmodefraction2a",
 
-				// Aggregate ramp and non-ramp data
-				"INSERT INTO OpModeFraction2 ("+
-						"sourceTypeID,"+
-						"roadTypeID,"+
-						"hourDayID,"+
-						"opModeID,"+
-						"polProcessID,"+
-						"opModeFraction) "+
-					"SELECT "+
-						"sourceTypeID,"+
-						"roadTypeID,"+
-						"hourDayID,"+
-						"opModeID,"+
-						"polProcessID,"+
-						"sum(opModeFraction) as opModeFraction "+
-					"FROM "+
-						"OpModeFraction2a "+
-					"GROUP BY "+
-						"roadTypeID, sourceTypeID, hourDayID, opModeID, polProcessID",
+				// aggregate ramp and non-ramp data
+				"insert into opmodefraction2 ("+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"hourdayid,"+
+						"opmodeid,"+
+						"polprocessid,"+
+						"opmodefraction) "+
+					"select "+
+						"sourcetypeid,"+
+						"roadtypeid,"+
+						"hourdayid,"+
+						"opmodeid,"+
+						"polprocessid,"+
+						"sum(opmodefraction) as opmodefraction "+
+					"from "+
+						"opmodefraction2a "+
+					"group by "+
+						"roadtypeid, sourcetypeid, hourdayid, opmodeid, polprocessid",
 
-				"ANALYZE TABLE OpModeFraction2"
+				"analyze table opmodefraction2"
 			};
 
 			for(int i=0;i<statements.length;i++) {
@@ -1625,68 +1625,68 @@ public class OperatingModeDistributionGenerator extends Generator {
 		try {
 			// Find [sourceTypeID, linkID, hourDayID, polProcessID] combinations
 			// that already exist within OpModeDistribution.
-			sql = "create table if not exists OMDGOMDKeys ( "+
-					"	sourceTypeID smallint(6) NOT NULL DEFAULT '0', "+
-					"	hourDayID smallint(6) NOT NULL DEFAULT '0', "+
-					"	polProcessID int NOT NULL DEFAULT '0', "+
-					"	primary key (hourdayID, polProcessID, sourceTypeID) "+
+			sql = "create table if not exists omdgomdkeys ( "+
+					"	sourcetypeid smallint(6) not null default '0', "+
+					"	hourdayid smallint(6) not null default '0', "+
+					"	polprocessid int not null default '0', "+
+					"	primary key (hourdayid, polprocessid, sourcetypeid) "+
 					")";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "truncate table OMDGOMDKeys";
+			sql = "truncate table omdgomdkeys";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "insert into OMDGOMDKeys (sourceTypeID, hourDayID, polProcessID) "+
-					"select distinct sourceTypeID, hourDayID, polProcessID "+
-					"from OpModeDistribution "+
-					"where linkID = " + linkID;
+			sql = "insert into omdgomdkeys (sourcetypeid, hourdayid, polprocessid) "+
+					"select distinct sourcetypeid, hourdayid, polprocessid "+
+					"from opmodedistribution "+
+					"where linkid = " + linkID;
 			SQLRunner.executeSQL(db, sql);
 
 			// Add to OpModeDistribution those entries that don't already have records
-			sql = "INSERT IGNORE INTO OpModeDistribution ("+
-						"sourceTypeID,"+
-						"linkID,"+
-						"hourDayID,"+
-						"polProcessID,"+
-						"opModeID,"+
-						"opModeFraction) "+
-					"SELECT "+
-						"omf2.sourceTypeID,"+
-						"l.linkID,"+
-						"omf2.hourDayID,"+
-						"omf2.polProcessID,"+
-						"omf2.opModeID,"+
-						"omf2.opModeFraction "+
-					"FROM "+
-						"OpModeFraction2 omf2 "+
-						"inner join Link l on l.roadTypeID=omf2.roadtypeID "+
-						"left outer join OMDGOMDKeys k on ( "+
-							"k.hourDayID=omf2.hourDayID "+
-							"and k.polProcessID=omf2.polProcessID "+
-							"and k.sourceTypeID=omf2.sourceTypeID "+
+			sql = "INSERT IGNORE INTO opmodedistribution ("+
+						"sourcetypeid,"+
+						"linkid,"+
+						"hourdayid,"+
+						"polprocessid,"+
+						"opmodeid,"+
+						"opmodefraction) "+
+					"select "+
+						"omf2.sourcetypeid,"+
+						"l.linkid,"+
+						"omf2.hourdayid,"+
+						"omf2.polprocessid,"+
+						"omf2.opmodeid,"+
+						"omf2.opmodefraction "+
+					"from "+
+						"opmodefraction2 omf2 "+
+						"inner join link l on l.roadtypeid=omf2.roadtypeid "+
+						"left outer join omdgomdkeys k on ( "+
+							"k.hourdayid=omf2.hourdayid "+
+							"and k.polprocessid=omf2.polprocessid "+
+							"and k.sourcetypeid=omf2.sourcetypeid "+
 						") "+
-					"WHERE "+
-						"k.hourDayID is null "+
-						"and k.polProcessID is null "+
-						"and k.sourceTypeID is null "+
-						"and l.linkID =" + linkID;
+					"where "+
+						"k.hourdayid is null "+
+						"and k.polprocessid is null "+
+						"and k.sourcetypeid is null "+
+						"and l.linkid =" + linkID;
 			SQLRunner.executeSQL(db, sql);
 
 			// Copy representing entries to those being represented, but only if those
 			// being represented are not already present.
-			sql = "truncate table OMDGOMDKeys";
+			sql = "truncate table omdgomdkeys";
 			SQLRunner.executeSQL(db, sql);
 
-			sql = "insert into OMDGOMDKeys (sourceTypeID, hourDayID, polProcessID) "+
-					"select distinct sourceTypeID, hourDayID, polProcessID "+
-					"from OpModeDistribution "+
-					"where linkID = " + linkID;
+			sql = "insert into omdgomdkeys (sourcetypeid, hourdayid, polprocessid) "+
+					"select distinct sourcetypeid, hourdayid, polprocessid "+
+					"from opmodedistribution "+
+					"where linkid = " + linkID;
 			SQLRunner.executeSQL(db, sql);
 
 			ArrayList<String> ppaList = new ArrayList<String>();
 			ArrayList<String> repPPAList = new ArrayList<String>();
-			sql = "select polProcessID, representingPolProcessID"
-					+ " from OMDGPolProcessRepresented";
+			sql = "select polprocessid, representingpolprocessid"
+					+ " from omdgpolprocessrepresented";
 			query.open(db,sql);
 			while(query.rs.next()) {
 				ppaList.add(query.rs.getString(1));
@@ -1697,43 +1697,43 @@ public class OperatingModeDistributionGenerator extends Generator {
 				String ppa = ppaList.get(i);
 				String repPPA = repPPAList.get(i);
 
-				sql = "INSERT IGNORE INTO OpModeDistribution ("+
-							"sourceTypeID,"+
-							"linkID,"+
-							"hourDayID,"+
-							"polProcessID,"+
-							"opModeID,"+
-							"opModeFraction) "+
-						"SELECT "+
-							"omf2.sourceTypeID,"+
-							"l.linkID,"+
-							"omf2.hourDayID,"+
-							ppa + " as polProcessID,"+
-							"omf2.opModeID,"+
-							"omf2.opModeFraction "+
-						"FROM "+
-							"OpModeFraction2 omf2 "+
-							"inner join Link l on l.roadTypeID=omf2.roadtypeID "+
-							"left outer join OMDGOMDKeys k on ( "+
-								"k.hourDayID=omf2.hourDayID "+
-								"and k.polProcessID=" + ppa + " "+
-								"and k.sourceTypeID=omf2.sourceTypeID "+
+				sql = "INSERT IGNORE INTO opmodedistribution ("+
+							"sourcetypeid,"+
+							"linkid,"+
+							"hourdayid,"+
+							"polprocessid,"+
+							"opmodeid,"+
+							"opmodefraction) "+
+						"select "+
+							"omf2.sourcetypeid,"+
+							"l.linkid,"+
+							"omf2.hourdayid,"+
+							ppa + " as polprocessid,"+
+							"omf2.opmodeid,"+
+							"omf2.opmodefraction "+
+						"from "+
+							"opmodefraction2 omf2 "+
+							"inner join link l on l.roadtypeid=omf2.roadtypeid "+
+							"left outer join omdgomdkeys k on ( "+
+								"k.hourdayid=omf2.hourdayid "+
+								"and k.polprocessid=" + ppa + " "+
+								"and k.sourcetypeid=omf2.sourcetypeid "+
 							") "+
-						"WHERE "+
-							"k.hourDayID is null "+
-							"and k.polProcessID is null "+
-							"and k.sourceTypeID is null "+
-							"and l.linkID =" + linkID+ " "+
-							"and omf2.polProcessID =" + repPPA;
+						"where "+
+							"k.hourdayid is null "+
+							"and k.polprocessid is null "+
+							"and k.sourcetypeid is null "+
+							"and l.linkid =" + linkID+ " "+
+							"and omf2.polprocessid =" + repPPA;
 				SQLRunner.executeSQL(db, sql);
 			}
 
-			modelYearPhysics.updateOperatingModeDistribution(db,"OpModeDistribution");
-			SQLRunner.executeSQL(db,"ANALYZE TABLE OpModeDistribution");
+			modelYearPhysics.updateOperatingModeDistribution(db,"opmodedistribution");
+			SQLRunner.executeSQL(db,"ANALYZE TABLE opmodedistribution");
 
 			// Get distinct polProcessID in OpModeDistributionTemp as these are the ones to 
 			// be cleaned out of OpModeDistribution
-			sql = "SELECT DISTINCT polProcessID FROM OpModeFraction2";
+			sql = "SELECT DISTINCT polprocessid from opmodefraction2";
 			polProcessIDs = "";
 			query.open(db,sql);
 			while(query.rs.next()) {

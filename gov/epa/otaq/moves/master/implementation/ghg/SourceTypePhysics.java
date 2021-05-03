@@ -40,43 +40,43 @@ public class SourceTypePhysics {
 		try {
 			// Fill the mapping table with basic data
 			String[] statements = {
-				"drop table if exists sourceUseTypePhysicsMapping",
+				"drop table if exists sourceusetypephysicsmapping",
 
-				"create table sourceUseTypePhysicsMapping ("
-						+ " 	realSourceTypeID smallint not null,"
-						+ " 	tempSourceTypeID smallint not null,"
-						+ " 	regClassID smallint not null,"
-						+ " 	beginModelYearID smallint not null,"
-						+ " 	endModelYearID smallint not null,"
-						+ " 	opModeIDOffset smallint not null,"
+				"create table sourceusetypephysicsmapping ("
+						+ " 	realsourcetypeid smallint not null,"
+						+ " 	tempsourcetypeid smallint not null,"
+						+ " 	regclassid smallint not null,"
+						+ " 	beginmodelyearid smallint not null,"
+						+ " 	endmodelyearid smallint not null,"
+						+ " 	opmodeidoffset smallint not null,"
 
-						+ " 	rollingTermA float DEFAULT NULL,"
-						+ " 	rotatingTermB float DEFAULT NULL,"
-						+ " 	dragTermC float DEFAULT NULL,"
-						+ " 	sourceMass float DEFAULT NULL,"
-						+ " 	fixedMassFactor float DEFAULT NULL,"
+						+ " 	rollingterma float default null,"
+						+ " 	rotatingtermb float default null,"
+						+ " 	dragtermc float default null,"
+						+ " 	sourcemass float default null,"
+						+ " 	fixedmassfactor float default null,"
 
-						+ " 	primary key (realSourceTypeID, regClassID, beginModelYearID, endModelYearID),"
-						+ " 	key (beginModelYearID, endModelYearID, realSourceTypeID, regClassID),"
-						+ " 	key (tempSourceTypeID, realSourceTypeID, regClassID, beginModelYearID, endModelYearID)"
+						+ " 	primary key (realsourcetypeid, regclassid, beginmodelyearid, endmodelyearid),"
+						+ " 	key (beginmodelyearid, endmodelyearid, realsourcetypeid, regclassid),"
+						+ " 	key (tempsourcetypeid, realsourcetypeid, regclassid, beginmodelyearid, endmodelyearid)"
 						+ ")",
 
-				"insert ignore into sourceUseTypePhysicsMapping (realSourceTypeID, tempSourceTypeID, regClassID, "
-						+ " 	beginModelYearID, endModelYearID, opModeIDOffset,"
-						+ " 	rollingTermA, rotatingTermB, dragTermC, sourceMass, fixedMassFactor)"
-						+ " select sourceTypeID as realSourceTypeID, sourceTypeID as tempSourceTypeID, regClassID,"
-						+ " 	beginModelYearID, endModelYearID, 0 as opModeIDOffset,"
-						+ " 	rollingTermA, rotatingTermB, dragTermC, sourceMass, fixedMassFactor"
-						+ " from sourceUseTypePhysics"
+				"insert ignore into sourceusetypephysicsmapping (realsourcetypeid, tempsourcetypeid, regclassid, "
+						+ " 	beginmodelyearid, endmodelyearid, opmodeidoffset,"
+						+ " 	rollingterma, rotatingtermb, dragtermc, sourcemass, fixedmassfactor)"
+						+ " select sourcetypeid as realsourcetypeid, sourcetypeid as tempsourcetypeid, regclassid,"
+						+ " 	beginmodelyearid, endmodelyearid, 0 as opmodeidoffset,"
+						+ " 	rollingterma, rotatingtermb, dragtermc, sourcemass, fixedmassfactor"
+						+ " from sourceusetypephysics"
 						+ " join runspecmodelyear rsmy"
-						+ " where rsmy.modelYearID between beginModelYearID and endModelYearID"
+						+ " where rsmy.modelyearid between beginmodelyearid and endmodelyearid"
 			};
 			for(int i=0;i<statements.length;i++) {
 				sql = statements[i];
 				SQLRunner.executeSQL(db,sql);
 			}
 			// Create temporary source types and assign op mode mapping
-			sql = "select * from sourceUseTypePhysicsMapping order by realSourceTypeID, regClassID, beginModelYearID";
+			sql = "select * from sourceusetypephysicsmapping order by realsourcetypeid, regclassid, beginmodelyearid";
 			ArrayList<String> updateStatements = new ArrayList<String>();
 			int nextTempSourceTypeID = 100;
 			int nextOpModeIDOffset = 1000;
@@ -86,20 +86,20 @@ public class SourceTypePhysics {
 			boolean isFirst = true;
 			query.open(db,sql);
 			while(query.rs.next()) {
-				int realSourceTypeID = query.rs.getInt("realSourceTypeID");
-				int regClassID = query.rs.getInt("regClassID");
-				int beginModelYearID = query.rs.getInt("beginModelYearID");
+				int realSourceTypeID = query.rs.getInt("realsourcetypeid");
+				int regClassID = query.rs.getInt("regclassid");
+				int beginModelYearID = query.rs.getInt("beginmodelyearid");
 				
 				/*
 				A new sourceTypeID should be assigned for each combination of [realSourceTypeID, regClassID, beginModelYearID].
 				Each realSourceTypeID gets its own offset sequence, starting at 1000 and adding 100 for each [regClassID, beginModelYearID] combination.
 				*/
 				if(!isFirst && realSourceTypeID == priorRealSourceTypeID && (regClassID != priorRegClassID || beginModelYearID != priorBeginModelYearID)) {
-					sql = "update sourceUseTypePhysicsMapping set tempSourceTypeID=" + nextTempSourceTypeID
-							+ ", opModeIDOffset=" + nextOpModeIDOffset
-							+ " where realSourceTypeID=" + realSourceTypeID
-							+ " and regClassID=" + regClassID
-							+ " and beginModelYearID=" + beginModelYearID;
+					sql = "update sourceusetypephysicsmapping set tempsourcetypeid=" + nextTempSourceTypeID
+							+ ", opmodeidoffset=" + nextOpModeIDOffset
+							+ " where realsourcetypeid=" + realSourceTypeID
+							+ " and regclassid=" + regClassID
+							+ " and beginmodelyearid=" + beginModelYearID;
 					updateStatements.add(sql);
 					nextTempSourceTypeID++;
 					nextOpModeIDOffset += 100; // Opmodes used are 0-99, so an offset of 100 won't overlap
@@ -107,11 +107,11 @@ public class SourceTypePhysics {
 					// Leave the current row using the original sourceTypeID tied to the original operating modes.
 					// The next modelyear break for this [sourceTypeID, regClassID] will get new operating modes.
 
-					sql = "update sourceUseTypePhysicsMapping set tempSourceTypeID=" + nextTempSourceTypeID
-							+ ", opModeIDOffset=" + nextOpModeIDOffset
-							+ " where realSourceTypeID=" + realSourceTypeID
-							+ " and regClassID=" + regClassID
-							+ " and beginModelYearID=" + beginModelYearID;
+					sql = "update sourceusetypephysicsmapping set tempsourcetypeid=" + nextTempSourceTypeID
+							+ ", opmodeidoffset=" + nextOpModeIDOffset
+							+ " where realsourcetypeid=" + realSourceTypeID
+							+ " and regclassid=" + regClassID
+							+ " and beginmodelyearid=" + beginModelYearID;
 					updateStatements.add(sql);
 					nextTempSourceTypeID++;
 					nextOpModeIDOffset += 100; // Opmodes used are 0-99, so an offset of 100 won't overlap
@@ -127,7 +127,7 @@ public class SourceTypePhysics {
 				SQLRunner.executeSQL(db,sql);
 			}
 		} catch(SQLException e) {
-			Logger.logError(e,"Unable to setup sourceUseTypePhysicsMapping");
+			Logger.logError(e,"unable to setup sourceusetypephysicsmapping");
 			throw e;
 		} finally {
 			query.onFinally();
@@ -139,7 +139,7 @@ public class SourceTypePhysics {
 	 * real source types and changing real operating modes to modelyear-specific modes.
 	 * @param db database connection to use
 	 * @param tableName table containing an operating mode distribution and using standard
-	 * column names of "sourceTypeID" and "opModeID".
+	 * column names of "sourcetypeid" and "opmodeid".
 	 * @throws SQLException if anything goes wrong
 	**/
 	public void updateOperatingModeDistribution(Connection db, String tableName) throws SQLException {
@@ -151,14 +151,14 @@ public class SourceTypePhysics {
 	 * real source types and changing real operating modes to modelyear-specific modes.
 	 * @param db database connection to use
 	 * @param tableName table containing an operating mode distribution and using standard
-	 * column names of "sourceTypeID" and "opModeID".
+	 * column names of "sourcetypeid" and "opmodeid".
 	 * @param whereClause optional string containing an expression to add to the WHERE clause
 	 * used to update the table.  Use this to improve performance when incrementally constructing
 	 * a table.
 	 * @throws SQLException if anything goes wrong
 	**/
 	public void updateOperatingModeDistribution(Connection db, String tableName, String whereClause) throws SQLException {
-		String alreadyKey = "updateOMD|" + tableName + "|" + StringUtilities.safeGetString(whereClause);
+		String alreadyKey = "updateomd|" + tablename + "|" + StringUtilities.safeGetString(whereClause);
 		if(alreadyDoneFlags.contains(alreadyKey)) {
 			//return;
 		}
@@ -167,30 +167,30 @@ public class SourceTypePhysics {
 		SQLRunner.Query query = new SQLRunner.Query();
 		String sql = "";
 		try {
-			sql = "select distinct realSourceTypeID, tempSourceTypeID, opModeIDOffset"
-					+ " from sourceUseTypePhysicsMapping"
-					+ " join (select distinct sourceTypeID,linkID from opmodedistribution) omd"
-					+ " on (omd.sourceTypeID = realSourceTypeID or omd.sourceTypeID = tempSourceTypeID)"
-					+ " where realSourceTypeID <> tempSourceTypeID";
+			sql = "select distinct realsourcetypeid, tempsourcetypeid, opmodeidoffset"
+					+ " from sourceusetypephysicsmapping"
+					+ " join (select distinct sourcetypeid,linkid from opmodedistribution) omd"
+					+ " on (omd.sourcetypeid = realsourcetypeid or omd.sourcetypeid = tempsourcetypeid)"
+					+ " where realsourcetypeid <> tempsourcetypeid";
 					if(whereClause != null && whereClause.length() > 0) {
-						sql += " and (" + whereClause + ")";
+						sql += " and (" + whereclause + ")";
 					}
-					sql += " order by realSourceTypeID, beginModelYearID";
+					sql += " order by realsourcetypeid, beginmodelyearid";
 			ArrayList<String> updateStatements = new ArrayList<String>();
 			query.open(db,sql);
 			
 			while(query.rs.next()) {	
-				int realSourceTypeID = query.rs.getInt("realSourceTypeID");
-				int tempSourceTypeID = query.rs.getInt("tempSourceTypeID");
-				int opModeIDOffset = query.rs.getInt("opModeIDOffset");
+				int realSourceTypeID = query.rs.getInt("realsourcetypeid");
+				int tempSourceTypeID = query.rs.getInt("tempsourcetypeid");
+				int opModeIDOffset = query.rs.getInt("opmodeidoffset");
 
 				// Change source types for any new operating modes
-				sql = "update " + tableName + " set sourceTypeID=" + realSourceTypeID
-						+ " where sourceTypeID=" + tempSourceTypeID
-						+ " and opModeID >= 0+" + opModeIDOffset + " and opModeID < 100+" + opModeIDOffset
-						+ " and (polProcessID < 0 or mod(polProcessID,100) = 1)";
+				sql = "update " + tablename + " set sourcetypeid=" + realSourceTypeID
+						+ " where sourcetypeid=" + tempSourceTypeID
+						+ " and opmodeid >= 0+" + opmodeidoffset + " and opmodeid < 100+" + opModeIDOffset
+						+ " and (polprocessid < 0 or mod(polprocessid,100) = 1)";
 				if(whereClause != null && whereClause.length() > 0) {
-					sql += " and (" + whereClause + ")";
+					sql += " and (" + whereclause + ")";
 				}
 				updateStatements.add(sql);
 				
@@ -205,64 +205,64 @@ public class SourceTypePhysics {
 				
 				sql = "insert into physics_" + tableName
 						+ " select * from " + tableName
-						+ " where sourceTypeID=" + tempSourceTypeID
-						+ " and polProcessID = 11609";
+						+ " where sourcetypeid=" + tempSourceTypeID
+						+ " and polprocessid = 11609";
 				if(whereClause != null && whereClause.length() > 0) {
-					sql += " and (" + whereClause + ")";
+					sql += " and (" + whereclause + ")";
 				}
 				updateStatements.add(sql);
 				
 				sql = "delete from " + tableName
-						+ " where sourceTypeID=" + tempSourceTypeID
-						+ " and polProcessID = 11609";
+						+ " where sourcetypeid=" + tempSourceTypeID
+						+ " and polprocessid = 11609";
 				if(whereClause != null && whereClause.length() > 0) {
-					sql += " and (" + whereClause + ")";
+					sql += " and (" + whereclause + ")";
 				}
 				updateStatements.add(sql);
 
-				sql = "update physics_" + tableName + " set sourceTypeID=" + realSourceTypeID
-					+ ", opModeID=opModeID+ " + opModeIDOffset
-					+ " where opModeID <> 501";
+				sql = "update physics_" + tablename + " set sourcetypeid=" + realSourceTypeID
+					+ ", opmodeid=opmodeid+ " + opModeIDOffset
+					+ " where opmodeid <> 501";
 				if(whereClause != null && whereClause.length() > 0) {
-					sql += " and (" + whereClause + ")";
+					sql += " and (" + whereclause + ")";
 				}
 				updateStatements.add(sql);
 
-				sql = "insert ignore into " + tableName + " select * from physics_" + tableName;
+				sql = "insert ignore into " + tablename + " select * from physics_" + tableName;
 				updateStatements.add(sql);
 
 				// Promote old operating modes and change source types
 				// This statement fail (which is ok and can be ignored) if
 				// entries exist with extended operating modes already.
-				sql = "update " + tableName + " set sourceTypeID=" + realSourceTypeID
-						+ ", opModeID=opModeID + " + opModeIDOffset
-						+ " where sourceTypeID=" + tempSourceTypeID
-						+ " and opModeID >= 0 and opModeID < 100"
-						+ " and (polProcessID < 0 or mod(polProcessID,100) = 1)";
+				sql = "update " + tablename + " set sourcetypeid=" + realSourceTypeID
+						+ ", opmodeid=opmodeid + " + opModeIDOffset
+						+ " where sourcetypeid=" + tempSourceTypeID
+						+ " and opmodeid >= 0 and opmodeid < 100"
+						+ " and (polprocessid < 0 or mod(polprocessid,100) = 1)";
 				if(whereClause != null && whereClause.length() > 0) {
-					sql += " and (" + whereClause + ")";
+					sql += " and (" + whereclause + ")";
 				}
 				updateStatements.add(sql);
 				
 				if(opModeIDOffset > 0) {
 					sql = "delete from " + tableName
-							+ " where sourceTypeID=" + tempSourceTypeID
-							+ " and opModeID >= 0 and opModeID < 100"
-							+ " and (polProcessID < 0 or mod(polProcessID,100) = 1)"
-							+ " and isUserInput = 'N'";
+							+ " where sourcetypeid=" + tempSourceTypeID
+							+ " and opmodeid >= 0 and opmodeid < 100"
+							+ " and (polprocessid < 0 or mod(polprocessid,100) = 1)"
+							+ " and isuserinput = 'N'";
 					if(whereClause != null && whereClause.length() > 0) {
-						sql += " and (" + whereClause + ")";
+						sql += " and (" + whereclause + ")";
 					}
 					updateStatements.add(sql);
 
 					// tempSourceTypeID never equals realSourceTypeID any more, so get rid of real source type operating modes
 					sql = "delete from " + tableName
-							+ " where sourceTypeID=" + realSourceTypeID
-							+ " and opModeID >= 0 and opModeID < 100"
-							+ " and (polProcessID < 0 or mod(polProcessID,100) = 1)"
-							+ " and isUserInput = 'N'";
+							+ " where sourcetypeid=" + realSourceTypeID
+							+ " and opmodeid >= 0 and opmodeid < 100"
+							+ " and (polprocessid < 0 or mod(polprocessid,100) = 1)"
+							+ " and isuserinput = 'N'";
 					if(whereClause != null && whereClause.length() > 0) {
-						sql += " and (" + whereClause + ")";
+						sql += " and (" + whereclause + ")";
 					}
 					updateStatements.add(sql);
 				}
@@ -278,7 +278,7 @@ public class SourceTypePhysics {
 			}
 
 		} catch(SQLException e) {
-			Logger.logError(e,"Unable to updateOperatingModeDistribution");
+			Logger.logError(e,"unable to updateoperatingmodedistribution");
 			throw e;
 		} finally {
 			query.onFinally();
@@ -290,14 +290,14 @@ public class SourceTypePhysics {
 	 * real source types and changing real operating modes to modelyear-specific modes.
 	 * @param db database connection to use
 	 * @param tableName table containing an operating mode distribution and using standard
-	 * column names of "sourceTypeID" and "opModeID".
+	 * column names of "sourcetypeid" and "opmodeid".
 	 * @param whereClause optional string containing an expression to add to the WHERE clause
 	 * used to update the table.  Use this to improve performance when incrementally constructing
 	 * a table.
 	 * @throws SQLException if anything goes wrong
 	**/
 	public void updateOpModes(Connection db, String tableName) throws SQLException {
-		String alreadyKey = "updateOpModes|" + tableName;
+		String alreadyKey = "updateopmodes|" + tableName;
 		if(alreadyDoneFlags.contains(alreadyKey)) {
 			//return;
 		}
@@ -307,35 +307,35 @@ public class SourceTypePhysics {
 		String sql = "";
 		TreeSet<Integer> seenRealSourceTypeIDs = new TreeSet<Integer>();
 		try {
-			sql = "select distinct realSourceTypeID, tempSourceTypeID, opModeIDOffset"
-					+ " from sourceUseTypePhysicsMapping"
-					+ " where realSourceTypeID <> tempSourceTypeID"
-					+ " order by realSourceTypeID, beginModelYearID";
+			sql = "select distinct realsourcetypeid, tempsourcetypeid, opmodeidoffset"
+					+ " from sourceusetypephysicsmapping"
+					+ " where realsourcetypeid <> tempsourcetypeid"
+					+ " order by realsourcetypeid, beginmodelyearid";
 			ArrayList<String> updateStatements = new ArrayList<String>();
 			query.open(db,sql);
 			while(query.rs.next()) {
-				int realSourceTypeID = query.rs.getInt("realSourceTypeID");
-				int tempSourceTypeID = query.rs.getInt("tempSourceTypeID");
-				int opModeIDOffset = query.rs.getInt("opModeIDOffset");
+				int realSourceTypeID = query.rs.getInt("realsourcetypeid");
+				int tempSourceTypeID = query.rs.getInt("tempsourcetypeid");
+				int opModeIDOffset = query.rs.getInt("opmodeidoffset");
 
 				// Translate the old operating mode to a new operating mode
 				sql = "drop table if exists physics_" + tableName;
 				updateStatements.add(sql);
 
-				sql = "create table physics_" + tableName + " like " + tableName;
+				sql = "create table physics_" + tablename + " like " + tableName;
 				updateStatements.add(sql);
 				
 				sql = "insert into physics_" + tableName
 						+ " select * from " + tableName
-						+ " where opModeID >= 0 and opModeID < 100"
-						+ " and sourceTypeID=" + tempSourceTypeID
-						+ " and (polProcessID < 0 or mod(polProcessID,100) = 1)";
+						+ " where opmodeid >= 0 and opmodeid < 100"
+						+ " and sourcetypeid=" + tempSourceTypeID
+						+ " and (polprocessid < 0 or mod(polprocessid,100) = 1)";
 				updateStatements.add(sql);
 		
-				sql = "update physics_" + tableName + " set opModeID=opModeID+" + opModeIDOffset;
+				sql = "update physics_" + tablename + " set opmodeid=opmodeid+" + opModeIDOffset;
 				updateStatements.add(sql);
 				
-				sql = "insert ignore into " + tableName + " select * from physics_" + tableName;
+				sql = "insert ignore into " + tablename + " select * from physics_" + tableName;
 				updateStatements.add(sql);
 				
 				Integer t = Integer.valueOf(realSourceTypeID);
@@ -348,14 +348,14 @@ public class SourceTypePhysics {
 					// Handle brakewear special case for pollutant 11609
 					sql = "insert into physics_" + tableName
 							+ " select * from " + tableName
-							+ " where (opModeID=501 or (opModeID >= 0 and opModeID < 100))"
-							+ " and sourceTypeID=" + tempSourceTypeID
-							+ " and polProcessID=11609 and roadTypeID in (2,4)";
+							+ " where (opmodeid=501 or (opmodeid >= 0 and opmodeid < 100))"
+							+ " and sourcetypeid=" + tempSourceTypeID
+							+ " and polprocessid=11609 and roadtypeid in (2,4)";
 					updateStatements.add(sql);
 	
 					// Finish the updates by changing to the real sourceTypeID
 					sql = "update physics_" + tableName
-							+ " set sourceTypeID=" + realSourceTypeID;
+							+ " set sourcetypeid=" + realSourceTypeID;
 					updateStatements.add(sql);
 	
 					sql = "insert ignore into " + tableName
@@ -369,12 +369,12 @@ public class SourceTypePhysics {
 				try {
 					SQLRunner.executeSQL(db,sql);
 				} catch(SQLException e) {
-					Logger.logError(e,"Unable to updateOpModes using: " + sql);
+					Logger.logError(e,"unable to updateopmodes using: " + sql);
 					// Nothing to do here
 				}
 			}
 		} catch(SQLException e) {
-			Logger.logError(e,"Unable to updateOpModes using: " + sql);
+			Logger.logError(e,"unable to updateopmodes using: " + sql);
 			throw e;
 		} finally {
 			query.onFinally();
@@ -400,7 +400,7 @@ public class SourceTypePhysics {
 		String sql = "";
 		try {
 			ArrayList<Integer> opModes = new ArrayList<Integer>();
-			sql = "select opModeID from operatingMode where opModeID >= 0 and opModeID < 100";
+			sql = "select opmodeid from operatingmode where opmodeid >= 0 and opmodeid < 100";
 			query.open(db,sql);
 			while(query.rs.next()) {
 				opModes.add(Integer.valueOf(query.rs.getInt(1)));
@@ -408,10 +408,10 @@ public class SourceTypePhysics {
 			query.close();
 
 			ArrayList<Integer> bases = new ArrayList<Integer>();
-			sql = "select distinct realSourceTypeID, opModeIDOffset, beginModelYearID, endModelYearID"
-					+ " from sourceUseTypePhysicsMapping"
-					+ " where opModeIDOffset > 0"
-					+ " order by opModeIDOffset";
+			sql = "select distinct realsourcetypeid, opmodeidoffset, beginmodelyearid, endmodelyearid"
+					+ " from sourceusetypephysicsmapping"
+					+ " where opmodeidoffset > 0"
+					+ " order by opmodeidoffset";
 			query.open(db,sql);
 			while(query.rs.next()) {
 				int sourceTypeID = query.rs.getInt(1);
@@ -431,7 +431,7 @@ public class SourceTypePhysics {
 			}
 			query.close();
 		} catch(SQLException e) {
-			Logger.logError(e,"Unable to setup getOpModeUpdates");
+			Logger.logError(e,"unable to setup getopmodeupdates");
 			throw e;
 		} finally {
 			query.onFinally();
@@ -449,13 +449,13 @@ public class SourceTypePhysics {
 	**/
 	public void updateEmissionRateTables(Connection db, int processID) throws SQLException {
 		if(!(processID == 9 || processID == 1)) {
-			//Logger.log(LogMessageCategory.DEBUG,"SourceTypePhysics.updateEmissionRateTables skipped for process " + processID);
+			//Logger.log(LogMessageCategory.DEBUG,"sourcetypephysics.updateemissionratetables skipped for process " + processID);
 			return;
 		}
-		System.out.println("SourceTypePhysics.updateEmissionRateTables starting for process 1...");
-		String alreadyKey = "updateEmissionRates|" + processID;
+		System.out.println("sourcetypephysics.updateemissionratetables starting for process 1...");
+		String alreadyKey = "updateemissionrates|" + processID;
 		if(alreadyDoneFlags.contains(alreadyKey)) {
-			Logger.log(LogMessageCategory.DEBUG,"SourceTypePhysics.updateEmissionRateTables already done");
+			Logger.log(LogMessageCategory.DEBUG,"sourcetypephysics.updateemissionratetables already done");
 			return;
 		}
 		alreadyDoneFlags.add(alreadyKey);
@@ -463,8 +463,8 @@ public class SourceTypePhysics {
 		SQLRunner.Query query = new SQLRunner.Query();
 		ArrayList<String> updateStatements = new ArrayList<String>();
 		String[] tableNames = {
-			"emissionRate",
-			"emissionRateByAge"
+			"emissionrate",
+			"emissionratebyage"
 		};
 
 		TreeMap<Integer,TreeSet<Integer>> offsetsByPolProcess = new TreeMap<Integer,TreeSet<Integer>>();
@@ -475,26 +475,26 @@ public class SourceTypePhysics {
 			MYGroupYesOrNo = 'Y';
 		}
 
-		String sql = "select distinct stpm.opModeIDOffset, sbd.polProcessID, sbd.sourceBinID"
-				+ " from sourceTypePolProcess stpp"
-				+ " inner join sourceUseTypePhysicsMapping stpm on ("
-				+ " 	stpm.realSourceTypeID=stpp.sourceTypeID"
-				+ " 	and stpm.opModeIDOffset>0)"
-				+ " inner join pollutantProcessAssoc ppa on ("
-				+ " 	ppa.polProcessID=stpp.polProcessID"
-				+ " 	and ppa.processID=" + processID
-				+ " 	and stpp.isMYGroupReqd='" + MYGroupYesOrNo + "')"
-				+ " inner join sourceBinDistribution sbd on ("
-				+ " 	sbd.polProcessID=ppa.polProcessID)"
-				+ " inner join sourceTypeModelYear stmy on ("
-				+ " 	stmy.sourceTypeModelYearID=sbd.sourceTypeModelYearID"
-				+ " 	and stmy.sourceTypeID=stpm.realSourceTypeID"
-				+ " 	and stmy.modelYearID >= stpm.beginModelYearID"
-				+ " 	and stmy.modelYearID <= stpm.endModelYearID)"
-				+ " inner join sourceBin sb on ("
-				+ " 	sb.sourceBinID = sbd.sourceBinID"
-				+ " 	and (sb.regClassID = 0 or sb.regClassID = stpm.regClassID or stpm.regClassID = 0) )"
-				+ " order by stpm.opModeIDOffset, sbd.polProcessID";
+		String sql = "select distinct stpm.opmodeidoffset, sbd.polprocessid, sbd.sourcebinid"
+				+ " from sourcetypepolprocess stpp"
+				+ " inner join sourceusetypephysicsmapping stpm on ("
+				+ " 	stpm.realsourcetypeid=stpp.sourcetypeid"
+				+ " 	and stpm.opmodeidoffset>0)"
+				+ " inner join pollutantprocessassoc ppa on ("
+				+ " 	ppa.polprocessid=stpp.polprocessid"
+				+ " 	and ppa.processid=" + processID
+				+ " 	and stpp.ismygroupreqd='" + mygroupyesorno + "')"
+				+ " inner join sourcebindistribution sbd on ("
+				+ " 	sbd.polprocessid=ppa.polprocessid)"
+				+ " inner join sourcetypemodelyear stmy on ("
+				+ " 	stmy.sourcetypemodelyearid=sbd.sourcetypemodelyearid"
+				+ " 	and stmy.sourcetypeid=stpm.realsourcetypeid"
+				+ " 	and stmy.modelyearid >= stpm.beginmodelyearid"
+				+ " 	and stmy.modelyearid <= stpm.endmodelyearid)"
+				+ " inner join sourcebin sb on ("
+				+ " 	sb.sourcebinid = sbd.sourcebinid"
+				+ " 	and (sb.regclassid = 0 or sb.regclassid = stpm.regclassid or stpm.regclassid = 0) )"
+				+ " order by stpm.opmodeidoffset, sbd.polprocessid";
 
 		try {
 			checkSourceBins(db,processID);
@@ -509,7 +509,7 @@ public class SourceTypePhysics {
 				int tempPolProcessID = query.rs.getInt(2);
 				String tempSourceBinID = query.rs.getString(3);
 
-				//Logger.log(LogMessageCategory.DEBUG,"SourceTypePhysics.updateEmissionRateTables opModeIDOffset="+tempOpModeIDOffset + " polProcessID=" + tempPolProcessID + " sourceBinID=" + tempSourceBinID);
+				//Logger.log(LogMessageCategory.DEBUG,"sourcetypephysics.updateemissionratetables opmodeidoffset="+tempopmodeidoffset + " polprocessid=" + temppolprocessid + " sourcebinid=" + tempSourceBinID);
 				if(tempOpModeIDOffset != opModeIDOffset || tempPolProcessID != polProcessID) {
 					if(sourceBinIDs.length() > 0) {
 						for(int ti=0;ti<tableNames.length;ti++) {
@@ -518,11 +518,11 @@ public class SourceTypePhysics {
 						}
 
 						/*
-						sql = "insert ignore into fullACAdjustment (sourceTypeID, polProcessID, fullACAdjustment, fullACAdjustmentCV, opModeID)"
-								+ " select sourceTypeID, polProcessID, fullACAdjustment, fullACAdjustmentCV, opModeID + " + opModeIDOffset
-								+ " from fullACAdjustment"
-								+ " where opModeID >= 0 and opModeID < 100"
-								+ " and polProcessID = " + polProcessID;
+						sql = "insert ignore into fullacadjustment (sourcetypeid, polprocessid, fullacadjustment, fullacadjustmentcv, opmodeid)"
+								+ " select sourcetypeid, polprocessid, fullacadjustment, fullacadjustmentcv, opmodeid + " + opModeIDOffset
+								+ " from fullacadjustment"
+								+ " where opmodeid >= 0 and opmodeid < 100"
+								+ " and polprocessid = " + polProcessID;
 						updateStatements.add(sql);
 						*/
 						String textOpModeIDOffset = "" + opModeIDOffset;
@@ -558,11 +558,11 @@ public class SourceTypePhysics {
 				}
 
 				/*
-				sql = "insert ignore into fullACAdjustment (sourceTypeID, polProcessID, fullACAdjustment, fullACAdjustmentCV, opModeID)"
-						+ " select sourceTypeID, polProcessID, fullACAdjustment, fullACAdjustmentCV, opModeID + " + opModeIDOffset
-						+ " from fullACAdjustment"
-						+ " where opModeID >= 0 and opModeID < 100"
-						+ " and polProcessID = " + polProcessID;
+				sql = "insert ignore into fullacadjustment (sourcetypeid, polprocessid, fullacadjustment, fullacadjustmentcv, opmodeid)"
+						+ " select sourcetypeid, polprocessid, fullacadjustment, fullacadjustmentcv, opmodeid + " + opModeIDOffset
+						+ " from fullacadjustment"
+						+ " where opmodeid >= 0 and opmodeid < 100"
+						+ " and polprocessid = " + polProcessID;
 				updateStatements.add(sql);
 				*/
 				String textOpModeIDOffset = "" + opModeIDOffset;
@@ -580,11 +580,11 @@ public class SourceTypePhysics {
 				if(polProcessIDs == null || polProcessIDs.size() <= 0) {
 					continue;
 				}
-				sql = "insert ignore into fullACAdjustment (sourceTypeID, polProcessID, fullACAdjustment, fullACAdjustmentCV, opModeID)"
-						+ " select sourceTypeID, polProcessID, fullACAdjustment, fullACAdjustmentCV, opModeID + " + textOpModeIDOffset
-						+ " from fullACAdjustment"
-						+ " where opModeID >= 0 and opModeID < 100"
-						+ " and polProcessID in (";
+				sql = "insert ignore into fullacadjustment (sourcetypeid, polprocessid, fullacadjustment, fullacadjustmentcv, opmodeid)"
+						+ " select sourcetypeid, polprocessid, fullacadjustment, fullacadjustmentcv, opmodeid + " + textOpModeIDOffset
+						+ " from fullacadjustment"
+						+ " where opmodeid >= 0 and opmodeid < 100"
+						+ " and polprocessid in (";
 				boolean isFirst = true;
 				for(String textPolProcessID : polProcessIDs) {
 					if(!isFirst) {
@@ -600,17 +600,17 @@ public class SourceTypePhysics {
 			for(Iterator<String> i=updateStatements.iterator();i.hasNext();) {
 				sql = i.next();
 				SQLRunner.executeSQL(db,sql);
-				//Logger.log(LogMessageCategory.DEBUG,"SourceTypePhysics.updateEmissionRateTables "+sql);
+				//Logger.log(LogMessageCategory.DEBUG,"sourcetypephysics.updateemissionratetables "+sql);
 			}
 			updateStatements.clear();
 			// Remove unwanted unadjusted entries
-			sql = "select distinct p1.regClassID"
-					+ " from sourceUseTypePhysicsMapping p1"
-					+ " left outer join sourceUseTypePhysicsMapping p2 on ("
-					+ " 	p1.regClassID = p2.regClassID"
-					+ " 	and p2.opModeIDOffset = 0"
+			sql = "select distinct p1.regclassid"
+					+ " from sourceusetypephysicsmapping p1"
+					+ " left outer join sourceusetypephysicsmapping p2 on ("
+					+ " 	p1.regclassid = p2.regclassid"
+					+ " 	and p2.opmodeidoffset = 0"
 					+ " )"
-					+ " where p2.regClassID is null and p1.regClassID > 0";
+					+ " where p2.regclassid is null and p1.regclassid > 0";
 			query.open(db,sql);
 			/*
 			while(query.rs.next()) {
@@ -618,12 +618,12 @@ public class SourceTypePhysics {
 				for(int ti=0;ti<tableNames.length;ti++) {
 					String tableName = tableNames[ti];
 					sql = "delete from " + tableName
-							+ " where opModeID >= 0 and opModeID < 100"
-							+ " and polProcessID = " + polProcessID
-							+ " and sourceBinID in ("
-							+ " 	select sourceBinID"
-							+ " 	from sourceBin"
-							+ " 	where regClassID = " + regClassID
+							+ " where opmodeid >= 0 and opmodeid < 100"
+							+ " and polprocessid = " + polProcessID
+							+ " and sourcebinid in ("
+							+ " 	select sourcebinid"
+							+ " 	from sourcebin"
+							+ " 	where regclassid = " + regClassID
 							+ " )";
 					updateStatements.add(sql);
 				}
@@ -642,12 +642,12 @@ public class SourceTypePhysics {
 				for(int ti=0;ti<tableNames.length;ti++) {
 					String tableName = tableNames[ti];
 					sql = "delete from " + tableName
-							+ " where opModeID >= 0 and opModeID < 100"
-							+ " and polProcessID = " + polProcessID
-							+ " and sourceBinID in ("
-							+ " 	select sourceBinID"
-							+ " 	from sourceBin"
-							+ " 	where regClassID in (" + regClassIDsCSV + ")"
+							+ " where opmodeid >= 0 and opmodeid < 100"
+							+ " and polprocessid = " + polProcessID
+							+ " and sourcebinid in ("
+							+ " 	select sourcebinid"
+							+ " 	from sourcebin"
+							+ " 	where regclassid in (" + regclassidscsv + ")"
 							+ " )";
 					updateStatements.add(sql);
 				}
@@ -655,7 +655,7 @@ public class SourceTypePhysics {
 			for(Iterator<String> i=updateStatements.iterator();i.hasNext();) {
 				sql = i.next();
 				SQLRunner.executeSQL(db,sql);
-				//Logger.log(LogMessageCategory.DEBUG,"SourceTypePhysics.updateEmissionRateTables#2 "+sql);
+				//Logger.log(LogMessageCategory.DEBUG,"sourcetypephysics.updateemissionratetables#2 "+sql);
 			}
 			updateStatements.clear();
 			// Ensure opModePolProcAssoc has the required values
@@ -670,13 +670,13 @@ public class SourceTypePhysics {
 						allOffsets.add(offset);
 						for(int ti=0;ti<tableNames.length;ti++) {
 							String tableName = tableNames[ti];
-							sql = "insert ignore into opModePolProcAssoc (polProcessID, opModeID)"
-									+ " select distinct " + polProcessInt + ", opModeID"
+							sql = "insert ignore into opmodepolprocassoc (polprocessid, opmodeid)"
+									+ " select distinct " + polprocessint + ", opmodeid"
 									+ " from " + tableName
-									+ " where polProcessID=" + polProcessInt
-									+ " and opModeID >= 0 + " + offset + " and opModeID < 100 + " + offset;
+									+ " where polprocessid=" + polProcessInt
+									+ " and opmodeid >= 0 + " + offset + " and opmodeid < 100 + " + offset;
 							SQLRunner.executeSQL(db,sql);
-							//Logger.log(LogMessageCategory.DEBUG,"SourceTypePhysics.updateEmissionRateTables#4 "+sql);
+							//Logger.log(LogMessageCategory.DEBUG,"sourcetypephysics.updateemissionratetables#4 "+sql);
 						}
 					}
 				}
@@ -684,17 +684,17 @@ public class SourceTypePhysics {
 			for(int i=0;i<tableNames.length;i++) {
 				sql = "analyze table " + tableNames[i];
 				SQLRunner.executeSQL(db,sql);
-				//Logger.log(LogMessageCategory.DEBUG,"SourceTypePhysics.updateEmissionRateTables#3 "+sql);
+				//Logger.log(LogMessageCategory.DEBUG,"sourcetypephysics.updateemissionratetables#3 "+sql);
 			}
-			sql = "analyze table opModePolProcAssoc";
+			sql = "analyze table opmodepolprocassoc";
 			SQLRunner.executeSQL(db,sql);
 		} catch(SQLException e) {
-			Logger.logError(e,"Unable to update emission rate tables for source type physics");
+			Logger.logError(e,"unable to update emission rate tables for source type physics");
 			throw e;
 		} finally {
 			query.onFinally();
 		}
-		Logger.log(LogMessageCategory.DEBUG,"SourceTypePhysics.updateEmissionRateTables done");
+		Logger.log(LogMessageCategory.DEBUG,"sourcetypephysics.updateemissionratetables done");
 	}
 
 	/**
@@ -714,20 +714,20 @@ public class SourceTypePhysics {
 		sql = "drop table if exists physics_" + tableName;
 		updateStatements.add(sql);
 		
-		sql = "create table physics_" + tableName + " like " + tableName;
+		sql = "create table physics_" + tablename + " like " + tableName;
 		updateStatements.add(sql);
 		
 		sql = "insert into physics_" + tableName
 				+ " select * from " + tableName
-				+ " where opModeID >= 0 and opModeID < 100"
-				+ " and polProcessID=" + polProcessID
-				+ " and sourceBinID in (" + sourceBinIDs + ")";
+				+ " where opmodeid >= 0 and opmodeid < 100"
+				+ " and polprocessid=" + polProcessID
+				+ " and sourcebinid in (" + sourcebinids + ")";
 		updateStatements.add(sql);
 
-		sql = "update physics_" + tableName + " set opModeID=opModeID+" + opModeIDOffset;
+		sql = "update physics_" + tablename + " set opmodeid=opmodeid+" + opModeIDOffset;
 		updateStatements.add(sql);
 		
-		sql = "insert ignore into " + tableName + " select * from physics_" + tableName;
+		sql = "insert ignore into " + tablename + " select * from physics_" + tableName;
 		updateStatements.add(sql);
 	}
 
@@ -737,7 +737,7 @@ public class SourceTypePhysics {
 	 * @throws SQLException if anything goes wrong
 	**/	
 	public void createExpandedOperatingModesTable(Connection db) throws SQLException {
-		String alreadyKey = "createExpandedOperatingModesTable";
+		String alreadyKey = "createexpandedoperatingmodestable";
 		if(alreadyDoneFlags.contains(alreadyKey)) {
 			return;
 		}
@@ -746,25 +746,25 @@ public class SourceTypePhysics {
 		String sql = "";
 		try {
 			String[] statements = {
-				"drop table if exists physicsOperatingMode",
+				"drop table if exists physicsoperatingmode",
 	
-				"create table physicsOperatingMode like operatingMode",
+				"create table physicsoperatingmode like operatingmode",
 	
-				"insert into physicsOperatingMode select * from operatingMode",
+				"insert into physicsoperatingmode select * from operatingmode",
 	
-				"insert ignore into physicsOperatingMode (opModeID, opModeName, VSPLower, VSPUpper, speedLower, speedUpper, brakeRate1Sec, brakeRate3Sec, minSoakTime, maxSoakTime)"
-						+ " select distinct opModeID+opModeIDOffset, "
-						+ " 	opModeName, VSPLower, VSPUpper, speedLower, speedUpper, brakeRate1Sec, brakeRate3Sec, minSoakTime, maxSoakTime"
-						+ " from operatingMode, sourceUseTypePhysicsMapping"
-						+ " where opModeID >= 0 and opModeID < 100"
-						+ " and opModeIDOffset>0"
+				"insert ignore into physicsoperatingmode (opmodeid, opmodename, vsplower, vspupper, speedlower, speedupper, brakerate1sec, brakerate3sec, minsoaktime, maxsoaktime)"
+						+ " select distinct opmodeid+opmodeidoffset, "
+						+ " 	opmodename, vsplower, vspupper, speedlower, speedupper, brakerate1sec, brakerate3sec, minsoaktime, maxsoaktime"
+						+ " from operatingmode, sourceusetypephysicsmapping"
+						+ " where opmodeid >= 0 and opmodeid < 100"
+						+ " and opmodeidoffset>0"
 			};
 			for(int i=0;i<statements.length;i++) {
 				sql = statements[i];
 				SQLRunner.executeSQL(db,sql);
 			}
 		} catch(SQLException e) {
-			Logger.logError(e,"Unable to update emission rate tables for source type physics");
+			Logger.logError(e,"unable to update emission rate tables for source type physics");
 			throw e;
 		}
 	}
@@ -776,189 +776,189 @@ public class SourceTypePhysics {
 	 * @throws SQLException if anything goes wrong
 	**/
 	void checkSourceBins(Connection db, int processID) throws SQLException {
-		String alreadyKey = "checkSourceBins|" + processID;
+		String alreadyKey = "checksourcebins|" + processID;
 		if(alreadyDoneFlags.contains(alreadyKey)) {
 			return;
 		}
 		alreadyDoneFlags.add(alreadyKey);
 
 		String[] setupStatements = {
-			"create table if not exists sourceBinModelYearRange ("
-					+ " 	sourceBinID bigint not null,"
-					+ " 	polProcessID int not null,"
-					+ " 	minModelYearID int not null,"
-					+ " 	maxModelYearID int not null,"
-					+ " 	howManyModelYears int not null,"
-					+ " 	primary key (sourceBinID, polProcessID)"
+			"create table if not exists sourcebinmodelyearrange ("
+					+ " 	sourcebinid bigint not null,"
+					+ " 	polprocessid int not null,"
+					+ " 	minmodelyearid int not null,"
+					+ " 	maxmodelyearid int not null,"
+					+ " 	howmanymodelyears int not null,"
+					+ " 	primary key (sourcebinid, polprocessid)"
 					+ " )",
 
-			"insert ignore into sourceBinModelYearRange(sourceBinID,polProcessID,minModelYearID,maxModelYearID,howManyModelYears)"
-					+ " select sbd.sourceBinID, sbd.polProcessID, min(stmy.modelYearID) as minModelYearID, max(stmy.modelYearID) as maxModelYearID, count(distinct stmy.modelYearID) as howMany"
-					+ " from sourceTypePolProcess stpp"
-					+ " inner join pollutantProcessAssoc ppa on ("
-					+ " 	ppa.polProcessID=stpp.polProcessID"
-					+ " 	and ppa.processID=" + processID
-					+ " 	and stpp.isMYGroupReqd='Y')"
-					+ " inner join sourceBinDistribution sbd on ("
-					+ " 	sbd.polProcessID=ppa.polProcessID)"
-					+ " inner join sourceTypeModelYear stmy on ("
-					+ " 	stmy.sourceTypeModelYearID=sbd.sourceTypeModelYearID"
-					+ " 	and stmy.sourceTypeID=stpp.sourceTypeID)"
-					+ " group by sbd.sourceBinID, sbd.polProcessID",
+			"insert ignore into sourcebinmodelyearrange(sourcebinid,polprocessid,minmodelyearid,maxmodelyearid,howmanymodelyears)"
+					+ " select sbd.sourcebinid, sbd.polprocessid, min(stmy.modelyearid) as minmodelyearid, max(stmy.modelyearid) as maxmodelyearid, count(distinct stmy.modelyearid) as howmany"
+					+ " from sourcetypepolprocess stpp"
+					+ " inner join pollutantprocessassoc ppa on ("
+					+ " 	ppa.polprocessid=stpp.polprocessid"
+					+ " 	and ppa.processid=" + processID
+					+ " 	and stpp.ismygroupreqd='Y')"
+					+ " inner join sourcebindistribution sbd on ("
+					+ " 	sbd.polprocessid=ppa.polprocessid)"
+					+ " inner join sourcetypemodelyear stmy on ("
+					+ " 	stmy.sourcetypemodelyearid=sbd.sourcetypemodelyearid"
+					+ " 	and stmy.sourcetypeid=stpp.sourcetypeid)"
+					+ " group by sbd.sourcebinid, sbd.polprocessid",
 
 			// Get sbid, my, st, rc that are allowed.
-			"drop table if exists allowedSourceBinMYSTRC",
-			"create table allowedSourceBinMYSTRC ("
-					+ " 	sourceBinID bigint not null,"
-					+ " 	modelYearID smallint not null,"
-					+ " 	sourceTypeID smallint not null,"
-					+ " 	regClassID smallint not null,"
-					+ " 	primary key (modelYearID, sourceTypeID, regClassID, sourceBinID)"
+			"drop table if exists allowedsourcebinmystrc",
+			"create table allowedsourcebinmystrc ("
+					+ " 	sourcebinid bigint not null,"
+					+ " 	modelyearid smallint not null,"
+					+ " 	sourcetypeid smallint not null,"
+					+ " 	regclassid smallint not null,"
+					+ " 	primary key (modelyearid, sourcetypeid, regclassid, sourcebinid)"
 					+ " )",
-			"insert into allowedSourceBinMYSTRC (sourceBinID, modelYearID, sourceTypeID, regClassID)"
-					+ " select distinct sbd.sourceBinID, stmy.modelYearID, stpp.sourceTypeID, sb.regClassID"
-					+ " from sourceTypePolProcess stpp"
-					+ " inner join pollutantProcessAssoc ppa on ("
-					+ " 	ppa.polProcessID=stpp.polProcessID"
-					+ " 	and ppa.processID=" + processID
-					+ " 	and stpp.isMYGroupReqd='Y')"
-					+ " inner join sourceBinDistribution sbd on ("
-					+ " 	sbd.polProcessID=ppa.polProcessID)"
-					+ " inner join sourceTypeModelYear stmy on ("
-					+ " 	stmy.sourceTypeModelYearID=sbd.sourceTypeModelYearID"
-					+ " 	and stmy.sourceTypeID=stpp.sourceTypeID)"
-					+ " inner join sourceBin sb on ("
-					+ " 	sb.sourceBinID = sbd.sourceBinID)"
-					+ " inner join sampleVehiclePopulation svp on ("
-					+ " 	svp.sourceTypeModelYearID = stmy.sourceTypeModelYearID"
-					+ " 	and (sb.regClassID = 0 or svp.regClassID = sb.regClassID)"
-					+ " 	and svp.fuelTypeID = sb.fuelTypeID)",
+			"insert into allowedsourcebinmystrc (sourcebinid, modelyearid, sourcetypeid, regclassid)"
+					+ " select distinct sbd.sourcebinid, stmy.modelyearid, stpp.sourcetypeid, sb.regclassid"
+					+ " from sourcetypepolprocess stpp"
+					+ " inner join pollutantprocessassoc ppa on ("
+					+ " 	ppa.polprocessid=stpp.polprocessid"
+					+ " 	and ppa.processid=" + processID
+					+ " 	and stpp.ismygroupreqd='Y')"
+					+ " inner join sourcebindistribution sbd on ("
+					+ " 	sbd.polprocessid=ppa.polprocessid)"
+					+ " inner join sourcetypemodelyear stmy on ("
+					+ " 	stmy.sourcetypemodelyearid=sbd.sourcetypemodelyearid"
+					+ " 	and stmy.sourcetypeid=stpp.sourcetypeid)"
+					+ " inner join sourcebin sb on ("
+					+ " 	sb.sourcebinid = sbd.sourcebinid)"
+					+ " inner join samplevehiclepopulation svp on ("
+					+ " 	svp.sourcetypemodelyearid = stmy.sourcetypemodelyearid"
+					+ " 	and (sb.regclassid = 0 or svp.regclassid = sb.regclassid)"
+					+ " 	and svp.fueltypeid = sb.fueltypeid)",
 			// Get my, st, rc used by physics.
-			"drop table if exists usedMYSTRC",
-			"create table usedMYSTRC ("
-					+ " 	modelYearID smallint not null,"
-					+ " 	sourceTypeID smallint not null,"
-					+ " 	regClassID smallint not null,"
-					+ " 	primary key (modelYearID, sourceTypeID, regClassID)"
+			"drop table if exists usedmystrc",
+			"create table usedmystrc ("
+					+ " 	modelyearid smallint not null,"
+					+ " 	sourcetypeid smallint not null,"
+					+ " 	regclassid smallint not null,"
+					+ " 	primary key (modelyearid, sourcetypeid, regclassid)"
 					+ " )",
-			"insert into usedMYSTRC (modelYearID, sourceTypeID, regClassID)"
-					+ " select distinct stmy.modelYearID, stpm.realSourceTypeID as sourceTypeID, stpm.regClassID"
-					+ " from sourceUseTypePhysicsMapping stpm"
-					+ " inner join sourceTypeModelYear stmy on ("
-					+ " 	stmy.sourceTypeID=stpm.realSourceTypeID"
-					+ " 	and stmy.modelYearID >= stpm.beginModelYearID"
-					+ " 	and stmy.modelYearID <= stpm.endModelYearID)"
-					+ " inner join sampleVehiclePopulation svp on ("
-					+ " 	svp.sourceTypeModelYearID = stmy.sourceTypeModelYearID"
-					+ " 	and svp.regClassID = stpm.regClassID)",
+			"insert into usedmystrc (modelyearid, sourcetypeid, regclassid)"
+					+ " select distinct stmy.modelyearid, stpm.realsourcetypeid as sourcetypeid, stpm.regclassid"
+					+ " from sourceusetypephysicsmapping stpm"
+					+ " inner join sourcetypemodelyear stmy on ("
+					+ " 	stmy.sourcetypeid=stpm.realsourcetypeid"
+					+ " 	and stmy.modelyearid >= stpm.beginmodelyearid"
+					+ " 	and stmy.modelyearid <= stpm.endmodelyearid)"
+					+ " inner join samplevehiclepopulation svp on ("
+					+ " 	svp.sourcetypemodelyearid = stmy.sourcetypemodelyearid"
+					+ " 	and svp.regclassid = stpm.regclassid)",
 			// Find missing entries
-			"drop table if exists missingMYSTRC",
-			"create table missingMYSTRC ("
-					+ " 	modelYearID smallint not null,"
-					+ " 	sourceTypeID smallint not null,"
-					+ " 	regClassID smallint not null,"
-					+ " 	primary key (modelYearID, sourceTypeID, regClassID)"
+			"drop table if exists missingmystrc",
+			"create table missingmystrc ("
+					+ " 	modelyearid smallint not null,"
+					+ " 	sourcetypeid smallint not null,"
+					+ " 	regclassid smallint not null,"
+					+ " 	primary key (modelyearid, sourcetypeid, regclassid)"
 					+ " )",
-			"insert into missingMYSTRC (modelYearID, sourceTypeID, regClassID)"
-					+ " select distinct a.modelYearID, a.sourceTypeID, a.regClassID"
-					+ " from allowedSourceBinMYSTRC a"
-					+ " left outer join usedMYSTRC u using (modelYearID, sourceTypeID, regClassID)"
-					+ " where u.modelYearID is null",
+			"insert into missingmystrc (modelyearid, sourcetypeid, regclassid)"
+					+ " select distinct a.modelyearid, a.sourcetypeid, a.regclassid"
+					+ " from allowedsourcebinmystrc a"
+					+ " left outer join usedmystrc u using (modelyearid, sourcetypeid, regclassid)"
+					+ " where u.modelyearid is null",
 			// Report using a range
-			"drop table if exists missingMYSTRC_Ranges",
-			"create table missingMYSTRC_Ranges ("
-					+ " 	modelYearID smallint not null,"
-					+ " 	sourceTypeID smallint not null,"
-					+ " 	regClassID smallint not null,"
-					+ " 	isUpperLimit smallint not null,"
-					+ " 	minModelYearID smallint null,"
-					+ " 	maxModelYearID smallint null,"
-					+ " 	primary key (modelYearID, sourceTypeID, regClassID, isUpperLimit)"
+			"drop table if exists missingmystrc_ranges",
+			"create table missingmystrc_ranges ("
+					+ " 	modelyearid smallint not null,"
+					+ " 	sourcetypeid smallint not null,"
+					+ " 	regclassid smallint not null,"
+					+ " 	isupperlimit smallint not null,"
+					+ " 	minmodelyearid smallint null,"
+					+ " 	maxmodelyearid smallint null,"
+					+ " 	primary key (modelyearid, sourcetypeid, regclassid, isupperlimit)"
 					+ " )",
-			"insert into missingMYSTRC_Ranges (sourceTypeID, regClassID, modelYearID, isUpperLimit)"
-					+ " select b.sourceTypeID, b.regClassID, b.modelYearID,"
-					+ " 	case when bp1.modelYearID is null then 1 else 0 end as isUpperLimit"
-					+ " from missingMYSTRC b"
-					+ " left outer join missingMYSTRC bp1 on ("
-					+ " 	b.modelYearID + 1 = bp1.modelYearID"
-					+ " 	and b.sourceTypeID = bp1.sourceTypeID"
-					+ " 	and b.regClassID = bp1.regClassID"
+			"insert into missingmystrc_ranges (sourcetypeid, regclassid, modelyearid, isupperlimit)"
+					+ " select b.sourcetypeid, b.regclassid, b.modelyearid,"
+					+ " 	case when bp1.modelyearid is null then 1 else 0 end as isupperlimit"
+					+ " from missingmystrc b"
+					+ " left outer join missingmystrc bp1 on ("
+					+ " 	b.modelyearid + 1 = bp1.modelyearid"
+					+ " 	and b.sourcetypeid = bp1.sourcetypeid"
+					+ " 	and b.regclassid = bp1.regclassid"
 					+ " )"
-					+ " left outer join missingMYSTRC bm1 on ("
-					+ " 	b.modelYearID - 1 = bm1.modelYearID"
-					+ " 	and b.sourceTypeID = bm1.sourceTypeID"
-					+ " 	and b.regClassID = bm1.regClassID"
+					+ " left outer join missingmystrc bm1 on ("
+					+ " 	b.modelyearid - 1 = bm1.modelyearid"
+					+ " 	and b.sourcetypeid = bm1.sourcetypeid"
+					+ " 	and b.regclassid = bm1.regclassid"
 					+ " )"
-					+ " where bp1.modelYearID is null or bm1.modelYearID is null",
-			"drop table if exists missingMYSTRC_Ranges2",
-			"create table missingMYSTRC_Ranges2 like missingMYSTRC_Ranges",
-			"insert into missingMYSTRC_Ranges2 select * from missingMYSTRC_Ranges",
-			"update missingMYSTRC_Ranges set minModelYearID=modelYearID where isUpperLimit = 0",
-			"update missingMYSTRC_Ranges set maxModelYearID=("
-					+ " 	select min(modelYearID)"
-					+ " 	from missingMYSTRC_Ranges2 r"
-					+ " 	where r.isUpperLimit=1"
-					+ " 	and r.modelYearID >= missingMYSTRC_Ranges.modelYearID"
+					+ " where bp1.modelyearid is null or bm1.modelyearid is null",
+			"drop table if exists missingmystrc_ranges2",
+			"create table missingmystrc_ranges2 like missingmystrc_ranges",
+			"insert into missingmystrc_ranges2 select * from missingmystrc_ranges",
+			"update missingmystrc_ranges set minmodelyearid=modelyearid where isupperlimit = 0",
+			"update missingmystrc_ranges set maxmodelyearid=("
+					+ " 	select min(modelyearid)"
+					+ " 	from missingmystrc_ranges2 r"
+					+ " 	where r.isupperlimit=1"
+					+ " 	and r.modelyearid >= missingmystrc_ranges.modelyearid"
 					+ " )"
-					+ " where isUpperLimit=0",
-			"drop table if exists missingMYSTRC_Ranges2"
+					+ " where isupperlimit=0",
+			"drop table if exists missingmystrc_ranges2"
 		};
 		
 		String[] queryStatements = {
 				/*
-				"select distinct case when howMany > 1 then"
-				+ " 		concat('Sourcebin ',sourceBinID,' is affected by ',howMany,' sourceUseTypePhysics entries.')"
+				"select distinct case when howmany > 1 then"
+				+ " 		concat('sourcebin ',sourcebinid,' is affected by ',howmany,' sourceusetypephysics entries.')"
 				+ " 	else ''"
-				+ " 	end as errorMessage"
+				+ " 	end as errormessage"
 				+ " from ("
-					+ " select sourceTypeID, sourceBinID, "
-					+ " 	count(distinct opModeIDOffset) as howMany, "
-					+ " 	min(minModelYearID) as minModelYearID, "
-					+ " 	max(maxModelYearID) as maxModelYearID,"
-					+ " 	min(binMinModelYearID) as binMinModelYearID,"
-					+ " 	max(binMaxModelYearID) as binMaxModelYearID,"
-					+ " 	max(howManyModelYears) as howManyModelYears,"
-					+ " 	max(binHowManyModelYears) as binHowManyModelYears"
+					+ " select sourcetypeid, sourcebinid, "
+					+ " 	count(distinct opmodeidoffset) as howmany, "
+					+ " 	min(minmodelyearid) as minmodelyearid, "
+					+ " 	max(maxmodelyearid) as maxmodelyearid,"
+					+ " 	min(binminmodelyearid) as binminmodelyearid,"
+					+ " 	max(binmaxmodelyearid) as binmaxmodelyearid,"
+					+ " 	max(howmanymodelyears) as howmanymodelyears,"
+					+ " 	max(binhowmanymodelyears) as binhowmanymodelyears"
 					+ " from ("
-						+ " select stpp.sourceTypeID, sbd.sourceBinID, sbd.polProcessID, stpm.opModeIDOffset, "
-						+ " 	min(stmy.modelYearID) as minModelYearID, max(stmy.modelYearID) as maxModelYearID, "
-						+ " 	count(distinct stmy.modelYearID) as howManyModelYears,"
-						+ " 	sbmyr.minModelYearID as binMinModelYearID,"
-						+ " 	sbmyr.maxModelYearID as binMaxModelYearID,"
-						+ " 	sbmyr.howManyModelYears as binHowManyModelYears"
-						+ " from sourceTypePolProcess stpp"
-						+ " inner join sourceUseTypePhysicsMapping stpm on ("
-						+ " 	stpm.realSourceTypeID=stpp.sourceTypeID"
-						+ " 	and stpm.opModeIDOffset>=0)"
-						+ " inner join pollutantProcessAssoc ppa on ("
-						+ " 	ppa.polProcessID=stpp.polProcessID"
-						+ " 	and ppa.processID=" + processID
-						+ " 	and stpp.isMYGroupReqd='Y')"
-						+ " inner join sourceBinDistribution sbd on ("
-						+ " 	sbd.polProcessID=ppa.polProcessID)"
-						+ " inner join sourceTypeModelYear stmy on ("
-						+ " 	stmy.sourceTypeModelYearID=sbd.sourceTypeModelYearID"
-						+ " 	and stmy.sourceTypeID=stpm.realSourceTypeID"
-						+ " 	and stmy.modelYearID >= stpm.beginModelYearID"
-						+ " 	and stmy.modelYearID <= stpm.endModelYearID)"
-						+ " inner join sourceBin sb on ("
-						+ " 	sb.sourceBinID = sbd.sourceBinID"
-						+ " 	and (sb.regClassID = 0 or sb.regClassID = stpm.regClassID or stpm.regClassID = 0) )"
-						+ " inner join sourceBinModelYearRange sbmyr on ("
-						+ " 	sbmyr.sourceBinID = sbd.sourceBinID"
-						+ " 	and sbmyr.polProcessID = sbd.polProcessID)"
-						+ " group by stpp.sourceTypeID, sbd.sourceBinID, sbd.polProcessID, stpm.opModeIDOffset"
-					+ " ) T"
-					+ " group by sourceTypeID, sourceBinID"
-				+ " ) T2"
-				+ " where howMany > 1"
-				+ " order by sourceBinID",
+						+ " select stpp.sourcetypeid, sbd.sourcebinid, sbd.polprocessid, stpm.opmodeidoffset, "
+						+ " 	min(stmy.modelyearid) as minmodelyearid, max(stmy.modelyearid) as maxmodelyearid, "
+						+ " 	count(distinct stmy.modelyearid) as howmanymodelyears,"
+						+ " 	sbmyr.minmodelyearid as binminmodelyearid,"
+						+ " 	sbmyr.maxmodelyearid as binmaxmodelyearid,"
+						+ " 	sbmyr.howmanymodelyears as binhowmanymodelyears"
+						+ " from sourcetypepolprocess stpp"
+						+ " inner join sourceusetypephysicsmapping stpm on ("
+						+ " 	stpm.realsourcetypeid=stpp.sourcetypeid"
+						+ " 	and stpm.opmodeidoffset>=0)"
+						+ " inner join pollutantprocessassoc ppa on ("
+						+ " 	ppa.polprocessid=stpp.polprocessid"
+						+ " 	and ppa.processid=" + processID
+						+ " 	and stpp.ismygroupreqd='Y')"
+						+ " inner join sourcebindistribution sbd on ("
+						+ " 	sbd.polprocessid=ppa.polprocessid)"
+						+ " inner join sourcetypemodelyear stmy on ("
+						+ " 	stmy.sourcetypemodelyearid=sbd.sourcetypemodelyearid"
+						+ " 	and stmy.sourcetypeid=stpm.realsourcetypeid"
+						+ " 	and stmy.modelyearid >= stpm.beginmodelyearid"
+						+ " 	and stmy.modelyearid <= stpm.endmodelyearid)"
+						+ " inner join sourcebin sb on ("
+						+ " 	sb.sourcebinid = sbd.sourcebinid"
+						+ " 	and (sb.regclassid = 0 or sb.regclassid = stpm.regclassid or stpm.regclassid = 0) )"
+						+ " inner join sourcebinmodelyearrange sbmyr on ("
+						+ " 	sbmyr.sourcebinid = sbd.sourcebinid"
+						+ " 	and sbmyr.polprocessid = sbd.polprocessid)"
+						+ " group by stpp.sourcetypeid, sbd.sourcebinid, sbd.polprocessid, stpm.opmodeidoffset"
+					+ " ) t"
+					+ " group by sourcetypeid, sourcebinid"
+				+ " ) t2"
+				+ " where howmany > 1"
+				+ " order by sourcebinid",
 				*/
 
-				"select concat('Sourcetype ',sourceTypeID,' regClass ',regClassID,' has no sourceUseTypePhysics coverage for model years ',minModelYearID,'-',maxModelYearID) as errorMessage"
-						+ " from missingMYSTRC_Ranges"
-						+ " where isUpperLimit=0 and minModelYearID is not null and maxModelYearID is not null"
-						+ " order by sourceTypeID, regClassID, minModelYearID"
+				"select concat('sourcetype ',sourcetypeid,' regclass ',regclassid,' has no sourceusetypephysics coverage for model years ',minmodelyearid,'-',maxmodelyearid) as errormessage"
+						+ " from missingmystrc_ranges"
+						+ " where isupperlimit=0 and minmodelyearid is not null and maxmodelyearid is not null"
+						+ " order by sourcetypeid, regclassid, minmodelyearid"
 		};
 
 		String sql = "";
@@ -983,12 +983,12 @@ public class SourceTypePhysics {
 						continue;
 					}
 					alreadyDoneMessages.add(message);
-					Logger.log(LogMessageCategory.ERROR,"ERROR: " + message);
+					Logger.log(LogMessageCategory.ERROR,"error: " + message);
 				}
 				query.close();
 			}
 		} catch(SQLException e) {
-			Logger.logError(e,"Unable to check sourcebins using: " + sql);
+			Logger.logError(e,"unable to check sourcebins using: " + sql);
 			throw e;
 		} finally {
 			query.onFinally();
@@ -1006,16 +1006,16 @@ public class SourceTypePhysics {
 		
 		// Step 1: Create temporary table to hold the offset opModeIDs
 		String[] setupStatements = {
-			"drop table if exists tempOffsetOpModeDistribution",
-			"create table if not exists tempOffsetOpModeDistribution like opmodedistribution", 
-			"drop table if exists tempOpModeUpdates",
-			"create table if not exists tempOpModeUpdates (" +
-				"sourceTypeID int, " +
-				"opModeID int, " +
-				"newOpModeID int, " +
-				"beginModelYearID int, " +
-				"endModelYearID int, " +
-				"UNIQUE KEY(sourceTypeID,opModeID,newOpModeID,beginModelYearID,endModelYearID), KEY(sourceTypeID,opModeID,newOpModeID,beginModelYearID,endModelYearID))"
+			"drop table if exists tempoffsetopmodedistribution",
+			"create table if not exists tempoffsetopmodedistribution like opmodedistribution", 
+			"drop table if exists tempopmodeupdates",
+			"create table if not exists tempopmodeupdates (" +
+				"sourcetypeid int, " +
+				"opmodeid int, " +
+				"newopmodeid int, " +
+				"beginmodelyearid int, " +
+				"endmodelyearid int, " +
+				"unique key(sourcetypeid,opmodeid,newopmodeid,beginmodelyearid,endmodelyearid), key(sourcetypeid,opmodeid,newopmodeid,beginmodelyearid,endmodelyearid))"
 		};
 		for(String sql : setupStatements) {
 			SQLRunner.executeSQL(db,sql);
@@ -1023,21 +1023,21 @@ public class SourceTypePhysics {
 		
 		// Step 2: Put the corect offset OpModeIDs in the temporary table using the non-offset table
 		for (SourceTypeOpMode s : gottenOpModeUpdates) {
-			String sql = "INSERT INTO tempOpModeUpdates VALUES (" + 
-				s.sourceTypeID + ", " + s.opModeID + ", " + s.newOpModeID + ", " + s.beginModelYearID + ", " + s.endModelYearID + ")";
+			String sql = "insert into tempopmodeupdates values (" + 
+				s.sourceTypeID + ", " + s.opmodeid + ", " + s.newopmodeid + ", " + s.beginmodelyearid + ", " + s.endmodelyearid + ")";
 			SQLRunner.executeSQL(db,sql);
 		}
 		// join the update table with the existing op mode distribution table
 		String sql = "insert into tempoffsetopmodedistribution " +
-			"select tomu.sourceTypeID, omd.hourDayID, omd.linkID, omd.polProcessID, tomu.newopModeID, omd.opModeFraction, omd.opModeFractionCV, omd.isUserInput " +
-			"FROM tempopmodeupdates tomu " +
-			"LEFT JOIN opmodedistribution omd " +
-			"USING (sourceTypeID,opModeID) " +
-			"WHERE opModeFraction IS NOT NULL and omd.opModeID < 100 and linkID > 0";
+			"select tomu.sourcetypeid, omd.hourdayid, omd.linkid, omd.polprocessid, tomu.newopmodeid, omd.opmodefraction, omd.opmodefractioncv, omd.isuserinput " +
+			"from tempopmodeupdates tomu " +
+			"left join opmodedistribution omd " +
+			"using (sourcetypeid,opmodeid) " +
+			"where opmodefraction is not null and omd.opmodeid < 100 and linkid > 0";
 		SQLRunner.executeSQL(db,sql);
 		
 		// Step 3: delete relevant rows from old table without the offset IDs
-		sql = "delete from opmodedistribution where opModeID < 100 and linkID > 0";
+		sql = "delete from opmodedistribution where opmodeid < 100 and linkid > 0";
 		SQLRunner.executeSQL(db,sql);
 		
 		// Step 4: put all the data from the temporary table into the existing table
@@ -1045,9 +1045,9 @@ public class SourceTypePhysics {
 		SQLRunner.executeSQL(db,sql);
 		
 		// Step 5: drop the temporary tables
-		sql = "drop table if exists tempOffsetOpModeDistribution;";
+		sql = "drop table if exists tempoffsetopmodedistribution;";
 		SQLRunner.executeSQL(db,sql);
-		sql = "drop table if exists tempOpModeUpdates;";
+		sql = "drop table if exists tempopmodeupdates;";
 		SQLRunner.executeSQL(db,sql);
 	}
 }
