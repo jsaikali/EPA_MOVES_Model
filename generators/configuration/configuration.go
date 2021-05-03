@@ -131,7 +131,7 @@ func TestExecutionDatabase() {
 	defer db.Close()
 
 	fmt.Println("Running query in execution database...")
-	rows, err := db.Query("select ageID, ageGroupID from ageCategory")
+	rows, err := db.Query("select ageid, agegroupid from agecategory")
 	CheckErr(err)
 
     defer rows.Close()

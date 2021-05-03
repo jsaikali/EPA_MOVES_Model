@@ -189,39 +189,39 @@ public class GenericImporter extends ImporterBase {
 			// ----- preferentially to NonRoad tables (such as with ageID) but still accept bindings
 			// to tables in the main default database (such as fuelTypeID).
 			String[] basicPairs = {
-				"ageID", "NRAgeCategory",
-				"ageID", "ageCategory",
-				"countyID", "County",
-				"stateID", "State",
-				"zoneID", "Zone",
-				"opModeID", "OperatingMode",
-				"monthGroupID", "MonthGroupOfAnyYear",
-				"monthID", "MonthOfAnyYear",
-				"fuelFormulationID", "FuelFormulation",
-				"fuelSubTypeID", "FuelSubtype",
-				"fuelTypeID", "FuelType",
-				"fuelYearID", "FuelSupplyYear",
-				"countyID", "CountyState",
-				"HPMSVtypeID", "HPMSVType",
-				"roadTypeID", "RoadType",
-				"avgSpeedBinID", "AvgSpeedBin",
-				"sourceTypeID", "NRSourceUseType",
-				"sourceTypeID", "SourceUseType",
-				"hourID", "HourOfAnyDay",
-				"hourDayID", "HourDay",
-				"polProcessID", "PollutantProcessAssoc",
-				"polProcessID", "IMPollutantProcessAssoc",
-				"inspectFreq", "IMInspectFreq",
-				"testStandardsID", "IMTestStandards",
-				"engTechID", "EngineTech",		
-				"dayID", "DayOfAnyWeek",
+				"ageid", "nragecategory",
+				"ageid", "agecategory",
+				"countyid", "county",
+				"stateid", "state",
+				"zoneid", "zone",
+				"opmodeid", "operatingmode",
+				"monthgroupid", "monthgroupofanyyear",
+				"monthid", "monthofanyyear",
+				"fuelformulationid", "fuelformulation",
+				"fuelsubtypeid", "fuelsubtype",
+				"fueltypeid", "fueltype",
+				"fuelyearid", "fuelsupplyyear",
+				"countyid", "countystate",
+				"hpmsvtypeid", "hpmsvtype",
+				"roadtypeid", "roadtype",
+				"avgspeedbinid", "avgspeedbin",
+				"sourcetypeid", "nrsourceusetype",
+				"sourcetypeid", "sourceusetype",
+				"hourid", "hourofanyday",
+				"hourdayid", "hourday",
+				"polprocessid", "pollutantprocessassoc",
+				"polprocessid", "impollutantprocessassoc",
+				"inspectfreq", "iminspectfreq",
+				"teststandardsid", "imteststandards",
+				"engtechid", "enginetech",		
+				"dayid", "dayofanyweek",
 
-				"NREquipTypeID", "NREquipmentType",
-				"growthPatternID", "NRGrowthPattern",
-				"NRHPRangeBinID", "NRHPRangeBin",
-				"SCC", "NRSCC",
-				"sectorID", "Sector",
-				"surrogateID", "NRSurrogate"
+				"nrequiptypeid", "nrequipmenttype",
+				"growthpatternid", "nrgrowthpattern",
+				"nrhprangebinid", "nrhprangebin",
+				"scc", "nrscc",
+				"sectorid", "sector",
+				"surrogateid", "nrsurrogate"
 			};
 			for(int i=0;i<basicPairs.length;i+=2) {
 				if(basicPairs[i+0].equalsIgnoreCase(columnName)) {
@@ -252,27 +252,27 @@ public class GenericImporter extends ImporterBase {
 
 			// Handle standard column name mappings independent of table
 			String[] basicPairs = {
-				"fuelTypeID", ImporterManager.FILTER_FUEL,
-				"fuelYearID", ImporterManager.FILTER_FUEL_YEAR,
-				"hourDayID", ImporterManager.FILTER_HOURDAY,
-				"hourID", ImporterManager.FILTER_HOUR,
-				"dayID", ImporterManager.FILTER_DAY,
-				"monthID", ImporterManager.FILTER_MONTH,
-				"monthGroupID", ImporterManager.FILTER_MONTH_GROUP,
-				"yearID", ImporterManager.FILTER_YEAR,
-				"sourceTypeID", ImporterManager.FILTER_SOURCE,
-				"zoneID", ImporterManager.FILTER_ZONE,
-				"countyID", ImporterManager.FILTER_COUNTY,
-				"stateID", ImporterManager.FILTER_STATE,
-				"fuelFormulationID", ImporterManager.FILTER_FUEL_FORMULATION,
-				"fuelSubtypeID", ImporterManager.FILTER_FUEL_SUBTYPE,
-				"roadTypeID", ImporterManager.FILTER_ROAD_TYPE,
-				"hpmsVtypeID", ImporterManager.FILTER_HPMS_VTYPE,
-				"ageID", ImporterManager.FILTER_AGE,
-				"avgSpeedBinID", ImporterManager.FILTER_AVGSPEED_BIN,
-				"polProcessID", ImporterManager.FILTER_POLPROCESSID,
-				"opModeID", ImporterManager.FILTER_OPMODEID,
-				"testStandardsID", ImporterManager.FILTER_TESTSTANDARDSID 
+				"fueltypeid", ImporterManager.FILTER_FUEL,
+				"fuelyearid", ImporterManager.FILTER_FUEL_YEAR,
+				"hourdayid", ImporterManager.FILTER_HOURDAY,
+				"hourid", ImporterManager.FILTER_HOUR,
+				"dayid", ImporterManager.FILTER_DAY,
+				"monthid", ImporterManager.FILTER_MONTH,
+				"monthgroupid", ImporterManager.FILTER_MONTH_GROUP,
+				"yearid", ImporterManager.FILTER_YEAR,
+				"sourcetypeid", ImporterManager.FILTER_SOURCE,
+				"zoneid", ImporterManager.FILTER_ZONE,
+				"countyid", ImporterManager.FILTER_COUNTY,
+				"stateid", ImporterManager.FILTER_STATE,
+				"fuelformulationid", ImporterManager.FILTER_FUEL_FORMULATION,
+				"fuelsubtypeid", ImporterManager.FILTER_FUEL_SUBTYPE,
+				"roadtypeid", ImporterManager.FILTER_ROAD_TYPE,
+				"hpmsvtypeid", ImporterManager.FILTER_HPMS_VTYPE,
+				"ageid", ImporterManager.FILTER_AGE,
+				"avgspeedbinid", ImporterManager.FILTER_AVGSPEED_BIN,
+				"polprocessid", ImporterManager.FILTER_POLPROCESSID,
+				"opmodeid", ImporterManager.FILTER_OPMODEID,
+				"teststandardsid", ImporterManager.FILTER_TESTSTANDARDSID 
 			};
 			for(int i=0;i<basicPairs.length;i+=2) {
 				if(basicPairs[i+0].equalsIgnoreCase(columnName)) {
@@ -465,29 +465,29 @@ public class GenericImporter extends ImporterBase {
 		tables.remove("x_tempc");
 		tables.remove("x_tempp");
 
-		tables.remove("sourceTypeAgeDistribution");
-		tables.remove("avgSpeedDistribution");
-		tables.remove("driveScheduleSecondLink");
-		tables.remove("FuelFormulation");
-		tables.remove("FuelSupply");
+		tables.remove("sourcetypeagedistribution");
+		tables.remove("avgspeeddistribution");
+		tables.remove("driveschedulesecondlink");
+		tables.remove("fuelformulation");
+		tables.remove("fuelsupply");
 		tables.remove("link");
-		tables.remove("opModeDistribution");
-		tables.remove("linkSourceTypeHour");
-		tables.remove("zoneMonthHour");
-		tables.remove("offNetworkLink");
-		tables.remove("roadType");
-		tables.remove("roadTypeDistribution");
-		tables.remove("sourceTypeYear");
-		tables.remove("HPMSVTypeYear");
-		tables.remove("MonthVMTFraction");
-		tables.remove("DayVMTFraction");
-		tables.remove("HourVMTFraction");
-		tables.remove("zoneRoadType");
+		tables.remove("opmodedistribution");
+		tables.remove("linksourcetypehour");
+		tables.remove("zonemonthhour");
+		tables.remove("offnetworklink");
+		tables.remove("roadtype");
+		tables.remove("roadtypedistribution");
+		tables.remove("sourcetypeyear");
+		tables.remove("hpmsvtypeyear");
+		tables.remove("monthvmtfraction");
+		tables.remove("dayvmtfraction");
+		tables.remove("hourvmtfraction");
+		tables.remove("zoneroadtype");
 
 		if(!ImporterInstantiator.activeManager.isProject()) {
 			// HotellingHours has an importer for non-project mode.
 			// Don't allow it to be generically imported for project domain.
-			tables.remove("hotellingHours");
+			tables.remove("hotellinghours");
 		}
 	}
 }

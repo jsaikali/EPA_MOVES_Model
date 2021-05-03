@@ -380,10 +380,10 @@ public class BaseRateByAgeHelper {
 			// Load records into the database
 			sql = "LOAD DATA LOCAL INFILE '" + file.getCanonicalPath() + "' INTO TABLE " + tableName
 					+ " ("
-					+ "sourceTypeID,roadTypeID,avgSpeedBinID,hourDayID,polProcessID,pollutantID,processID,modelYearID,fuelTypeID,ageGroupID,regClassID,opModeID,"
-					+ "meanBaseRate,meanBaseRateIM,meanBaseRateACAdj,meanBaseRateIMACAdj,"
-					+ "emissionRate,emissionRateIM,emissionRateACAdj,emissionRateIMACAdj,"
-					+ "opModeFraction,opModeFractionRate"
+					+ "sourcetypeid,roadtypeid,avgspeedbinid,hourdayid,polprocessid,pollutantid,processid,modelyearid,fueltypeid,agegroupid,regclassid,opmodeid,"
+					+ "meanbaserate,meanbaserateim,meanbaserateacadj,meanbaserateimacadj,"
+					+ "emissionrate,emissionrateim,emissionrateacadj,emissionrateimacadj,"
+					+ "opmodefraction,opmodefractionrate"
 					+ ")";
 			SQLRunner.executeSQL(db,sql);
 

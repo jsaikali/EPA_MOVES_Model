@@ -42,53 +42,53 @@ public class ImporterManager {
 	/** True if the XML generation code should perform a self-check **/
 	private static boolean shouldTestXML = false;
 
-	public static final String FILTER_FUEL = "fuelTypeID";
-	public static final String FILTER_FUEL_YEAR = "fuelYearID";
-	public static final String FILTER_HOURDAY = "hourDayID";
-	public static final String FILTER_HOUR = "hourID";
-	public static final String FILTER_DAY = "dayID";
-	public static final String FILTER_MONTH = "monthID";
-	public static final String FILTER_MONTH_GROUP = "monthGroupID";
-	public static final String FILTER_YEAR = "yearID";
-	public static final String FILTER_AGEDYEAR = "agedYearID";
-	public static final String FILTER_AGEDMODELYEAR = "agedModelYearID";
-	public static final String FILTER_SOURCE = "sourceTypeID";
-	public static final String FILTER_OFFNETWORK_LINK = "offNetworkLinkID";
-	public static final String FILTER_ZONE = "zoneID";
-	public static final String FILTER_COUNTY = "countyID";
-	public static final String FILTER_STATE = "stateID";
-	public static final String FILTER_FUEL_REGION = "regionID";
-	public static final String FILTER_FUEL_FORMULATION = "fuelFormulationID";
-	public static final String FILTER_FUEL_SUBTYPE = "fuelSubtypeID";
-	public static final String FILTER_ROAD_TYPE = "roadTypeID";
-	public static final String FILTER_ROAD_TYPE_HWY = "highwayRoadTypeID";
-	public static final String FILTER_ROAD_TYPE_NOT_OFFNETWORK = "notOffNetworkRoadTypeID";
-	public static final String FILTER_MARKET_SHARE = "marketShare";
-	public static final String FILTER_HPMS_VTYPE = "hpmsVtypeID";
-	public static final String FILTER_NON_NEGATIVE = "NonNegativeFloat";
-	public static final String FILTER_NON_NEGATIVE_DEFAULT_1 = "NonNegativeFloatDefault1";
-	public static final String FILTER_0_TO_1_FRACTION = "zeroToOneFraction";
-	public static final String FILTER_0_TO_100_PERCENTAGE = "zeroTo100Percentage";
-	public static final String FILTER_AGE = "ageID";
-	public static final String FILTER_AVGSPEED_BIN = "avgSpeedBinID";
-	public static final String FILTER_POLPROCESSID = "polProcessID";
-	public static final String FILTER_POLPROCESSID_IM = "polProcessIDIM";
-	public static final String FILTER_STARTS_POLPROCESSID = "startsPolProcessID";
-	public static final String FILTER_POLLUTANT = "pollutantID";
-	public static final String FILTER_PROCESS = "processID";
-	public static final String FILTER_OPMODEID = "opModeID";
-	public static final String FILTER_STARTS_OPMODEID = "startsOpModeIDs";
-	public static final String FILTER_OPMODEID_AUX = "opModeIDAux";
-	public static final String FILTER_IMPROGRAMID = "IMProgramID"; //int >=1
-	public static final String FILTER_INSPECTFREQ = "inspectFreq";
-	public static final String FILTER_TESTSTANDARDSID = "testStandardsID";
-	public static final String FILTER_MODELYEARID = "modelYearID"; // int  between  >=1960 to <=2060
+	public static final String FILTER_FUEL = "fueltypeid";
+	public static final String FILTER_FUEL_YEAR = "fuelyearid";
+	public static final String FILTER_HOURDAY = "hourdayid";
+	public static final String FILTER_HOUR = "hourid";
+	public static final String FILTER_DAY = "dayid";
+	public static final String FILTER_MONTH = "monthid";
+	public static final String FILTER_MONTH_GROUP = "monthgroupid";
+	public static final String FILTER_YEAR = "yearid";
+	public static final String FILTER_AGEDYEAR = "agedyearid";
+	public static final String FILTER_AGEDMODELYEAR = "agedmodelyearid";
+	public static final String FILTER_SOURCE = "sourcetypeid";
+	public static final String FILTER_OFFNETWORK_LINK = "offnetworklinkid";
+	public static final String FILTER_ZONE = "zoneid";
+	public static final String FILTER_COUNTY = "countyid";
+	public static final String FILTER_STATE = "stateid";
+	public static final String FILTER_FUEL_REGION = "regionid";
+	public static final String FILTER_FUEL_FORMULATION = "fuelformulationid";
+	public static final String FILTER_FUEL_SUBTYPE = "fuelsubtypeid";
+	public static final String FILTER_ROAD_TYPE = "roadtypeid";
+	public static final String FILTER_ROAD_TYPE_HWY = "highwayroadtypeid";
+	public static final String FILTER_ROAD_TYPE_NOT_OFFNETWORK = "notoffnetworkroadtypeid";
+	public static final String FILTER_MARKET_SHARE = "marketshare";
+	public static final String FILTER_HPMS_VTYPE = "hpmsvtypeid";
+	public static final String FILTER_NON_NEGATIVE = "nonnegativefloat";
+	public static final String FILTER_NON_NEGATIVE_DEFAULT_1 = "nonnegativefloatdefault1";
+	public static final String FILTER_0_TO_1_FRACTION = "zerotoonefraction";
+	public static final String FILTER_0_TO_100_PERCENTAGE = "zeroto100percentage";
+	public static final String FILTER_AGE = "ageid";
+	public static final String FILTER_AVGSPEED_BIN = "avgspeedbinid";
+	public static final String FILTER_POLPROCESSID = "polprocessid";
+	public static final String FILTER_POLPROCESSID_IM = "polprocessidim";
+	public static final String FILTER_STARTS_POLPROCESSID = "startspolprocessid";
+	public static final String FILTER_POLLUTANT = "pollutantid";
+	public static final String FILTER_PROCESS = "processid";
+	public static final String FILTER_OPMODEID = "opmodeid";
+	public static final String FILTER_STARTS_OPMODEID = "startsopmodeids";
+	public static final String FILTER_OPMODEID_AUX = "opmodeidaux";
+	public static final String FILTER_IMPROGRAMID = "improgramid"; //int >=1
+	public static final String FILTER_INSPECTFREQ = "inspectfreq";
+	public static final String FILTER_TESTSTANDARDSID = "teststandardsid";
+	public static final String FILTER_MODELYEARID = "modelyearid"; // int  between  >=1960 to <=2060
 	public static final String FILTER_YN = "yn";
-	public static final String FILTER_SOURCEFUELTYPE = "sourceFuelTypeID"; // sourceTypeID*100 + fuelTypeID
-	public static final String FILTER_IS_LEAP_YEAR = "isLeapYear";
-	public static final String FILTER_MODEL_YEAR_RANGE = "modelYearRange"; // 2 model years, low to high, both >= 1960 to <= 2060
-	public static final String FILTER_COUNTYTYPE = "countyTypeID";
-	public static final String FILTER_IDLEREGION = "idleRegionID";
+	public static final String FILTER_SOURCEFUELTYPE = "sourcefueltypeid"; // sourceTypeID*100 + fuelTypeID
+	public static final String FILTER_IS_LEAP_YEAR = "isleapyear";
+	public static final String FILTER_MODEL_YEAR_RANGE = "modelyearrange"; // 2 model years, low to high, both >= 1960 to <= 2060
+	public static final String FILTER_COUNTYTYPE = "countytypeid";
+	public static final String FILTER_IDLEREGION = "idleregionid";
 	public static final String LOG_TABLES_SCRIPT = "database/CreateAuditLogTables.sql";
 
 	/**
@@ -607,12 +607,12 @@ public class ImporterManager {
 				sql = (String)DatabaseConnectionManager.
 						defaultDatabaseCreateTableStatements.get("year");
 				SQLRunner.executeSQL(newDB,sql);
-				sql = "insert ignore into Year"
+				sql = "insert ignore into year"
 						+ " select *"
-						+ " from " + defaultDatabaseName + ".Year"
-						+ " where yearID=" + year;
+						+ " from " + defaultDatabaseName + ".year"
+						+ " where yearid=" + year;
 				SQLRunner.executeSQL(newDB,sql);
-				sql = "update Year set isBaseYear='Y' where yearID=" + year;
+				sql = "update year set isbaseyear='Y' where yearid=" + year;
 				SQLRunner.executeSQL(newDB,sql);
 			}
 			GeographicSelection g = null;
@@ -642,29 +642,29 @@ public class ImporterManager {
 				GenericCounty c = runSpec.genericCounty;
 
 				sql = (String)DatabaseConnectionManager.
-						defaultDatabaseCreateTableStatements.get("countyYear");
+						defaultDatabaseCreateTableStatements.get("countyyear");
 				SQLRunner.executeSQL(newDB,sql);
 
 				sql = (String)DatabaseConnectionManager.
-						defaultDatabaseCreateTableStatements.get("regionCounty");
+						defaultDatabaseCreateTableStatements.get("regioncounty");
 				SQLRunner.executeSQL(newDB,sql);
 
 				for(Iterator<Integer> i=runSpec.timeSpan.years.iterator();i.hasNext();) {
 					Integer year = i.next();
-					sql = "insert ignore into CountyYear (countyID, yearID,"
-							+ " refuelingVaporProgramAdjust, refuelingSpillProgramAdjust)"
+					sql = "insert ignore into countyyear (countyid, yearid,"
+							+ " refuelingvaporprogramadjust, refuelingspillprogramadjust)"
 							+ " values (" + c.getCountyID() + "," + year
 							+ "," + c.refuelingVaporProgramAdjust
 							+ "," + c.refuelingSpillProgramAdjust
 							+ ")";
 					SQLRunner.executeSQL(newDB,sql);
 
-					sql = "insert ignore into regionCounty (regionID, countyID, regionCodeID, fuelYearID)"
+					sql = "insert ignore into regioncounty (regionid, countyid, regioncodeid, fuelyearid)"
 							+ " values (100000000," + c.getCountyID() + ",1," + year
 							+ ")";
 					SQLRunner.executeSQL(newDB,sql);
 
-					sql = "insert ignore into regionCounty (regionID, countyID, regionCodeID, fuelYearID)"
+					sql = "insert ignore into regioncounty (regionid, countyid, regioncodeid, fuelyearid)"
 							+ " values (100000000," + c.getCountyID() + ",2," + year
 							+ ")";
 					SQLRunner.executeSQL(newDB,sql);
@@ -672,12 +672,12 @@ public class ImporterManager {
 
 				String[] genericCountyStatements = {
 					// State table
-					"insert ignore into State (stateID, stateName, stateAbbr, idleRegionID)"
+					"insert ignore into state (stateid, statename, stateabbr, idleregionid)"
 							+ " values (" + c.stateID + ",'Generic','99',1)",
 
 					// County table
-					"insert ignore into County (countyID, stateID, countyName, altitude,"
-							+ " gpaFract, barometricPressure, barometricPressureCV,countyTypeID)"
+					"insert ignore into county (countyid, stateid, countyname, altitude,"
+							+ " gpafract, barometricpressure, barometricpressurecv,countytypeid)"
 							+ " values (" + c.getCountyID() + "," + c.stateID
 							+ "," + DatabaseUtilities.escapeSQL(c.description,true)
 							+ ",'" + (c.isHighAltitude()?"H":"L") + "'"
@@ -685,14 +685,14 @@ public class ImporterManager {
 							+ "," + c.barometricPressure
 							+ ",null,1)",
 
-					"update County set stateID=" + c.stateID
-							+ ", countyName=" + DatabaseUtilities.escapeSQL(c.description,true)
+					"update County set stateid=" + c.stateID
+							+ ", countyname=" + DatabaseUtilities.escapeSQL(c.description,true)
 							+ ", altitude='" + (c.isHighAltitude()?"H":"L") + "'"
-							+ ", gpaFract=" + c.gpaFraction
-							+ ", barometricPressure=" + c.barometricPressure
-							+ ", barometricPressureCV=null"
-							+ ", countyTypeID=1"
-							+ " where countyID=" + c.getCountyID(),
+							+ ", gpafract=" + c.gpaFraction
+							+ ", barometricpressure=" + c.barometricPressure
+							+ ", barometricpressurecv=null"
+							+ ", countytypeid=1"
+							+ " where countyid=" + c.getCountyID(),
 
 					/*
 					// Zone table
@@ -719,64 +719,64 @@ public class ImporterManager {
 			} else {
 				String[] standardStatements = {
 					// State table
-					"insert ignore into State"
-							+ " select State.*"
-							+ " from " + defaultDatabaseName + ".County"
-							+ " inner join " + defaultDatabaseName + ".State"
-							+ " using (stateID)"
-							+ " where countyID=" + g.databaseKey,
+					"insert ignore into state"
+							+ " select state.*"
+							+ " from " + defaultDatabaseName + ".county"
+							+ " inner join " + defaultDatabaseName + ".state"
+							+ " using (stateid)"
+							+ " where countyid=" + g.databaseKey,
 
 					// County table
-					"insert ignore into County"
+					"insert ignore into county"
 							+ " select *"
-							+ " from " + defaultDatabaseName + ".County"
-							+ " where countyID=" + g.databaseKey,
+							+ " from " + defaultDatabaseName + ".county"
+							+ " where countyid=" + g.databaseKey,
 
 					// Zone table
-					"insert ignore into Zone"
-							+ " select Zone.*"
-							+ " from " + defaultDatabaseName + ".County c"
-							+ " inner join " + defaultDatabaseName + ".Zone"
-							+ " using (countyID)"
-							+ " where c.countyID=" + g.databaseKey,
-					"drop table if exists zoneTemp",
-					"create table zoneTemp"
-							+ " select sum(startAllocFactor) as sumStartAllocFactor,"
-							+ " sum(idleAllocFactor) as sumIdleAllocFactor,"
-							+ " sum(SHPAllocFactor) as sumSHPAllocFactor"
-							+ " from Zone"
-							+ " where countyID=" + g.databaseKey,
-					"update Zone, zoneTemp set "
-							+ " startAllocFactor=(case when (sumStartAllocFactor is null or sumStartAllocFactor <= 0) then 1 else (startAllocFactor/sumStartAllocFactor) end),"
-							+ " idleAllocFactor=(case when (sumIdleAllocFactor is null or sumIdleAllocFactor <= 0) then 1 else (idleAllocFactor/sumIdleAllocFactor) end),"
-							+ " SHPAllocFactor=(case when (sumSHPAllocFactor is null or sumSHPAllocFactor <= 0) then 1 else (SHPAllocFactor/sumSHPAllocFactor) end)"
-							+ " where countyID=" + g.databaseKey,
-					"drop table if exists zoneTemp",
+					"insert ignore into zone"
+							+ " select zone.*"
+							+ " from " + defaultDatabaseName + ".county c"
+							+ " inner join " + defaultDatabaseName + ".zone"
+							+ " using (countyid)"
+							+ " where c.countyid=" + g.databaseKey,
+					"drop table if exists zonetemp",
+					"create table zonetemp"
+							+ " select sum(startallocfactor) as sumstartallocfactor,"
+							+ " sum(idleallocfactor) as sumidleallocfactor,"
+							+ " sum(shpallocfactor) as sumshpallocfactor"
+							+ " from zone"
+							+ " where countyid=" + g.databaseKey,
+					"update zone, zonetemp set "
+							+ " startallocfactor=(case when (sumstartallocfactor is null or sumstartallocfactor <= 0) then 1 else (startallocfactor/sumstartallocfactor) end),"
+							+ " idleallocfactor=(case when (sumidleallocfactor is null or sumidleallocfactor <= 0) then 1 else (idleallocfactor/sumidleallocfactor) end),"
+							+ " shpallocfactor=(case when (sumshpallocfactor is null or sumshpallocfactor <= 0) then 1 else (shpallocfactor/sumshpallocfactor) end)"
+							+ " where countyid=" + g.databaseKey,
+					"drop table if exists zonetemp",
 
 					// ZoneRoadType table
 					(String)DatabaseConnectionManager.
 							defaultDatabaseCreateTableStatements.get("zoneroadtype"),
-					"insert ignore into ZoneRoadType"
-							+ " select ZoneRoadType.*"
-							+ " from " + defaultDatabaseName + ".County c"
-							+ " inner join " + defaultDatabaseName + ".Zone"
-							+ " using (countyID)"
-							+ " inner join " + defaultDatabaseName + ".ZoneRoadType"
-							+ " using (zoneID)"
-							+ " where c.countyID=" + g.databaseKey,
-					"drop table if exists zoneTemp",
-					"create table zoneTemp"
-							+ " select roadTypeID, sum(SHOAllocFactor) as sumSHOAllocFactor"
-							+ " from ZoneRoadType zrt"
-							+ " inner join Zone z using (zoneID)"
-							+ " where countyID=" + g.databaseKey
-							+ " group by roadTypeID",
-					"update ZoneRoadType, zoneTemp, Zone set "
-							+ " SHOAllocFactor=(case when (sumSHOAllocFactor is null or sumSHOAllocFactor <= 0) then 1 else (SHOAllocFactor/sumSHOAllocFactor) end)"
-							+ " where ZoneRoadType.zoneID=Zone.zoneID"
-							+ " and ZoneRoadType.roadTypeID=zoneTemp.roadTypeID"
-							+ " and Zone.countyID=" + g.databaseKey,
-					"drop table if exists zoneTemp"
+					"insert ignore into zoneroadtype"
+							+ " select zoneroadtype.*"
+							+ " from " + defaultDatabaseName + ".county c"
+							+ " inner join " + defaultDatabaseName + ".zone"
+							+ " using (countyid)"
+							+ " inner join " + defaultDatabaseName + ".zoneroadtype"
+							+ " using (zoneid)"
+							+ " where c.countyid=" + g.databaseKey,
+					"drop table if exists zonetemp",
+					"create table zonetemp"
+							+ " select roadtypeid, sum(shoallocfactor) as sumshoallocfactor"
+							+ " from zoneroadtype zrt"
+							+ " inner join zone z using (zoneid)"
+							+ " where countyid=" + g.databaseKey
+							+ " group by roadtypeid",
+					"update zoneroadtype, zonetemp, zone set "
+							+ " shoallocfactor=(case when (sumshoallocfactor is null or sumshoallocfactor <= 0) then 1 else (shoallocfactor/sumshoallocfactor) end)"
+							+ " where zoneroadtype.zoneid=zone.zoneid"
+							+ " and zoneroadtype.roadtypeid=zonetemp.roadtypeid"
+							+ " and zone.countyid=" + g.databaseKey,
+					"drop table if exists zonetemp"
 				};
 				statements = standardStatements;
 			}
@@ -1005,8 +1005,8 @@ public class ImporterManager {
 				fullDescription = fullDescription.substring(0,4096).trim();
 			}
 			// Store the descriptions
-			sql = "insert into auditLog (whenHappened,importerName,"
-					+ "briefDescription,fullDescription) "
+			sql = "insert into auditlog (whenhappened,importername,"
+					+ "briefdescription,fulldescription) "
 					+ "values (now()"
 					+ "," + DatabaseUtilities.escapeSQL(importer.getName(),true)
 					+ "," + DatabaseUtilities.escapeSQL(briefDescription,true)
@@ -1041,7 +1041,7 @@ public class ImporterManager {
 		}
 		String sql = "";
 		try {
-			sql = "delete from auditLog where importerName="
+			sql = "delete from auditlog where importername="
 					+ DatabaseUtilities.escapeSQL(importer.getName(),true);
 			SQLRunner.executeSQL(db,sql);
 		} catch(Exception e) {
@@ -1076,9 +1076,9 @@ public class ImporterManager {
 		}
 		String sql = "";
 		try {
-			sql = "delete from auditLog where importerName="
+			sql = "delete from auditlog where importername="
 					+ DatabaseUtilities.escapeSQL(importer.getName(),true)
-					+ " and briefDescription like '% " + DatabaseUtilities.escapeSQL(tableName,false) + " %'";
+					+ " and briefdescription like '% " + DatabaseUtilities.escapeSQL(tableName,false) + " %'";
 			SQLRunner.executeSQL(db,sql);
 		} catch(Exception e) {
 			Logger.logError(e,"Unable to clear audit log entries for " + importer.getName() + ", table " + tableName);
@@ -1525,20 +1525,20 @@ public class ImporterManager {
 			loadTestStandardsIDs();
 			loadIsLeapYear();
 
-			filterDataTypes.put(FILTER_YN,"YesNo");
-			filterDataTypes.put(FILTER_MODELYEARID,"ModelYear");
-			filterDataTypes.put(FILTER_MODEL_YEAR_RANGE,"ModelYearRange");
-			filterDataTypes.put(FILTER_MARKET_SHARE,"GreaterThanZeroFloat");
-			filterDataTypes.put(FILTER_NON_NEGATIVE,"NonNegativeFloat");
-			filterDataTypes.put(FILTER_0_TO_1_FRACTION,"zeroToOneFraction");
-			filterDataTypes.put(FILTER_0_TO_100_PERCENTAGE,"zeroTo100Percentage");
-			filterDataTypes.put(FILTER_IMPROGRAMID,"GreaterThanZeroInt");
+			filterDataTypes.put(FILTER_YN,"yesno");
+			filterDataTypes.put(FILTER_MODELYEARID,"modelyear");
+			filterDataTypes.put(FILTER_MODEL_YEAR_RANGE,"modelyearrange");
+			filterDataTypes.put(FILTER_MARKET_SHARE,"greaterthanzerofloat");
+			filterDataTypes.put(FILTER_NON_NEGATIVE,"nonnegativefloat");
+			filterDataTypes.put(FILTER_0_TO_1_FRACTION,"zerotoonefraction");
+			filterDataTypes.put(FILTER_0_TO_100_PERCENTAGE,"zeroto100percentage");
+			filterDataTypes.put(FILTER_IMPROGRAMID,"greaterthanzeroint");
 
 			// FILTER_NON_NEGATIVE_DEFAULT_1
 			TreeSet<Object> one = new TreeSet<Object>();
 			filterValueSets.put(FILTER_NON_NEGATIVE_DEFAULT_1,one);
 			one.add(Double.valueOf(1));
-			filterDataTypes.put(FILTER_NON_NEGATIVE_DEFAULT_1,"NonNegativeFloat");
+			filterDataTypes.put(FILTER_NON_NEGATIVE_DEFAULT_1,"nonnegativefloat");
 		} catch(Exception e) {
 			Logger.logError(e,"Unable to load filter values");
 		}
@@ -1593,10 +1593,10 @@ public class ImporterManager {
 		Connection db = DatabaseConnectionManager.checkOutConnection(MOVESDatabaseType.DEFAULT);
 		String sql = "";
 		try {
-			sql = "select testStandardsID from IMTestStandards";
+			sql = "select teststandardsid from imteststandards";
 			addIntegers(db,sql,testStandardsIDs,null);
 
-			sql = "select inspectFreq from IMInspectFreq";
+			sql = "select inspectfreq from iminspectfreq";
 			addIntegers(db,sql,inspectFreqIDs ,null);
 		} finally {
 			if(db != null) {
@@ -1637,11 +1637,11 @@ public class ImporterManager {
 		SQLRunner.Query query = new SQLRunner.Query();
 		TreeSet<Integer> affectedIDs = new TreeSet<Integer>();
 		try {
-			sql = "select polProcessID"
-					+ " from PollutantProcessAssoc ppa"
-					+ " inner join EmissionProcess using (processID)"
-					+ " inner join Pollutant using (pollutantID)"
-					+ " where (isAffectedByExhaustIM='Y' or isAffectedByEvapIM='Y')";
+			sql = "select polprocessid"
+					+ " from pollutantprocessassoc ppa"
+					+ " inner join emissionprocess using (processid)"
+					+ " inner join pollutant using (pollutantid)"
+					+ " where (isaffectedbyexhaustim='Y' or isaffectedbyevapim='Y')";
 			query.open(db,sql);
 			while(query.rs.next()) {
 				affectedIDs.add(Integer.valueOf(query.rs.getInt(1)));
@@ -1690,13 +1690,13 @@ public class ImporterManager {
 		Connection db = DatabaseConnectionManager.checkOutConnection(MOVESDatabaseType.DEFAULT);
 		String sql = "";
 		try {
-			sql = "select opModeID from OperatingMode";
+			sql = "select opmodeid from operatingmode";
 			addIntegers(db,sql,opModeIDs,null);
 
-			sql = "select opModeID from OperatingMode where opModeID >= 101 and opModeID < 150";
+			sql = "select opmodeid from operatingmode where opmodeid >= 101 and opmodeid < 150";
 			addIntegers(db,sql,startsOpModeIDs,null);
 
-			sql = "select opModeID from OperatingMode where opModeID >= 200 and opModeID <= 299";
+			sql = "select opmodeid from operatingmode where opmodeid >= 200 and opmodeid <= 299";
 			addIntegers(db,sql,opModeIDsAux,null);
 		} finally {
 			if(db != null) {
@@ -1751,21 +1751,21 @@ public class ImporterManager {
 			}
 			for(Iterator<Object> i=fuels.iterator();i.hasNext();) {
 				Integer fuelType = (Integer)i.next();
-				sql = "select fuelFormulationID"
-						+ " from fuelSubType"
-						+ " inner join fuelFormulation using (fuelSubTypeID)"
-						+ " where fuelTypeID=" + fuelType;
+				sql = "select fuelformulationid"
+						+ " from fuelsubtype"
+						+ " inner join fuelformulation using (fuelsubtypeid)"
+						+ " where fueltypeid=" + fuelType;
 				addIntegers(db,sql,fuelFormulations,null);
 
-				sql = "select fuelSubtypeID"
-						+ " from fuelSubType"
-						+ " where fuelTypeID=" + fuelType;
+				sql = "select fuelsubtypeid"
+						+ " from fuelsubtype"
+						+ " where fueltypeid=" + fuelType;
 				addIntegers(db,sql,fuelSubtypes,null);
 			}
 			if(sourceTypes.size() > 0) {
-				sql = "select distinct HPMSVtypeID"
-						+ " from SourceUseType"
-						+ " where sourceTypeID in (0";
+				sql = "select distinct hpmsvtypeid"
+						+ " from sourceusetype"
+						+ " where sourcetypeid in (0";
 				for(Iterator<Object> i=sourceTypes.iterator();i.hasNext();) {
 					sql += ",";
 					sql += i.next();
@@ -1775,10 +1775,10 @@ public class ImporterManager {
 			}
 
 			// Fill the set of all fuels and source types
-			sql = "select fuelTypeID from fuelType";
+			sql = "select fueltypeid from fueltype";
 			addIntegers(db,sql,allFuels,null);
 
-			sql = "select sourceTypeID from sourceUseType";
+			sql = "select sourcetypeid from sourceusetype";
 			addIntegers(db,sql,allSourceTypes,null);
 		} finally {
 			if(db != null) {
@@ -1831,19 +1831,19 @@ public class ImporterManager {
 			}
 			for(Iterator<Object> i=fuels.iterator();i.hasNext();) {
 				Integer fuelType = (Integer)i.next();
-				sql = "select fuelFormulationID"
-						+ " from nrFuelSubType"
-						+ " inner join fuelFormulation using (fuelSubTypeID)"
-						+ " where fuelTypeID=" + fuelType;
+				sql = "select fuelformulationid"
+						+ " from nrfuelsubtype"
+						+ " inner join fuelformulation using (fuelsubtypeid)"
+						+ " where fueltypeid=" + fuelType;
 				addIntegers(db,sql,fuelFormulations,null);
 
-				sql = "select fuelSubtypeID"
-						+ " from nrFuelSubType"
-						+ " where fuelTypeID=" + fuelType;
+				sql = "select fuelsubtypeid"
+						+ " from nrfuelsubtype"
+						+ " where fueltypeid=" + fuelType;
 				addIntegers(db,sql,fuelSubtypes,null);
 			}
 			// Fill the set of all fuels and source types
-			sql = "select fuelTypeID from nrFuelType";
+			sql = "select fueltypeid from nrfueltype";
 			addIntegers(db,sql,allFuels,null);
 		} finally {
 			if(db != null) {
@@ -1886,7 +1886,7 @@ public class ImporterManager {
 			TreeSet<Object> speedBins = new TreeSet<Object>();
 			filterValueSets.put(FILTER_AVGSPEED_BIN,speedBins);
 			filterDataTypes.put(FILTER_AVGSPEED_BIN,"Integer");
-			sql = "select avgSpeedBinID from avgSpeedBin";
+			sql = "select avgspeedbinid from avgspeedbin";
 			addIntegers(db,sql,speedBins,null);
 		} finally {
 			if(db != null) {
@@ -1937,7 +1937,7 @@ public class ImporterManager {
 			for(Iterator<Integer> i=e.years.iterator();i.hasNext();) {
 				Integer year = (Integer)i.next();
 				years.add(year);
-				sql = "select fuelYearID from year where yearID=" + year;
+				sql = "select fuelyearid from year where yearid=" + year;
 				addIntegers(db,sql,fuelYears,null);
 				// Add model years and calendar years within the 30 year age range of the simulated calendar year
 				for(int ai=0;ai<=30;ai++) {
@@ -1953,19 +1953,19 @@ public class ImporterManager {
 			for(Iterator<Integer> i=e.months.iterator();i.hasNext();) {
 				Integer month = (Integer)i.next();
 				months.add(month);
-				sql = "select monthGroupID from monthOfAnyYear where monthID=" + month;
+				sql = "select monthgroupid from monthofanyyear where monthid=" + month;
 				addIntegers(db,sql,monthGroups,null);
 			}
 
 			TreeSet<Object> hourDays = new TreeSet<Object>();
 			filterValueSets.put(FILTER_HOURDAY,hourDays);
 			filterDataTypes.put(FILTER_HOURDAY,"Integer");
-			sql = "select hourDayID from hourDay where hourID in (0";
+			sql = "select hourdayid from hourday where hourid in (0";
 			for(Iterator<Object> i=hours.iterator();i.hasNext();) {
 				sql += ",";
 				sql += i.next();
 			}
-			sql += ") and dayID in (0";
+			sql += ") and dayid in (0";
 			for(Iterator<Object> i=days.iterator();i.hasNext();) {
 				sql += ",";
 				sql += i.next();
@@ -1976,7 +1976,7 @@ public class ImporterManager {
 			TreeSet<Object> ages = new TreeSet<Object>();
 			filterValueSets.put(FILTER_AGE,ages);
 			filterDataTypes.put(FILTER_AGE,"Integer");
-			sql = "select ageID from ageCategory";
+			sql = "select ageid from agecategory";
 			addIntegers(db,sql,ages,null);
 		} finally {
 			if(db != null) {
@@ -2037,79 +2037,79 @@ public class ImporterManager {
 					counties.add(Integer.valueOf(g.databaseKey));
 					regionCounties.add(Integer.valueOf(g.databaseKey));
 					// Get the state for the county
-					sql = "select stateID from County where countyID=" + g.databaseKey;
+					sql = "select stateid from county where countyid=" + g.databaseKey;
 					addIntegers(db,sql,states,null);
 					// Get the zones in the county
-					sql = "select zoneID from Zone where countyID=" + g.databaseKey;
+					sql = "select zoneid from zone where countyid=" + g.databaseKey;
 					addIntegers(db,sql,zones,null);
 					// Get the offnetwork links in the county
-					sql = "select linkID from link where roadTypeID=1 and countyID=" + g.databaseKey;
+					sql = "select linkid from link where roadtypeid=1 and countyid=" + g.databaseKey;
 					addIntegers(db,sql,offNetworkLinks,null);
 					// Get the countyTypeID for the county
-					sql = "select countyTypeID from county where countyID=" + g.databaseKey;
+					sql = "select countytypeid from county where countyid=" + g.databaseKey;
 					addIntegers(db,sql,countyTypes,null);
 					// Get the idleRegionID for the county
-					sql = "select idleRegionID"
-							+ " from State"
-							+ " inner join County using (stateID)"
-							+ " where countyID=" + g.databaseKey;
+					sql = "select idleregionid"
+							+ " from state"
+							+ " inner join county using (stateid)"
+							+ " where countyid=" + g.databaseKey;
 					addIntegers(db,sql,idleRegions,null);
 				} else if(g.type == GeographicSelectionType.STATE) {
 					states.add(Integer.valueOf(g.databaseKey));
 					// Get the counties for the state
-					sql = "select countyID from County where stateID=" + g.databaseKey;
+					sql = "select countyid from county where stateid=" + g.databaseKey;
 					addIntegers(db,sql,counties,null);
 					addIntegers(db,sql,regionCounties,null);
 					// Get the zones in the state
-					sql = "select zoneID"
-							+ " from Zone"
-							+ " inner join County using (countyID)"
-							+ " where stateID=" + g.databaseKey;
+					sql = "select zoneid"
+							+ " from zone"
+							+ " inner join county using (countyid)"
+							+ " where stateid=" + g.databaseKey;
 					addIntegers(db,sql,zones,null);
 					// Get the offnetwork links in the state
-					sql = "select linkID"
+					sql = "select linkid"
 							+ " from link"
-							+ " inner join county using (countyID)"
-							+ " where roadTypeID=1 and stateID=" + g.databaseKey;
+							+ " inner join county using (countyid)"
+							+ " where roadtypeid=1 and stateid=" + g.databaseKey;
 					addIntegers(db,sql,offNetworkLinks,null);
 					// Get the countyTypeIDs
-					sql = "select countyTypeID from countyType";
+					sql = "select countytypeid from countytype";
 					addIntegers(db,sql,countyTypes,null);
 					// Get the idleRegionID for the state
-					sql = "select idleRegionID from State where stateID=" + g.databaseKey;
+					sql = "select idleregionid from state where stateid=" + g.databaseKey;
 					addIntegers(db,sql,idleRegions,null);
 				} else if(g.type == GeographicSelectionType.NATION) {
 					// Get the states and counties in the nation
-					sql = "select stateID, countyID from County";
+					sql = "select stateid, countyid from county";
 					addIntegers(db,sql,states,counties);
 					// Get the zones in the nation
-					sql = "select zoneID from Zone";
+					sql = "select zoneid from zone";
 					addIntegers(db,sql,zones,null);
 					// Get the offnetwork links in the nation
-					sql = "select linkID from link where roadTypeID=1";
+					sql = "select linkid from link where roadtypeid=1";
 					addIntegers(db,sql,offNetworkLinks,null);
 					// Get all countyTypeIDs 
-					sql = "select countyTypeID from countyType";
+					sql = "select countytypeid from countytype";
 					addIntegers(db,sql,countyTypes,null);
 					// Get all idleRegionIDs
-					sql = "select idleRegionID from idleRegion";
+					sql = "select idleregionid from idleregion";
 					addIntegers(db,sql,idleRegions,null);
 					// Get the regions in the nation (only works if year is selected in runspec)
 					if(fuelYearsText != "") {
-						sql = "select regionID"
-								+ " from regionCounty"
-								+ " where regionCodeID=1"
-								+ " and fuelYearID in (" + fuelYearsText + ")";
+						sql = "select regionid"
+								+ " from regioncounty"
+								+ " where regioncodeid=1"
+								+ " and fuelyearid in (" + fuelYearsText + ")";
 						addIntegers(db,sql,regions,null);
 					}
 					regionCounties.clear();
 				}
 				if(fuelYearsText != "" && regionCounties.size() > 0) {
-					sql = "select regionID"
-							+ " from regionCounty"
-							+ " where regionCodeID=1"
-							+ " and fuelYearID in (" + fuelYearsText + ")"
-							+ " and countyID in (" + StringUtilities.getCSVGeneric(regionCounties) + ")";
+					sql = "select regionid"
+							+ " from regioncounty"
+							+ " where regioncodeid=1"
+							+ " and fuelyearid in (" + fuelYearsText + ")"
+							+ " and countyid in (" + StringUtilities.getCSVGeneric(regionCounties) + ")";
 					addIntegers(db,sql,regions,null);
 				}
 			}
@@ -2549,8 +2549,8 @@ public class ImporterManager {
 				t += "," + i.next();
 			}
 			hpmsVTypes = getIntegers(defaultDb,
-					"select distinct hpmsVTypeID from sourceUseType"
-					+ " where sourceTypeID in (" + t + ")");
+					"select distinct hpmsvtypeid from sourceusetype"
+					+ " where sourcetypeid in (" + t + ")");
 
 			loadTimesInRunSpec();
 
@@ -2558,9 +2558,9 @@ public class ImporterManager {
 				zones = new TreeSet<Object>();
 				zones.add(Integer.valueOf(runSpec.genericCounty.getCountyID()*10));
 			} else {
-				zones = getIntegers(defaultDb,"select zoneID"
+				zones = getIntegers(defaultDb,"select zoneid"
 						+ " from zone"
-						+ " where countyID in (" + countyIDsText + ")");
+						+ " where countyid in (" + countyIDsText + ")");
 			}
 
 			hasCaches = true;
@@ -2689,7 +2689,7 @@ public class ImporterManager {
 		if(zones == null) {
 			loadCaches();
 		}
-		return tableHasIntegers(db,sql,zones,"select zoneID from Zone",importer,qualityMessagePrefix);
+		return tableHasIntegers(db,sql,zones,"select zoneid from zone",importer,qualityMessagePrefix);
 	}
 
 	/**
@@ -2746,24 +2746,24 @@ public class ImporterManager {
 				}
 			}
 
-			hourDays = getIntegers(defaultDb,"select hourDayID"
-					+ " from hourDay"
-					+ " where hourID in (" + hoursText + ")"
-					+ " and dayID in (" + daysText + ")");
+			hourDays = getIntegers(defaultDb,"select hourdayid"
+					+ " from hourday"
+					+ " where hourid in (" + hoursText + ")"
+					+ " and dayid in (" + daysText + ")");
 
 			if(days.contains(Integer.valueOf(2))) {
-				day2HourDayIDs = getIntegers(defaultDb,"select hourDayID"
-						+ " from hourDay"
-						+ " where hourID in (" + hoursText + ")"
-						+ " and dayID=2");
+				day2HourDayIDs = getIntegers(defaultDb,"select hourdayid"
+						+ " from hourday"
+						+ " where hourid in (" + hoursText + ")"
+						+ " and dayid=2");
 			} else {
 				day2HourDayIDs = new TreeSet<Object>();
 			}
 			if(days.contains(Integer.valueOf(5))) {
-				day5HourDayIDs = getIntegers(defaultDb,"select hourDayID"
-						+ " from hourDay"
-						+ " where hourID in (" + hoursText + ")"
-						+ " and dayID=5");
+				day5HourDayIDs = getIntegers(defaultDb,"select hourdayid"
+						+ " from hourday"
+						+ " where hourid in (" + hoursText + ")"
+						+ " and dayid=5");
 			} else {
 				day5HourDayIDs = new TreeSet<Object>();
 			}
@@ -2959,7 +2959,7 @@ public class ImporterManager {
 					}
 					return -1;
 				} else if(countyCount == 1) {
-					sql = "select count(*) from County where countyID=" + countyID;
+					sql = "select count(*) from county where countyid=" + countyID;
 					countyCount = (int)SQLRunner.executeScalar(db,sql);
 					if(countyCount != 1) {
 						if(messages != null) {
@@ -2987,12 +2987,12 @@ public class ImporterManager {
 				// join to ensure State->County->Zone->ZoneRoadType exist will suffice.
 				sql = "select count(*)"
 						+ " from state s"
-						+ " inner join county c on c.stateID=s.stateID"
-						+ " inner join zone z on z.countyID=c.countyID";
+						+ " inner join county c on c.stateid=s.stateid"
+						+ " inner join zone z on z.countyid=c.countyid";
 				if(!runSpec.isCustomDomain()) {
-					sql += " inner join zoneRoadType zrt on zrt.zoneID=z.zoneID";
+					sql += " inner join zoneroadtype zrt on zrt.zoneid=z.zoneid";
 				}
-				sql += " where c.countyID=" + countyID;
+				sql += " where c.countyid=" + countyID;
 				int supportingCount = (int)SQLRunner.executeScalar(db,sql);
 				if(supportingCount < 1) { // 1 or more is required
 					if(messages != null) {
@@ -3018,7 +3018,7 @@ public class ImporterManager {
 
 			}
 			// The Year table must be empty or have only the desired Year.
-			sql = "select count(*) from Year";
+			sql = "select count(*) from year";
 			int yearCount = 0;
 			try {
 				yearCount = (int)SQLRunner.executeScalar(db,sql);
@@ -3028,7 +3028,7 @@ public class ImporterManager {
 					}
 					return -1;
 				} else if(yearCount == 1) {
-					sql = "select count(*) from Year where yearID=" + year;
+					sql = "select count(*) from year where yearid=" + year;
 					yearCount = (int)SQLRunner.executeScalar(db,sql);
 					if(yearCount != 1) {
 						if(messages != null) {
