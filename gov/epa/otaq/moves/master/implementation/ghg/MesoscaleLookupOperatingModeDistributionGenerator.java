@@ -94,7 +94,7 @@ public class MesoscaleLookupOperatingModeDistributionGenerator extends Generator
 
 			start = System.currentTimeMillis();
 			if(isValid) {
-				String alreadyKey = "calc|" + incontext.iterprocess.databasekey + "|" + inContext.iterLocation.linkRecordID;
+				String alreadyKey = "calc|" + inContext.iterProcess.databaseKey + "|" + inContext.iterLocation.linkRecordID;
 				if(!alreadyDoneFlags.contains(alreadyKey)) {
 					alreadyDoneFlags.add(alreadyKey);
 					calculateOpModeFractions(inContext.iterLocation.linkRecordID);
@@ -116,7 +116,7 @@ public class MesoscaleLookupOperatingModeDistributionGenerator extends Generator
 			db = null;
 		}
 
-		Logger.log(LogMessageCategory.INFO,"meslkomdg setuptime=" + setuptime + " totaltime=" + totalTime);
+		Logger.log(LogMessageCategory.INFO,"meslkomdg setuptime=" + setupTime + " totaltime=" + totalTime);
 	}
 
 	/**
@@ -574,7 +574,7 @@ public class MesoscaleLookupOperatingModeDistributionGenerator extends Generator
 				if(lastSourceType != sourceType || lastRoadType != roadType) {
 					if(lastSourceType >= 0 && !hasNonRamp) {
 						Logger.log(LogMessageCategory.ERROR,
-								"no drive schedule for road type " + lastroadtype + " and "
+								"no drive schedule for road type " + lastRoadType + " and "
 								+ "source type " + lastSourceType);
 						return false;
 					}
@@ -587,7 +587,7 @@ public class MesoscaleLookupOperatingModeDistributionGenerator extends Generator
 			}
 			if(lastSourceType >= 0 && !hasNonRamp) {
 				Logger.log(LogMessageCategory.ERROR,
-						"no drive schedule for road type " + lastroadtype + " and "
+						"no drive schedule for road type " + lastRoadType + " and "
 						+ "source type " + lastSourceType);
 				return false;
 			}
@@ -1234,15 +1234,15 @@ public class MesoscaleLookupOperatingModeDistributionGenerator extends Generator
 					speedClause += "speed < " + speedUpper;
 				}
 				if(vspClause.length() > 0) {
-					whereClause += "(" + vspclause + ")";
+					whereClause += "(" + vspClause + ")";
 				}
 				if(speedClause.length() > 0) {
 					if(whereClause.length() > 0) {
 						whereClause += " and ";
 					}
-					whereClause += "(" + speedclause + ")";
+					whereClause += "(" + speedClause + ")";
 				}
-				sql += " where " + whereclause + " and polprocessid = " + polProcessID + 
+				sql += " where " + whereClause + " and polprocessid = " + polProcessID + 
 						" and opmodeid is null";
 				SQLRunner.executeSQL(db, sql);
 			}
@@ -1607,7 +1607,7 @@ public class MesoscaleLookupOperatingModeDistributionGenerator extends Generator
 							"k.hourdayid is null "+
 							"and k.polprocessid is null "+
 							"and k.sourcetypeid is null "+
-							"and l.linkid =" + linkid+ " "+
+							"and l.linkid =" + linkID+ " "+
 							"and omf2.polprocessid =" + repPPA;
 				SQLRunner.executeSQL(db, sql);
 			}

@@ -187,7 +187,7 @@ public class SourceTypePhysics {
 				// Change source types for any new operating modes
 				sql = "update " + tableName + " set sourcetypeid=" + realSourceTypeID
 						+ " where sourcetypeid=" + tempSourceTypeID
-						+ " and opmodeid >= 0+" + opmodeidoffset + " and opmodeid < 100+" + opModeIDOffset
+						+ " and opmodeid >= 0+" + opModeIDOffset + " and opmodeid < 100+" + opModeIDOffset
 						+ " and (polprocessid < 0 or mod(polprocessid,100) = 1)";
 				if(whereClause != null && whereClause.length() > 0) {
 					sql += " and (" + whereClause + ")";
@@ -671,7 +671,7 @@ public class SourceTypePhysics {
 						for(int ti=0;ti<tableNames.length;ti++) {
 							String tableName = tableNames[ti];
 							sql = "insert ignore into opmodepolprocassoc (polprocessid, opmodeid)"
-									+ " select distinct " + polprocessint + ", opmodeid"
+									+ " select distinct " + polProcessInt + ", opmodeid"
 									+ " from " + tableName
 									+ " where polprocessid=" + polProcessInt
 									+ " and opmodeid >= 0 + " + offset + " and opmodeid < 100 + " + offset;
