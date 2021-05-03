@@ -120,7 +120,7 @@ public class WeeksInMonthHelper {
 	public String getDaysPerMonthSQLClause(String yearColumnName,String monthColumnName,
 			String dayColumnName) {
 		String weeksClause = getWeeksPerMonthSQLClause(yearColumnName,monthColumnName);
-		String t = StringUtilities.replace(noOfRealDaysClause,"##dayIDColumnName##",dayColumnName);
+		String t = StringUtilities.replace(noOfRealDaysClause,"##dayidcolumnname##",dayColumnName);
 		String sql = "(" + weeksClause + "*(" + t + "))";
 		return sql;
 	}
@@ -136,7 +136,7 @@ public class WeeksInMonthHelper {
 		if(!loadMonthsFromDatabase() || dayCounts.size() <= 0 || realDaysPerDay.size() <= 0) {
 			return "1";
 		}
-		String t = StringUtilities.replace(portionOfWeekPerDayClause,"##dayIDColumnName##",dayColumnName);
+		String t = StringUtilities.replace(portionOfWeekPerDayClause,"##dayidcolumnname##",dayColumnName);
 		String sql = "(" + t + ")";
 		return sql;
 	}
@@ -150,8 +150,8 @@ public class WeeksInMonthHelper {
 		monthsAndDays = new TreeMap<Integer,Integer>();
 		dayCounts = new TreeMap<Integer,String>();
 		realDaysPerDay = new TreeMap<Integer,Integer>();
-		noOfRealDaysClause = "case ##dayIDColumnName##";
-		portionOfWeekPerDayClause = "case ##dayIDColumnName##";
+		noOfRealDaysClause = "case ##dayidcolumnname##";
+		portionOfWeekPerDayClause = "case ##dayidcolumnname##";
 
 		Connection executionDatabase = null;
 		String sql = "";
@@ -160,7 +160,7 @@ public class WeeksInMonthHelper {
 		try {
 			executionDatabase = DatabaseConnectionManager.checkOutConnection(
 					MOVESDatabaseType.EXECUTION);
-			sql = "SELECT MonthID, noOfDays FROM MonthOfAnyYear";
+			sql = "SELECT monthid, noofdays from monthofanyyear";
 			rs = SQLRunner.executeQuery(executionDatabase, sql);
 			while(rs.next()) {
 				Integer monthID = Integer.valueOf(rs.getInt(1));
@@ -183,7 +183,7 @@ public class WeeksInMonthHelper {
 				return false;
 			}
 
-			sql = "select dayID, noOfRealDays from dayOfAnyWeek";
+			sql = "select dayid, noofrealdays from dayofanyweek";
 			rs = SQLRunner.executeQuery(executionDatabase, sql);
 			while(rs.next()) {
 				Integer dayID = Integer.valueOf(rs.getInt(1));

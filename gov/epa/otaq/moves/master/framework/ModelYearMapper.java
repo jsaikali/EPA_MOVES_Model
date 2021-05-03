@@ -51,9 +51,9 @@ public class ModelYearMapper {
 		String sql = "";
 		try {
 			// Select mapping entries ordered by startUserYear
-			sql = "select startUserModelYear, endUserModelYear, startStandardModelYear, endStandardModelYear"
-					+ " from modelYearMapping"
-					+ " order by startUserModelYear";
+			sql = "select startusermodelyear, endusermodelyear, startstandardmodelyear, endstandardmodelyear"
+					+ " from modelyearmapping"
+					+ " order by startusermodelyear";
 			// Populate mappings via addToMappings
 			query.open(db,sql);
 			while(query.rs.next()) {

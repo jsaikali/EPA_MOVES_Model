@@ -51,14 +51,14 @@ public class DefaultDataMaker {
 		try {
 			// Fix any misaligned fuelSubtypeIDs in gasoline and ethanol fuels
 			String[] formulationFixes = {
-				"update fuelFormulation set fuelSubtypeID = 10 where fuelSubtypeID <> 10 and ETOHVolume < 0.10  and fuelSubtypeID <> 11 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18)",
-				"update fuelFormulation set fuelSubtypeID = 12 where fuelSubtypeID <> 12 and ETOHVolume >= 9    and ETOHVolume < 12.5 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18)",
-				"update fuelFormulation set fuelSubtypeID = 13 where fuelSubtypeID <> 13 and ETOHVolume >= 6    and ETOHVolume < 9 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18)",
-				"update fuelFormulation set fuelSubtypeID = 14 where fuelSubtypeID <> 14 and ETOHVolume >= 0.10 and ETOHVolume < 6 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18)",
-				"update fuelFormulation set fuelSubtypeID = 15 where fuelSubtypeID <> 15 and ETOHVolume >= 12.5 and ETOHVolume < 17.5 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18)",
-				"update fuelFormulation set fuelSubtypeID = 51 where fuelSubtypeID <> 51 and ETOHVolume >= 70.5 and ETOHVolume <= 100 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18)",
-				"update fuelFormulation set fuelSubtypeID = 52 where fuelSubtypeID <> 52 and ETOHVolume >= 50.5 and ETOHVolume < 70.5 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18)",
-				"update fuelFormulation set fuelSubtypeID = 18 where fuelSubtypeID <> 18 and ETOHVolume >= 17.5 and ETOHVolume < 50.5 and fuelSubtypeID in (10,11,12,13,14,15,51,52,18)"
+				"update fuelformulation set fuelsubtypeid = 10 where fuelsubtypeid <> 10 and etohvolume < 0.10  and fuelsubtypeid <> 11 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18)",
+				"update fuelformulation set fuelsubtypeid = 12 where fuelsubtypeid <> 12 and etohvolume >= 9    and etohvolume < 12.5 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18)",
+				"update fuelformulation set fuelsubtypeid = 13 where fuelsubtypeid <> 13 and etohvolume >= 6    and etohvolume < 9 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18)",
+				"update fuelformulation set fuelsubtypeid = 14 where fuelsubtypeid <> 14 and etohvolume >= 0.10 and etohvolume < 6 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18)",
+				"update fuelformulation set fuelsubtypeid = 15 where fuelsubtypeid <> 15 and etohvolume >= 12.5 and etohvolume < 17.5 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18)",
+				"update fuelformulation set fuelsubtypeid = 51 where fuelsubtypeid <> 51 and etohvolume >= 70.5 and etohvolume <= 100 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18)",
+				"update fuelformulation set fuelsubtypeid = 52 where fuelsubtypeid <> 52 and etohvolume >= 50.5 and etohvolume < 70.5 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18)",
+				"update fuelformulation set fuelsubtypeid = 18 where fuelsubtypeid <> 18 and etohvolume >= 17.5 and etohvolume < 50.5 and fuelsubtypeid in (10,11,12,13,14,15,51,52,18)"
 			};
 			for(int i=0;i<formulationFixes.length;i++) {
 				sql = formulationFixes[i];
@@ -70,15 +70,15 @@ public class DefaultDataMaker {
 			SQLRunner.executeSQL(executionDatabase,sql);
 
 			//Calculate volToWtPercentOxy
-			sql = "calculateVolToWtPercentOxy()";
+			sql = "calculatevoltowtpercentoxy()";
 			calculateVolToWtPercentOxy(executionDatabase);
 
 			// Update T50, T90, e200, and e300
 			String[] t50t90Calculations = {
-				"update fuelFormulation set T50 = 2.0408163 * (147.91 - e200) where e200 is not null and e200 > 0 and (T50 is null or T50 <= 0)",
-				"update fuelFormulation set T90 = 4.5454545 * (155.47 - e300) where e300 is not null and e300 > 0 and (T90 is null or T90 <= 0)",
-				"update fuelFormulation set e200 = 147.91-(T50/2.0408163) where T50 is not null and T50 > 0 and (e200 is null or e200 <= 0)",
-				"update fuelFormulation set e300 = 155.47-(T90/4.5454545) where T90 is not null and T90 > 0 and (e300 is null or e300 <= 0)"
+				"update fuelformulation set t50 = 2.0408163 * (147.91 - e200) where e200 is not null and e200 > 0 and (t50 is null or t50 <= 0)",
+				"update fuelformulation set t90 = 4.5454545 * (155.47 - e300) where e300 is not null and e300 > 0 and (t90 is null or t90 <= 0)",
+				"update fuelformulation set e200 = 147.91-(t50/2.0408163) where t50 is not null and t50 > 0 and (e200 is null or e200 <= 0)",
+				"update fuelformulation set e300 = 155.47-(t90/4.5454545) where t90 is not null and t90 > 0 and (e300 is null or e300 <= 0)"
 				/*
 				"update nrFuelFormulation set T50 = 2.0408163 * (147.91 - e200) where e200 is not null and e200 > 0 and (T50 is null or T50 <= 0)",
 				"update nrFuelFormulation set T90 = 4.5454545 * (155.47 - e300) where e300 is not null and e300 > 0 and (T90 is null or T90 <= 0)",
@@ -93,94 +93,94 @@ public class DefaultDataMaker {
 
 			//Remove fuelSupply records with zero market shares.  Their presence causes unneeded
 			//overhead when joining to the fuelSupply table.
-			sql = "delete from fuelSupply where marketShare < 0.0001";
+			sql = "delete from fuelsupply where marketshare < 0.0001";
 			SQLRunner.executeSQL(executionDatabase,sql);
 
 			//use default values for the Marketshare field  if no record is found in the
 			//FuelSupply table for a given county, year, monthgroup, and fueltype.
 			// As first step, create a lists of fuelYears and fuelTypes relevant to the run specification
-			sql = "DROP TABLE IF EXISTS RunSpecFuelYear";
+			sql = "DROP TABLE IF EXISTS runspecfuelyear";
 			SQLRunner.executeSQL(executionDatabase,sql);
 
-			sql = "CREATE TABLE RunSpecFuelYear " +
-				  "SELECT DISTINCT fuelYearID FROM Year INNER JOIN RunSpecYear USING(yearID)";
+			sql = "CREATE TABLE runspecfuelyear " +
+				  "SELECT DISTINCT fuelyearid from year inner join runspecyear using(yearid)";
 			SQLRunner.executeSQL(executionDatabase,sql);
 
-			sql = "DROP TABLE IF EXISTS RunSpecFuelType";
+			sql = "DROP TABLE IF EXISTS runspecfueltype";
 			SQLRunner.executeSQL(executionDatabase,sql);
 
-			sql = "CREATE TABLE RunSpecFuelType SELECT DISTINCT fuelTypeID from RunSpecSourceFuelType union select distinct fuelTypeID from RunSpecSectorFuelType";
+			sql = "CREATE TABLE runspecfueltype select distinct fueltypeid from runspecsourcefueltype union select distinct fueltypeid from runspecsectorfueltype";
 			SQLRunner.executeSQL(executionDatabase,sql);
 
 			TreeSet<String> defaultFuelMessages = new TreeSet<String>();
 			boolean[] isNonroadTables = { false, true };
-			String[] fuelSupplyTables = { "FuelSupply", "NRFuelSupply" };
-			String[] fuelTypeTables = { "FuelType", "NRFuelType" };
-			String[] fuelSubTypeTables = { "FuelSubtype", "NRFuelSubtype" };
+			String[] fuelSupplyTables = { "fuelsupply", "nrfuelsupply" };
+			String[] fuelTypeTables = { "fueltype", "nrfueltype" };
+			String[] fuelSubTypeTables = { "fuelsubtype", "nrfuelsubtype" };
 			for(int i=0;i<fuelSupplyTables.length;i++) {
 				if(needsNonRoad != isNonroadTables[i]) {
 					continue;
 				}
 				// as second step, create a list of fuelTypes by county, fuelYear, and MonthGroup
 				// which have a non-default fuel supply, making list relevant to the run specification
-				sql = "DROP TABLE IF EXISTS GivenFuelSupply";
+				sql = "DROP TABLE IF EXISTS givenfuelsupply";
 				SQLRunner.executeSQL(executionDatabase,sql);
 	
-				sql = "CREATE TABLE GivenFuelSupply " +
-					"SELECT DISTINCT fs.fuelRegionID, fs.fuelYearID, fs.monthGroupID, fst.fuelTypeID " +
+				sql = "CREATE TABLE givenfuelsupply " +
+					"select distinct fs.fuelregionid, fs.fuelyearid, fs.monthgroupid, fst.fueltypeid " +
 					"FROM " + fuelSupplyTables[i] + " fs " +
-					"INNER JOIN RunSpecFuelRegion rsc ON fs.fuelRegionID=rsc.fuelRegionID " +
-					"INNER JOIN RunSpecFuelYear rsfy ON fs.fuelYearID=rsfy.fuelYearID " +
-					"INNER JOIN RunSpecMonthGroup rsmg ON fs.monthGroupID=rsmg.monthGroupID " +
-					"INNER JOIN FuelFormulation ff ON fs.fuelFormulationID=ff.fuelFormulationID " +
-					"INNER JOIN " + fuelSubTypeTables[i] + " fst ON ff.fuelSubtypeID=fst.fuelSubtypeID ";
+					"INNER JOIN runspecfuelregion rsc on fs.fuelregionid=rsc.fuelregionid " +
+					"inner join runspecfuelyear rsfy on fs.fuelyearid=rsfy.fuelyearid " +
+					"inner join runspecmonthgroup rsmg on fs.monthgroupid=rsmg.monthgroupid " +
+					"inner join fuelformulation ff on fs.fuelformulationid=ff.fuelformulationid " +
+					"INNER JOIN " + fuelSubTypeTables[i] + " fst on ff.fuelsubtypeid=fst.fuelsubtypeid ";
 				SQLRunner.executeSQL(executionDatabase,sql);
 	
 				// as third step create a list of fuelTypes, also by county, fuelYear, and monthGroup
 				//   which need a fuel supply
-				sql = "DROP TABLE IF EXISTS NeededFuelSupply";
+				sql = "DROP TABLE IF EXISTS neededfuelsupply";
 				SQLRunner.executeSQL(executionDatabase,sql);
 	
-				sql = "CREATE TABLE NeededFuelSupply " +
-					"SELECT fuelRegionID, fuelYearID, monthGroupID, " +
-						"ft.fuelTypeID, defaultFormulationID " +
-					" FROM RunSpecFuelRegion " +
-					" CROSS JOIN RunSpecFuelYear " +
-					" CROSS JOIN RunSpecMonthGroup " +
-					" CROSS JOIN RunSpecFuelType " +
-					" INNER JOIN " + fuelTypeTables[i] + " ft ON RunSpecFuelType.fuelTypeID = ft.fuelTypeID ";
+				sql = "CREATE TABLE neededfuelsupply " +
+					"select fuelregionid, fuelyearid, monthgroupid, " +
+						"ft.fueltypeid, defaultformulationid " +
+					" from runspecfuelregion " +
+					" cross join runspecfuelyear " +
+					" cross join runspecmonthgroup " +
+					" cross join runspecfueltype " +
+					" INNER JOIN " + fuelTypeTables[i] + " ft ON runspecfueltype.fueltypeid = ft.fueltypeid ";
 				SQLRunner.executeSQL(executionDatabase,sql);
 	
-				sql = "create unique index XPKGivenFuelSupply on GivenFuelSupply ("
-						+ " fuelRegionID, fuelYearID, monthGroupID, fuelTypeID)";
+				sql = "create unique index xpkgivenfuelsupply on givenfuelsupply ("
+						+ " fuelregionid, fuelyearid, monthgroupid, fueltypeid)";
 				SQLRunner.executeSQL(executionDatabase,sql);
 	
-				sql = "create unique index XPKNeededFuelSupply on NeededFuelSupply ("
-						+ " fuelRegionID, fuelYearID, monthGroupID, fuelTypeID)";
+				sql = "create unique index xpkneededfuelsupply on neededfuelsupply ("
+						+ " fuelregionid, fuelyearid, monthgroupid, fueltypeid)";
 				SQLRunner.executeSQL(executionDatabase,sql);
 	
 				// as fourth and final step, insert needed-but-missing records into FuelSupply
-				sql = "INSERT INTO " + fuelSupplyTables[i] + " (fuelRegionID, fuelYearID, monthGroupID, " +
-					"fuelFormulationID, marketShare, marketShareCV) " +
-					"SELECT nfs.fuelRegionID, nfs.fuelYearID, nfs.monthGroupID, " +
-					"nfs.defaultFormulationID, 1.0, 0.0 " +
-					"FROM NeededFuelSupply nfs  LEFT JOIN GivenFuelSupply gfs " +
-					"USING(fuelRegionID, fuelYearID, monthGroupID, fuelTypeID) " +
-					"WHERE gfs.fuelTypeID IS NULL ";
+				sql = "INSERT INTO " + fuelSupplyTables[i] + " (fuelregionid, fuelyearid, monthgroupid, " +
+					"fuelformulationid, marketshare, marketsharecv) " +
+					"select nfs.fuelregionid, nfs.fuelyearid, nfs.monthgroupid, " +
+					"nfs.defaultformulationid, 1.0, 0.0 " +
+					"from neededfuelsupply nfs  left join givenfuelsupply gfs " +
+					"using(fuelregionid, fuelyearid, monthgroupid, fueltypeid) " +
+					"where gfs.fueltypeid is null ";
 				SQLRunner.executeSQL(executionDatabase,sql);
 	
 				sql = "ANALYZE TABLE " + fuelSupplyTables[i];
 				SQLRunner.executeSQL(executionDatabase,sql);
 	
 				// Issue warnings for each default fuel that had to be added
-				sql = "SELECT nfs.fuelRegionID, nfs.fuelYearID, nfs.monthGroupID, " +
-					"nfs.defaultFormulationID, fuelTypeDesc " +
-					"FROM NeededFuelSupply nfs " +
-					"INNER JOIN " + fuelTypeTables[i] + " ft USING (fuelTypeID) " +
-					"LEFT JOIN GivenFuelSupply gfs " +
-					"USING(fuelRegionID, fuelYearID, monthGroupID, fuelTypeID) " +
-					"WHERE gfs.fuelTypeID IS NULL and ft.fuelTypeID <> 9 " + // give no warning about default formulation for Electricity
-					"ORDER BY nfs.fuelRegionID, nfs.fuelYearID, nfs.monthGroupID, fuelTypeDesc";
+				sql = "SELECT nfs.fuelregionid, nfs.fuelyearid, nfs.monthgroupid, " +
+					"nfs.defaultformulationid, fueltypedesc " +
+					"from neededfuelsupply nfs " +
+					"inner join " + fuelTypeTables[i] + " ft using (fueltypeid) " +
+					"left join givenfuelsupply gfs " +
+					"using(fuelregionid, fuelyearid, monthgroupid, fueltypeid) " +
+					"where gfs.fueltypeid is null and ft.fueltypeid <> 9 " + // give no warning about default formulation for electricity
+					"order by nfs.fuelregionid, nfs.fuelyearid, nfs.monthgroupid, fueltypedesc";
 				query.open(executionDatabase,sql);
 				while(query.rs.next()) {
 					int regionID = query.rs.getInt(1);
@@ -238,26 +238,26 @@ public class DefaultDataMaker {
 			SQLRunner.executeSQL(executionDatabase,sql);
 			*/
 
-			sql = "insert ignore into countyYear ("
-					+ " countyID, yearID, refuelingVaporProgramAdjust, refuelingSpillProgramAdjust)"
-					+ " select countyID, yearID, 0.0, 0.0"
-					+ " from runSpecCounty, runSpecYear";
+			sql = "insert ignore into countyyear ("
+					+ " countyid, yearid, refuelingvaporprogramadjust, refuelingspillprogramadjust)"
+					+ " select countyid, yearid, 0.0, 0.0"
+					+ " from runspeccounty, runspecyear";
 			SQLRunner.executeSQL(executionDatabase,sql);
 
-			sql = "insert into TemperatureProfileID (temperatureProfileID, zoneID, monthID)"
-					+ " select distinct (zoneID*10000)+(monthID*100) as temperatureProfileID, zoneID, monthID"
-					+ " from zoneMonthHour"
+			sql = "insert into temperatureprofileid (temperatureprofileid, zoneid, monthid)"
+					+ " select distinct (zoneid*10000)+(monthid*100) as temperatureprofileid, zoneid, monthid"
+					+ " from zonemonthhour"
 					+ " where not exists ("
 					+ " select *"
-					+ " from TemperatureProfileID"
-					+ " where TemperatureProfileID.zoneID=zoneMonthHour.zoneID"
-					+ " and TemperatureProfileID.monthID=zoneMonthHour.monthID)";
+					+ " from temperatureprofileid"
+					+ " where temperatureprofileid.zoneid=zonemonthhour.zoneid"
+					+ " and temperatureprofileid.monthid=zonemonthhour.monthid)";
 			SQLRunner.executeSQL(executionDatabase,sql);
 
-			sql = "create table if not exists NRModelYear like modelYear";
+			sql = "create table if not exists nrmodelyear like modelyear";
 			SQLRunner.executeSQL(executionDatabase,sql);
 			for(int i=1940;i<2060;i++) {
-				sql = "insert ignore into NRModelYear (modelYearID) values (" + i + ")";
+				sql = "insert ignore into nrmodelyear (modelyearid) values (" + i + ")";
 				SQLRunner.executeSQL(executionDatabase,sql);
 			}
 		} catch(SQLException e) {
@@ -278,11 +278,11 @@ public class DefaultDataMaker {
 	 * Obtain SQL to change any NULL-valued columns into 0-valued columns in the fuelFormulation table.
 	**/
 	public static String getFuelFormulationNullsSQL() {
-		String[] columnNames = { "RVP","sulfurLevel","ETOHVolume","MTBEVolume","ETBEVolume",
-				"TAMEVolume","aromaticContent","olefinContent","benzeneContent","e200","e300",
-				"volToWtPercentOxy","BioDieselEsterVolume","CetaneIndex","PAHContent","T50","T90"
+		String[] columnNames = { "rvp","sulfurlevel","etohvolume","mtbevolume","etbevolume",
+				"tamevolume","aromaticcontent","olefincontent","benzenecontent","e200","e300",
+				"voltowtpercentoxy","biodieselestervolume","cetaneindex","pahcontent","t50","t90"
 		};
-		String sql = "update fuelFormulation set ";
+		String sql = "update fuelformulation set ";
 		for(int i=0;i<columnNames.length;i++) {
 			if(i > 0) {
 				sql += ",";
@@ -307,9 +307,9 @@ public class DefaultDataMaker {
 	 * by tablesExtractedByScript.
 	**/
 	public void determineAllTablesToExtractAndCreate() {
-		if(tablesExtractedByScript.contains("TemperatureAdjustment")) {
-			tablesToBeExtracted.add("RunSpecSourceFuelType");
-			tablesToBeExtracted.add("PollutantProcessAssoc");
+		if(tablesExtractedByScript.contains("temperatureadjustment")) {
+			tablesToBeExtracted.add("runspecsourcefueltype");
+			tablesToBeExtracted.add("pollutantprocessassoc");
 		}
 
 		// Disregard any tables already being handled by the script
@@ -368,147 +368,147 @@ public class DefaultDataMaker {
 
 		String[] externalCalculatorStatements = {
 			"cache select "
-			+ " ##context.iterLocation.stateRecordID## as stateID,"
-			+ " ##context.iterLocation.countyRecordID## as countyID,"
-			+ " ##context.iterLocation.zoneRecordID## as zoneID,"
-			+ " ##context.iterLocation.linkRecordID## as linkID,"
-			+ " ##context.year## as yearID,"
-			+ " ##context.monthID## as monthID"
+			+ " ##context.iterlocation.staterecordid## as stateid,"
+			+ " ##context.iterlocation.countyrecordid## as countyid,"
+			+ " ##context.iterlocation.zonerecordid## as zoneid,"
+			+ " ##context.iterlocation.linkrecordid## as linkid,"
+			+ " ##context.year## as yearid,"
+			+ " ##context.monthid## as monthid"
 			+ " into outfile '##extconstants##';",
 
-			// Give the total set of pollutant/process selections to the external calculator. Just
-			// the file is needed. It doesn't need to be loaded into a real table.
-			"cache SELECT * INTO OUTFILE '##extpollutantprocess##' FROM RunSpecPollutantProcess;",
+			// give the total set of pollutant/process selections to the external calculator. just
+			// the file is needed. it doesn't need to be loaded into a real table.
+			"cache select * into outfile '##extpollutantprocess##' from runspecpollutantprocess;",
 
-			"cache select ageID, ageGroupID"
+			"cache select ageid, agegroupid"
 			+ " into outfile '##extagecategory##'"
-			+ " from AgeCategory;",
+			+ " from agecategory;",
 
-			"cache select ##context.iterLocation.countyRecordID##, ##context.year##, ##context.monthID##, "
-			+ " 		fst.fuelTypeID, fst.fuelSubTypeID, ff.fuelFormulationID, fs.marketShare"
+			"cache select ##context.iterlocation.countyrecordid##, ##context.year##, ##context.monthid##, "
+			+ " 		fst.fueltypeid, fst.fuelsubtypeid, ff.fuelformulationid, fs.marketshare"
 			+ " into outfile '##extfuelsupply##'"
 			+ " from year"
-			+ " inner join fuelSupply fs on (fs.fuelYearID=year.fuelYearID)"
-			+ " inner join monthOfAnyYear moay on (moay.monthGroupID=fs.monthGroupID)"
-			+ " inner join fuelFormulation ff on (ff.fuelFormulationID=fs.fuelFormulationID)"
-			+ " inner join fuelSubtype fst on (fst.fuelSubtypeID=ff.fuelSubtypeID)"
-			+ " where yearID = ##context.year##"
-			+ " and fs.fuelRegionID = ##context.fuelRegionID##"
-			+ " and moay.monthID = ##context.monthID##"
-			+ " and fst.fuelTypeID in (##macro.csv.all.fuelTypeID##);",
+			+ " inner join fuelsupply fs on (fs.fuelyearid=year.fuelyearid)"
+			+ " inner join monthofanyyear moay on (moay.monthgroupid=fs.monthgroupid)"
+			+ " inner join fuelformulation ff on (ff.fuelformulationid=fs.fuelformulationid)"
+			+ " inner join fuelsubtype fst on (fst.fuelsubtypeid=ff.fuelsubtypeid)"
+			+ " where yearid = ##context.year##"
+			+ " and fs.fuelregionid = ##context.fuelregionid##"
+			+ " and moay.monthid = ##context.monthid##"
+			+ " and fst.fueltypeid in (##macro.csv.all.fueltypeid##);",
 
-			"cache select ##context.iterLocation.countyRecordID##, ##context.year##, ##context.monthID##,"
-			+ " 	fst.fuelTypeID, fst.fuelSubTypeID, ff.fuelFormulationID, fs.marketShare"
+			"cache select ##context.iterlocation.countyrecordid##, ##context.year##, ##context.monthid##,"
+			+ " 	fst.fueltypeid, fst.fuelsubtypeid, ff.fuelformulationid, fs.marketshare"
 			+ " into outfile '##extnrfuelsupply##'"
 			+ " from year"
-			+ " inner join nrFuelSupply fs on (fs.fuelYearID=year.fuelYearID)"
-			+ " inner join monthOfAnyYear moay on (moay.monthGroupID=fs.monthGroupID)"
-			+ " inner join fuelFormulation ff on (ff.fuelFormulationID=fs.fuelFormulationID)"
-			+ " inner join nrFuelSubtype fst on (fst.fuelSubtypeID=ff.fuelSubtypeID)"
-			+ " where yearID = ##context.year##"
-			+ " and fs.fuelRegionID = ##context.fuelRegionID##"
-			+ " and moay.monthID = ##context.monthID##"
-			+ " and fst.fuelTypeID in (##macro.csv.all.nrFuelTypeID##);",
+			+ " inner join nrfuelsupply fs on (fs.fuelyearid=year.fuelyearid)"
+			+ " inner join monthofanyyear moay on (moay.monthgroupid=fs.monthgroupid)"
+			+ " inner join fuelformulation ff on (ff.fuelformulationid=fs.fuelformulationid)"
+			+ " inner join nrfuelsubtype fst on (fst.fuelsubtypeid=ff.fuelsubtypeid)"
+			+ " where yearid = ##context.year##"
+			+ " and fs.fuelregionid = ##context.fuelregionid##"
+			+ " and moay.monthid = ##context.monthid##"
+			+ " and fst.fueltypeid in (##macro.csv.all.nrfueltypeid##);",
 
-			"cache select fuelTypeID, humidityCorrectionCoeff, fuelDensity, subjectToEvapCalculations"
+			"cache select fueltypeid, humiditycorrectioncoeff, fueldensity, subjecttoevapcalculations"
 			+ " into outfile '##extfueltype##'"
-			+ " from fuelType;",
+			+ " from fueltype;",
 
-			"cache select fuelTypeID, humidityCorrectionCoeff, fuelDensity, subjectToEvapCalculations"
+			"cache select fueltypeid, humiditycorrectioncoeff, fueldensity, subjecttoevapcalculations"
 			+ " into outfile '##extnrfueltype##'"
-			+ " from nrFuelType;",
+			+ " from nrfueltype;",
 			
-			"cache select fuelSubtypeID, fuelTypeID, fuelSubtypePetroleumFraction, fuelSubtypeFossilFraction,"
-			+ " 	carbonContent, oxidationFraction, energyContent"
+			"cache select fuelsubtypeid, fueltypeid, fuelsubtypepetroleumfraction, fuelsubtypefossilfraction,"
+			+ " 	carboncontent, oxidationfraction, energycontent"
 			+ " into outfile '##extfuelsubtype##'"
-			+ " from fuelSubtype;",
+			+ " from fuelsubtype;",
 
-			"cache select fuelSubtypeID, fuelTypeID, fuelSubtypePetroleumFraction, fuelSubtypeFossilFraction,"
-			+ " 	carbonContent, oxidationFraction, energyContent"
+			"cache select fuelsubtypeid, fueltypeid, fuelsubtypepetroleumfraction, fuelsubtypefossilfraction,"
+			+ " 	carboncontent, oxidationfraction, energycontent"
 			+ " into outfile '##extnrfuelsubtype##'"
-			+ " from nrFuelSubtype;",
+			+ " from nrfuelsubtype;",
 			
 			"cache select distinct"
-			+ " 	FuelFormulation.fuelFormulationID,"
-			+ " 	FuelFormulation.fuelSubtypeID,"
-			+ " 	ifnull(FuelFormulation.RVP,0),"
-			+ " 	ifnull(FuelFormulation.sulfurLevel,0),"
-			+ " 	ifnull(FuelFormulation.ETOHVolume,0),"
-			+ " 	ifnull(FuelFormulation.MTBEVolume,0),"
-			+ " 	ifnull(FuelFormulation.ETBEVolume,0),"
-			+ " 	ifnull(FuelFormulation.TAMEVolume,0),"
-			+ " 	ifnull(FuelFormulation.aromaticContent,0),"
-			+ " 	ifnull(FuelFormulation.olefinContent,0),"
-			+ " 	ifnull(FuelFormulation.benzeneContent,0),"
-			+ " 	ifnull(FuelFormulation.e200,0),"
-			+ " 	ifnull(FuelFormulation.e300,0),"
-			+ " 	ifnull(FuelFormulation.volToWtPercentOxy,0),"
-			+ " 	ifnull(FuelFormulation.BioDieselEsterVolume,0),"
-			+ " 	ifnull(FuelFormulation.CetaneIndex,0),"
-			+ " 	ifnull(FuelFormulation.PAHContent,0),"
-			+ " 	ifnull(FuelFormulation.T50,0),"
-			+ " 	ifnull(FuelFormulation.T90,0)"
-			+ " INTO OUTFILE '##extfuelformulation##'"
-			+ " FROM FuelFormulation"
-			+ " WHERE FuelFormulation.FuelFormulationID IN ("
-			+ " 	select distinct ff.fuelFormulationID"
-			+ " 	FROM FuelSupply"
-			+ " 	INNER JOIN RunSpecMonthGroup ON (FuelSupply.monthGroupID = RunSpecMonthGroup.monthGroupID)"
-			+ " 	INNER JOIN Year ON (FuelSupply.fuelYearID = Year.fuelYearID)"
-			+ " 	INNER JOIN FuelFormulation ff ON (ff.fuelFormulationID = FuelSupply.fuelFormulationID)"
-			+ " 	INNER JOIN FuelSubtype ON (FuelSubtype.fuelSubtypeID = ff.fuelSubtypeID)"
-			+ " 	INNER JOIN MonthOfAnyYear ON (MonthOfAnyYear.monthGroupID = FuelSupply.monthGroupID)"
-			+ " 	INNER JOIN RunSpecMonth ON (RunSpecMonth.monthID = MonthOfAnyYear.monthID)"
-			+ " 	WHERE fuelRegionID = ##context.fuelRegionID##"
-			+ " 	AND yearID = ##context.year##"
-			+ " 	AND MonthOfAnyYear.monthID = ##context.monthID##"
-			+ " 	AND FuelSubtype.fuelTypeID in (##macro.csv.all.fuelTypeID##)"
+			+ " 	fuelformulation.fuelformulationid,"
+			+ " 	fuelformulation.fuelsubtypeid,"
+			+ " 	ifnull(fuelformulation.rvp,0),"
+			+ " 	ifnull(fuelformulation.sulfurlevel,0),"
+			+ " 	ifnull(fuelformulation.etohvolume,0),"
+			+ " 	ifnull(fuelformulation.mtbevolume,0),"
+			+ " 	ifnull(fuelformulation.etbevolume,0),"
+			+ " 	ifnull(fuelformulation.tamevolume,0),"
+			+ " 	ifnull(fuelformulation.aromaticcontent,0),"
+			+ " 	ifnull(fuelformulation.olefincontent,0),"
+			+ " 	ifnull(fuelformulation.benzenecontent,0),"
+			+ " 	ifnull(fuelformulation.e200,0),"
+			+ " 	ifnull(fuelformulation.e300,0),"
+			+ " 	ifnull(fuelformulation.voltowtpercentoxy,0),"
+			+ " 	ifnull(fuelformulation.biodieselestervolume,0),"
+			+ " 	ifnull(fuelformulation.cetaneindex,0),"
+			+ " 	ifnull(fuelformulation.pahcontent,0),"
+			+ " 	ifnull(fuelformulation.t50,0),"
+			+ " 	ifnull(fuelformulation.t90,0)"
+			+ " into outfile '##extfuelformulation##'"
+			+ " from fuelformulation"
+			+ " where fuelformulation.fuelformulationid in ("
+			+ " 	select distinct ff.fuelformulationid"
+			+ " 	from fuelsupply"
+			+ " 	inner join runspecmonthgroup on (fuelsupply.monthgroupid = runspecmonthgroup.monthgroupid)"
+			+ " 	inner join year on (fuelsupply.fuelyearid = year.fuelyearid)"
+			+ " 	inner join fuelformulation ff on (ff.fuelformulationid = fuelsupply.fuelformulationid)"
+			+ " 	inner join fuelsubtype on (fuelsubtype.fuelsubtypeid = ff.fuelsubtypeid)"
+			+ " 	inner join monthofanyyear on (monthofanyyear.monthgroupid = fuelsupply.monthgroupid)"
+			+ " 	inner join runspecmonth on (runspecmonth.monthid = monthofanyyear.monthid)"
+			+ " 	where fuelregionid = ##context.fuelregionid##"
+			+ " 	and yearid = ##context.year##"
+			+ " 	and monthofanyyear.monthid = ##context.monthid##"
+			+ " 	and fuelsubtype.fueltypeid in (##macro.csv.all.fueltypeid##)"
 			+ " );",
 
 			"cache select distinct"
-			+ " 	FuelFormulation.fuelFormulationID,"
-			+ " 	FuelFormulation.fuelSubtypeID,"
-			+ " 	ifnull(FuelFormulation.RVP,0),"
-			+ " 	ifnull(FuelFormulation.sulfurLevel,0),"
-			+ " 	ifnull(FuelFormulation.ETOHVolume,0),"
-			+ " 	ifnull(FuelFormulation.MTBEVolume,0),"
-			+ " 	ifnull(FuelFormulation.ETBEVolume,0),"
-			+ " 	ifnull(FuelFormulation.TAMEVolume,0),"
-			+ " 	ifnull(FuelFormulation.aromaticContent,0),"
-			+ " 	ifnull(FuelFormulation.olefinContent,0),"
-			+ " 	ifnull(FuelFormulation.benzeneContent,0),"
-			+ " 	ifnull(FuelFormulation.e200,0),"
-			+ " 	ifnull(FuelFormulation.e300,0),"
-			+ " 	ifnull(FuelFormulation.volToWtPercentOxy,0),"
-			+ " 	ifnull(FuelFormulation.BioDieselEsterVolume,0),"
-			+ " 	ifnull(FuelFormulation.CetaneIndex,0),"
-			+ " 	ifnull(FuelFormulation.PAHContent,0),"
-			+ " 	ifnull(FuelFormulation.T50,0),"
-			+ " 	ifnull(FuelFormulation.T90,0)"
-			+ " INTO OUTFILE '##extnrfuelformulation##'"
-			+ " FROM fuelFormulation as FuelFormulation"
-			+ " WHERE FuelFormulation.FuelFormulationID IN ("
-			+ " 	select distinct ff.fuelFormulationID"
-			+ " 	FROM NRFuelSupply as FuelSupply"
-			+ " 	INNER JOIN RunSpecMonthGroup ON (FuelSupply.monthGroupID = RunSpecMonthGroup.monthGroupID)"
-			+ " 	INNER JOIN Year ON (FuelSupply.fuelYearID = Year.fuelYearID)"
-			+ " 	INNER JOIN FuelFormulation ff ON (ff.fuelFormulationID = FuelSupply.fuelFormulationID)"
-			+ " 	INNER JOIN NRFuelSubtype as FuelSubtype ON (FuelSubtype.fuelSubtypeID = ff.fuelSubtypeID)"
-			+ " 	INNER JOIN MonthOfAnyYear ON (MonthOfAnyYear.monthGroupID = FuelSupply.monthGroupID)"
-			+ " 	INNER JOIN RunSpecMonth ON (RunSpecMonth.monthID = MonthOfAnyYear.monthID)"
-			+ " 	WHERE fuelRegionID = ##context.fuelRegionID##"
-			+ " 	AND yearID = ##context.year##"
-			+ " 	AND MonthOfAnyYear.monthID = ##context.monthID##"
-			+ " 	AND FuelSubtype.fuelTypeID in (##macro.csv.all.nrFuelTypeID##)"
+			+ " 	fuelformulation.fuelformulationid,"
+			+ " 	fuelformulation.fuelsubtypeid,"
+			+ " 	ifnull(fuelformulation.rvp,0),"
+			+ " 	ifnull(fuelformulation.sulfurlevel,0),"
+			+ " 	ifnull(fuelformulation.etohvolume,0),"
+			+ " 	ifnull(fuelformulation.mtbevolume,0),"
+			+ " 	ifnull(fuelformulation.etbevolume,0),"
+			+ " 	ifnull(fuelformulation.tamevolume,0),"
+			+ " 	ifnull(fuelformulation.aromaticcontent,0),"
+			+ " 	ifnull(fuelformulation.olefincontent,0),"
+			+ " 	ifnull(fuelformulation.benzenecontent,0),"
+			+ " 	ifnull(fuelformulation.e200,0),"
+			+ " 	ifnull(fuelformulation.e300,0),"
+			+ " 	ifnull(fuelformulation.voltowtpercentoxy,0),"
+			+ " 	ifnull(fuelformulation.biodieselestervolume,0),"
+			+ " 	ifnull(fuelformulation.cetaneindex,0),"
+			+ " 	ifnull(fuelformulation.pahcontent,0),"
+			+ " 	ifnull(fuelformulation.t50,0),"
+			+ " 	ifnull(fuelformulation.t90,0)"
+			+ " into outfile '##extnrfuelformulation##'"
+			+ " from fuelformulation as fuelformulation"
+			+ " where fuelformulation.fuelformulationid in ("
+			+ " 	select distinct ff.fuelformulationid"
+			+ " 	from nrfuelsupply as fuelsupply"
+			+ " 	inner join runspecmonthgroup on (fuelsupply.monthgroupid = runspecmonthgroup.monthgroupid)"
+			+ " 	inner join year on (fuelsupply.fuelyearid = year.fuelyearid)"
+			+ " 	inner join fuelformulation ff on (ff.fuelformulationid = fuelsupply.fuelformulationid)"
+			+ " 	inner join nrfuelsubtype as fuelsubtype on (fuelsubtype.fuelsubtypeid = ff.fuelsubtypeid)"
+			+ " 	inner join monthofanyyear on (monthofanyyear.monthgroupid = fuelsupply.monthgroupid)"
+			+ " 	inner join runspecmonth on (runspecmonth.monthid = monthofanyyear.monthid)"
+			+ " 	where fuelregionid = ##context.fuelregionid##"
+			+ " 	and yearid = ##context.year##"
+			+ " 	and monthofanyyear.monthid = ##context.monthid##"
+			+ " 	and fuelsubtype.fueltypeid in (##macro.csv.all.nrfueltypeid##)"
 			+ " );",
 
-			"cache select SCC, NREquipTypeID, fuelTypeID"
+			"cache select scc, nrequiptypeid, fueltypeid"
 			+ " into outfile '##extnrscc##'"
-			+ " from nrSCC;",
+			+ " from nrscc;",
 
 			"cache select nrhprangebinid, engtechid, nrhpcategory"
 			+ " into outfile '##extnrhpcategory##'"
-			+ " from nrHPCategory;"
+			+ " from nrhpcategory;"
 		};
 		for(int i=0;i<externalCalculatorStatements.length;i++) {
 			result.add(externalCalculatorStatements[i]);
@@ -543,31 +543,31 @@ public class DefaultDataMaker {
 		// pollutant/process and fueltype if no record is found in the TemperatureAdjustment
 		// table for a particular combination of these key values in the Temperature Adjustment
 		// table.
-		if(tablesExtractedByScript.contains("TemperatureAdjustment")) {
+		if(tablesExtractedByScript.contains("temperatureadjustment")) {
 
 // !!! Gwo Shyu - Start of Change, 04/09/2014
 
 			sql = "drop table if exists tmpsfppa;";
 			result.add(sql);
-			sql = "create table tmpsfppa select * from RunSpecSourceFuelType, PollutantProcessAssoc;";
+			sql = "create table tmpsfppa select * from runspecsourcefueltype, pollutantprocessassoc;";
 			result.add(sql);
-			sql = "alter table tmpsfppa add index NDXSTFTpolProcess (sourceTypeID,fuelTypeID, polProcessID);";
+			sql = "alter table tmpsfppa add index ndxstftpolprocess (sourcetypeid,fueltypeid, polprocessid);";
 			result.add(sql);
-			sql = "alter table tmpsfppa add index NDXfuelTypepolProcess (fuelTypeID, polProcessID);";
+			sql = "alter table tmpsfppa add index ndxfueltypepolprocess (fueltypeid, polprocessid);";
 			result.add(sql);
-			sql = "INSERT IGNORE INTO TemperatureAdjustment ( "
-					+	"polProcessID, fuelTypeID, "
-					+	"tempAdjustTermA, tempAdjustTermACV, "
-					+	"tempAdjustTermB, tempAdjustTermBCV, "
-					+	"tempAdjustTermC, tempAdjustTermCCV, "
-					+	"minModelYearID, maxModelYearID ) "
-					+"SELECT DISTINCT "
-					+	"polProcessID, fuelTypeID, "
+			sql = "INSERT IGNORE INTO temperatureadjustment ( "
+					+	"polprocessid, fueltypeid, "
+					+	"tempadjustterma, tempadjusttermacv, "
+					+	"tempadjusttermb, tempadjusttermbcv, "
+					+	"tempadjusttermc, tempadjusttermccv, "
+					+	"minmodelyearid, maxmodelyearid ) "
+					+"select distinct "
+					+	"polprocessid, fueltypeid, "
 					+	"0, 0, 0, 0, 0, 0, 1960, 2060 "
-					+"FROM "
+					+"from "
 					+	"tmpsfppa "
-					+	"left outer join TemperatureAdjustment using (fuelTypeID, polProcessID) "
-					+	"where TemperatureAdjustment.polProcessID is null;";
+					+	"left outer join temperatureadjustment using (fueltypeid, polprocessid) "
+					+	"where temperatureadjustment.polprocessid is null;";
 
 /*
 			sql = "INSERT IGNORE INTO TemperatureAdjustment ( "
@@ -589,7 +589,7 @@ public class DefaultDataMaker {
 
 			result.add(sql);
 
-			sql = "ANALYZE TABLE TemperatureAdjustment;";
+			sql = "ANALYZE TABLE temperatureadjustment;";
 			result.add(sql);
 		}
 
@@ -621,14 +621,14 @@ public class DefaultDataMaker {
 	 * @throws SQLException if anything goes wrong
 	**/
 	public static void calculateVolToWtPercentOxy(Connection db) throws SQLException {
-		String[] tableNames = { "fuelFormulation" }; // , "nrFuelFormulation" };
+		String[] tableNames = { "fuelformulation" }; // , "nrFuelFormulation" };
 		for(int i=0;i<tableNames.length;i++) {
-			String sql = "update " + tableNames[i] + " set volToWtPercentOxy="
-					+ " case when (ETOHVolume+MTBEVolume+ETBEVolume+TAMEVolume) > 0 then"
-					+ " 	(ETOHVolume*0.3653"
-					+ " 	+ MTBEVolume*0.1792"
-					+ " 	+ ETBEVolume*0.1537"
-					+ " 	+ TAMEVolume*0.1651) / (ETOHVolume+MTBEVolume+ETBEVolume+TAMEVolume)"
+			String sql = "update " + tableNames[i] + " set voltowtpercentoxy="
+					+ " case when (etohvolume+mtbevolume+etbevolume+tamevolume) > 0 then"
+					+ " 	(etohvolume*0.3653"
+					+ " 	+ mtbevolume*0.1792"
+					+ " 	+ etbevolume*0.1537"
+					+ " 	+ tamevolume*0.1651) / (etohvolume+mtbevolume+etbevolume+tamevolume)"
 					+ " else 0"
 					+ " end";
 			SQLRunner.executeSQL(db,sql);
