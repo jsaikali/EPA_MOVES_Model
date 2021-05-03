@@ -373,8 +373,12 @@ public class BaseRateByAgeHelper {
 			howMany += flushOutput(writer);
 			writer.close();
 			writer = null;
+			try{
+				Process p=Runtime.getRuntime().exec( "chmod 777 "+file.getCanonicalPath() );
+				p.waitFor();
+			} catch (Exception e) { e.printStackTrace(); }
 			// Load records into the database
-			sql = "LOAD DATA INFILE '" + file.getCanonicalPath().replace('\\','/') + "' INTO TABLE " + tableName
+			sql = "LOAD DATA LOCAL INFILE '" + file.getCanonicalPath() + "' INTO TABLE " + tableName
 					+ " ("
 					+ "sourceTypeID,roadTypeID,avgSpeedBinID,hourDayID,polProcessID,pollutantID,processID,modelYearID,fuelTypeID,ageGroupID,regClassID,opModeID,"
 					+ "meanBaseRate,meanBaseRateIM,meanBaseRateACAdj,meanBaseRateIMACAdj,"
