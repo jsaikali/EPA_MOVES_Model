@@ -453,9 +453,6 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 		tempWorkFilePath.setReadable(true, false);
 		tempWorkFilePath.setExecutable(true, false);
 		tempWorkFilePath.setWritable(true, false);
-		workingFolderPath.setReadable(true, false);
-		workingFolderPath.setExecutable(true, false);
-		workingFolderPath.setWritable(true, false);
 
 		try {
 			if(!openDatabase(false)) {
@@ -471,6 +468,9 @@ public class RemoteEmissionsCalculator extends MOVESThread {
 				}
 			}
 
+			workingFolderPath.setReadable(true, false);
+			workingFolderPath.setExecutable(true, false);
+			workingFolderPath.setWritable(true, false);
 			if(workerWindow != null) {
 				workerWindow.changeStatusText("Processing " + progressPath.getName());
 			} else {
