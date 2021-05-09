@@ -164,7 +164,12 @@ public class TemporaryFileManager {
 			String name = "MOVESTemporary";
 			int attempt = 0;
 			File w = null;
-			Logger.log(LogMessageCategory.INFO,"baseFolder= " + baseFolder.getCanonicalPath());
+			try{
+				Logger.log(LogMessageCategory.INFO,"baseFolder= " + baseFolder.getCanonicalPath());
+			} catch(Exception e) {
+				Logger.log(LogMessageCategory.INFO,"baseFolder= null");
+			}
+
 
 			for(;attempt<1000;attempt++) {
 				try {
