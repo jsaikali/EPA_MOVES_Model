@@ -560,6 +560,12 @@ func (this *tempFiles) close() {
 	}
 	this.outputWriter.Flush()
 	this.outputFile.Close()
+	
+	fmt.Println("Close...")
+
+	this.outputFile.setReadable(true, false);
+	this.outputFile.setExecutable(true, false);
+	this.outputFile.setWritable(true, false);
 
 	if hasFinalRecords {
 		globalevents.SqlStarting()
@@ -1158,6 +1164,7 @@ func makeBaseRateFromSourceBinRates(romdQueue chan *romdBlock, sqlToWrite chan s
     }
 	writeLines(outputRecords,false,files)
 	files.close()
+
 
 	fmt.Println("makeBaseRateFromSourceBinRates done, romdCount=",romdCount,",writeCount=",writeCount)
 }
