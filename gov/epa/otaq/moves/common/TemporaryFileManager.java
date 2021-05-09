@@ -164,19 +164,21 @@ public class TemporaryFileManager {
 			String name = "MOVESTemporary";
 			int attempt = 0;
 			File w = null;
+			Logger.log(LogMessageCategory.INFO,"baseFolder= " + baseFolder.getCanonicalPath());
+
 			for(;attempt<1000;attempt++) {
 				try {
 					if(attempt == 0) {
 						if(baseFolder == null) {
-							w = new File("MOVESTemporary");
+							w = new File("/var/lib", "MOVESTemporary");
 						} else {
-							w = new File(baseFolder, "MOVESTemporary");
+							w = new File("/var/lib", "MOVESTemporary");
 						}
 					} else {
 						if(baseFolder == null) {
-							w = new File("MOVESTemporary_" + attempt);
+							w = new File("/var/lib", "MOVESTemporary_" + attempt);
 						} else {
-							w = new File(baseFolder, "MOVESTemporary_" + attempt);
+							w = new File("/var/lib", "MOVESTemporary_" + attempt);
 						}
 					}
 					if(w.exists() && !w.isDirectory()) {

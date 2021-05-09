@@ -17,7 +17,7 @@ var finalSqlToWrite []string
 // the activity and pollution data to the output database.
 func StartWriting(howManyThreads int, sqlToWrite chan string) {
 	finalSqlToWrite = make([]string,1000)
-
+	fmt.Printf("JO TESTING = %v,", finalSqlToWrite)
 	accumulatorIndex := 0
 
 	for i := 0; i<howManyThreads; i++ {
