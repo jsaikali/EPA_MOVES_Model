@@ -65,7 +65,7 @@ public class FuelEffectsGeneratorTest extends TestCase {
 
 		if(inputDB != null && testDB != null) {
 			TreeSet<Integer> sourceTypes = DatabaseUtilities.getIntegerSet(inputDB,
-					"select sourceTypeID from sourceUseType");
+					"select sourcetypeid from sourceusetype");
 			ExecutionRunSpec.fillSourceTypes(testDB,sourceTypes);
 		}
 	}
@@ -154,18 +154,18 @@ public class FuelEffectsGeneratorTest extends TestCase {
 		public AirToxicsFuelHandler(Connection db) {
 			String sql = "";
 			try {
-				sql = "select max(fuelFormulationID) from fuelFormulation";
+				sql = "select max(fuelformulationid) from fuelformulation";
 				testFuelID = 1+(int)SQLRunner.executeScalar(db,sql);
-				sql = "insert into fuelFormulation (fuelFormulationID, fuelSubtypeID,"
-						+ " 	volToWtPercentOxy, sulfurLevel, RVP, e200, e300,"
-						+ " 	aromaticContent, olefinContent, benzeneContent)"
+				sql = "insert into fuelformulation (fuelformulationid, fuelsubtypeid,"
+						+ " 	voltowtpercentoxy, sulfurlevel, rvp, e200, e300,"
+						+ " 	aromaticcontent, olefincontent, benzenecontent)"
 						+ " values (" + testFuelID + ",10,"
 						+ " 3.529924,215.96,8.7,50.17562,82.6122,"
 						+ " 34.3368,7.0944,1.4)";
 				SQLRunner.executeSQL(db,sql);
 
-				sql = "insert into fuelSupply ("
-						+ " countyID,fuelYearID,monthGroupID,fuelFormulationID,marketShare)"
+				sql = "insert into fuelsupply ("
+						+ " countyid,fuelyearid,monthgroupid,fuelformulationid,marketshare)"
 						+ " values (-1,-1,0," + testFuelID + ",1.0)";
 				SQLRunner.executeSQL(db,sql);
 			} catch(Exception e) {
@@ -181,12 +181,12 @@ public class FuelEffectsGeneratorTest extends TestCase {
 			if(testFuelID <= 0) {
 				return;
 			}
-			String sql = "delete from fuelFormulation where fuelFormulationID=" + testFuelID;
+			String sql = "delete from fuelformulation where fuelformulationid=" + testFuelID;
 			try {
 				SQLRunner.executeSQL(db,sql);
 
-				sql = "delete from fuelSupply where countyID= -1 and fuelYearID= -1"
-						+ " and monthGroupID=0";
+				sql = "delete from fuelsupply where countyid= -1 and fuelyearid= -1"
+						+ " and monthgroupid=0";
 				SQLRunner.executeSQL(db,sql);
 			} catch(Exception e) {
 				Logger.logSqlError(e,"Unable to remove test fuel formulation",sql);
@@ -213,7 +213,7 @@ public class FuelEffectsGeneratorTest extends TestCase {
 	public void testDoAirToxicsCalculations() throws Exception {
 		AirToxicsFuelHandler fuelHandler = new AirToxicsFuelHandler(testDB);
 		try {
-			String sql = "truncate atRatio";
+			String sql = "truncate atratio";
 			SQLRunner.executeSQL(testDB,sql);
 
 			FuelEffectsGenerator g = new FuelEffectsGenerator();
@@ -223,14 +223,14 @@ public class FuelEffectsGeneratorTest extends TestCase {
 			}
 			g.doAirToxicsCalculations();
 
-			sql = "select atRatio"
-					+ " from ATRatio"
-					+ " where fuelTypeID=1"
-					+ " and fuelFormulationID=" + fuelHandler.testFuelID
-					+ " and polProcessID=2001" // benzene, running
-					+ " and ageID=0"
-					+ " and monthGroupID=1"
-					+ " and maxModelYearID=2000";
+			sql = "select atratio"
+					+ " from atratio"
+					+ " where fueltypeid=1"
+					+ " and fuelformulationid=" + fuelHandler.testFuelID
+					+ " and polprocessid=2001" // benzene, running
+					+ " and ageid=0"
+					+ " and monthgroupid=1"
+					+ " and maxmodelyearid=2000";
 			double ratio = SQLRunner.executeScalar(g.db,sql);
 			assertEquals("ATRatio does not match",((int)(0.0639*10000))/10000.0,((int)(ratio*10000))/10000.0);
 
@@ -248,7 +248,7 @@ public class FuelEffectsGeneratorTest extends TestCase {
 	public void testDoCOCalculations() throws Exception {
 		AirToxicsFuelHandler fuelHandler = new AirToxicsFuelHandler(testDB);
 		try {
-			String sql = "truncate criteriaRatio";
+			String sql = "truncate criteriaratio";
 			SQLRunner.executeSQL(testDB,sql);
 
 			FuelEffectsGenerator g = new FuelEffectsGenerator();
@@ -259,13 +259,13 @@ public class FuelEffectsGeneratorTest extends TestCase {
 			g.doCOCalculations();
 
 			sql = "select ratio"
-					+ " from criteriaRatio"
-					+ " where fuelTypeID=1"
-					+ " and fuelFormulationID=" + fuelHandler.testFuelID
-					+ " and polProcessID=201" // CO, running
-					+ " and ageID=0"
-					+ " and sourceTypeID=21"
-					+ " and modelYearID=2010";
+					+ " from criteriaratio"
+					+ " where fueltypeid=1"
+					+ " and fuelformulationid=" + fuelHandler.testFuelID
+					+ " and polprocessid=201" // co, running
+					+ " and ageid=0"
+					+ " and sourcetypeid=21"
+					+ " and modelyearid=2010";
 			double ratio = SQLRunner.executeScalar(g.db,sql);
 			assertEquals("coRatio does not match",((int)(1.7548*10000))/10000.0,((int)(ratio*10000))/10000.0);
 
@@ -347,7 +347,7 @@ public class FuelEffectsGeneratorTest extends TestCase {
 	public void testDoHCCalculations() throws Exception {
 		AirToxicsFuelHandler fuelHandler = new AirToxicsFuelHandler(testDB);
 		try {
-			String sql = "truncate criteriaRatio";
+			String sql = "truncate criteriaratio";
 			SQLRunner.executeSQL(testDB,sql);
 
 			FuelEffectsGenerator g = new FuelEffectsGenerator();
@@ -358,13 +358,13 @@ public class FuelEffectsGeneratorTest extends TestCase {
 			g.doHCCalculations();
 
 			sql = "select ratio"
-					+ " from criteriaRatio"
-					+ " where fuelTypeID=1"
-					+ " and fuelFormulationID=" + fuelHandler.testFuelID
-					+ " and polProcessID=101" // HC, running
-					+ " and ageID=0"
-					+ " and sourceTypeID=21"
-					+ " and modelYearID=2010";
+					+ " from criteriaratio"
+					+ " where fueltypeid=1"
+					+ " and fuelformulationid=" + fuelHandler.testFuelID
+					+ " and polprocessid=101" // hc, running
+					+ " and ageid=0"
+					+ " and sourcetypeid=21"
+					+ " and modelyearid=2010";
 			double ratio = SQLRunner.executeScalar(g.db,sql);
 			assertEquals("HC ratio does not match",((int)(1.4634*10000))/10000.0,((int)(ratio*10000))/10000.0);
 
@@ -382,7 +382,7 @@ public class FuelEffectsGeneratorTest extends TestCase {
 	public void testDoNOxCalculations() throws Exception {
 		AirToxicsFuelHandler fuelHandler = new AirToxicsFuelHandler(testDB);
 		try {
-			String sql = "truncate criteriaRatio";
+			String sql = "truncate criteriaratio";
 			SQLRunner.executeSQL(testDB,sql);
 
 			FuelEffectsGenerator g = new FuelEffectsGenerator();
@@ -393,13 +393,13 @@ public class FuelEffectsGeneratorTest extends TestCase {
 			g.doNOxCalculations();
 
 			sql = "select ratio"
-					+ " from criteriaRatio"
-					+ " where fuelTypeID=1"
-					+ " and fuelFormulationID=" + fuelHandler.testFuelID
-					+ " and polProcessID=301" // NOx, running
-					+ " and ageID=0"
-					+ " and sourceTypeID=21"
-					+ " and modelYearID=2010";
+					+ " from criteriaratio"
+					+ " where fueltypeid=1"
+					+ " and fuelformulationid=" + fuelHandler.testFuelID
+					+ " and polprocessid=301" // nox, running
+					+ " and ageid=0"
+					+ " and sourcetypeid=21"
+					+ " and modelyearid=2010";
 			double ratio = SQLRunner.executeScalar(g.db,sql);
 			assertEquals("NOx ratio does not match",((int)(2.1019*10000))/10000.0,((int)(ratio*10000))/10000.0);
 
@@ -424,18 +424,18 @@ public class FuelEffectsGeneratorTest extends TestCase {
 		public MTBEFuelHandler(Connection db) {
 			String sql = "";
 			try {
-				sql = "select max(fuelFormulationID) from fuelFormulation";
+				sql = "select max(fuelformulationid) from fuelformulation";
 				testFuelID = 1+(int)SQLRunner.executeScalar(db,sql);
-				sql = "insert into fuelFormulation (fuelFormulationID, fuelSubtypeID,"
-						+ " 	volToWtPercentOxy, sulfurLevel, RVP, e200, e300,"
-						+ " 	aromaticContent, olefinContent, benzeneContent, MTBEVolume)"
+				sql = "insert into fuelformulation (fuelformulationid, fuelsubtypeid,"
+						+ " 	voltowtpercentoxy, sulfurlevel, rvp, e200, e300,"
+						+ " 	aromaticcontent, olefincontent, benzenecontent, mtbevolume)"
 						+ " values (" + testFuelID + ",10,"
 						+ " 3.529924,215.96,8.7,50.17562,82.6122,"
 						+ " 34.3368,7.0944,1.4,10)";
 				SQLRunner.executeSQL(db,sql);
 
-				sql = "insert into fuelSupply ("
-						+ " countyID,fuelYearID,monthGroupID,fuelFormulationID,marketShare)"
+				sql = "insert into fuelsupply ("
+						+ " countyid,fuelyearid,monthgroupid,fuelformulationid,marketshare)"
 						+ " values (-1,-1,0," + testFuelID + ",1.0)";
 				SQLRunner.executeSQL(db,sql);
 			} catch(Exception e) {
@@ -451,12 +451,12 @@ public class FuelEffectsGeneratorTest extends TestCase {
 			if(testFuelID <= 0) {
 				return;
 			}
-			String sql = "delete from fuelFormulation where fuelFormulationID=" + testFuelID;
+			String sql = "delete from fuelformulation where fuelformulationid=" + testFuelID;
 			try {
 				SQLRunner.executeSQL(db,sql);
 
-				sql = "delete from fuelSupply where countyID= -1 and fuelYearID= -1"
-						+ " and monthGroupID=0";
+				sql = "delete from fuelsupply where countyid= -1 and fuelyearid= -1"
+						+ " and monthgroupid=0";
 				SQLRunner.executeSQL(db,sql);
 			} catch(Exception e) {
 				Logger.logSqlError(e,"Unable to remove test fuel formulation",sql);
@@ -480,7 +480,7 @@ public class FuelEffectsGeneratorTest extends TestCase {
 	public void testMTBECalculations() throws Exception {
 		MTBEFuelHandler fuelHandler = new MTBEFuelHandler(testDB);
 		try {
-			String sql = "drop table if exists MTBERatio";
+			String sql = "drop table if exists mtberatio";
 			SQLRunner.executeSQL(testDB,sql);
 
 			FuelEffectsGenerator g = new FuelEffectsGenerator();
@@ -490,11 +490,11 @@ public class FuelEffectsGeneratorTest extends TestCase {
 			}
 			g.doMTBECalculations();
 
-			sql = "select mtbeRatio"
-					+ " from mtbeRatio"
-					+ " where fuelTypeID=1"
-					+ " and fuelFormulationID=" + fuelHandler.testFuelID
-					+ " and polProcessID=2201"; // MTBE, running
+			sql = "select mtberatio"
+					+ " from mtberatio"
+					+ " where fueltypeid=1"
+					+ " and fuelformulationid=" + fuelHandler.testFuelID
+					+ " and polprocessid=2201"; // MTBE, running
 			double ratio = SQLRunner.executeScalar(g.db,sql);
 			assertEquals("mtbeRatio does not match",((int)(0.013248*10000))/10000.0,((int)(ratio*10000))/10000.0);
 
@@ -536,8 +536,8 @@ public class FuelEffectsGeneratorTest extends TestCase {
 	/** Test HCSpeciationCalculator.buildOxyThreshCase() **/
 	public void testBuildOxyThreshCase() throws Exception {
 		String caseStatement = HCSpeciationCalculator.buildOxyThreshCase(testDB);
-		String sql = "select fuelFormulationID, (" + caseStatement + ") as oxyThreshID"
-				+ " from fuelFormulation";
+		String sql = "select fuelformulationid, (" + caseStatement + ") as oxythreshid"
+				+ " from fuelformulation";
 		System.out.println(sql);
 		SQLRunner.Query query = new SQLRunner.Query();
 		try {
@@ -554,7 +554,7 @@ public class FuelEffectsGeneratorTest extends TestCase {
 			}
 			query.close();
 
-			sql = "select count(*) from oxyThreshName";
+			sql = "select count(*) from oxythreshname";
 			int count = (int)SQLRunner.executeScalar(testDB,sql);
 			assertEquals("Not all oxyThreshIDs found in fuelFormulation",count,ids.size());
 		} finally {
@@ -567,15 +567,15 @@ public class FuelEffectsGeneratorTest extends TestCase {
 		MTBEFuelHandler fuelHandler = new MTBEFuelHandler(testDB);
 		String sql = "";
 		try {
-			sql = "truncate GeneralFuelRatio";
+			sql = "truncate generalfuelratio";
 			SQLRunner.executeSQL(testDB,sql);
 
-			sql = "insert into GeneralFuelRatioExpression ("
-					+ " fuelTypeID, polProcessID, minModelYearID, maxModelYearID,"
-					+ " minAgeID, maxAgeID,sourceTypeID,fuelEffectRatioExpression,"
-					+ " fuelEffectRatioGPAExpression)"
+			sql = "insert into generalfuelratioexpression ("
+					+ " fueltypeid, polprocessid, minmodelyearid, maxmodelyearid,"
+					+ " minageid, maxageid,sourcetypeid,fueleffectratioexpression,"
+					+ " fueleffectratiogpaexpression)"
 					+ " values (1,-101,1960,2060,0,30,0,"
-					+ " 'MTBEVolume+7','MTBEVolume*2')";
+					+ " 'mtbevolume+7','mtbevolume*2')";
 			SQLRunner.executeSQL(testDB,sql);
 
 			FuelEffectsGenerator g = new FuelEffectsGenerator();
@@ -585,19 +585,19 @@ public class FuelEffectsGeneratorTest extends TestCase {
 			}
 			g.doGeneralFuelRatio();
 
-			sql = "select fuelEffectRatio"
-					+ " from GeneralFuelRatio"
-					+ " where fuelTypeID=1"
-					+ " and fuelFormulationID=" + fuelHandler.testFuelID
-					+ " and polProcessID= -101";
+			sql = "select fueleffectratio"
+					+ " from generalfuelratio"
+					+ " where fueltypeid=1"
+					+ " and fuelformulationid=" + fuelHandler.testFuelID
+					+ " and polprocessid= -101";
 			double ratio = SQLRunner.executeScalar(g.db,sql);
 			assertEquals("fuelEffectRatio does not match",((int)(17.0*10000))/10000.0,((int)(ratio*10000))/10000.0);
 
-			sql = "select fuelEffectRatioGPA"
-					+ " from GeneralFuelRatio"
-					+ " where fuelTypeID=1"
-					+ " and fuelFormulationID=" + fuelHandler.testFuelID
-					+ " and polProcessID= -101";
+			sql = "select fueleffectratiogpa"
+					+ " from generalfuelratio"
+					+ " where fueltypeid=1"
+					+ " and fuelformulationid=" + fuelHandler.testFuelID
+					+ " and polprocessid= -101";
 			ratio = SQLRunner.executeScalar(g.db,sql);
 			assertEquals("fuelEffectRatioGPA does not match",((int)(20.0*10000))/10000.0,((int)(ratio*10000))/10000.0);
 
@@ -609,8 +609,8 @@ public class FuelEffectsGeneratorTest extends TestCase {
 		} finally {
 			fuelHandler.cleanup(testDB);
 
-			sql = "delete from GeneralFuelRatioExpression"
-					+ " where polProcessID= -101";
+			sql = "delete from generalfuelratioexpression"
+					+ " where polprocessid= -101";
 			SQLRunner.executeSQL(testDB,sql);
 		}
 	}
@@ -624,16 +624,16 @@ public class FuelEffectsGeneratorTest extends TestCase {
 		}
 
 		DatabaseSelection executionDatabase = new DatabaseSelection();
-		executionDatabase.databaseName = "MOVESExecution";
+		executionDatabase.databaseName = "movesexecution";
 		Connection db = null;
 		String sql = "";
 		try {
 			db = executionDatabase.openConnection();
 
 			ArrayList<FuelEffectsGenerator.FuelUsageEntry> highEthanolUsages = FuelEffectsGenerator.cloneEthanolFuelsForRegions(db);
-			sql = "alter table fuelFormulation add altRVP float null";
+			sql = "alter table fuelformulation add altrvp float null";
 			SQLRunner.executeSQL(db,sql);
-			sql = "update fuelFormulation set altRVP=RVP";
+			sql = "update fuelformulation set altrvp=rvp";
 			SQLRunner.executeSQL(db,sql);
 			FuelEffectsGenerator.alterHighEthanolFuelProperties(db,highEthanolUsages);
 		} catch(Exception e) {

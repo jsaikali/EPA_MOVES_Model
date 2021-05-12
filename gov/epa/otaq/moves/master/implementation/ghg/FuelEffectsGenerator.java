@@ -2851,7 +2851,7 @@ if(ageID == 0) {
 							 * @output criteriaRatio
 							 * @condition Predictive Calculations
 							**/
-							runSulfurModel(db,"temp" + tableBaseName + "A","criteriaRatio",useRateOfProgress);
+							runSulfurModel(db,"temp" + tableBaseName + "A","criteriaratio",useRateOfProgress);
 
 							sql = "truncate temp" + tableBaseName + "A";
 							SQLRunner.executeSQL(db,sql);

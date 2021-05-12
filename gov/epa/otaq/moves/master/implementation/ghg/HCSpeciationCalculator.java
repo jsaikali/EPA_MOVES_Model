@@ -92,10 +92,10 @@ public class HCSpeciationCalculator extends EmissionCalculator implements Emissi
 		SQLRunner.Query query = new SQLRunner.Query();
 
 		try {
-			sql = "select polProcessID"
-					+ " from PollutantProcessAssoc"
-					+ " where pollutantID in (5,79,80,86,87)"
-					+ " and processID in (1,2,11,12,13,15,16,17,18,19,20,21,30,31,32,90,91)";
+			sql = "select polprocessid"
+					+ " from pollutantprocessassoc"
+					+ " where pollutantid in (5,79,80,86,87)"
+					+ " and processid in (1,2,11,12,13,15,16,17,18,19,20,21,30,31,32,90,91)";
 			db = DatabaseConnectionManager.checkOutConnection(MOVESDatabaseType.EXECUTION);
 			query.open(db,sql);
 			while(query.rs.next()) {
@@ -244,7 +244,7 @@ public class HCSpeciationCalculator extends EmissionCalculator implements Emissi
 	 * @throws SQLException if anything goes wrong
 	**/
 	public static String buildOxyThreshCase(Connection db) throws SQLException {
-		String sql = "select oxyThreshID, oxyThreshName from oxyThreshName";
+		String sql = "select oxythreshid, oxythreshname from oxythreshname";
 		SQLRunner.Query query = new SQLRunner.Query();
 		String result = "case\n";
 		try {
