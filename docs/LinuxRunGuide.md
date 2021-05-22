@@ -1,8 +1,6 @@
 # Runnning MOVES on Linux  
 ### Author: Joanna Saikali  
 
-Stay tuned... this will be completed by 5/25/2021   
-
 ## Changes made to original MOVES
 - Linux versions of dependency installations (mariaDB, sql, golang)   
 - Changes to paths, configurations in several config files   
