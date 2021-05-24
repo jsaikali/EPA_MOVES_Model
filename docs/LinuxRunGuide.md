@@ -103,6 +103,9 @@ bash SetupDatabase.sh
 ## Instructions on running MOVES on Linux server
 One can launch a Terminal or Powershell to execute the following commands.   
 These were written for terminal but can easily be modified for Powershell.  
+#### Connect to the Cornell University VPN
+Instructions on doing so can be found here:  https://it.cornell.edu/cuvpn  
+The Linux server is IP-restricted which is why this is a necessary step!
 
 #### SSH into the Windows Server
 ```
