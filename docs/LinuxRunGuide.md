@@ -145,8 +145,15 @@ ant run -Drunspec="testrun.mrs" &> log.log
 
 #### View results in MariaDB
 ```
+// Launch SQL
 sudo mysql -uroot -pmoves
+
+// Open up the database with MOVES output
 use database databasetest; # OR WHATEVER YOUR DATABASE IS CALLED BASED ON RUNSPEC
+
+// View available tables
 show tables;
+
+// Get RunSpec results
 select * from movesoutput;
 ```
