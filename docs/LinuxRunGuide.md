@@ -101,20 +101,52 @@ bash SetupDatabase.sh
 ```
 
 ## Instructions on running MOVES on Linux server
+One can launch a Terminal or Powershell to execute the following commands.   
+These were written for terminal but can easily be modified for Powershell.  
+
+#### SSH into the Windows Server
+```
+ssh -i <pem file> <server login>
+```
+
+#### Navigate to MOVES directory and source necessary environment variables
+```
+cd climateaction/EPA_MOVES_Model
+source setenv.csh
+```
+
+If you are on a new server rather than Joanna's server, without Linux MOVES cloned, you will need to do the following:
+```
+git clone https://github.com/jsaikali/EPA_MOVES_Model.git
+cd EPA_MOVES_Model 
+source setenv.csh
+```
+
 #### Compile the MOVES tool
 ```
 ant crungui
 ```
 
-#### Run the MOVES tool pointing to the runspec desired; write results to log.log
+#### Upload the RunSpec that you would like to run.
+Launch a new powershell window and navigate to the directory that contains the RunSpec file you want. Suppose this is called "testrun.mrs".
 ```
-ant run -Drunspec="joannarunspec.mrs" &> log.log
+cd /path/to/directory/with/testrun.mrs
+sftp -i <pem file> <server login>
+cd climateaction/EPA_MOVES_Model
+put testrun.mrs
+```
+Once you have uploaded the desired runspec, you can now close out of this window.  
+
+#### Run the MOVES tool pointing to the runspec desired; write results to log.log
+Now in your regular SSH tab, you can execute the RunSpec you uploaded
+```
+ant run -Drunspec="testrun.mrs" &> log.log
 ```
 
 #### View results in MariaDB
 ```
 sudo mysql -uroot -pmoves
-use database joannatest; # OR WHATEVER YOUR DATABASE IS CALLED BASED ON RUNSPEC
+use database databasetest; # OR WHATEVER YOUR DATABASE IS CALLED BASED ON RUNSPEC
 show tables;
 select * from movesoutput;
 ```
