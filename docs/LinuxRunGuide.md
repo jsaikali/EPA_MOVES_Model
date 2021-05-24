@@ -118,5 +118,3 @@ use database joannatest; # OR WHATEVER YOUR DATABASE IS CALLED BASED ON RUNSPEC
 show tables;
 select * from movesoutput;
 ```
-
-## Future changes that need to be done
